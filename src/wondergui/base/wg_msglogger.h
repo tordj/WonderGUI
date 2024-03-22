@@ -41,7 +41,9 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static MsgLogger_p		create( std::ostream& stream ) { return MsgLogger_p( new MsgLogger(stream)); }
+		static MsgLogger_p		create( const std::function<void(const char*)>& func ) { return MsgLogger_p( new MsgLogger(func)); }
 
+		
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
@@ -78,6 +80,7 @@ namespace wg
 
 	private:
 		MsgLogger( std::ostream& stream );
+		MsgLogger( const std::function<void(const char*)>& func );
 		~MsgLogger();
 
 		void	_onRouteAdded() override;
@@ -94,7 +97,8 @@ namespace wg
 
 		bool			m_msgFilter[MsgType_size];
 
-		std::ostream&	m_out;
+		std::ostream *						m_pStream = nullptr;
+		std::function<void(const char*)>	m_func;
 
 	};
 

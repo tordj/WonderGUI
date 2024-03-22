@@ -35,7 +35,12 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	MsgLogger::MsgLogger( std::ostream& stream ) : m_out(stream)
+	MsgLogger::MsgLogger( std::ostream& stream ) : m_pStream(&stream)
+	{
+		logAllMsgs();
+	}
+
+	MsgLogger::MsgLogger( const std::function<void(const char*)>& func ) : m_func(func)
 	{
 		logAllMsgs();
 	}
@@ -375,8 +380,19 @@ namespace wg
 			pointerPos = _formatPointerPos( p );
 		}
 
-		m_out << " - " << _pMsg->typeInfo().className << " - " << source << copyTo << pointerPos << modkeys << params;
-		m_out << std::endl;
+		if( m_func )
+		{
+			const int 	c_len = c_paramLen + 1024;
+			char		output[c_len];
+			
+			snprintf( output, c_len, " - %s - %s%s%s%s%s\n", _pMsg->typeInfo().className, source.c_str(), copyTo.c_str(), pointerPos.c_str(), modkeys.c_str(), params );
+			m_func(output);
+		}
+		else
+		{
+			*m_pStream << " - " << _pMsg->typeInfo().className << " - " << source << copyTo << pointerPos << modkeys << params;
+			*m_pStream << std::endl;
+		}
 	}
 
 	//____ _formatTimestamp() ______________________________________________________
