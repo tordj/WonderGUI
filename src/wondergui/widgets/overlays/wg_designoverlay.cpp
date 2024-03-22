@@ -222,7 +222,7 @@ namespace wg
 
 	//____ _refreshRealGeo() __________________________________________________
 
-	void DesignOverlay::_refreshRealGeo(ToolboxSlot * pSlot)
+	void DesignOverlay::_refreshRealGeo(ToolboxSlot * pSlot, bool bForceResize)
 	{
 		if (m_pSelectedWidget)
 		{
@@ -283,7 +283,7 @@ namespace wg
 				pSlot->m_geo = childGeo;
 			}
 
-			if (pSlot->_widget()->_size() != childGeo.size())
+			if (pSlot->_widget()->_size() != childGeo.size() || bForceResize )
 				pSlot->_setSize(childGeo, m_scale);
 		}
 		else
@@ -372,7 +372,7 @@ namespace wg
 		else
 		{
 			auto p = static_cast<ToolboxSlot*>(pSlot);
-			_refreshRealGeo( p );
+			_refreshRealGeo( p, true );
 		}
 	}
 
@@ -423,7 +423,7 @@ namespace wg
 		// Refresh modal widgets geometry, their positions might have changed.
 
 		for( auto pSlot = palettes._begin() ; pSlot != palettes._end() ; pSlot++ )
-			_refreshRealGeo( pSlot );
+			_refreshRealGeo( pSlot, true );
 	}
 
 	//____ _receive() ______________________________________________________________

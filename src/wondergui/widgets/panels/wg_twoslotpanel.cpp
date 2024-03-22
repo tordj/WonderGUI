@@ -300,11 +300,12 @@ namespace wg
 	void TwoSlotPanel::_resize(const SizeSPX& size, int scale)
 	{
 		spx breadthDiff = m_bHorizontal ? m_size.h - size.h : m_size.w - size.w;
-		bool bForceUpdate = (scale != m_scale || breadthDiff != 0);
+
+		//TODO: Optimize. If scale and breadth remains same then we only need to force update those that have requested resize.
+		bool bForceUpdate = true; //(scale != m_scale || breadthDiff != 0);
 			
 		Container::_resize(size,scale);
 		_updateGeo( bForceUpdate );
-			
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________

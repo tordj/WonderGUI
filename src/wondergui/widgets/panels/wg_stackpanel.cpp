@@ -364,6 +364,7 @@ namespace wg
 
 		if(newDefault != m_defaultSize || m_defaultSize != m_size )
 		{
+			pSlot->m_bResizeRequired = true;
 			m_defaultSize = newDefault;
 			_requestResize();
 		}
@@ -529,7 +530,7 @@ namespace wg
 		{
 			RectSPX newGeo = _childGeo(pSlot);
 
-			if (newGeo != pSlot->m_geo)
+			if (pSlot->m_bResizeRequired || newGeo != pSlot->m_geo)
 			{
 				if (pSlot->m_bVisible)
 				{
@@ -538,6 +539,7 @@ namespace wg
 				}
 				pSlot->m_geo = newGeo;
  				pSlot->_setSize(newGeo.size(), m_scale);
+				pSlot->m_bResizeRequired = false;
 			}
 
 			pSlot++;
@@ -548,6 +550,8 @@ namespace wg
 
 	RectSPX StackPanel::_childGeo( const StackPanelSlot * pSlot ) const
 	{
+		//TODO: There should be some handling of widget that doesn't fit on one axis, using matchingWidth()/matchingHeight().
+		
 		RectSPX base = RectSPX( m_size ) - align(ptsToSpx(pSlot->m_margin,m_scale));
 
 		if( base.w <= 0 || base.h <= 0 )

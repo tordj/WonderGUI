@@ -90,6 +90,7 @@ namespace wg
 
 		Placement			m_placement = Placement::Center;
 		SizePolicy2D		m_sizePolicy = SizePolicy2D::Original;
+		bool				m_bResizeRequired = false;
 	};
 
 

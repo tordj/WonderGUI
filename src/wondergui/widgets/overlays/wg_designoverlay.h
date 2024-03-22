@@ -156,7 +156,7 @@ namespace wg
 		//
 
 		RectSPX			_selectionGeo() const;
-		void			_refreshRealGeo(ToolboxSlot * pSlot);
+		void			_refreshRealGeo(ToolboxSlot * pSlot, bool bForceResize = false);
 		void			_selectWidget(Widget * pWidget);
 		//
 
