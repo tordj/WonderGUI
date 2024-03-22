@@ -225,6 +225,42 @@ namespace wg
 		_childRequestRender( &slot );
 	}
 
+	//____ _matchingHeight() _____________________________________________________
+
+	spx CanvasCapsule::_matchingHeight(spx width, int scale) const
+	{
+		if( m_bScaleCanvas && !slot.isEmpty() )
+		{
+			SizeSPX border = m_skin.contentBorderSize(scale);
+			
+			spx givenWidth = width - border.w;
+			SizeSPX defSize = slot._widget()->_defaultSize(scale);
+			
+			spx wantedHeight = align(int64_t(defSize.h * givenWidth) / defSize.w);
+			return wantedHeight + border.h;
+		}
+		else
+			return Capsule::_matchingHeight(width,scale);
+	}
+
+	//____ _matchingWidth() ______________________________________________________
+
+	spx	CanvasCapsule::_matchingWidth(spx height, int scale) const
+	{
+		if( m_bScaleCanvas && !slot.isEmpty() )
+		{
+			SizeSPX border = m_skin.contentBorderSize(scale);
+			
+			spx givenHeight = height - border.h;
+			SizeSPX defSize = slot._widget()->_defaultSize(scale);
+			
+			spx wantedWidth = align(int64_t(defSize.w * givenHeight) / defSize.h);
+			return wantedWidth + border.w;
+		}
+		else
+			return Capsule::_matchingWidth(height,scale);
+	}
+
 	//____ _resizeCanvasAndChild() _______________________________________________
 
 	void CanvasCapsule::_resizeCanvasAndChild()
@@ -232,8 +268,8 @@ namespace wg
 		SizeSPX newSize;
 		if( m_bScaleCanvas )
 		{
-			if( slot.widget() )
-				newSize = slot.widget()->_defaultSize(m_scale);
+			if( slot._widget() )
+				newSize = slot._widget()->_defaultSize(m_scale);
 			else
 				newSize.clear();
 		}
@@ -243,8 +279,8 @@ namespace wg
 		if( newSize != m_canvasSize )
 		{
 			_setCanvasSize( newSize );
-			if( slot.widget() )
-				slot.widget()->_resize(newSize, m_scale);
+			if( slot._widget() )
+				slot._widget()->_resize(newSize, m_scale);
 		}
 	}
 

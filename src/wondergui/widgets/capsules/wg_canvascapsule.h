@@ -137,6 +137,12 @@ namespace wg
 		inline Gradient		tintGradient() { return m_gradient; }
 		inline BlendMode	blendMode() { return m_blendMode; }
 
+		//.____ Internal _________________________________________________
+
+		spx					_matchingHeight(spx width, int scale) const override;
+		spx					_matchingWidth(spx height, int scale) const override;
+
+		
 	protected:
 		CanvasCapsule();
 		
