@@ -323,7 +323,7 @@ namespace wg
 	{
 		int64_t	timestampStillDisplayed = m_latestTimestamp - m_displayTime - m_latency;
 		
-		int microsecPerPixel = m_displayTime / (m_chartCanvas.w / 64);
+		int microsecPerPixel = m_chartCanvas.w > 0 ? m_displayTime / (m_chartCanvas.w / 64) : 0;
 
 		for( auto& entry : entries )
 		{
