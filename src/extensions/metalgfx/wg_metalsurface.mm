@@ -407,6 +407,8 @@ namespace wg
 
     bool MetalSurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
     {
+		//TODO: Only copy pixels that are needed, not whole texture.
+		
         if( !m_texture )
             return false;
         
@@ -424,7 +426,7 @@ namespace wg
 
     void MetalSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
     {
-        if( m_texture )
+        if( m_texture && !bufferRect.isEmpty() )
             _syncTexture( bufferRect + buffer.rect.pos() );
     }
 
