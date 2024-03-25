@@ -362,44 +362,49 @@ namespace wg
 
 	Widget * InputHandler::_updateEnteredWidgets( Widget * pMarkedWidget, int64_t timestamp )
 	{
+		// Create new list of entered widgets
+		
+		std::vector<Widget_wp>	enteredWidgets;
+		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
+			enteredWidgets.push_back( pWidget );
 
+		// Send MouseLeave to those that are not in the new list.
+
+		for( auto& weakptr : m_vEnteredWidgets )
+		{
+			Widget * pWidget = weakptr.rawPtr();
+			
+			if ( pWidget && _widgetPosInList( pWidget, enteredWidgets ) < 0 )
+			{
+				MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
+				p->setCopyTo(pWidget);
+				Base::msgRouter()->post(p);
+			}
+		}
+		
 		// Loop through our new widgets and check if they already
 		// were entered. Send MouseEnter to all new widgets and notice the first
-		// common ancestor .
+		// common ancestor.
 
 		Widget * pFirstAlreadyMarked = 0;
-		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
+		for( auto& weakptr : enteredWidgets )
 		{
-			int ofs = _widgetPosInList( pWidget, m_vEnteredWidgets );
-			if( ofs >= 0 )
-			{
-				if( !pFirstAlreadyMarked )
-					pFirstAlreadyMarked = pWidget;
-				m_vEnteredWidgets[ofs] = 0;
-			}
-			else
+			Widget * pWidget = weakptr.rawPtr();
+			
+			if( _widgetPosInList( pWidget, m_vEnteredWidgets ) < 0 )
 			{
 				MouseEnterMsg_p p = MouseEnterMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(pWidget);
 				Base::msgRouter()->post(p);
 			}
+			else if( !pFirstAlreadyMarked )
+				pFirstAlreadyMarked = pWidget;
 		}
 
-		// Send MouseLeave to those that were left.
-
-		for( size_t i = 0 ; i < m_vEnteredWidgets.size() ; i++ )
-			if (m_vEnteredWidgets[i])
-			{
-				MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, m_vEnteredWidgets[i].rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
-				p->setCopyTo(m_vEnteredWidgets[i].rawPtr());
-				Base::msgRouter()->post(p);
-			}
 		// Replace the old list with a new one.
 
-		m_vEnteredWidgets.clear();
-		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
-			m_vEnteredWidgets.push_back( pWidget );
-
+		m_vEnteredWidgets.swap(enteredWidgets);
+		
 		// Return first already marked, calling function might need it.
 
 		return pFirstAlreadyMarked;
