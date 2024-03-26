@@ -29,11 +29,18 @@ using std::string;
 
 //____ Constructor ____________________________________________________________
 
-WgEventLogger::WgEventLogger( std::ostream& stream ) : m_out(stream)
+WgEventLogger::WgEventLogger( std::ostream& stream ) : m_pStream(&stream)
 {
 	LogAllEvents();
 	IgnoreEvent( WG_EVENT_TICK );
 }
+
+WgEventLogger::WgEventLogger( const std::function<void(const char*)> func ) : m_func(func)
+{
+	LogAllEvents();
+	IgnoreEvent( WG_EVENT_TICK );
+}
+
 
 //____ Destructor _____________________________________________________________
 
@@ -537,9 +544,21 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 	modkeys = _formatModkeys( _pEvent );
 	pointerPos = _formatPointerPos( _pEvent );
 
-	m_out << timestamp.c_str() << " - " << id.c_str() << " - " << widget.c_str() << pointerPos.c_str() << modkeys.c_str() << params;
-	m_out << std::endl;
+	if( m_func )
+	{
+		const int 	c_len = 2048;
+		char		output[c_len];
+		
+		snprintf( output, c_len, " %s - %s - %s%s%s%s\n", timestamp.c_str(), id.c_str(), widget.c_str(), pointerPos.c_str(), modkeys.c_str(), params );
+		m_func(output);
+	}
+	else
+	{
+		* m_pStream << timestamp.c_str() << " - " << id.c_str() << " - " << widget.c_str() << pointerPos.c_str() << modkeys.c_str() << params;
+		* m_pStream << std::endl;
+	}
 }
+
 
 //____ _formatTimestamp() ______________________________________________________
 

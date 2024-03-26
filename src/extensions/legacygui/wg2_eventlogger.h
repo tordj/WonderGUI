@@ -24,6 +24,8 @@
 #define WG_EVENTLOGGER_DOT_H
 
 #include <iostream>
+#include <functional>
+
 #include <wg2_eventhandler.h>
 
 
@@ -32,6 +34,8 @@ class WgEventLogger : public WgEventListener
 public:
 
 	WgEventLogger( std::ostream& stream );
+	WgEventLogger( const std::function<void(const char*)> func );
+
 	~WgEventLogger();
 
 	void OnEvent( const WgEvent::Event * _pEvent );
@@ -69,7 +73,8 @@ private:
 
 	bool			m_eventFilter[WG_EVENT_MAX];
 
-	std::ostream&	m_out;
+	std::ostream *	m_pStream = nullptr;
+	std::function<void(const char*)>	m_func;
 
 };
 
