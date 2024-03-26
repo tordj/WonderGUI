@@ -57,6 +57,13 @@ namespace wg
         m_pEdgemapFactory = pEdgemapFactory;
         m_bRendering = false;
 		m_bIsProxyDevice = true;
+		
+		// Incomplete initialization of m_canvas.
+		
+		auto canvasSize = PluginCalls::gfxDevice->canvasSize(object);
+		
+		m_canvas.size.w = canvasSize.w;
+		m_canvas.size.h = canvasSize.h;
 	}
 
 	//____ Destructor ______________________________________________________________

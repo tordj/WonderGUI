@@ -159,6 +159,7 @@ namespace wg
 			for (int i = 1; i < nRectangles; i++)
 				bounds.growToContain(pRectangles[i]);
 
+			//TODO: This is incomplete, we should only allow rectangles that are a subset of those used in beginCanvasUpdate.
 			
 			if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvas.size.w || bounds.h > m_canvas.size.h)
 			{
