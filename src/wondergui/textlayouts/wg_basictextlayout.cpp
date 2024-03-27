@@ -47,6 +47,9 @@ namespace wg
 		m_selectionBackColor	= bp.selectionBackColor;
 		m_selectionCharBlend	= bp.selectionCharBlend;
 		m_selectionCharColor	= bp.selectionCharColor;
+		
+		m_softLineSpacing		= bp.lineSpacing;
+		m_hardLineSpacing		= bp.lineSpacing + bp.paragraphSpacing;
 
 		m_bLineWrap				= bp.wrap;
 
@@ -584,32 +587,35 @@ namespace wg
 		else
 		{
 			LineInfo * pLine = pBegLine;
-
+			spx		yPos = canvas.y + begPos.y -pLine->base;
+			
 			RectSPX area;
 			area.x = canvas.x + begPos.x;
-			area.y = canvas.y + begPos.y - pLine->base;
+			area.y = yPos;
 			area.w = pLine->width - (begPos.x - _linePosX( pLine, canvas.w));
 			area.h = pLine->height;
 
 			pDevice->fill( area, color );
 
-			area.y += pLine->spacing;
+			yPos += pLine->spacing;
 			pLine++;
 
 			while( pLine != pEndLine )
 			{
 				area.x = canvas.x + _linePosX( pLine, canvas.w);
+				area.y = yPos;
 				area.w = pLine->width;
 				area.h = pLine->height;
 
 				pDevice->fill( area, color );
 
-				area.y += pLine->spacing;
+				yPos += pLine->spacing;
 				pLine++;
 			}
 
 
 			area.x = canvas.x + _linePosX( pLine, canvas.w);
+			area.y = yPos;
 			area.w = endPos.x;
 			area.h = pLine->height;
 
@@ -805,10 +811,13 @@ namespace wg
 		{
 			const LineInfo * pLine = pBegLine;
 
+			spx yPos = begPos.y - pLine->base;
+			
 			x1 = begPos.x;
-			y1 = begPos.y - pLine->base;
+			y1 = yPos;
 			x2 = pLine->width + _linePosX(pLine, canvas.w);
-			y2 = y1 + pLine->height;
+			
+			yPos += pLine->spacing;
 
 			pLine++;
 
@@ -822,7 +831,7 @@ namespace wg
 				if (nx2 > x2)
 					x2 = nx2;
 
-				y2 += pLine->spacing;
+				yPos += pLine->spacing;
 				pLine++;
 			}
 
@@ -834,7 +843,7 @@ namespace wg
 			if (nx2 > x2)
 				x2 = nx2;
 
-			y2 += pLine->height;
+			y2 = yPos + pLine->height;
 		}
 
 		return RectSPX( x1, y1, x2-x1, y2-y1);
@@ -1281,7 +1290,7 @@ namespace wg
 
 				// Update totalHeight
 
-				totalHeight += pChars->isEndOfText() ? maxAscend + maxDescend : maxAscend + maxDescendGap;
+				totalHeight += pChars->isEndOfText() ? maxAscend + maxDescend : align( (maxAscend + maxDescendGap) * m_hardLineSpacing);
 
 				if (pChars->isEndOfText())
 					break;
@@ -1318,7 +1327,7 @@ namespace wg
 
 					// Update totalHeight
 
-					totalHeight += pChars->isEndOfText() ? bpMaxAscend + bpMaxDescend : bpMaxAscend + bpMaxDescendGap;
+					totalHeight += pChars->isEndOfText() ? bpMaxAscend + bpMaxDescend : align( (bpMaxAscend + bpMaxDescendGap) * m_softLineSpacing);
 
 					// Prepare for next line
 
@@ -1540,7 +1549,7 @@ namespace wg
 				pLines->width = width;
 				pLines->height = maxAscend + maxDescend;
 				pLines->base = maxAscend;
-				pLines->spacing = maxAscend + maxDescendGap;
+				pLines->spacing = align((maxAscend + maxDescendGap) * m_hardLineSpacing);
 				pLines++;
 
 				// Update size
@@ -1548,7 +1557,7 @@ namespace wg
 				if (width > size.w)
 					size.w = width;
 
-				size.h += pChars->isEndOfText() ? maxAscend + maxDescend : maxAscend + maxDescendGap;
+				size.h += pChars->isEndOfText() ? maxAscend + maxDescend : align( (maxAscend + maxDescendGap)*m_hardLineSpacing);
 
 				if (pChars->isEndOfText())
 					break;
@@ -1591,7 +1600,7 @@ namespace wg
 					pLines->width = bpWidth;
 					pLines->height = bpMaxAscend + bpMaxDescend;
 					pLines->base = bpMaxAscend;
-					pLines->spacing = bpMaxAscend + bpMaxDescendGap;
+					pLines->spacing = align((bpMaxAscend + bpMaxDescendGap) * m_softLineSpacing);
 					pLines++;
 
 					// Update size
@@ -1599,7 +1608,7 @@ namespace wg
 					if (bpWidth > size.w)
 						size.w = bpWidth;
 
-					size.h += pChars->isEndOfText() ? bpMaxAscend + bpMaxDescend : bpMaxAscend + bpMaxDescendGap;
+					size.h += pChars->isEndOfText() ? bpMaxAscend + bpMaxDescend : align( (bpMaxAscend + bpMaxDescendGap) * m_softLineSpacing);
 
 					// Prepare for next line
 
@@ -1750,7 +1759,7 @@ namespace wg
 				pLines->width = width;
 				pLines->height = maxAscend + maxDescend;
 				pLines->base = maxAscend;
-				pLines->spacing = maxAscend + maxDescendGap;
+				pLines->spacing = align((maxAscend + maxDescendGap) * m_hardLineSpacing);
 				pLines++;
 
 				// Update size
@@ -1758,7 +1767,7 @@ namespace wg
 				if (width > size.w)
 					size.w = width;
 
-				size.h += pChars->isEndOfText() ? maxAscend + maxDescend : maxAscend + maxDescendGap;
+				size.h += pChars->isEndOfText() ? maxAscend + maxDescend : align( (maxAscend + maxDescendGap) * m_hardLineSpacing);
 
 				//
 
@@ -1895,7 +1904,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 			if (width > size.w)
 				size.w = width;
 
-			size.h += pChars->isEndOfText() ? maxAscend + maxDescend : maxAscend + maxDescendGap;
+			size.h += pChars->isEndOfText() ? maxAscend + maxDescend : align( (maxAscend + maxDescendGap) * m_hardLineSpacing);
 
 			//
 

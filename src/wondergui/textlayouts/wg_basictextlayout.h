@@ -53,6 +53,9 @@ namespace wg
 			BlendMode	selectionCharBlend	= BlendMode::Invert;
 			HiColor		selectionCharColor	= HiColor::White;
 
+			float		lineSpacing			= 1.f;
+			float		paragraphSpacing	= 0.f;					// Add to lineSpacing at hard line endings.
+			
 			bool		wrap = false;
 		};
 
@@ -208,6 +211,9 @@ namespace wg
 		HiColor			m_selectionCharColor;
 		BlendMode		m_selectionCharBlend;
 
+		float			m_hardLineSpacing = 1.f;
+		float			m_softLineSpacing = 1.f;
+		
 		TextItem *		m_pFocusedText = nullptr;
 	};
 

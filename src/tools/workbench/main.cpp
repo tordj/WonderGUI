@@ -707,7 +707,7 @@ int main(int argc, char** argv)
 		//	stretchBlitTest(pRoot->child.ptr());
 		//	scrollIntoViewTest(pRoot->child.ptr());
 		//	textClipTest(pSlot);
-		//	textEditorTest(pSlot);
+			textEditorTest(pSlot);
 		//	lineEditorTest(pSlot);
 		//	popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
@@ -754,7 +754,7 @@ int main(int argc, char** argv)
 		//	textDisplayTest(pSlot);
 		//  scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
-			packPanelStressTest(pSlot);
+		//	packPanelStressTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -1302,13 +1302,15 @@ bool textClipTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool textEditorTest(ComponentPtr<DynamicSlot> pEntry)
 {
+	auto pLayout = BasicTextLayout::create({ .lineSpacing = 1.2f, .paragraphSpacing = 1.f, .wrap = true});
+
 	auto pSkin = ColorSkin::create(Color::YellowGreen, 2);
 
-	auto pEditor = TextEditor::create( {	.editor = { .text = String("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.") }, 
+	auto pEditor = TextEditor::create( {	.editor = { .layout = pLayout, .text = String("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.") },
 											.skin = pSkin});
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.pushBack(pEditor, { .pos = { 10,10 }, .size = { 150, 0 } });
+	pFlex->slots.pushBack(pEditor, { .pos = { 10,10 }, .size = { 150, 200 } });
 
 	*pEntry = pFlex;
 
