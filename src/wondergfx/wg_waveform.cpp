@@ -223,10 +223,10 @@ namespace wg
 		else
 		{
 			if( pTopSamples )
-				EdgemapTools::convertSamples(m_pTopSamples + sampleBegin, pTopSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+				EdgemapTools::convertSamples(m_pTopSamples + sampleBegin, pTopSamples, m_origo, m_size.h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
 
 			if( pBottomSamples )
-				EdgemapTools::convertSamples(m_pBottomSamples + sampleBegin, pBottomSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+				EdgemapTools::convertSamples(m_pBottomSamples + sampleBegin, pBottomSamples, m_origo, m_size.h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
 
 			m_dirtBegin = std::min(sampleBegin,m_dirtBegin);
 			m_dirtEnd = std::max(sampleEnd,m_dirtEnd);
@@ -252,10 +252,10 @@ namespace wg
 		else
 		{
 			if( pTopSamples )
-				EdgemapTools::convertSamples(m_pTopSamples + sampleBegin, pTopSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+				EdgemapTools::convertSamples(m_pTopSamples + sampleBegin, pTopSamples, m_origo, m_size.h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
 
 			if( pBottomSamples )
-				EdgemapTools::convertSamples(m_pBottomSamples + sampleBegin, pBottomSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+				EdgemapTools::convertSamples(m_pBottomSamples + sampleBegin, pBottomSamples, m_origo, m_size.h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
 
 			m_dirtBegin = std::min(sampleBegin,m_dirtBegin);
 			m_dirtEnd = std::max(sampleEnd,m_dirtEnd);
@@ -272,7 +272,7 @@ namespace wg
 		int nbSamples = int(pDestEnd - pDestBegin);
 		int allocBytes= nbSamples * sizeof(spx);
 		spx * pConverted = (spx*) GfxBase::memStackAlloc(allocBytes);
-		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_pEdgemap->pixelSize().h*64, 1, nbSamples, 0, 1, 0, 1);
+		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_size.h*64, 1, nbSamples, 0, 1, 0, 1);
 
 		int bufferBeg = 0;
 		int bufferEnd = nbSamples;
@@ -308,7 +308,7 @@ namespace wg
 		int nbSamples = int(pDestEnd - pDestBegin);
 		int allocBytes= nbSamples * sizeof(spx);
 		spx * pConverted = (spx*) GfxBase::memStackAlloc(allocBytes);
-		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_pEdgemap->pixelSize().h*64, 1, nbSamples, 0, 1, 0, 1);
+		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_size.h*64, 1, nbSamples, 0, 1, 0, 1);
 
 		int bufferBeg = 0;
 		int bufferEnd = nbSamples;
@@ -341,14 +341,14 @@ namespace wg
 
 	void Waveform::setFlatTopLine( int sampleBegin, int sampleEnd, spx sample )
 	{
-		spx out = EdgemapTools::convertSample(sample, m_origo, m_pEdgemap->pixelSize().h*64);
+		spx out = EdgemapTools::convertSample(sample, m_origo, m_size.h*64);
 
 		_setFlatLine(m_pTopSamples, sampleBegin, sampleEnd, out);
 	}
 
 	void Waveform::setFlatTopLine( int sampleBegin, int sampleEnd, float sample )
 	{
-		spx out = EdgemapTools::convertSample(sample, m_origo, m_pEdgemap->pixelSize().h*64);
+		spx out = EdgemapTools::convertSample(sample, m_origo, m_size.h*64);
 
 		_setFlatLine(m_pTopSamples, sampleBegin, sampleEnd, out);
 	}
@@ -357,14 +357,14 @@ namespace wg
 
 	void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, spx sample )
 	{
-		spx out = EdgemapTools::convertSample(sample, m_origo, m_pEdgemap->pixelSize().h*64);
+		spx out = EdgemapTools::convertSample(sample, m_origo, m_size.h*64);
 
 		_setFlatLine(m_pBottomSamples, sampleBegin, sampleEnd, out);
 	}
 
 	void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 	{
-		spx out = EdgemapTools::convertSample(sample, m_origo, m_pEdgemap->pixelSize().h*64);
+		spx out = EdgemapTools::convertSample(sample, m_origo, m_size.h*64);
 
 		_setFlatLine(m_pBottomSamples, sampleBegin, sampleEnd, out);
 	}
