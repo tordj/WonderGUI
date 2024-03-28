@@ -29,6 +29,7 @@
 #include <wg_container.h>
 #include <wg_slot.h>
 #include <wg_scroller.h>
+#include <wg_transitions.h>
 
 namespace wg
 {
@@ -75,6 +76,7 @@ namespace wg
 			bool				stickyFocus			= false;
 			bool				tabLock 			= false;
 			String				tooltip;
+			CoordTransition_p	transition;
 			Axis				wheelOneAxis 		= Axis::Y;
 			Axis				wheelTwoAxis		= Axis::X;
 			ModKeys				wheelShift 			= ModKeys::Alt;
@@ -118,13 +120,18 @@ namespace wg
 		void			setStealWheelFromScrollbars(bool bSteal);
 		void			setAutoscroll(bool autoscrollX, bool autoscrollY);
 
-		void			setRelativeViewOffset( float x, float y );
+		void			setRelativeViewOffset( float x, float y, CoordTransition * pTransition = nullptr );
 
-		bool			setViewOffset( Coord offset );
+		bool			setViewOffset( Coord offset, CoordTransition * pTransition = nullptr );
 		Coord			viewOffset() const;
 		
 		Size			viewSize() const;
 		Size			contentSize() const;
+		
+		void			setTransition( CoordTransition * pTransition );
+		CoordTransition_p	transition( CoordTransition * pTransition ) const { return m_pDefaultTransition; }
+
+		bool			isTransitioning() const { return m_pTransitionInUse; }
 		
 		//void			setDragCombo(MouseButton button, ModKeys modkeys); // NOT POSSIBLE YET, NEEDS TO BE ABLE TO INTERCEPT MESSAGES.
 
@@ -138,6 +145,8 @@ namespace wg
 		bool			_setViewOffset( CoordSPX offset );
 		CoordSPX		_viewOffset() const { return m_childWindow.pos() - m_childCanvas.pos(); } // Can be negative if content is smaller than view and placement is not NorthWest.
 		
+		bool			_setViewTransition( CoordSPX offset, CoordTransition * pTransition );
+
 		SizeSPX			_viewSize() const { return m_childWindow.size(); }
 		SizeSPX			_contentSize() const { return m_childCanvas.size(); }
 ;
@@ -178,6 +187,8 @@ namespace wg
 			m_wheelAxisShiftCombo	= bp.wheelShift;
 			m_bStealWheelFromScrollbars = bp.stealWheelFromScrollbars;
 
+			m_pDefaultTransition	= bp.transition;
+			
 			_updateRegions();
 			_updateCanvasSize();
 			
@@ -203,6 +214,8 @@ namespace wg
 		// Overloaded from Widget
 
 		virtual void _resize(const SizeSPX& size, int scale) override;
+
+		void		_update(int microPassed, int64_t microsecTimestamp);
 
 		void		_receive(Msg * pMsg) override;
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
@@ -294,9 +307,16 @@ namespace wg
 
 		bool			m_bChildRequestedResize = false;
 		
-//		bool		m_bOverlayScrollbars;
-
-
+		// Transition related
+		
+		CoordTransition_p	m_pDefaultTransition;
+		CoordTransition_p	m_pTransitionInUse;
+		int					m_transitionProgress = 0;
+		
+		CoordSPX			m_startViewOfs;
+		CoordSPX			m_endViewOfs;
+		
+		
 	};
 
 

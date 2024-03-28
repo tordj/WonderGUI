@@ -228,6 +228,9 @@ ScrollPanel_p MyApp::createScrollPanel()
 	pScrollPanel->setAutohideScrollbars(true, true);
 	pScrollPanel->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
 
+	pScrollPanel->setTransition(CoordTransition::create(3000000));
+	
+	
 	return pScrollPanel;
 }
 

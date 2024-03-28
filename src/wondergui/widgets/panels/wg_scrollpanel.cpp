@@ -392,7 +392,7 @@ namespace wg
 
 	//____ setRelativeViewOffset() _______________________________________________
 
-	void ScrollPanel::setRelativeViewOffset( float x, float y )
+	void ScrollPanel::setRelativeViewOffset( float x, float y, CoordTransition * pTransition )
 	{
 		if( x < 0.f )
 			x = 0.f;
@@ -404,18 +404,26 @@ namespace wg
 		else if( y > 1.f )
 			y = 1.f;
 
-		spx xOfs = align(m_childWindow.x - int((m_childCanvas.w - m_childWindow.w) * x));
-		spx yOfs = align(m_childWindow.y - int((m_childCanvas.h - m_childWindow.h) * y));
+		spx xOfs = m_childWindow.x - int((m_childCanvas.w - m_childWindow.w) * x);
+		spx yOfs = m_childWindow.y - int((m_childCanvas.h - m_childWindow.h) * y);
 		
-		_setViewOffset({xOfs,yOfs});
+		if( pTransition || m_pDefaultTransition )
+			_setViewTransition({xOfs,yOfs}, pTransition);
+		else
+			_setViewOffset({xOfs,yOfs});
 	}
 
 	//____ setViewOffset() _______________________________________________________
 
-	bool ScrollPanel::setViewOffset( Coord _offset )
+	bool ScrollPanel::setViewOffset( Coord _offset, CoordTransition * pTransition )
 	{
-		CoordSPX offset = align(ptsToSpx(_offset, m_scale));
-		return _setViewOffset(offset);
+		CoordSPX offset = ptsToSpx(_offset, m_scale);
+			
+		
+		if( pTransition || m_pDefaultTransition )
+			return _setViewTransition(offset, pTransition);
+		else
+			return _setViewOffset(offset);
 	}
 
 	//____ viewOffset() __________________________________________________________
@@ -439,6 +447,14 @@ namespace wg
 		return spxToPts(_contentSize(), m_scale);
 	}
 
+	//____ setTransition() _______________________________________________________
+
+	void ScrollPanel::setTransition( CoordTransition * pTransition )
+	{
+		m_pDefaultTransition = pTransition;
+	}
+
+
 	//____ _setViewOffset() _______________________________________________________
 
 	bool ScrollPanel::_setViewOffset( CoordSPX _offset )
@@ -461,6 +477,30 @@ namespace wg
 		return ( m_childCanvas.pos() == wantedChildCanvasPos);
 	}
 
+	//____ _setViewTransition() __________________________________________________
+
+	bool ScrollPanel::_setViewTransition( CoordSPX offset, CoordTransition * pTransition )
+	{
+		if( !pTransition && !m_pDefaultTransition )
+			return false;
+		
+		m_startViewOfs = _viewOffset();
+		m_endViewOfs = offset;
+	
+		if( !m_pTransitionInUse )
+			_startReceiveUpdates();
+		
+		if( pTransition )
+			m_pTransitionInUse = pTransition;
+		else
+			m_pTransitionInUse = m_pDefaultTransition;
+		
+		m_transitionProgress = 0;
+
+		// Should probably return false if offset is not reachable.
+		
+		return true;
+	}
 
 	//____ _matchingHeight() __________________________________________________
 
@@ -812,6 +852,29 @@ namespace wg
 		_updateScrollbars();
 	}
 
+	//____ _update() __________________________________________________________
+
+	void ScrollPanel::_update(int microPassed, int64_t microsecTimestamp)
+	{
+		int timestamp = m_transitionProgress + microPassed;
+
+		if( timestamp >= m_pTransitionInUse->duration() )
+		{
+			m_transitionProgress = 0;
+			m_pTransitionInUse = nullptr;
+			
+			_setViewOffset(m_endViewOfs);
+			_stopReceiveUpdates();
+		}
+		else
+		{
+			m_transitionProgress = timestamp;
+			
+			CoordSPX ofs = m_pTransitionInUse->snapshot(timestamp, m_startViewOfs, m_endViewOfs);
+			_setViewOffset(ofs);
+		}
+	}
+
 	//____ _receive() _________________________________________________________
 
 	void ScrollPanel::_receive(Msg* pMsg)
@@ -1145,12 +1208,10 @@ namespace wg
 
 			if (window.pos() != startPos)
 			{
-				m_childCanvas.x -= window.x - startPos.x;
-				m_childCanvas.y -= window.y - startPos.y;
-
-				_childWindowCorrection();
-				_updateScrollbars();
-				_requestRender();
+				if( m_pDefaultTransition )
+					_setViewTransition(window.pos(), nullptr);
+				else
+					_setViewOffset(window.pos());
 			}
 
 			// Forward to any outer ScrollPanel
