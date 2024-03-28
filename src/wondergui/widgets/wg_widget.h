@@ -202,6 +202,9 @@ namespace wg
 		bool				hasBaggage() const;
 		Object_p			baggage() const;
 
+		void				bringIntoView( Border margin = 0);
+		void				bringIntoView( Rect area, Border margin = 0 );
+
 		//.____ Internal ______________________________________________________
 
 		inline Container* _parent() const { return m_pHolder ? m_pHolder->_container() : nullptr; }
