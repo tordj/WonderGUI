@@ -717,7 +717,7 @@ int main(int argc, char** argv)
 		//	pianoKeyboardTest(pSlot);
 		//	sliderTest(pSlot);
 		//	rangeSliderTest(pSlot);
-		//	pieKnobTest(pSlot);
+			pieKnobTest(pSlot);
 		//	spinKnobTest(pSlot);
 		//  animKnobTest(pSlot);
 		//	canvasStackTest(pSlot);
@@ -1678,18 +1678,39 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 									}
 		});
 
+		auto pBgSkin6 = PieMeterSkin::create({
+				.backColor = Color::Black,
+				.emptyColor = Color::Transparent,
+				.hubColor = Color::Yellow,
+				.hubSize = 0.25f,
+				.length = 8.f / 12.f * 360,
+				.min = 0.2f,
+				.movingSlices = true,
+//				.rotation = 10.f / 12.f * 360,
+				.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
+							{0.2f,Color::Blue,Color::Blue},
+							{0.1f,Color::LightBlue,Color::LightBlue}
+				},
+				.startFromCenter = true
+		});
+
+	
 
 	auto pKnob1 = Knob::create( { .skin = pBgSkin1, .value = 0.5f } );
 	auto pKnob2 = Knob::create( { .dragAxis = Axis::X, .skin = pBgSkin2, .value = 0.5f });
 	auto pKnob3 = Knob::create( { .dragAxis = Axis::X, .skin = pBgSkin3, .value = 0.5f });
 	auto pKnob4 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin4, .value = 0.5f });
 	auto pKnob5 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin5, .value = 0.5f });
+	auto pKnob6 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin6, .value = 0.5f });
 
 	pBaseLayer->slots.pushBack(pKnob1, { .pos = {10, 10}, .size = {100, 100} });
 	pBaseLayer->slots.pushBack(pKnob2, { .pos = {120, 10}, .size = {100, 100} });
 	pBaseLayer->slots.pushBack(pKnob3, { .pos = {230, 10}, .size = {100, 100} });
 	pBaseLayer->slots.pushBack(pKnob4, { .pos = {340, 10}, .size = {100, 200} });
 	pBaseLayer->slots.pushBack(pKnob5, { .pos = {450, 10}, .size = {200, 100} });
+	pBaseLayer->slots.pushBack(pKnob6, { .pos = {10, 220}, .size = {100, 100} });
+
+
 	*pSlot = pBaseLayer;
  
  

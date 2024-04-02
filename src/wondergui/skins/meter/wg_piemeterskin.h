@@ -81,6 +81,9 @@ namespace wg
 			float		rotation = 0.f;
 
 			Slice		slices[c_maxSlices];
+			
+			bool		startFromCenter = false;
+
 		};
 
 		//.____ Creation __________________________________________
@@ -123,6 +126,7 @@ namespace wg
 		float		m_hubSize = 0.75f;
 		bool		m_bRectangular = false;
 		bool		m_bStaticSections = true;
+		bool		m_bStartFromCenter = false;
 
 		Border		m_gfxPadding;
 
