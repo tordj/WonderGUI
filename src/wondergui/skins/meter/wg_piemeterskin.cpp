@@ -62,6 +62,8 @@ namespace wg
 		m_bStaticSections = !bp.movingSlices;
 		m_bRectangular = bp.square;
 
+		m_bStartFromCenter	= bp.startFromCenter;
+		
 		// Copy slices
 
 		m_nSlices = 0;
@@ -167,15 +169,39 @@ namespace wg
 
 		float sliceSizes[c_maxSlices];
 		HiColor sliceColors[c_maxSlices];
+		int nSlices = 0;
 
 		HiColor hubColor = m_hubColor.a == 4096 ? m_hubColor : HiColor::blend(m_backColor, m_hubColor, BlendMode::Blend);
 
-		float totalLength = m_minRange + value * (m_maxRange - m_minRange);
+		float startPos, totalLength;
+		
+		if( m_bStartFromCenter )
+		{
+			if( !m_emptyColor.isFullyTransparent() )
+			{
+				sliceColors[nSlices] = m_emptyColor;
+				sliceSizes[nSlices++] = (m_maxRange-m_minRange)/2;
+			}
 
+			totalLength = m_minRange + abs(value - 0.5f) * (m_maxRange - m_minRange);
+
+			if( value < 0.5f || !m_emptyColor.isFullyTransparent() )
+				startPos = m_rangeStart - m_maxRange/2;
+			else
+				startPos = m_rangeStart - (m_minRange/2);
+		}
+		else
+		{
+			startPos = m_rangeStart;
+			totalLength = m_minRange + value * (m_maxRange - m_minRange);
+		}
+		
+		while( startPos < 0 )
+			startPos += 1.f;
+		
 //		if (totalLength == 0.f)
 //			return;
 
-		int nSlices = 0;
 
 		if (m_bStaticSections)
 		{
@@ -218,13 +244,34 @@ namespace wg
 
 		// Possibly fill out with empty section
 
-		if (value < 1.f)
+		if( m_bStartFromCenter)
 		{
-			sliceColors[nSlices] = m_emptyColor;
-			sliceSizes[nSlices++] = (1.f - value) * (m_maxRange - m_minRange);
-		}
+			if (value > 0.f && value < 1.f)
+			{
+				sliceColors[nSlices] = m_emptyColor;
+				sliceSizes[nSlices++] = (0.5f - abs(value-0.5f) ) * (m_maxRange - m_minRange);
+			}
 
-		pDevice->drawPieChart(canvas, m_rangeStart, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
+			if( m_bStartFromCenter && value < 0.5f )
+			{
+				std::reverse(sliceColors, sliceColors+nSlices);
+				std::reverse(sliceSizes, sliceSizes+nSlices);
+			}
+
+		}
+		else
+		{
+			if (value < 1.f && !m_emptyColor.isFullyTransparent() )
+			{
+				sliceColors[nSlices] = m_emptyColor;
+				sliceSizes[nSlices++] = (1.f - value) * (m_maxRange - m_minRange);
+			}
+		}
+		
+		
+		//
+		
+		pDevice->drawPieChart(canvas, startPos, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
 	}
 
 	//____  _defaultSize() ___________________________________________________
