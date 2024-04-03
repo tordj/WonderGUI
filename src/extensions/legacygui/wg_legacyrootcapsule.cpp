@@ -92,8 +92,7 @@ namespace wg
 
 	PointerStyle LegacyRootCapsule::pointerStyle() const
 	{
-		//TODO: Implement!!!
-		return PointerStyle::Arrow;
+		return m_pEventHandler->PointerStyle();
 	}
 
 	//____ _defaultSize() _____________________________________________________
