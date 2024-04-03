@@ -1641,65 +1641,80 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 
 //	auto pBgSkin3 = PieMeterSkin::create(10.f / 12.f, 0.05f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.75f, Color::Transparent, Color::Black);
 	auto pBgSkin3 = PieMeterSkin::create({	
-											.backColor = Color::Black,
-											.emptyColor = Color::DarkGrey,
-											.hubColor = Color::Transparent,
-											.hubSize = 0.75f,
-											.length = 4.f / 12.f * 360,
-											.min = 0.05f,
-											.rotation = 10.f / 12.f * 360,
-											.slices = {{ 1.f, Color::Green, Color::Red }}
-										});
+		.backColor = Color::Black,
+		.emptyColor = Color::DarkGrey,
+		.hubColor = Color::Transparent,
+		.hubSize = 0.75f,
+		.length = 4.f / 12.f * 360,
+		.min = 0.05f,
+		.rotation = 10.f / 12.f * 360,
+		.slices = {{ 1.f, Color::Green, Color::Red }}
+	});
 
 
 	auto pBgSkin4 = PieMeterSkin::create({
-										.backColor = Color::Black,
-										.emptyColor = Color::DarkGrey,
-										.hubColor = Color::Transparent,
-										.hubSize = 0.75f,
-										.length = 4.f / 12.f * 360,
-										.min = 1 / 8.f,
-										.square = true,
-										.rotation = 10.f / 12.f * 360,
-										.slices = { {0.4f, Color::Red, Color::Red},
-													{0.4f, Color::Orange, Color::Orange},
-													{1.2f,Color::Blue,Color::Green},
-													{0.2f,Color::White,Color::Black} }
-										});
+		.backColor = Color::Black,
+		.emptyColor = Color::DarkGrey,
+		.hubColor = Color::Transparent,
+		.hubSize = 0.75f,
+		.length = 4.f / 12.f * 360,
+		.min = 1 / 8.f,
+		.square = true,
+		.rotation = 10.f / 12.f * 360,
+		.slices = { {0.4f, Color::Red, Color::Red},
+					{0.4f, Color::Orange, Color::Orange},
+					{1.2f,Color::Blue,Color::Green},
+					{0.2f,Color::White,Color::Black} }
+	});
 
 	auto pBgSkin5 = PieMeterSkin::create({
-									.backColor = Color::Black,
-									.emptyColor = Color::DarkGrey,
-									.hubColor = Color::Yellow,
-									.hubSize = 0.25f,
-									.length = 4.f / 12.f * 360,
-									.min = 0,
-									.movingSlices = true,
-									.rotation = 10.f / 12.f * 360,
-									.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
-												{0.2f,Color::Blue,Color::Blue},
-												{0.1f,Color::LightBlue,Color::LightBlue}
-									}
-		});
+		.backColor = Color::Black,
+		.emptyColor = Color::DarkGrey,
+		.hubColor = Color::Yellow,
+		.hubSize = 0.25f,
+		.length = 4.f / 12.f * 360,
+		.min = 0,
+		.movingSlices = true,
+		.rotation = 10.f / 12.f * 360,
+		.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
+					{0.2f,Color::Blue,Color::Blue},
+					{0.1f,Color::LightBlue,Color::LightBlue}
+		}
+	});
+/*
+	auto pBgSkin6 = PieMeterSkin::create({
+		.backColor = Color::Black,
+		.emptyColor = Color::Transparent,
+		.hubColor = Color::Yellow,
+		.hubSize = 0.25f,
+		.length = 8.f / 12.f * 360,
+		.min = 0.2f,
+		.movingSlices = true,
+		.rotation = 10.f / 12.f * 360,
+		.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
+					{0.2f,Color::Blue,Color::Blue},
+					{0.1f,Color::LightBlue,Color::LightBlue}
+		},
+		.startFromCenter = true
+	});
+*/
 
-		auto pBgSkin6 = PieMeterSkin::create({
-				.backColor = Color::Black,
-				.emptyColor = Color::Transparent,
-				.hubColor = Color::Yellow,
-				.hubSize = 0.25f,
-				.length = 8.f / 12.f * 360,
-				.min = 0.2f,
-				.movingSlices = true,
-//				.rotation = 10.f / 12.f * 360,
-				.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
-							{0.2f,Color::Blue,Color::Blue},
-							{0.1f,Color::LightBlue,Color::LightBlue}
-				},
-				.startFromCenter = true
-		});
+	auto pBgSkin6 = PieMeterSkin::create({
+		.backColor = Color::Transparent,
+		.emptyColor = Color::Black,
+		.hubColor = Color::Yellow,
+		.hubSize = 0.87f,
+		.length = 360,
+		.min = 0.0f,
+//		.movingSlices = false,
+//		.rotation = 10.f / 12.f * 360,
+		.slices = { {1.0f,Color::Red,Color::Red}
+		},
+		.startFromCenter = true
+	});
 
 	
-
+	
 	auto pKnob1 = Knob::create( { .skin = pBgSkin1, .value = 0.5f } );
 	auto pKnob2 = Knob::create( { .dragAxis = Axis::X, .skin = pBgSkin2, .value = 0.5f });
 	auto pKnob3 = Knob::create( { .dragAxis = Axis::X, .skin = pBgSkin3, .value = 0.5f });
@@ -1707,6 +1722,8 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pKnob5 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin5, .value = 0.5f });
 	auto pKnob6 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin6, .value = 0.5f });
 
+	pKnob6->setValue(0.0f);
+	
 	pBaseLayer->slots.pushBack(pKnob1, { .pos = {10, 10}, .size = {100, 100} });
 	pBaseLayer->slots.pushBack(pKnob2, { .pos = {120, 10}, .size = {100, 100} });
 	pBaseLayer->slots.pushBack(pKnob3, { .pos = {230, 10}, .size = {100, 100} });
@@ -1716,8 +1733,7 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 
 
 	*pSlot = pBaseLayer;
- 
- 
+  
 	return true;
 }
 

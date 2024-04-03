@@ -209,16 +209,16 @@ namespace wg
 
 			for (int i = 0; i < m_nSlices; i++)
 			{
-				sliceColors[i] = HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value*4096));
+				sliceColors[nSlices] = HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value*4096));
 
 				float size = m_slices[i].size*m_maxRange;
 				if (length + size >= totalLength)
 				{
-					sliceSizes[i] = totalLength - length;
+					sliceSizes[nSlices] = totalLength - length;
 					nSlices++;
 					break;
 				}
-				sliceSizes[i] = size;
+				sliceSizes[nSlices] = size;
 				length += size;
 				nSlices++;
 			}
