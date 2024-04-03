@@ -89,13 +89,15 @@ namespace wg
 		static constexpr int *		curveTab() { return s_curveTab; }
 		static constexpr int		curveTabSize() { return c_nCurveTabEntries; }
 
+	protected:
 		
+		static GfxContext_p			s_pGfxContext;
+
 	private:
 		
 		static void					_genCurveTab();
 
 		static int					s_gfxInitCounter;
-		static GfxContext_p			s_pGfxContext;
 
 		const static int 			c_nCurveTabEntries = 1024;
 		static int 					s_curveTab[c_nCurveTabEntries];

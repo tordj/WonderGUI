@@ -69,26 +69,28 @@ public:
 	int             line;
 };
 
-class WgContext : public wg::GfxContext
+class WgContext : public wg::Object
 {
 	friend class WgBase;
-
-	WgCursor *			pDefaultCursor;
+	
+	WgCursor *			pDefaultCursor = nullptr;
 
 	// Settings for keyboard/pointer input
 
-	int					doubleClickTimeTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
-	int					doubleClickDistanceTreshold;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
+	int					doubleClickTimeTreshold = 250;		// Maximum millseconds between first and second press to count as a doubleclick.
+	int					doubleClickDistanceTreshold = 2;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
 
-	int					buttonRepeatDelay;
-	int					buttonRepeatRate;
+	int					buttonRepeatDelay = 300;
+	int					buttonRepeatRate = 200;
 
-	int					keyRepeatDelay;
-	int					keyRepeatRate;
+	int					keyRepeatDelay = 300;
+	int					keyRepeatRate = 150;
 
 	std::map<int,WgKey>	keycodeMap;		// Maps native keycodes to WgKey.
 	
-	wg::HostBridge *	pHostBridge;
+	wg::HostBridge *	pHostBridge = nullptr;
+	
+	wg::GfxContext_p	pGfxContext;
 };
 
 typedef	wg::StrongPtr<WgContext>	WgContext_p;

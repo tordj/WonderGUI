@@ -47,15 +47,13 @@ void WgBase::Init( wg::HostBridge * pHostBridge)
 	s_iSoftubeNumberOfInstances++;
 	if(s_iSoftubeNumberOfInstances != 1)
 		return;
-
-	if( s_pContextCreator == nullptr )
-		s_pContextCreator = [] { return wg::GearContext_p(new WgContext()); };
-
 	
 	wg::GfxBase::init();
 
-	s_pContext = wg_static_cast<WgContext_p>(s_pGearContext);
+	s_pContext = new WgContext();
 
+	s_pContext->pGfxContext = s_pGfxContext;
+	
 	s_pContext->pHostBridge = pHostBridge;
 	
 	wg::TextTool::setDefaultBreakRules();
@@ -67,17 +65,6 @@ void WgBase::Init( wg::HostBridge * pHostBridge)
 	textStyleBP.font = wg::DummyFont::create();
 
 	wg::TextStyle::s_pDefaultStyle = wg::TextStyle::create( textStyleBP );
-	
-	s_pContext->pDefaultCursor = nullptr;
-
-	s_pContext->doubleClickTimeTreshold 		= 250;
-	s_pContext->doubleClickDistanceTreshold 	= 2;
-
-	s_pContext->buttonRepeatDelay 	= 300;
-	s_pContext->buttonRepeatRate 	= 200;
-
-	s_pContext->keyRepeatDelay 		= 300;
-	s_pContext->keyRepeatRate 		= 150;
 }
 
 //____ Exit() __________________________________________________________________
@@ -99,9 +86,23 @@ void WgBase::Exit()
 
 WgContext_p WgBase::switchContext( const WgContext_p& pNewContext )
 {
-	auto pOld = wg_static_cast<WgContext_p>(GfxBase::switchContext(pNewContext));
-	s_pContext = wg_static_cast<WgContext_p>(s_pGearContext);
-	return pOld;
+	auto pOldContext = s_pContext;
+
+	if( pNewContext )
+	{
+		s_pContext = pNewContext;
+
+		wg::GfxBase::switchContext(pNewContext->pGfxContext);
+	}
+	else
+	{
+		s_pContext = WgContext_p(new WgContext());
+		
+		wg::GfxBase::switchContext(nullptr);
+		s_pContext->pGfxContext = s_pGfxContext;
+	}
+
+	return pOldContext;
 }
 
 //____ SetDefaultCursor() ___________________________________________________
