@@ -36,10 +36,9 @@
 #include <wg2_smartptr.h>
 
 
-WgBase::Data *			WgBase::s_pData = 0;
+WgContext_p				WgBase::s_pContext = 0;
 int WgBase::s_iSoftubeNumberOfInstances = 0;
 
-wg::HostBridge *		WgBase::s_pHostBridge = nullptr;
 
 //____ Init() __________________________________________________________________
 
@@ -49,9 +48,15 @@ void WgBase::Init( wg::HostBridge * pHostBridge)
 	if(s_iSoftubeNumberOfInstances != 1)
 		return;
 
+	if( s_pContextCreator == nullptr )
+		s_pContextCreator = [] { return wg::GearContext_p(new WgContext()); };
+
+	
 	wg::GfxBase::init();
 
-	s_pHostBridge = pHostBridge;
+	s_pContext = wg_static_cast<WgContext_p>(s_pGearContext);
+
+	s_pContext->pHostBridge = pHostBridge;
 	
 	wg::TextTool::setDefaultBreakRules();
 
@@ -63,21 +68,16 @@ void WgBase::Init( wg::HostBridge * pHostBridge)
 
 	wg::TextStyle::s_pDefaultStyle = wg::TextStyle::create( textStyleBP );
 	
-	assert( s_pData == 0 );
-	s_pData = new Data;
+	s_pContext->pDefaultCursor = nullptr;
 
-	s_pData->pDefaultCursor = 0;
+	s_pContext->doubleClickTimeTreshold 		= 250;
+	s_pContext->doubleClickDistanceTreshold 	= 2;
 
-	s_pData->doubleClickTimeTreshold 		= 250;
-	s_pData->doubleClickDistanceTreshold 	= 2;
+	s_pContext->buttonRepeatDelay 	= 300;
+	s_pContext->buttonRepeatRate 	= 200;
 
-	s_pData->buttonRepeatDelay 	= 300;
-	s_pData->buttonRepeatRate 	= 200;
-
-	s_pData->keyRepeatDelay 	= 300;
-	s_pData->keyRepeatRate 		= 150;
-
-	wg::TextTool::setDefaultBreakRules();
+	s_pContext->keyRepeatDelay 		= 300;
+	s_pContext->keyRepeatRate 		= 150;
 }
 
 //____ Exit() __________________________________________________________________
@@ -88,34 +88,40 @@ void WgBase::Exit()
 	if(s_iSoftubeNumberOfInstances != 0)
 		return;
 
-	assert( s_pData != 0 );
-
-	delete s_pData;
-	s_pData = 0;
+	s_pContext = nullptr;
 	
 	wg::TextStyle::s_pDefaultStyle = nullptr;
 
 	wg::GfxBase::exit();
 }
 
+//____ switchContext() ________________________________________________________
+
+WgContext_p WgBase::switchContext( const WgContext_p& pNewContext )
+{
+	auto pOld = wg_static_cast<WgContext_p>(GfxBase::switchContext(pNewContext));
+	s_pContext = wg_static_cast<WgContext_p>(s_pGearContext);
+	return pOld;
+}
+
 //____ SetDefaultCursor() ___________________________________________________
 
 void WgBase::SetDefaultCursor( WgCursor * pCursor )
 {
-	assert( s_pData != 0 );
-	s_pData->pDefaultCursor = pCursor;
+	assert( s_pContext != 0 );
+	s_pContext->pDefaultCursor = pCursor;
 }
 
 //____ SetDoubleClickTresholds() _______________________________________________
 
 bool WgBase::SetDoubleClickTresholds( int time, int distance )
 {
-	assert( s_pData != 0 );
+	assert( s_pContext != 0 );
 	if( time <= 0 || distance <= 0 )
 		return false;
 
-	s_pData->doubleClickTimeTreshold		= time;
-	s_pData->doubleClickDistanceTreshold	= distance;
+	s_pContext->doubleClickTimeTreshold		= time;
+	s_pContext->doubleClickDistanceTreshold	= distance;
 	return true;
 }
 
@@ -123,12 +129,12 @@ bool WgBase::SetDoubleClickTresholds( int time, int distance )
 
 bool WgBase::SetMouseButtonRepeat( int delay, int rate )
 {
-	assert( s_pData != 0 );
+	assert( s_pContext != 0 );
 	if( delay <= 0 || rate <= 0 )
 		return false;
 
-	s_pData->buttonRepeatDelay	= delay;
-	s_pData->buttonRepeatRate	= rate;
+	s_pContext->buttonRepeatDelay	= delay;
+	s_pContext->buttonRepeatRate	= rate;
 	return true;
 }
 
@@ -136,12 +142,12 @@ bool WgBase::SetMouseButtonRepeat( int delay, int rate )
 
 bool WgBase::SetKeyRepeat( int delay, int rate )
 {
-	assert( s_pData != 0 );
+	assert( s_pContext != 0 );
 	if( delay <= 0 || rate <= 0 )
 		return false;
 
-	s_pData->keyRepeatDelay	= delay;
-	s_pData->keyRepeatRate	= rate;
+	s_pContext->keyRepeatDelay	= delay;
+	s_pContext->keyRepeatRate	= rate;
 	return true;
 }
 
@@ -149,8 +155,8 @@ bool WgBase::SetKeyRepeat( int delay, int rate )
 
 void WgBase::MapKey( WgKey translated_keycode, int native_keycode )
 {
-	assert( s_pData != 0 );
-	s_pData->keycodeMap[native_keycode] = translated_keycode;
+	assert( s_pContext != 0 );
+	s_pContext->keycodeMap[native_keycode] = translated_keycode;
 }
 
 
@@ -158,15 +164,15 @@ void WgBase::MapKey( WgKey translated_keycode, int native_keycode )
 
 void WgBase::UnmapKey( WgKey translated_keycode )
 {
-	assert( s_pData != 0 );
-	std::map<int,WgKey>::iterator it = s_pData->keycodeMap.begin();
+	assert( s_pContext != 0 );
+	std::map<int,WgKey>::iterator it = s_pContext->keycodeMap.begin();
 
-	while( it != s_pData->keycodeMap.end() )
+	while( it != s_pContext->keycodeMap.end() )
 	{
 		if( it->second == translated_keycode )
 		{
 			std::map<int,WgKey>::iterator it2 = it++;
-			s_pData->keycodeMap.erase(it2);
+			s_pContext->keycodeMap.erase(it2);
 		}
 		else
 			++it;
@@ -177,17 +183,17 @@ void WgBase::UnmapKey( WgKey translated_keycode )
 
 void WgBase::ClearKeyMap()
 {
-	assert( s_pData != 0 );
-	s_pData->keycodeMap.clear();
+	assert( s_pContext != 0 );
+	s_pContext->keycodeMap.clear();
 }
 
 //____ TranslateKey() __________________________________________________________
 
 WgKey WgBase::TranslateKey( int native_keycode )
 {
-	assert( s_pData != 0 );
-	std::map<int,WgKey>::iterator it = s_pData->keycodeMap.find(native_keycode);
-	if( it != s_pData->keycodeMap.end() )
+	assert( s_pContext != 0 );
+	std::map<int,WgKey>::iterator it = s_pContext->keycodeMap.find(native_keycode);
+	if( it != s_pContext->keycodeMap.end() )
 		return  it->second;
 	else
 		return WG_KEY_UNMAPPED;

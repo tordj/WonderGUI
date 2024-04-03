@@ -69,14 +69,43 @@ public:
 	int             line;
 };
 
+class WgContext : public wg::GfxContext
+{
+	friend class WgBase;
+
+	WgCursor *			pDefaultCursor;
+
+	// Settings for keyboard/pointer input
+
+	int					doubleClickTimeTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
+	int					doubleClickDistanceTreshold;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
+
+	int					buttonRepeatDelay;
+	int					buttonRepeatRate;
+
+	int					keyRepeatDelay;
+	int					keyRepeatRate;
+
+	std::map<int,WgKey>	keycodeMap;		// Maps native keycodes to WgKey.
+	
+	wg::HostBridge *	pHostBridge;
+};
+
+typedef	wg::StrongPtr<WgContext>	WgContext_p;
+typedef	wg::WeakPtr<WgContext>		WgContext_wp;
+
+
 class WgBase : public wg::GfxBase
 {
 public:
 	static void Init( wg::HostBridge * pHostBridge );
 	static void Exit();
 
+	static WgContext_p	 switchContext( const WgContext_p& pNewContext );
+
+	
 	static void 	SetDefaultCursor( WgCursor * pCursor );
-	static WgCursor * GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
+	static WgCursor * GetDefaultCursor() { assert(s_pContext!=nullptr); return s_pContext->pDefaultCursor; }
 
 	static void		MapKey( WgKey translated_keycode, int native_keycode );
 	static void		UnmapKey( WgKey translated_keycode );
@@ -86,49 +115,26 @@ public:
 	static bool		SetMouseButtonRepeat( int delay, int rate );
 	static bool		SetKeyRepeat( int delay, int rate );
 
-	static int		MouseButtonRepeatDelay() { assert(s_pData!=0); return s_pData->buttonRepeatDelay; }
-	static int		MouseButtonRepeatRate() { assert(s_pData!=0); return s_pData->buttonRepeatRate; }
+	static int		MouseButtonRepeatDelay() { assert(s_pContext!=0); return s_pContext->buttonRepeatDelay; }
+	static int		MouseButtonRepeatRate() { assert(s_pContext!=0); return s_pContext->buttonRepeatRate; }
 
-	static int		KeyRepeatDelay() { assert(s_pData!=0); return s_pData->keyRepeatDelay; }
-	static int		KeyRepeatRate() { assert(s_pData!=0); return s_pData->keyRepeatRate; }
+	static int		KeyRepeatDelay() { assert(s_pContext!=0); return s_pContext->keyRepeatDelay; }
+	static int		KeyRepeatRate() { assert(s_pContext!=0); return s_pContext->keyRepeatRate; }
 
 	static bool		SetDoubleClickTresholds( int time, int distance );
-	static int		DoubleClickTimeTreshold() { assert(s_pData!=0); return s_pData->doubleClickTimeTreshold; }
-	static int		DoubleClickDistanceTreshold() { assert(s_pData!=0); return s_pData->doubleClickDistanceTreshold; }
+	static int		DoubleClickTimeTreshold() { assert(s_pContext!=0); return s_pContext->doubleClickTimeTreshold; }
+	static int		DoubleClickDistanceTreshold() { assert(s_pContext!=0); return s_pContext->doubleClickDistanceTreshold; }
 
-	static wg::HostBridge * hostBridge() { return s_pHostBridge; }
+	static wg::HostBridge * hostBridge() { return s_pContext->pHostBridge; }
 	
 	static void		setDefaultStyle( wg::TextStyle* pStyle );
 	static wg::TextStyle_p	defaultStyle() { return wg::TextStyle::s_pDefaultStyle; }
 
 private:
 
-	struct Data
-	{
-		WgCursor *			pDefaultCursor;
-
-		// Settings for keyboard/pointer input
-
-		int					doubleClickTimeTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
-		int					doubleClickDistanceTreshold;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
-
-		int					buttonRepeatDelay;
-		int					buttonRepeatRate;
-
-		int					keyRepeatDelay;
-		int					keyRepeatRate;
-
-		std::map<int,WgKey>	keycodeMap;		// Maps native keycodes to WgKey.
-
-		//
-
-	};
-	
 	static int                              s_iSoftubeNumberOfInstances;
-	static Data *							s_pData;
-	
-	static wg::HostBridge *					s_pHostBridge;
-	
+	static WgContext_p						s_pContext;
+		
 };
 
 #endif //WG2_BASE_DOT_H
