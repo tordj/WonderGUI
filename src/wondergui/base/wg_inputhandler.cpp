@@ -336,13 +336,16 @@ namespace wg
 			
 			if( newStyle == PointerStyle::Undefined )
 			{
-				auto pRoot = pLastWidget->_holder()->_root();
-				if( pRoot )
+				if (pLastWidget->_holder())
 				{
-					auto style = pRoot->pointerStyle();
+					auto pRoot = pLastWidget->_holder()->_root();
+					if( pRoot )
+					{
+						auto style = pRoot->pointerStyle();
 					
-					if( style != PointerStyle::Undefined )
-						newStyle = style;
+						if( style != PointerStyle::Undefined )
+							newStyle = style;
+					}
 				}
 			}
 		}

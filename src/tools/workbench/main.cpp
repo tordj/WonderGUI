@@ -153,6 +153,7 @@ bool textDisplayTest(ComponentPtr<DynamicSlot> pSlot);
 bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot);
 bool scrollPanelTest(ComponentPtr<DynamicSlot> pEntry);
 bool packPanelStressTest(ComponentPtr<DynamicSlot> pEntry);
+bool packPanelStressTest2(ComponentPtr<DynamicSlot> pEntry);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -755,6 +756,7 @@ int main(int argc, char** argv)
 		//  scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
 		//	packPanelStressTest(pSlot);
+			packPanelStressTest2(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -3791,5 +3793,64 @@ bool packPanelStressTest(ComponentPtr<DynamicSlot> pEntry)
 	pInnerPanel->slots[1] = pCapsule;
 	
 	
+	return true;
+}
+
+//____ packPanelStressTest2() ______________________________________________________
+
+bool packPanelStressTest2(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pPaneSkin = BoxSkin::create({ .color = Color8::White,
+										.margin = 5,
+										.outlineColor = Color8::Black,
+										.outlineThickness = 1,
+										.padding = 3
+		});
+
+	auto pButtonSkin = BoxSkin::create({ .color = Color8::Grey,
+										  .outlineColor = Color8::Black,
+										  .outlineThickness = 1,
+										  .padding = 3
+		});
+
+	auto pHideLeftButton = Button::create({
+		.label = {.text = "HIDE LEFT" },
+		.skin = pButtonSkin
+		});
+
+	auto pUnhideLeftButton = Button::create({
+		.label = {.text = "UNHIDE LEFT" },
+		.skin = pButtonSkin
+		});
+
+
+	PackLayout_p pLayout = PackLayout::create({ .expandFactor = PackLayout::Factor::Weight,
+												.shrinkFactor = PackLayout::Factor::Weight });
+
+	PackPanel_p pButtonRow = PackPanel::create({ .axis = Axis::X, .id = 2, .layout = pLayout, .skin = ColorSkin::create({.color = Color::LawnGreen}) });
+
+	PackPanel_p pOuterPanel = PackPanel::create({ .axis = Axis::Y, .id = 1, .layout = pLayout, .skin = ColorSkin::create({.color = Color::Red}) });
+
+
+	PackPanel_p pInnerPanel = PackPanel::create({ .axis = Axis::X, .id = 2, .layout = pLayout, .skin = ColorSkin::create({.color = Color::Green}) });
+
+	pOuterPanel->slots << Filler::create( { .defaultSize = {200,30}, .skin = ColorSkin::create(Color::Brown) }) << pInnerPanel << pButtonRow;
+	pOuterPanel->setSlotWeight(0, 3, { 0,1,0 });
+
+	pInnerPanel->slots << Filler::create({ .defaultSize = {200,0}, .skin = ColorSkin::create(Color::Gray) })
+		<< Filler::create({ .defaultSize = {200,200}, .skin = ColorSkin::create(Color::White) })
+		<< Filler::create({ .defaultSize = {200,0}, .skin = ColorSkin::create(Color::DarkGray) });
+
+	pInnerPanel->setSlotWeight(0, 3, { 0,1,0 });
+
+	pButtonRow->slots << pHideLeftButton << pUnhideLeftButton;
+
+	Base::msgRouter()->addRoute(pHideLeftButton, MsgType::Select, [pInnerPanel](Msg* pMsg) { wg_dynamic_cast<Filler_p>(pInnerPanel->slots[0].widget())->setDefaultSize({ 0,0 }); });
+	Base::msgRouter()->addRoute(pUnhideLeftButton, MsgType::Select, [pInnerPanel](Msg* pMsg) { wg_dynamic_cast<Filler_p>(pInnerPanel->slots[0].widget())->setDefaultSize({ 200,0 }); });
+
+
+	*pEntry = pOuterPanel;
+
+
 	return true;
 }

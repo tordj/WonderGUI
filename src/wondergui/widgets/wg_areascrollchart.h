@@ -40,6 +40,8 @@ namespace wg
 		{
 			pts					bottomOutlineThickness = 1;
 			HiColor				color = Color8::LightGrey;
+			float				defaultBottomSample = 0.f;
+			float				defaultTopSample = 0.f;
 			std::function<void(int64_t latestTimestamp, int64_t firstNeededTimestamp, int64_t lastNeededTimestamp, int64_t currentTimestamp)> fetcher;
 			Gradient			gradient;								// Overrides color when set.
 			HiColor				outlineColor = Color8::DarkGrey;
@@ -47,8 +49,6 @@ namespace wg
 			pts					topOutlineThickness = 1;
 			bool				visible = true;
 			
-			float				defaultBottomSample = 0.f;
-			float				defaultTopSample = 0.f;
 
 		};
 
