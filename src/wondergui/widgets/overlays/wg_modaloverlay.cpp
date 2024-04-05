@@ -123,7 +123,7 @@ namespace wg
 			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 
-		if (bForceResize || pSlot->m_geo.size() != geo.size())
+		if (bForceResize || pSlot->_widget()->_size() != geo.size())
 			pSlot->_setSize(geo, m_scale);
 	}
 

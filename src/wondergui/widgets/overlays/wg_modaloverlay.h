@@ -93,8 +93,8 @@ namespace wg
 			const static bool safe_to_relocate = false;
 
 			bool		m_bVisible = true;
-			Placement	m_origo = Placement::NorthWest;
-			Rect		m_placementGeo;			// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets defaultSize() dynamically.
+			Placement	m_origo = Placement::Center;
+			Rect		m_placementGeo;			// Widgets geo relative origo. Setting width and height to 0 uses Widgets defaultSize() dynamically.
 												// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 			Widget_wp	m_pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
 

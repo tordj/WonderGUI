@@ -166,7 +166,7 @@ namespace wg
 	   {
 		   // Default height is forced, we only need to adapt width.
 
-		   pref.h = defaultSize.w;
+		   pref.h = defaultSize.h;
 		   pref.w = pChild->_matchingWidth(pref.h, scale);
 	   }
 	   else
