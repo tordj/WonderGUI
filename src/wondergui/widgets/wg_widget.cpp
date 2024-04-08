@@ -377,6 +377,22 @@ namespace wg
 		return m_pBaggage;
 	}
 
+	//____ bringIntoView() _______________________________________________________
+
+	void Widget::bringIntoView( Border margin )
+	{
+		RectSPX mustHaveArea = {0,0,m_size};
+		
+		_requestInView( mustHaveArea, mustHaveArea + Util::ptsToSpx(margin,m_scale) );
+	}
+
+	void Widget::bringIntoView( Rect area, Border margin )
+	{
+		RectSPX mustHaveArea = Util::ptsToSpx(area,m_scale);
+		
+		_requestInView( mustHaveArea, mustHaveArea + Util::ptsToSpx(margin,m_scale) );
+	}
+
 
 	//____ markTest() _____________________________________________________________
 	/**
