@@ -261,10 +261,14 @@ namespace wg
 
    SizeSPX SizeCapsule::_minSize(int scale) const
    {
+	   SizeSPX size;
+
 	   if( slot._widget() )
-		   return SizeSPX::max(align(ptsToSpx(m_minSize,scale)),slot._widget()->_minSize(scale));
+		   size = SizeSPX::max(align(ptsToSpx(m_minSize,scale)),slot._widget()->_minSize(scale));
 	   else
-		   return align(ptsToSpx(m_minSize, scale));
+		   size = align(ptsToSpx(m_minSize, scale));
+	   
+	   return size + m_skin.contentBorderSize(scale);
    }
 
    //____ _maxSize() ______________________________________________________________
@@ -277,16 +281,24 @@ namespace wg
 	   if( maxPts.h < 0 )
 		   maxPts.h = 10000000;
 	   
+	   SizeSPX size;
 	   if( slot._widget() )
-		   return SizeSPX::min(align(ptsToSpx(maxPts, scale)),slot._widget()->_maxSize(scale));
+		   size = SizeSPX::min(align(ptsToSpx(maxPts, scale)),slot._widget()->_maxSize(scale));
 	   else
-		   return align(ptsToSpx(maxPts, scale));
+		   size = align(ptsToSpx(maxPts, scale));
+
+	   return size + m_skin.contentBorderSize(scale);
    }
 
    //____ _matchingHeight() _______________________________________________________
 
    spx SizeCapsule::_matchingHeight(spx width, int scale) const
    {
+	   SizeSPX contentBorder = m_skin.contentBorderSize(scale);
+	   
+	   width -= contentBorder.w;
+	   
+	   spx result;
 	   if (m_defaultSize.h >= 0)
 	   {
 		   spx h = ptsToSpx(m_defaultSize.h, scale);
@@ -297,7 +309,7 @@ namespace wg
 			   spx min = slot._widget()->_minSize(scale).h;
 			   limit(h, min, max);
 		   }
-		   return align(h);
+		   result = align(h);
 	   }
 	   else if (slot._widget())
 	   {
@@ -305,17 +317,23 @@ namespace wg
 		   
 		   spx h = slot._widget()->_matchingHeight(width, scale);
 		   limit(h, ptsToSpx(m_minSize.h,scale), ptsToSpx(max,scale));
-		   return align(h);
+		   result = align(h);
 	   }
 	   else
-		   return align(ptsToSpx(m_minSize.h, scale));
+		   result = align(ptsToSpx(m_minSize.h, scale));
+	   
+	   return result + contentBorder.h;
    }
 
    //____ _matchingWidth() _______________________________________________________
 
    spx SizeCapsule::_matchingWidth( spx height, int scale ) const
    {
+	   SizeSPX contentBorder = m_skin.contentBorderSize(scale);
+	   
+	   height -= contentBorder.h;
 
+	   spx result;
 	   if( m_defaultSize.w >= 0 )
 	   {
 		   spx w = ptsToSpx(m_defaultSize.w, scale);
@@ -326,7 +344,7 @@ namespace wg
 			   spx min = slot._widget()->_minSize(scale).w;
 			   limit( w, min, max );
 		   }
-		   return align(w);
+		   result = align(w);
 	   }
 	   else if( slot._widget() )
 	   {
@@ -334,10 +352,12 @@ namespace wg
 
 		   spx w = slot._widget()->_matchingWidth(height,scale);
 		   limit( w, ptsToSpx(m_minSize.w,scale), ptsToSpx(max,scale) );
-		   return align(w);
+		   result = align(w);
 	   }
 	   else
-		   return align(ptsToSpx(m_minSize.w, scale));
+		   result = align(ptsToSpx(m_minSize.w, scale));
+
+	   return result + contentBorder.w;
    }
 
 
