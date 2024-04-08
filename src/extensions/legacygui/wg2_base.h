@@ -105,6 +105,8 @@ public:
 
 	static WgContext_p	 switchContext( const WgContext_p& pNewContext );
 
+	static WgContext_p	context() { return s_pContext; }
+	
 	
 	static void 	SetDefaultCursor( WgCursor * pCursor );
 	static WgCursor * GetDefaultCursor() { assert(s_pContext!=nullptr); return s_pContext->pDefaultCursor; }
