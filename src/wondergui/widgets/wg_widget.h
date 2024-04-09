@@ -171,6 +171,7 @@ namespace wg
 		inline void			setPointerStyle(PointerStyle style);
 		virtual PointerStyle pointerStyle() const;
 
+		void setShowToolTip(bool showToolTip);
 
 		//.____ Behavior ______________________________________________________
 
@@ -355,6 +356,7 @@ namespace wg
 		StaticSlot *	m_pSlot = nullptr;
 
 		String			m_tooltip;
+		bool 			m_showToolTip = true;
 
 		int				m_id = 0;
 		PointerStyle	m_pointerStyle = PointerStyle::Undefined;
@@ -817,6 +819,8 @@ namespace wg
 		m_tooltip = str; 
 	}
 
+
+
 	//____ tooltip() __________________________________________________________
 	/**
 	 * @brief Get widgets tooltip string.
@@ -832,7 +836,11 @@ namespace wg
 
 	String Widget::tooltip() const 
 	{ 
-		return m_tooltip; 
+		if(m_showToolTip)
+		{
+			return m_tooltip;
+		}
+		return String("");
 	}
 
 	//____ skin() _____________________________________________________________

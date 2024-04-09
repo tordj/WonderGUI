@@ -83,6 +83,16 @@ namespace wg
 		return 0;
 	}
 
+	//____ setShowToolTip() _______________________________________________________
+	/**
+	 * @brief Set if a widgets tooltip string should be shown.
+	 *
+	 */
+
+	void Widget::setShowToolTip(bool showToolTip)
+	{
+		m_showToolTip = showToolTip;
+	}
 
 	//____ releaseFromParent() ________________________________________________
 	/**
