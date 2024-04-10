@@ -82,9 +82,9 @@ void WgBase::Exit()
 	wg::GfxBase::exit();
 }
 
-//____ switchContext() ________________________________________________________
+//____ setContext() ________________________________________________________
 
-WgContext_p WgBase::switchContext( const WgContext_p& pNewContext )
+WgContext_p WgBase::setContext( const WgContext_p& pNewContext )
 {
 	auto pOldContext = s_pContext;
 
@@ -92,13 +92,13 @@ WgContext_p WgBase::switchContext( const WgContext_p& pNewContext )
 	{
 		s_pContext = pNewContext;
 
-		wg::GfxBase::switchContext(pNewContext->pGfxContext);
+		wg::GfxBase::setContext(pNewContext->pGfxContext);
 	}
 	else
 	{
 		s_pContext = WgContext_p(new WgContext());
 		
-		wg::GfxBase::switchContext(nullptr);
+		wg::GfxBase::setContext(nullptr);
 		s_pContext->pGfxContext = s_pGfxContext;
 	}
 

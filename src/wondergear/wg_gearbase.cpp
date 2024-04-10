@@ -186,9 +186,9 @@ namespace wg
 	}
 
 
-	//____ switchContext() _______________________________________________________
+	//____ setContext() _______________________________________________________
 
-	GearContext_p GearBase::switchContext( const GearContext_p& pNewContext )
+	GearContext_p GearBase::setContext( const GearContext_p& pNewContext )
 	{
 		GearContext_p p = s_pGearContext;
 	

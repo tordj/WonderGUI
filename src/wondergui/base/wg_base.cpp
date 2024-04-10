@@ -140,11 +140,11 @@ namespace wg
 		return GfxBase::exit();
 	}
 
-	//____ switchContext() _______________________________________________________
+	//____ setContext() _______________________________________________________
 
-	GUIContext_p Base::switchContext( const GUIContext_p& pNewContext )
+	GUIContext_p Base::setContext( const GUIContext_p& pNewContext )
 	{
-		auto pOld = wg_static_cast<GUIContext_p>(GfxBase::switchContext(pNewContext));
+		auto pOld = wg_static_cast<GUIContext_p>(GfxBase::setContext(pNewContext));
 		s_pGUIContext = wg_static_cast<GUIContext_p>(s_pGearContext);
 		return pOld;
 	}

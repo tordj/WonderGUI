@@ -107,11 +107,11 @@ namespace wg
 		return GearBase::exit();
 	}
 
-	//____ switchContext() _______________________________________________________
+	//____ setContext() _______________________________________________________
 
-	GfxContext_p GfxBase::switchContext( const GfxContext_p& pNewContext )
+	GfxContext_p GfxBase::setContext( const GfxContext_p& pNewContext )
 	{
-		auto pOld = wg_static_cast<GfxContext_p>(GfxBase::switchContext(pNewContext));
+		auto pOld = wg_static_cast<GfxContext_p>(GearBase::setContext(pNewContext));
 		s_pGfxContext = wg_static_cast<GfxContext_p>(s_pGearContext);
 		return pOld;
 	}

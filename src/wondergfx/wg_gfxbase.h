@@ -70,8 +70,9 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		static GfxContext_p			switchContext( const GfxContext_p& pNewContext );
-		
+		static GfxContext_p			setContext( const GfxContext_p& pNewContext );
+		static GfxContext_p			context() { return s_pGfxContext; }
+
 		static BitmapCache_p		defaultBitmapCache();
 		
 		static void					setDefaultSurfaceFactory( SurfaceFactory * pFactory );

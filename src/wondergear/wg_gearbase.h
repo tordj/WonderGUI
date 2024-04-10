@@ -93,8 +93,10 @@ namespace wg
 
 		//.____ Content _____________________________________________
 		
-		static GearContext_p		switchContext( const GearContext_p& pNewContext );
+		static GearContext_p		setContext( const GearContext_p& pNewContext );
+		static GearContext_p		context() { return s_pGearContext; }
 
+		
 		static void					setErrorHandler(std::function<void(Error&)> handler);
 		std::function<void(Error&)>	errorHandler();
 				

@@ -29,23 +29,46 @@
 #include <wg2_base.h>
 
 
+
+class WgPluginContext : public wg::Object
+{
+	~WgPluginContext() { delete pHostBridge; }
+	
+	friend class WgPluginBase;
+	
+	wg_plugin_interface 	callsCollection;
+	wg::PluginHostBridge *	pHostBridge;
+	
+	WgContext_p				pBaseContext;
+};
+
+typedef	wg::StrongPtr<WgPluginContext>	WgPluginContext_p;
+typedef	wg::WeakPtr<WgPluginContext>	WgPluginContext_wp;
+
+
+
 class WgPluginBase : public WgBase
 {
 public:
-
+	
 	//.____ Creation __________________________________________
-
+	
 	static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge );
 	static bool exit();
 	
 	//.____ Misc ________________________________________________
+	
+	static WgPluginContext_p	setContext( const WgPluginContext_p& pNewContext );
+	static WgPluginContext_p	context() { return s_pContext; };
 
+	
 	static bool			isInitialized() { return s_pluginInitCounter > 0; }
 	
 private:
 	static	int				s_pluginInitCounter;
-
-	static	wg::PluginHostBridge *	s_pHostBridge;
+	
+	static WgPluginContext_p	s_pContext;
+	
 };
 
 

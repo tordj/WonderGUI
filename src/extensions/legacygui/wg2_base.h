@@ -103,7 +103,7 @@ public:
 	static void Init( wg::HostBridge * pHostBridge );
 	static void Exit();
 
-	static WgContext_p	 switchContext( const WgContext_p& pNewContext );
+	static WgContext_p	 setContext( const WgContext_p& pNewContext );
 
 	static WgContext_p	context() { return s_pContext; }
 	

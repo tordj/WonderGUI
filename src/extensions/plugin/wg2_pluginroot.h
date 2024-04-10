@@ -32,6 +32,7 @@
 #endif
 
 #include <wg2_root.h>
+#include <wg2_pluginbase.h>
 
 #include <wg_skin.h>
 #include <wg_gfxdevice.h>
@@ -45,7 +46,7 @@ class WgPluginRoot : public WgWidgetHolder, public WgRoot
 	friend class WgWidget;
 
 public:
-	WgPluginRoot( wg_obj myPluginCapsule );
+	WgPluginRoot( wg_obj myPluginCapsule, WgPluginContext * pContext );
 	~WgPluginRoot();
 	
 	WgWidget *				FindWidget( const WgCoord& ofs, WgSearchMode mode ) override;
@@ -133,6 +134,7 @@ protected:
 		WgContainer *	_parent() const;
 
 		WgPluginRoot *	m_pRoot;
+		WgPluginContext_p	m_pContext;
 	};
 
 	inline void         _addPreRenderCall(WgWidget * pWidget) override { m_preRenderCalls.push_back(pWidget); }
@@ -155,7 +157,6 @@ protected:
 protected:
 	Hook				m_hook;
 	WgEventHandler *	m_pEventHandler = nullptr;
-
 	
 	wg_obj					m_pluginCapsule;
 
@@ -172,6 +173,9 @@ protected:
 	
 	int						m_microsecStored = 0;
 	bool					m_bBlockRequestResize = false;
+	
+	WgPluginContext_p		m_pContext;
+
 };
 
 

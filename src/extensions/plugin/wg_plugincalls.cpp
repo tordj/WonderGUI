@@ -53,7 +53,6 @@ namespace wg
 		if (pCallsCollection->structSize < sizeof(wg_plugin_interface))
 			goto	error_too_old_abi;
 
-
 		if (pCallsCollection->pBitmapCache->structSize < sizeof(wg_bitmapcache_calls))
 			goto	error_too_old_abi;
 
@@ -116,7 +115,7 @@ namespace wg
 //		streamPump		= pCallsCollection->pStreamPump;
 		surface			= pCallsCollection->pSurface;
 		surfaceFactory	= pCallsCollection->pSurfaceFactory;
-		edgemap		= pCallsCollection->pEdgemap;
+		edgemap			= pCallsCollection->pEdgemap;
 		edgemapFactory = pCallsCollection->pEdgemapFactory;
 		hostBridge		= pCallsCollection->pHostBridge;
 		pluginCapsule	= pCallsCollection->pPluginCapsule;

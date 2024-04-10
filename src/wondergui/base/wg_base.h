@@ -114,8 +114,9 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		static GUIContext_p	 switchContext( const GUIContext_p& pNewContext );
-		
+		static GUIContext_p	 setContext( const GUIContext_p& pNewContext );
+		static GUIContext_p	 context() { return s_pGUIContext; }
+
 		static MsgRouter_p			msgRouter();
 		static InputHandler_p		inputHandler();
 		static SkinSlotManager_p	skinSlotManager();

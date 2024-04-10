@@ -29,7 +29,7 @@ using namespace wg;
 
 
 int					WgPluginBase::s_pluginInitCounter = 0;
-PluginHostBridge *	WgPluginBase::s_pHostBridge = nullptr;
+WgPluginContext_p	WgPluginBase::s_pContext;
 
 
 
@@ -38,24 +38,27 @@ PluginHostBridge *	WgPluginBase::s_pHostBridge = nullptr;
 
 bool WgPluginBase::init(wg_plugin_interface* pCallsCollection, void * pRealHostBridge)
 {
-	if( s_pluginInitCounter > 0 )
-	{
-		s_pluginInitCounter++;
-		return true;
-	}
-		
+	// Plugin initialization works differently from GearBase/GfxBase/Base in that a
+	// new context is setup for each call to init.
+	
 	if( !PluginCalls::_init(pCallsCollection) )
 		return false;								// Host has too old ABI!
-	
-	s_pHostBridge = new PluginHostBridge(pRealHostBridge);
-			
-	WgBase::Init(s_pHostBridge);
-	
-	s_pluginInitCounter = 1;
-	return true;
 
-error_too_old_abi:
-	return false;
+	auto pHostBridge = new PluginHostBridge(pRealHostBridge);
+	
+	if( s_pluginInitCounter == 0 )
+		WgBase::Init(pHostBridge);
+	else
+		WgBase::setContext(nullptr);
+
+	s_pContext = new WgPluginContext();
+	
+	s_pContext->pBaseContext = WgBase::context();
+	s_pContext->callsCollection = * pCallsCollection;
+	s_pContext->pHostBridge = pHostBridge;
+
+	s_pluginInitCounter++;
+	return true;
 }
 
 //____ exit() __________________________________________________________________
@@ -76,9 +79,28 @@ bool WgPluginBase::exit()
 
 	WgBase::Exit();
 
-	delete s_pHostBridge;
-	s_pHostBridge = nullptr;
+	s_pContext = nullptr;
 
 	s_pluginInitCounter = 0;
 	return true;
+}
+
+//____ setContext() ________________________________________________________
+
+void WgPluginBase::setContext( const WgPluginContext_p& pNewContext )
+{
+	// Set context for plugins works differently than for GearBase/GfxBase/Base.
+	// If you want a new context you should call init() again.
+	
+	if( pNewContext == nullptr )
+		return;
+	
+	auto pOldContext = s_pContext;
+	
+	s_pContext = pNewContext;
+	WgBase::setContext(pNewContext->pBaseContext);
+	
+	PluginCalls::_init(&pNewContext->callsCollection);
+	
+	return pOldContext;
 }

@@ -35,8 +35,9 @@ static const char	c_hookType[] = {"PluginRootHook"};
 
 
 
-WgPluginRoot::WgPluginRoot( wg_obj myPluginCapsule )
+WgPluginRoot::WgPluginRoot( wg_obj myPluginCapsule, WgPluginContext * pContext )
 {
+	m_pContext = pContext;
 	m_pluginCapsule = myPluginCapsule;
 	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
@@ -62,7 +63,6 @@ WgPluginRoot::WgPluginRoot( wg_obj myPluginCapsule )
 
 	m_interface.onUpdate		= wg_onPluginUpdate;
 	
-	m_pluginCapsule = myPluginCapsule;
 	
 	PluginCalls::pluginCapsule->connect(m_pluginCapsule, static_cast<void *>(this), &m_interface);
 }
@@ -243,6 +243,8 @@ bool WgPluginRoot::_markTest(const CoordSPX& ofs)
 
 void WgPluginRoot::_preRender()
 {
+	WgPluginBase::setContext(m_pContext);
+	
 	for (auto& pWidget : m_preRenderCalls)
 	{
 		if( pWidget )
@@ -259,6 +261,9 @@ void WgPluginRoot::_render(wg_obj device, const RectSPX& _canvas, const RectSPX&
 	if (!m_hook.Widget())
 		return;
 
+	WgPluginBase::setContext(m_pContext);
+
+	
 	wg_obj hSurfFactory = PluginCalls::gfxDevice->surfaceFactory(device);
 	wg_obj hWaveFactory = PluginCalls::gfxDevice->edgemapFactory(device);
 
@@ -285,6 +290,8 @@ void WgPluginRoot::_render(wg_obj device, const RectSPX& _canvas, const RectSPX&
 
 void WgPluginRoot::_resize(const SizeSPX& size, int scale)
 {
+	WgPluginBase::setContext(m_pContext);
+
 	if( scale == -1 )
 		scale = m_scale;
 
@@ -379,6 +386,8 @@ void WgPluginRoot::_putText( const char * pUTF8Text )
 
 void WgPluginRoot::_update(int microPassed, int64_t microsecTimestamp)
 {
+	WgPluginBase::setContext(m_pContext);
+
 	int passed = microPassed + m_microsecStored;
 	m_microsecStored = passed % 1000;
 	m_pEventHandler->QueueEvent( new WgEvent::Tick( passed / 1000 ) );
@@ -391,6 +400,8 @@ bool WgPluginRoot::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesti
 {
 	if (!m_pluginCapsule)
 		return false;
+
+	WgPluginBase::setContext(m_pContext);
 
 	if( m_pEventHandler->KeyboardFocus() )
 	{
@@ -414,6 +425,8 @@ bool WgPluginRoot::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing
 	if (!m_pluginCapsule)
 		return false;
 
+	WgPluginBase::setContext(m_pContext);
+
 	bool result = (bool) PluginCalls::pluginCapsule->releaseFocus(m_pluginCapsule);
 	
 	if( !result )
@@ -433,6 +446,8 @@ void WgPluginRoot::_inViewRequested( WgHook * pChild )
 
 void WgPluginRoot::_inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea )
 {
+	WgPluginBase::setContext(m_pContext);
+
 	if (m_pluginCapsule)
 		PluginCalls::pluginCapsule->requestInView(m_pluginCapsule,
 							{ mustHaveArea.x*64,mustHaveArea.y*64,mustHaveArea.w*64,mustHaveArea.h*64 },
@@ -443,6 +458,8 @@ void WgPluginRoot::_inViewRequested( WgHook * pChild, const WgRect& mustHaveArea
 
 void WgPluginRoot::_childRequestResize()
 {
+	WgPluginBase::setContext(m_pContext);
+
 	if (m_pluginCapsule && !m_bBlockRequestResize)
 		PluginCalls::pluginCapsule->requestResize(m_pluginCapsule);
 }
@@ -451,12 +468,16 @@ void WgPluginRoot::_childRequestResize()
 
 void WgPluginRoot::_childRequestRender()
 {
+	WgPluginBase::setContext(m_pContext);
+
 	if (m_pluginCapsule && !m_bBlockRequestResize)
 		PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { 0,0,m_size.w,m_size.h });
 }
 
 void WgPluginRoot::_childRequestRender( const WgRect& rect )
 {
+	WgPluginBase::setContext(m_pContext);
+
 	if (m_pluginCapsule && !m_bBlockRequestResize)
 		PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { rect.x*64,rect.y*64,rect.w*64,rect.h*64 });
 }
