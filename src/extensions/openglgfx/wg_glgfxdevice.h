@@ -75,8 +75,8 @@ namespace wg
 		using GfxDevice::canvas;
 		const CanvasInfo canvas(CanvasRef ref) const override;
 
-		static void		setShaderBlob( Blob * pBlob ) const { s_pShaderPrograms = pBlob; }
-		static Blob_p	shaderBlob() const { return s_pShaderPrograms; }
+		static void		setShaderBlob( Blob * pBlob ) { s_pShaderPrograms = pBlob; }
+		static Blob_p	shaderBlob() { return s_pShaderPrograms; }
 		
 		//.____ State _________________________________________________
 
