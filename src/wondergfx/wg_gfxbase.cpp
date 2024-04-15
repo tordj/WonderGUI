@@ -51,10 +51,6 @@ namespace wg
 	{
 		if( s_gfxInitCounter == 0 )
 		{
-			HiColor::_initTables();
-			_genCurveTab();
-
-			s_gfxInitCounter++;
 			
 			if( s_pContextCreator == nullptr )
 				s_pContextCreator = []() { return GearContext_p(new GfxContext()); };
@@ -63,8 +59,12 @@ namespace wg
 			   return false;
 
 		   s_pGfxContext = wg_static_cast<GfxContext_p>(s_pGearContext);
-		}
 
+			HiColor::_initTables();
+			_genCurveTab();
+
+		}
+		
 		s_gfxInitCounter++;
 		return true;
 
