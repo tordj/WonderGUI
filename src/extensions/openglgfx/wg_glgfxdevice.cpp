@@ -2923,7 +2923,7 @@ namespace wg
 			char* pBuffer = (char*)s_pShaderPrograms->data();
 			ProgramBlobHeader* pHeader = (ProgramBlobHeader*)pBuffer;
 
-			if (pHeader->version == c_versionNb || pHeader->nbPrograms == c_nbPrograms)
+			if (pHeader->version == c_versionNb && pHeader->nbPrograms == c_nbPrograms)
 			{
 				ProgramBlobEntry& prg = pHeader->programs[programNb];
 				glProgramBinary(programID, prg.binaryFormat, pBuffer + prg.offset, prg.size);

@@ -55,7 +55,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GlGfxDevice_p	create(int uboBindingPoint = 0);
+		static GlGfxDevice_p	create(int uboBindingPoint = 0 );
 
 		//.____ Identification __________________________________________
 
@@ -75,6 +75,9 @@ namespace wg
 		using GfxDevice::canvas;
 		const CanvasInfo canvas(CanvasRef ref) const override;
 
+		static void		setShaderBlob( Blob * pBlob ) const { s_pShaderPrograms = pBlob; }
+		static Blob_p	shaderBlob() const { return s_pShaderPrograms; }
+		
 		//.____ State _________________________________________________
 
 		void	setTintColor(HiColor color) override;
