@@ -39,6 +39,8 @@ class WgPluginContext : public wg::Object
 	wg_plugin_interface 	callsCollection;
 	wg::PluginHostBridge *	pHostBridge;
 	
+	std::function<void(WgPluginContext *)> contextSwitchCallback;
+
 	WgContext_p				pBaseContext;
 };
 
@@ -53,7 +55,7 @@ public:
 	
 	//.____ Creation __________________________________________
 	
-	static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge );
+	static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge, std::function<void(WgPluginContext *)> contextSwitchCallback = nullptr );
 	static bool exit();
 	
 	//.____ Misc ________________________________________________

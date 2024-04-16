@@ -36,7 +36,8 @@ WgPluginContext_p	WgPluginBase::s_pContext;
 
 //___ init() ______________________________________________________________
 
-bool WgPluginBase::init(wg_plugin_interface* pCallsCollection, void * pRealHostBridge)
+bool WgPluginBase::init(wg_plugin_interface* pCallsCollection, void * pRealHostBridge,
+						std::function<void(WgPluginContext *)> contextSwitchCallback )
 {
 	// Plugin initialization works differently from GearBase/GfxBase/Base in that a
 	// new context is setup for each call to init.
@@ -56,7 +57,8 @@ bool WgPluginBase::init(wg_plugin_interface* pCallsCollection, void * pRealHostB
 	s_pContext->pBaseContext = WgBase::context();
 	s_pContext->callsCollection = * pCallsCollection;
 	s_pContext->pHostBridge = pHostBridge;
-
+	s_pContext->contextSwitchCallback = contextSwitchCallback;
+	
 	s_pluginInitCounter++;
 	return true;
 }
@@ -101,6 +103,9 @@ WgPluginContext_p WgPluginBase::setContext( const WgPluginContext_p& pNewContext
 	WgBase::setContext(pNewContext->pBaseContext);
 	
 	PluginCalls::_init(&pNewContext->callsCollection);
+	
+	if( pNewContext->contextSwitchCallback )
+		pNewContext->contextSwitchCallback(pNewContext);
 	
 	return pOldContext;
 }
