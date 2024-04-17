@@ -528,8 +528,7 @@ namespace wg
 			}
 			else
 			{
-				//TODO: Re-render portion that was covered by caret.
-
+				_requestRender(_layout()->rectForCaret(this));				
 				m_editState.bCaret = false;
 			}
 
@@ -553,16 +552,26 @@ namespace wg
 
 	void EditableText::setEditMode( TextEditMode mode )
 	{
+		if( mode == m_editMode )
+			return;
+		
 		switch( mode )
 		{
 			case TextEditMode::Static:
-			break;
+				m_editState.bCaret = false;
+				m_editState.selectOfs = 0;
+				m_editState.caretOfs = 0;
+				m_editState.wantedOfs = -1;
+				break;
+				
 			case TextEditMode::Selectable:
-			break;
+				m_editState.bCaret = false;
+				m_editState.wantedOfs = -1;
+				break;
 			case TextEditMode::Editable:
 				if( m_editState.selectOfs != m_editState.caretOfs )
 				{
-
+					//TODO: Do we need to do something here?
 				}
 			break;
 		}
@@ -762,6 +771,10 @@ namespace wg
 				std::swap( beg, end );
 
 			retVal = replace( beg, end-beg, &buffer );
+			
+			int newPos = beg + buffer.length();
+			m_editState.caretOfs = newPos;
+			m_editState.selectOfs = newPos;
 		}
 		else													// Just insert the put content
 			retVal = insert( m_editState.caretOfs, &buffer );
