@@ -278,16 +278,9 @@ namespace wg
 				break;
 			}
 
-
 			case MsgType::MousePress:
 			{
 				auto pMess = static_cast<MousePressMsg*>(pMsg);
-				if(!m_state.isFocused())
-				{
-					// This is to make sure TextInput messages are not lost along the way
-					_componentRequestFocus(nullptr, true);
-				}
-
 				int button;
 				switch( pMess->button() )
 				{
@@ -437,19 +430,12 @@ namespace wg
 
 	bool LegacyRootCapsule::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting )
 	{
-		if( m_pEventHandler->KeyboardFocus() )
+		if (!m_state.isFocused())
 		{
-			return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
-		}
-		else
-		{
-			bool result = grabFocus(false);					//TODO: Support raising of window.
-
-			if( !result )
+			if (!grabFocus(true))
 				return false;
-
-			return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
 		}
+		return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
 	}
 
 	//____ _focusReleased() ___________________________________________________
