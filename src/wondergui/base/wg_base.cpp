@@ -62,13 +62,11 @@ namespace wg
 			return true;
 		}
 
-		if( s_pContextCreator == nullptr )
-			s_pContextCreator = [] { return GearContext_p(new GUIContext()); };
-
 		if( !GfxBase::init() )
 			return false;
 
-		s_pGUIContext = wg_static_cast<GUIContext_p>(s_pGearContext);
+		s_pGUIContext = new GUIContext();
+		s_pGUIContext->pGfxContext = GfxBase::context();
 		
 		s_pGUIContext->pHostBridge = pHostBridge;
 
@@ -144,8 +142,16 @@ namespace wg
 
 	GUIContext_p Base::setContext( const GUIContext_p& pNewContext )
 	{
-		auto pOld = wg_static_cast<GUIContext_p>(GfxBase::setContext(pNewContext));
-		s_pGUIContext = wg_static_cast<GUIContext_p>(s_pGearContext);
+		auto pOld = s_pGUIContext;
+		
+		if( pNewContext )
+			s_pGUIContext = pNewContext;
+		else
+			s_pGUIContext = new GUIContext();
+
+		GfxBase::setContext(s_pGUIContext->pGfxContext);
+		s_pGUIContext->pGfxContext = GfxBase::context();
+
 		return pOld;
 	}
 

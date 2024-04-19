@@ -52,7 +52,7 @@ void WgBase::Init( wg::HostBridge * pHostBridge)
 
 	s_pContext = new WgContext();
 
-	s_pContext->pGfxContext = s_pGfxContext;
+	s_pContext->pGfxContext = GfxBase::context();
 	
 	s_pContext->pHostBridge = pHostBridge;
 	
@@ -99,7 +99,7 @@ WgContext_p WgBase::setContext( const WgContext_p& pNewContext )
 		s_pContext = WgContext_p(new WgContext());
 		
 		wg::GfxBase::setContext(nullptr);
-		s_pContext->pGfxContext = s_pGfxContext;
+		s_pContext->pGfxContext = wg::GfxBase::context();
 	}
 
 	return pOldContext;

@@ -157,8 +157,6 @@ namespace wg
 
 		static bool			s_bTrackingObjects;
 		static std::unordered_map<Object*, ObjectInfo>	s_trackedObjects;
-
-		static  GearContext_p(*s_pContextCreator)();
 	};
 
 

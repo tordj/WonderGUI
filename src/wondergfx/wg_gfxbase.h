@@ -38,7 +38,7 @@ namespace wg
 	typedef	StrongPtr<SurfaceFactory>	SurfaceFactory_p;
 
 
-	class GfxContext : public GearContext
+	class GfxContext : public Object
 	{
 		friend class GfxBase;
 		
@@ -48,6 +48,8 @@ namespace wg
 		EdgemapFactory_p	pDefaultEdgemapFactory;
 		GfxDevice_p			pDefaultGfxDevice;
 		BitmapCache_p		pDefaultBitmapCache;
+
+		GearContext_p		pGearContext;
 	};
 
 	typedef	StrongPtr<GfxContext>	GfxContext_p;
@@ -90,20 +92,18 @@ namespace wg
 		static constexpr int *		curveTab() { return s_curveTab; }
 		static constexpr int		curveTabSize() { return c_nCurveTabEntries; }
 
-	protected:
 		
-		static GfxContext_p			s_pGfxContext;
 
 	private:
-		
+
+		static GfxContext_p			s_pGfxContext;
+
 		static void					_genCurveTab();
 
 		static int					s_gfxInitCounter;
 
 		const static int 			c_nCurveTabEntries = 1024;
 		static int 					s_curveTab[c_nCurveTabEntries];
-
-		
 	};
 
 

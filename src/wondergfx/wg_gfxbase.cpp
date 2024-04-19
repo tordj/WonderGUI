@@ -51,23 +51,18 @@ namespace wg
 	{
 		if( s_gfxInitCounter == 0 )
 		{
-			
-			if( s_pContextCreator == nullptr )
-				s_pContextCreator = []() { return GearContext_p(new GfxContext()); };
-			
 			if( !GearBase::init() )
 			   return false;
 
-		   s_pGfxContext = wg_static_cast<GfxContext_p>(s_pGearContext);
-
+			s_pGfxContext = new GfxContext();
+			s_pGfxContext->pGearContext = GearBase::context();
+			
 			HiColor::_initTables();
 			_genCurveTab();
-
 		}
 		
 		s_gfxInitCounter++;
 		return true;
-
 	}
 
 	//____ exit() __________________________________________________________________
@@ -111,8 +106,16 @@ namespace wg
 
 	GfxContext_p GfxBase::setContext( const GfxContext_p& pNewContext )
 	{
-		auto pOld = wg_static_cast<GfxContext_p>(GearBase::setContext(pNewContext));
-		s_pGfxContext = wg_static_cast<GfxContext_p>(s_pGearContext);
+		auto pOld = s_pGfxContext;
+		
+		if( pNewContext )
+			s_pGfxContext = pNewContext;
+		else
+			s_pGfxContext = new GfxContext();
+
+		GearBase::setContext(s_pGfxContext->pGearContext);
+		s_pGfxContext->pGearContext = GearBase::context();
+
 		return pOld;
 	}
 

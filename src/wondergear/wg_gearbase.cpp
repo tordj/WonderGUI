@@ -48,9 +48,6 @@ namespace wg
 
 	bool						GearBase::s_bTrackingObjects = false;
 
-	GearContext_p(*GearBase::s_pContextCreator)();
-
-
 	std::unordered_map<Object*, GearBase::ObjectInfo>	GearBase::s_trackedObjects;
 
 
@@ -64,11 +61,8 @@ namespace wg
 			s_objectsDestroyed = 0;
 			s_pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 			s_pMemStack = new MemStack( 4096 );
-
-			if( s_pContextCreator == nullptr )
-				s_pContextCreator = []() { return GearContext_p(new GearContext()); };
 				
-			s_pGearContext = s_pContextCreator();
+			s_pGearContext = new GearContext();
 		}
 		
 		s_initCounter++;
@@ -195,7 +189,7 @@ namespace wg
 		if( pNewContext )
 			s_pGearContext = pNewContext;
 		else
-			s_pGearContext = s_pContextCreator();
+			s_pGearContext = new GearContext();
 		return p;
 	}
 

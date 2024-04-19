@@ -64,7 +64,7 @@ namespace wg
 
 
 
-	class GUIContext : public GfxContext
+	class GUIContext : public Object
 	{
 		friend class Base;
 		
@@ -82,6 +82,8 @@ namespace wg
 		int64_t			timestamp;
 
 		std::vector<Receiver*>	updateReceivers;
+		
+		GfxContext_p		pGfxContext;
 	};
 
 	typedef	StrongPtr<GUIContext>	GUIContext_p;
