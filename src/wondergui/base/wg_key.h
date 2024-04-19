@@ -39,19 +39,37 @@ namespace wg
 			Shift = 1,
 			Alt = 2,
 			AltShift = 3,
-			Ctrl = 4,
-			CtrlShift = 5,
-			CtrlAlt = 6,
-			CtrlAltShift = 7,
-			Super = 8,
 
-			SuperShift = 9,
-			SuperAlt = 10,
-			SuperAltShift = 11,
-			SuperCtrl = 12,
-			SuperCtrlShift = 13,
-			SuperCtrlAlt = 14,
-			SuperCtrlAltShift = 15,
+			Command = 4,
+			CommandShift = 5,
+			CommandAlt = 6,
+			CommandAltShift = 7,
+
+			StdCtrl = 4,
+			StdCtrlShift = 5,
+			StdCtrlAlt = 6,
+			StdCtrlAltShift = 7,
+
+
+			MacCtrl = 8,
+
+			MacCtrlShift = 9,
+			MacCtrlAlt = 10,
+			MacCtrlAltShift = 11,
+			MacCtrlCmd = 12,
+			MacCtrlCmdShift = 13,
+			MacCtrlCmdAlt = 14,
+			MacCtrlCmdAltShift = 15,
+
+			OSKey = 16,
+
+			OSKeyShift = 17,
+			OSKeyAlt = 18,
+			OSKeyAltShift = 19,
+			OSKeyCtrl = 20,
+			OSKeyCtrlShift = 21,
+			OSKeyCtrlAlt = 22,
+			OSKeyCtrlAltShift = 23,
 		};
 
 	}
@@ -93,10 +111,12 @@ namespace wg
 		F12,
 
 		Shift,
-		Control,
 		Alt,
-		Super,
-
+		Command,				// Map against Command on Mac, essentially the same as Control on Windows/Linux.
+		StdControl = Command,	// Map against Control on Windows/Linux.
+		MacControl,				// Map against Control on a Mac keyboard. Used among else to simulate second button on mouse button press.
+		OSKey,					// Map against Start key on Windows/Linux.
+		
 		Unmapped		// This one must always be last!
 	};
 

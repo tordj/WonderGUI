@@ -1124,8 +1124,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 		// Skip posting KEY_REPEAT for modifier keys
 
 		int keyCode = pInfo->pEvent->TranslatedKeyCode();
-		if( keyCode == WG_KEY_SHIFT || keyCode == WG_KEY_CONTROL || keyCode == WG_KEY_ALT ||
-			keyCode == WG_KEY_SUPER || keyCode == WG_KEY_MAC_CONTROL || keyCode == WG_KEY_WIN_START )
+		if( keyCode == WG_KEY_SHIFT || keyCode == WG_KEY_CONTROL || keyCode == WG_KEY_ALT || keyCode == WG_KEY_MAC_CONTROL || keyCode == WG_KEY_WIN_START )
 			continue;
 
 		//
@@ -1428,9 +1427,6 @@ void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 		case WG_KEY_ALT:
 			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_ALT);
 			break;
-		case WG_KEY_SUPER:
-			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SUPER);
-			break;
 		case WG_KEY_MAC_CONTROL:
 			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_MAC_CONTROL);
 			break;
@@ -1515,9 +1511,6 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 			break;
 		case WG_KEY_ALT:
 			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_ALT);
-			break;
-		case WG_KEY_SUPER:
-			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SUPER);
 			break;
 		case WG_KEY_MAC_CONTROL:
 			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_MAC_CONTROL);

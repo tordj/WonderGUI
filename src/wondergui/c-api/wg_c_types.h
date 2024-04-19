@@ -102,16 +102,15 @@ typedef enum
 	WG_KEY_F12,
 
 	WG_KEY_SHIFT,
-	WG_KEY_CONTROL,
+	WG_KEY_CONTROL_COMMAND,			// Should map against Control on a Windows keyboard and Command on a Mac keyboard (mostly same functionality)
 	WG_KEY_ALT,
-	WG_KEY_SUPER,
+
+	WG_KEY_MAC_CONTROL,
+	WG_KEY_WIN_START,
 
 	WG_KEY_UNMAPPED,
 	
-	// These two are only here for WG2 compatibility. Do not use!
 	
-	WG_KEY_MAC_CONTROL,	// Deprecated. Do not use!
-	WG_KEY_WIN_START	// Deprecated. Do not use!
 	
 	
 } wg_key;

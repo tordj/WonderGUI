@@ -121,13 +121,13 @@ namespace wg
 						m_editState.bShiftDown = true;
 						break;
 					case Key::Left:
-						if( modKeys & ModKeys::Ctrl )
+						if( modKeys & ModKeys::StdCtrl )
 							caretPrevWord();
 						else
 							caretLeft();
 						break;
 					case Key::Right:
-						if( modKeys & ModKeys::Ctrl)
+						if( modKeys & ModKeys::StdCtrl)
 							caretNextWord();
 						else
 							caretRight();
@@ -144,7 +144,7 @@ namespace wg
 					case Key::Backspace:
 						if( hasSelection() )
 							eraseSelected();
-						else if( modKeys & ModKeys::Ctrl)
+						else if( modKeys & ModKeys::StdCtrl)
 							caretErasePrevWord();
 						else
 							caretErasePrevChar();
@@ -153,21 +153,21 @@ namespace wg
 					case Key::Delete:
 						if( hasSelection() )
 							eraseSelected();
-						else if( modKeys & ModKeys::Ctrl)
+						else if( modKeys & ModKeys::StdCtrl)
 							caretEraseNextWord();
 						else
 							caretEraseNextChar();
 						break;
 
 					case Key::Home:
-						if( modKeys & ModKeys::Ctrl)
+						if( modKeys & ModKeys::StdCtrl)
 							caretTextBegin();
 						else
 							caretLineBegin();
 						break;
 
 					case Key::End:
-						if( modKeys & ModKeys::Ctrl)
+						if( modKeys & ModKeys::StdCtrl)
 							caretTextEnd();
 						else
 							caretLineEnd();

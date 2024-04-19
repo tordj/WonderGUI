@@ -302,8 +302,8 @@ bool init_wondergui()
 	pInput->mapKey(SDLK_F12, Key::F12);
 
 
-	pInput->mapKey(SDLK_LCTRL, Key::Control);
-	pInput->mapKey(SDLK_RCTRL, Key::Control);
+	pInput->mapKey(SDLK_LCTRL, Key::StdControl);
+	pInput->mapKey(SDLK_RCTRL, Key::StdControl);
 
 	pInput->mapKey(SDLK_LSHIFT, Key::Shift);
 	pInput->mapKey(SDLK_RSHIFT, Key::Shift);
@@ -311,32 +311,21 @@ bool init_wondergui()
 	pInput->mapKey(SDLK_LALT, Key::Alt);
 	pInput->mapKey(SDLK_RALT, Key::Alt);
 
-	pInput->mapKey(SDLK_LGUI, Key::Super);
-	pInput->mapKey(SDLK_RGUI, Key::Super);
+	pInput->mapKey(SDLK_LGUI, Key::OSKey);
+	pInput->mapKey(SDLK_RGUI, Key::OSKey);
 
 	
 	pInput->mapKey(SDLK_KP_ENTER, Key::Return);
 
 
-#ifdef __APPLE__
-	pInput->mapCommand(SDLK_x, ModKeys::Super, EditCmd::Cut);
-	pInput->mapCommand(SDLK_c, ModKeys::Super, EditCmd::Copy);
-	pInput->mapCommand(SDLK_v, ModKeys::Super, EditCmd::Paste);
+	pInput->mapCommand(SDLK_x, ModKeys::Command, EditCmd::Cut);
+	pInput->mapCommand(SDLK_c, ModKeys::Command, EditCmd::Copy);
+	pInput->mapCommand(SDLK_v, ModKeys::Command, EditCmd::Paste);
 
-	pInput->mapCommand(SDLK_a, ModKeys::Super, EditCmd::SelectAll);
+	pInput->mapCommand(SDLK_a, ModKeys::Command, EditCmd::SelectAll);
 
-	pInput->mapCommand(SDLK_z, ModKeys::Super, EditCmd::Undo);
-	pInput->mapCommand(SDLK_z, ModKeys::SuperShift, EditCmd::Redo);
-#else
-	pInput->mapCommand(SDLK_x, ModKeys::Ctrl, EditCmd::Cut);
-	pInput->mapCommand(SDLK_c, ModKeys::Ctrl, EditCmd::Copy);
-	pInput->mapCommand(SDLK_v, ModKeys::Ctrl, EditCmd::Paste);
-
-	pInput->mapCommand(SDLK_a, ModKeys::Ctrl, EditCmd::SelectAll);
-
-	pInput->mapCommand(SDLK_z, ModKeys::Ctrl, EditCmd::Undo);
-	pInput->mapCommand(SDLK_z, ModKeys::CtrlShift, EditCmd::Redo);
-#endif
+	pInput->mapCommand(SDLK_z, ModKeys::Command, EditCmd::Undo);
+	pInput->mapCommand(SDLK_z, ModKeys::CommandShift, EditCmd::Redo);
 	
 	pInput->mapCommand(SDLK_ESCAPE, ModKeys::None, EditCmd::Escape);
 

@@ -206,7 +206,7 @@ namespace wg
 
 									// Unselect the rest if not CTRL-click.
 
-									if( !(pMsg->modKeys() & ModKeys::Ctrl) )
+									if( !(pMsg->modKeys() & ModKeys::StdCtrl) )
 									{
 										Slot * pBegin = _beginSlots();
 										Slot * pEnd = _endSlots();
@@ -218,7 +218,7 @@ namespace wg
 								}
 								else
 								{
-									if( pMsg->modKeys() & ModKeys::Ctrl)
+									if( pMsg->modKeys() & ModKeys::StdCtrl)
 									{
 										// CTRL-click: We just flip the entry.
 										_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->m_bSelected, true );

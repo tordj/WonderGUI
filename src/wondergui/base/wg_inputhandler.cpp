@@ -703,14 +703,17 @@ namespace wg
 			case Key::Shift:
 				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Shift);
 				break;
-			case Key::Control:
-				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Ctrl);
-				break;
 			case Key::Alt:
 				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Alt);
 				break;
-			case Key::Super:
-				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Super);
+			case Key::StdControl:
+				m_modKeys = (ModKeys) (m_modKeys | ModKeys::StdCtrl);
+				break;
+			case Key::MacControl:
+				m_modKeys = (ModKeys) (m_modKeys | ModKeys::MacCtrl);
+				break;
+			case Key::OSKey:
+				m_modKeys = (ModKeys) (m_modKeys | ModKeys::OSKey);
 				break;
 			default:
 				break;
@@ -749,14 +752,17 @@ namespace wg
 			case Key::Shift:
 				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::Shift);
 				break;
-			case Key::Control:
-				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::Ctrl);
-				break;
 			case Key::Alt:
 				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::Alt);
 				break;
-			case Key::Super:
-				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::Super);
+			case Key::StdControl:
+				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::StdCtrl);
+				break;
+			case Key::MacControl:
+				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::MacCtrl);
+				break;
+			case Key::OSKey:
+				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::OSKey);
 				break;
 			default:
 				break;
