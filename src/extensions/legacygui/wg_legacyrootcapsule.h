@@ -104,7 +104,7 @@ namespace wg
 
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 
-		
+
 		//.____ Misc _________________________________________________
 		// WG2 Interface
 
@@ -131,20 +131,23 @@ namespace wg
 		bool					SetChild( WgWidget * pWidget ) override;
 		inline void				DeleteChild() { SetChild(0); }
 		WgWidget * 				ReleaseChild();
-		
+
 	protected:
 		LegacyRootCapsule();
 
 		template<class BP> LegacyRootCapsule(const BP& bp) : Widget(bp), m_hook(this)
 		{
 			m_pEventHandler = new WgEventHandler(this);
-			
+
+			_routeKeyEvents();
+
 			_startReceiveUpdates();
 
 		}
 
-		 ~LegacyRootCapsule();
+		~LegacyRootCapsule();
 
+		void _routeKeyEvents();
 
 		inline void         _addPreRenderCall(WgWidget * pWidget) override { m_preRenderCalls.push_back(pWidget); }
 
@@ -158,11 +161,11 @@ namespace wg
 		void                _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea ) override;
 
 		void				_childRequestResize();
-		
+
 		void				_childRequestRender();
 		void				_childRequestRender( const WgRect& rect );
-		
-		
+
+
 		class Hook : public WgHook
 		{
 			friend class LegacyRootCapsule;
@@ -183,7 +186,7 @@ namespace wg
 
 		protected:
 
-			
+
 			virtual void	_requestRender();
 			virtual void	_requestRender( const WgRect& rect );
 			virtual void	_requestResize();
@@ -193,7 +196,7 @@ namespace wg
 
 			virtual void    _requestInView();
 			virtual void    _requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
-			
+
 			WgHook *		_prevHook() const;
 			WgHook *		_nextHook() const;
 			WgWidgetHolder * _holder() const;
@@ -201,15 +204,18 @@ namespace wg
 
 			LegacyRootCapsule *	m_pRoot;
 		};
-		
+
 		Hook				m_hook;
 		WgEventHandler *	m_pEventHandler = nullptr;
-		
+
 		std::vector<WgWidgetWeakPtr> m_preRenderCalls;
 
 		int						m_microsecStored = 0;
 		bool					m_bBlockRequestResize = false;
 		bool					m_bMouseInside = false;
+
+		RouteId		m_keyPressRoute;
+		RouteId		m_keyReleaseRoute;	
 
 	};
 

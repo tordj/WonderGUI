@@ -23,6 +23,7 @@
 #include <wg_legacyrootcapsule.h>
 #include <wg_gfxdevice.h>
 #include <wg_msg.h>
+#include <wg_msgrouter.h>
 #include <wg_base.h>
 
 #include <wg2_eventhandler.h>
@@ -59,8 +60,20 @@ namespace wg
 	{
 		m_pEventHandler = new WgEventHandler(this);
 
+		_routeKeyEvents();
 
 		_startReceiveUpdates();
+	}
+
+	//____ _routeKeyEvents _____________________________________________________
+
+	void LegacyRootCapsule::_routeKeyEvents()
+	{
+		m_keyPressRoute = Base::msgRouter()->addRoute(MsgType::KeyPress, [this](Msg* pMsg)
+									{ this->_receive(pMsg); });
+
+		m_keyReleaseRoute = Base::msgRouter()->addRoute(MsgType::KeyRelease, [this](Msg* pMsg)
+									{ this->_receive(pMsg); });
 	}
 
 	//____ Destructor _________________________________________________________
@@ -68,6 +81,9 @@ namespace wg
 	LegacyRootCapsule::~LegacyRootCapsule()
 	{
 		_stopReceiveUpdates();
+
+		Base::msgRouter()->deleteRoute(m_keyPressRoute);
+		Base::msgRouter()->deleteRoute(m_keyReleaseRoute);
 
 		delete m_pEventHandler;
 	}
@@ -278,16 +294,9 @@ namespace wg
 				break;
 			}
 
-
 			case MsgType::MousePress:
 			{
 				auto pMess = static_cast<MousePressMsg*>(pMsg);
-				if(!m_state.isFocused())
-				{
-					// This is to make sure TextInput messages are not lost along the way
-					_componentRequestFocus(nullptr, true);
-				}
-
 				int button;
 				switch( pMess->button() )
 				{
@@ -437,19 +446,12 @@ namespace wg
 
 	bool LegacyRootCapsule::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting )
 	{
-		if( m_pEventHandler->KeyboardFocus() )
+		if (!m_state.isFocused())
 		{
-			return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
-		}
-		else
-		{
-			bool result = grabFocus(false);					//TODO: Support raising of window.
-
-			if( !result )
+			if (!grabFocus(true))
 				return false;
-
-			return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
 		}
+		return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
 	}
 
 	//____ _focusReleased() ___________________________________________________
