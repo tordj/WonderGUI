@@ -388,7 +388,7 @@ namespace wg
 			Base::throwError(ErrorLevel::Warning, ErrorCode::IllegalCall, "dispatch() called from within a dispatch callback (i.e. message being processed calls dispatch). Call ignored.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
-		
+
 		m_bIsProcessing = true;
 
 		m_insertPos = m_msgQueue.begin();	// Insert any POINTER_ENTER/EXIT right at beginning.
@@ -407,7 +407,7 @@ namespace wg
 		{
 			Msg_p pMsg = m_msgQueue.front();
 			m_insertPos = m_msgQueue.begin()+1;	// Insert position set to right after current event.
-
+			
 			do
 			{
 				if( pMsg->hasCopyTo()  )

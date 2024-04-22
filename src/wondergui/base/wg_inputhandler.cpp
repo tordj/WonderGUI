@@ -149,7 +149,7 @@ namespace wg
 		for( auto it = m_keycodeMap.begin() ; it != m_keycodeMap.end() ; it++ )
 			if( it->second == translatedKeyCode )
 				return it->first;
-		
+
 		return 0;
 	}
 
@@ -294,7 +294,7 @@ namespace wg
 		for (int i = 0; i < MouseButton_size; i++)
 		{
 			//TODO: The pRoot-check is just a quick hack to prevent crashes. How should this really work?
-			
+
 			if (m_bButtonPressed[i] && pRoot)
 			{
 				CoordSPX pressPosSPX = Util::ptsToSpx(m_latestPressPosition[i], pRoot->scale());
@@ -323,7 +323,7 @@ namespace wg
 				if( !pWidget->isDisabled() )
 				{
 					auto style = pWidget->pointerStyle();
-					
+
 					if( style != PointerStyle::Undefined )
 					{
 						newStyle = style;
@@ -333,7 +333,7 @@ namespace wg
 				pLastWidget = pWidget;
 				pWidget = pWidget->parent();
 			}
-			
+
 			if( newStyle == PointerStyle::Undefined )
 			{
 				if (pLastWidget->_holder())
@@ -342,14 +342,14 @@ namespace wg
 					if( pRoot )
 					{
 						auto style = pRoot->pointerStyle();
-					
+
 						if( style != PointerStyle::Undefined )
 							newStyle = style;
 					}
 				}
 			}
 		}
-		
+
 		if( newStyle == PointerStyle::Undefined )
 			newStyle = PointerStyle::Arrow;
 
@@ -366,7 +366,7 @@ namespace wg
 	Widget * InputHandler::_updateEnteredWidgets( Widget * pMarkedWidget, int64_t timestamp )
 	{
 		// Create new list of entered widgets
-		
+
 		std::vector<Widget_wp>	enteredWidgets;
 		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
 			enteredWidgets.push_back( pWidget );
@@ -376,7 +376,7 @@ namespace wg
 		for( auto& weakptr : m_vEnteredWidgets )
 		{
 			Widget * pWidget = weakptr.rawPtr();
-			
+
 			if ( pWidget && _widgetPosInList( pWidget, enteredWidgets ) < 0 )
 			{
 				MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
@@ -384,7 +384,7 @@ namespace wg
 				Base::msgRouter()->post(p);
 			}
 		}
-		
+
 		// Loop through our new widgets and check if they already
 		// were entered. Send MouseEnter to all new widgets and notice the first
 		// common ancestor.
@@ -393,7 +393,7 @@ namespace wg
 		for( auto& weakptr : enteredWidgets )
 		{
 			Widget * pWidget = weakptr.rawPtr();
-			
+
 			if( _widgetPosInList( pWidget, m_vEnteredWidgets ) < 0 )
 			{
 				MouseEnterMsg_p p = MouseEnterMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
@@ -407,7 +407,7 @@ namespace wg
 		// Replace the old list with a new one.
 
 		m_vEnteredWidgets.swap(enteredWidgets);
-		
+
 		// Return first already marked, calling function might need it.
 
 		return pFirstAlreadyMarked;
@@ -458,7 +458,7 @@ namespace wg
 
 		// Check stickiness of focus, i.e. wether widget should keep focus when mouse pressed outside.
 		// This needs to be done before we post any MousePress messages, so that any FocusLost messages
-		// comes before any FocusGained generated from (and inserted right after) the MousePress 
+		// comes before any FocusGained generated from (and inserted right after) the MousePress
 		// message.
 
 		Widget* pFocused = _focusedWidget();
@@ -684,6 +684,26 @@ namespace wg
 
 		m_keysDown.push_back( info );
 
+		// Update modkeys
+
+		switch(translatedKeyCode)
+		{
+			case Key::Shift:
+				m_modKeys = (ModKeys)(m_modKeys | ModKeys::Shift);
+				break;
+			case Key::Control:
+				m_modKeys = (ModKeys)(m_modKeys | ModKeys::Ctrl);
+				break;
+			case Key::Alt:
+				m_modKeys = (ModKeys)(m_modKeys | ModKeys::Alt);
+				break;
+			case Key::Super:
+				m_modKeys = (ModKeys)(m_modKeys | ModKeys::Super);
+				break;
+			default:
+				break;
+		}
+
 		// Post KEY_PRESS message
 
 		Widget * pWidget = _focusedWidget();
@@ -695,26 +715,6 @@ namespace wg
 		if( cmd != EditCmd::None )
 			Base::msgRouter()->post( new EditCommandMsg( m_inputId, cmd, pWidget ));
 
-
-		// Update modkeys
-
-		switch( translatedKeyCode )
-		{
-			case Key::Shift:
-				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Shift);
-				break;
-			case Key::Control:
-				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Ctrl);
-				break;
-			case Key::Alt:
-				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Alt);
-				break;
-			case Key::Super:
-				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Super);
-				break;
-			default:
-				break;
-		}
 	}
 
 
