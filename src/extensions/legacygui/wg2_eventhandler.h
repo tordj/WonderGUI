@@ -55,7 +55,7 @@ public:
 
 struct WgModKeyMap
 {
-	WgModifierKeys       stepWord        = WG_MODKEY_CTRL;
+	WgModifierKeys       stepWord        = WG_MODKEY_STD_CTRL;
 	WgModifierKeys       beginEndLine    = WG_MODKEY_NONE;
 	WgModifierKeys       beginEndText    = WG_MODKEY_NONE;
 //    WgModifierKeys       pageUpDown      = WG_MODKEY_NONE;

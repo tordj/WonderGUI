@@ -106,56 +106,68 @@ int main ( int argc, char** argv )
 
 	InputHandler_p pInput = Base::inputHandler();
 	
-	pInput->mapKey( SDLK_LEFT, Key::Left );
-	pInput->mapKey( SDLK_RIGHT, Key::Right );
-	pInput->mapKey( SDLK_UP, Key::Up );
-	pInput->mapKey( SDLK_DOWN, Key::Down );
-	pInput->mapKey( SDLK_BACKSPACE, Key::Backspace );
-	pInput->mapKey( SDLK_DELETE, Key::Delete );
-	pInput->mapKey( SDLK_END, Key::End );
-	pInput->mapKey( SDLK_ESCAPE, Key::Escape );
-	pInput->mapKey( SDLK_HOME, Key::Home );
-	pInput->mapKey( SDLK_PAGEDOWN, Key::PageDown );
-	pInput->mapKey( SDLK_PAGEUP, Key::PageUp );
-	pInput->mapKey( SDLK_RETURN, Key::Return );
-	pInput->mapKey( SDLK_SPACE, Key::Space );
-	pInput->mapKey( SDLK_TAB, Key::Tab );
-	pInput->mapKey( SDLK_F1, Key::F1 );
-	pInput->mapKey( SDLK_F2, Key::F2 );
-	pInput->mapKey( SDLK_F3, Key::F3 );
-	pInput->mapKey( SDLK_F4, Key::F4 );
-	pInput->mapKey( SDLK_F5, Key::F5 );
-	pInput->mapKey( SDLK_F6, Key::F6 );
-	pInput->mapKey( SDLK_F7, Key::F7 );
-	pInput->mapKey( SDLK_F8, Key::F8 );
-	pInput->mapKey( SDLK_F9, Key::F9 );
-	pInput->mapKey( SDLK_F10, Key::F10 );
-	pInput->mapKey( SDLK_F11, Key::F11 );
-	pInput->mapKey( SDLK_F12, Key::F12 );
-	
-	
-	pInput->mapKey( SDLK_LCTRL, Key::Control );
-	pInput->mapKey( SDLK_RCTRL, Key::Control );
+	pInput->mapKey(SDLK_LEFT, Key::Left);
+	pInput->mapKey(SDLK_RIGHT, Key::Right);
+	pInput->mapKey(SDLK_UP, Key::Up);
+	pInput->mapKey(SDLK_DOWN, Key::Down);
+	pInput->mapKey(SDLK_BACKSPACE, Key::Backspace);
+	pInput->mapKey(SDLK_DELETE, Key::Delete);
+	pInput->mapKey(SDLK_END, Key::End);
+	pInput->mapKey(SDLK_ESCAPE, Key::Escape);
+	pInput->mapKey(SDLK_HOME, Key::Home);
+	pInput->mapKey(SDLK_PAGEDOWN, Key::PageDown);
+	pInput->mapKey(SDLK_PAGEUP, Key::PageUp);
+	pInput->mapKey(SDLK_RETURN, Key::Return);
+	pInput->mapKey(SDLK_SPACE, Key::Space);
+	pInput->mapKey(SDLK_TAB, Key::Tab);
+	pInput->mapKey(SDLK_F1, Key::F1);
+	pInput->mapKey(SDLK_F2, Key::F2);
+	pInput->mapKey(SDLK_F3, Key::F3);
+	pInput->mapKey(SDLK_F4, Key::F4);
+	pInput->mapKey(SDLK_F5, Key::F5);
+	pInput->mapKey(SDLK_F6, Key::F6);
+	pInput->mapKey(SDLK_F7, Key::F7);
+	pInput->mapKey(SDLK_F8, Key::F8);
+	pInput->mapKey(SDLK_F9, Key::F9);
+	pInput->mapKey(SDLK_F10, Key::F10);
+	pInput->mapKey(SDLK_F11, Key::F11);
+	pInput->mapKey(SDLK_F12, Key::F12);
 
-	pInput->mapKey( SDLK_LSHIFT, Key::Shift );
-	pInput->mapKey( SDLK_RSHIFT, Key::Shift );
 
-	pInput->mapKey( SDLK_LALT, Key::Alt );
-	pInput->mapKey( SDLK_RALT, Key::Alt );
-	
-	pInput->mapKey( SDLK_KP_ENTER, Key::Return );
-	
-	
-	pInput->mapCommand( SDLK_ESCAPE, ModKeys::None, EditCmd::Escape );
+	pInput->mapKey(SDLK_LSHIFT, Key::Shift);
+	pInput->mapKey(SDLK_RSHIFT, Key::Shift);
 
-	pInput->mapCommand( SDLK_x, ModKeys::Ctrl, EditCmd::Cut );
-	pInput->mapCommand( SDLK_c, ModKeys::Ctrl, EditCmd::Copy );
-	pInput->mapCommand( SDLK_v, ModKeys::Ctrl, EditCmd::Paste );
+	pInput->mapKey(SDLK_LALT, Key::Alt);
+	pInput->mapKey(SDLK_RALT, Key::Alt);
 
-	pInput->mapCommand( SDLK_a, ModKeys::Ctrl, EditCmd::SelectAll );
+#ifdef __APPLE__
+	pInput->mapKey(SDLK_LCTRL, Key::MacControl);
+	pInput->mapKey(SDLK_RCTRL, Key::MacControl);
+
+	pInput->mapKey(SDLK_LGUI, Key::Command);
+	pInput->mapKey(SDLK_RGUI, Key::Command);
+#else
+	pInput->mapKey(SDLK_LCTRL, Key::StdControl);
+	pInput->mapKey(SDLK_RCTRL, Key::StdControl);
+
+	pInput->mapKey(SDLK_LGUI, Key::OSKey);
+	pInput->mapKey(SDLK_RGUI, Key::OSKey);
+
+#endif
 	
-	pInput->mapCommand( SDLK_z, ModKeys::Ctrl, EditCmd::Undo );
-	pInput->mapCommand( SDLK_z, ModKeys::CtrlShift, EditCmd::Redo );
+	pInput->mapKey(SDLK_KP_ENTER, Key::Return);
+
+
+	pInput->mapCommand(SDLK_x, ModKeys::Command, EditCmd::Cut);
+	pInput->mapCommand(SDLK_c, ModKeys::Command, EditCmd::Copy);
+	pInput->mapCommand(SDLK_v, ModKeys::Command, EditCmd::Paste);
+
+	pInput->mapCommand(SDLK_a, ModKeys::Command, EditCmd::SelectAll);
+
+	pInput->mapCommand(SDLK_z, ModKeys::Command, EditCmd::Undo);
+	pInput->mapCommand(SDLK_z, ModKeys::CommandShift, EditCmd::Redo);
+	
+	pInput->mapCommand(SDLK_ESCAPE, ModKeys::None, EditCmd::Escape);
 
 
 	PixelFormat type = PixelFormat::Undefined;

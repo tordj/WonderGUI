@@ -302,18 +302,26 @@ bool init_wondergui()
 	pInput->mapKey(SDLK_F12, Key::F12);
 
 
-	pInput->mapKey(SDLK_LCTRL, Key::StdControl);
-	pInput->mapKey(SDLK_RCTRL, Key::StdControl);
-
 	pInput->mapKey(SDLK_LSHIFT, Key::Shift);
 	pInput->mapKey(SDLK_RSHIFT, Key::Shift);
 
 	pInput->mapKey(SDLK_LALT, Key::Alt);
 	pInput->mapKey(SDLK_RALT, Key::Alt);
 
+#ifdef __APPLE__
+	pInput->mapKey(SDLK_LCTRL, Key::MacControl);
+	pInput->mapKey(SDLK_RCTRL, Key::MacControl);
+
+	pInput->mapKey(SDLK_LGUI, Key::Command);
+	pInput->mapKey(SDLK_RGUI, Key::Command);
+#else
+	pInput->mapKey(SDLK_LCTRL, Key::StdControl);
+	pInput->mapKey(SDLK_RCTRL, Key::StdControl);
+
 	pInput->mapKey(SDLK_LGUI, Key::OSKey);
 	pInput->mapKey(SDLK_RGUI, Key::OSKey);
 
+#endif
 	
 	pInput->mapKey(SDLK_KP_ENTER, Key::Return);
 

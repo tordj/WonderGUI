@@ -413,7 +413,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 				switch( pEvent->ModKeys() )
 				{
 
-				case WG_MODKEY_CTRL:
+				case WG_MODKEY_STD_CTRL:
 					break;
 
 				default: // no modifier key was pressed
@@ -435,7 +435,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 				switch( pEvent->ModKeys() )
 				{
 
-				case WG_MODKEY_CTRL:
+				case WG_MODKEY_STD_CTRL:
 					break;
 
 				default: // no modifier key was pressed

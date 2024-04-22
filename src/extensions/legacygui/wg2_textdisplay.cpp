@@ -466,7 +466,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				if( modKeys & WG_MODKEY_CTRL )
+				if( modKeys & WG_MODKEY_STD_CTRL )
 					m_pText->goBOF();
 				else
 					m_pText->goBOL();
@@ -478,7 +478,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				if( modKeys & WG_MODKEY_CTRL )
+				if( modKeys & WG_MODKEY_STD_CTRL )
 					m_pText->goEOF();
 				else
 					m_pText->goEOL();

@@ -338,7 +338,7 @@ private:
 	
 	
     WgModifierKeys         m_axisLockModifier = WG_MODKEY_ALT;
-    WgModifierKeys         m_finetuneModifier = WG_MODKEY_CTRL;
+    WgModifierKeys         m_finetuneModifier = WG_MODKEY_STD_CTRL;
     WgModifierKeys         m_overrideModifier = WG_MODKEY_NONE;             // If pressed, we only do callback and send event, we don't grab or move slider.
     WgModifierKeys         m_staticModifier = WG_MODKEY_NONE;
 

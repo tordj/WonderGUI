@@ -16,8 +16,8 @@ namespace sdl_wglib
 	{
 		WgBase::MapKey( WG_KEY_SHIFT, SDLK_LSHIFT );
 		WgBase::MapKey( WG_KEY_SHIFT, SDLK_RSHIFT );
-		WgBase::MapKey( WG_KEY_CONTROL, SDLK_LCTRL );
-		WgBase::MapKey( WG_KEY_CONTROL, SDLK_RCTRL );
+		WgBase::MapKey( WG_KEY_STD_CONTROL, SDLK_LCTRL );
+		WgBase::MapKey( WG_KEY_STD_CONTROL, SDLK_RCTRL );
 		WgBase::MapKey( WG_KEY_ALT, SDLK_LALT );
 		WgBase::MapKey( WG_KEY_ALT, SDLK_RALT );
 
