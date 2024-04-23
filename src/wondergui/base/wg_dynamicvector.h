@@ -295,8 +295,11 @@ namespace wg
 	template < class EntryType>
 	void DynamicVector<EntryType>::clear()
 	{
-		_willEraseEntries(&StaticVector<EntryType>::m_entries[0], (int)StaticVector<EntryType>::m_entries.size());
-		StaticVector<EntryType>::m_entries.clear();
+		if( !StaticVector<EntryType>::m_entries.empty() )
+		{
+			_willEraseEntries(&StaticVector<EntryType>::m_entries[0], (int)StaticVector<EntryType>::m_entries.size());
+			StaticVector<EntryType>::m_entries.clear();
+		}
 	}
 
 

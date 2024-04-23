@@ -1180,6 +1180,12 @@ void WgPackPanel::_refreshChildGeo()
 		if( p->IsVisible() )
 		{
 			WgRect geo = (* pNewGeo) - p->m_padding.scale(m_scale);
+			
+			if( geo.w < 0 )
+				geo.w = 0;
+			if( geo.h < 0 )
+				geo.h = 0;
+			
 			if( geo != p->m_geo )
 			{
 				_requestRender(p->m_geo);

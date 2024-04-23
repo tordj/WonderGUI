@@ -1163,6 +1163,12 @@ void WgScrollPanel::_updateElementGeo( WgSize _mySize )
 	// If something visible has changed we need to update element geometry and request render.
 	// This is more optimized than it looks like...
 
+	if( newWindow.w < 0 )
+		newWindow.w = 0;
+	
+	if( newWindow.h < 0 )
+		newWindow.h = 0;
+	
 	if( newWindow != m_elements[WINDOW].m_windowGeo || bShowDragX != m_elements[XDRAG].m_bVisible || bShowDragY != m_elements[YDRAG].m_bVisible || newContentSize != m_contentSize )
 	{
 		m_elements[WINDOW].m_windowGeo = newWindow;
