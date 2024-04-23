@@ -74,6 +74,8 @@ typedef struct wg_pluginroot_calls_struct
 
 		void			(*onUpdate)(void* pPluginRoot, int microPassed, int64_t microsecTimestamp);
 
+		void 			(*wheelRoll)(void* pPluginRoot, int wheel, wg_pts distance, int bInvert, int64_t timestamp );
+
 } wg_pluginroot_calls;
 
 

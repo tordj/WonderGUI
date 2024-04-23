@@ -46,6 +46,7 @@ extern "C" {
 	void 		wg_setPluginButtonState(void* pPluginRoot, int button, int pressed, int64_t timestamp );
 	void 		wg_setPluginKeyState(void* pPluginRoot, int nativeKeyCode, int pressed, int64_t timestamp );
 	void 		wg_putPluginText(void* pPluginRoot, const char * pUTF8String );
+	void		wg_pluginWheelRoll(void* pPluginRoot, int wheel, wg_pts distance, int bInvert, int64_t timestamp );
 	void 		wg_onPluginUpdate(void* pPluginRoot, int microPassed, int64_t microsecTimestamp);
 	wg_pointerStyle wg_pluginPointerStyle(void* pPluginRoot);
 

@@ -125,6 +125,8 @@ namespace wg
 		void 		_setButtonState( int button, bool bPressed, int64_t timestamp );
 		void 		_setKeyState( int nativeKeyCode, bool bPressed, int64_t timestamp );
 		void		_putText( const char * pUTF8Text );
+		void		_wheelRoll( int wheel, pts distance, bool bInvert, int64_t timestamp );
+
 		
 		void		_update(int microPassed, int64_t microsecTimestamp);
 

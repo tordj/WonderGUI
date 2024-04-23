@@ -315,6 +315,13 @@ namespace wg
 				break;
 			}
 				
+			case MsgType::WheelRoll:
+			{
+				auto pMess = static_cast<WheelRollMsg*>(pMsg);
+				m_calls.wheelRoll(m_pPluginRoot, pMess->wheel(), pMess->distance(), pMess->invertScroll(), pMess->timestamp() );
+				break;
+			}
+				
 			default:
 				break;
 		}

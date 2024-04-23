@@ -60,6 +60,7 @@ WgPluginRoot::WgPluginRoot( wg_obj myPluginCapsule, WgPluginContext * pContext )
 	m_interface.setButtonState	= wg_setPluginButtonState;
 	m_interface.setKeyState		= wg_setPluginKeyState;
 	m_interface.putText			= wg_putPluginText;
+	m_interface.wheelRoll		= wg_pluginWheelRoll;
 
 	m_interface.onUpdate		= wg_onPluginUpdate;
 	
@@ -368,7 +369,7 @@ void WgPluginRoot::_setKeyState( int nativeKeyCode, bool bPressed, int64_t times
 	else
 		m_pEventHandler->QueueEvent( new WgEvent::KeyRelease( nativeKeyCode ) );
 }
-
+	
 //____ _putText() ___________________________________________________
 
 void WgPluginRoot::_putText( const char * pUTF8Text )
@@ -380,6 +381,13 @@ void WgPluginRoot::_putText( const char * pUTF8Text )
 		int chr = wg::TextTool::readChar(p);
 		m_pEventHandler->QueueEvent( new WgEvent::Character( chr ) );
 	}
+}
+
+//____ _wheelRoll() ____________________________________________________________
+
+void WgPluginRoot::_wheelRoll( int wheel, float distance, bool bInvert, int64_t timestamp )
+{
+	m_pEventHandler->QueueEvent( new WgEvent::MouseWheelRoll( wheel, int(distance), bInvert ) );
 }
 
 //____ _update() ______________________________________________________________

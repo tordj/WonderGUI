@@ -75,6 +75,7 @@ namespace wg
 		m_interface.setButtonState	= wg_setPluginButtonState;
 		m_interface.setKeyState		= wg_setPluginKeyState;
 		m_interface.putText			= wg_putPluginText;
+		m_interface.wheelRoll		= wg_pluginWheelRoll;
 
 		m_interface.onUpdate		= wg_onPluginUpdate;
 	}
@@ -352,6 +353,14 @@ namespace wg
 	{
 		Base::inputHandler()->putText(pUTF8Text);
 	}
+
+	//____ _wheelRoll() ____________________________________________________________
+
+	void PluginRoot::_wheelRoll( int wheel, pts distance, bool bInvert, int64_t timestamp )
+	{
+		Base::inputHandler()->setWheelRoll(wheel, distance, bInvert, timestamp);
+	}
+
 
 	//____ _update() __________________________________________________________
 
