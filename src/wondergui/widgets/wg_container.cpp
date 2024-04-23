@@ -336,6 +336,7 @@ namespace wg
 
 			// Go through WidgetRenderContexts, push and mask dirt
 
+			unsigned int lastWithDirt = renderList.size() -1;
 			for (unsigned int i = 0 ; i < renderList.size(); i++)
 			{
 				WidgetRenderContext * p = &renderList[i];
@@ -346,12 +347,15 @@ namespace wg
 				p->pWidget->_maskPatches( patches, p->geo, clipBounds, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 				if( patches.isEmpty() )
+				{
+					lastWithDirt = i;	// Prevent poping clipLists that have not been set.
 					break;
+				}
 			}
 
 			// Go through WidgetRenderContexts and render the patches in reverse order (topmost child rendered last).
 
-			for (int i = int(renderList.size()) - 1; i >= 0; i--)
+			for (int i = int(lastWithDirt); i >= 0; i--)
 			{
 				WidgetRenderContext * p = &renderList[i];
 				p->pWidget->_render( pDevice, p->geo, p->geo );
