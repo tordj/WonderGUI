@@ -57,14 +57,8 @@ void WgBase::Init( wg::HostBridge * pHostBridge)
 	s_pContext->pHostBridge = pHostBridge;
 	
 	wg::TextTool::setDefaultBreakRules();
-
-
 	wg::TextStyleManager::init();
 
-	wg::TextStyle::Blueprint textStyleBP;
-	textStyleBP.font = wg::DummyFont::create();
-
-	wg::TextStyle::s_pDefaultStyle = wg::TextStyle::create( textStyleBP );
 }
 
 //____ Exit() __________________________________________________________________
@@ -77,8 +71,7 @@ void WgBase::Exit()
 
 	s_pContext = nullptr;
 	
-	wg::TextStyle::s_pDefaultStyle = nullptr;
-
+	wg::TextStyleManager::exit();
 	wg::GfxBase::exit();
 }
 

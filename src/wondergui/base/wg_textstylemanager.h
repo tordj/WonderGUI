@@ -65,6 +65,8 @@ namespace wg
 		static int			s_capacity;				// Size in entries for lookup table.
 		static int			s_size;					// Size in entries for lookup table.
 		static int			s_nextAvailable;		// Offset in table for next available entry.
+		
+		static int			s_instanceCounter;		//
 	};
 }
 

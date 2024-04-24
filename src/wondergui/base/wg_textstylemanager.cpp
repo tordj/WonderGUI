@@ -22,6 +22,7 @@
 
 #include <wg_textstylemanager.h>
 #include <wg_base.h>
+#include <wg_dummyfont.h>
 
 
 namespace wg
@@ -30,6 +31,8 @@ namespace wg
 	int			TextStyleManager::s_capacity = 0;			// SizeI in entries for lookup table.
 	int			TextStyleManager::s_size = 0;
 	int			TextStyleManager::s_nextAvailable = -1;		// Offset in table for next available entry.
+
+	int			TextStyleManager::s_instanceCounter = 0;		// Offset in table for next available entry.
 
 	const TypeInfo	TextStyleManager::TYPEINFO = { "TextStyleManager", nullptr };
 
@@ -55,7 +58,7 @@ namespace wg
 		// If s_pLookupTable is set, we assume we have bailed out on an earlier exit, thus
 		// still have a lookup table with entries that are still alive.
         
-		if( s_pLookupTable == nullptr )
+		if( s_instanceCounter == 0 )
 		{
 			int capacity = 16;
 
@@ -65,27 +68,48 @@ namespace wg
 
 			for( int i = 0 ; i < capacity ; i++ )
 				* (int*)(&s_pLookupTable[i]) = i+1;
+			
+
+			TextStyle::Blueprint textStyleBP;
+			textStyleBP.font = DummyFont::create();
+
+			TextStyle::s_pDefaultStyle = TextStyle::create( textStyleBP );
 		}
+		
+		s_instanceCounter++;
 	}
 
 	//____ exit()_______________________________________________________________
 
 	void TextStyleManager::exit()
 	{
-		if (s_size > 0)
+		if( s_instanceCounter == 0 )
 		{
-			Base::throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Exiting TextStyleManager before all TextStyles have been deleted. This can cause crashes later on.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::Error, ErrorCode::SystemIntegrity, "Exiting TextStyleManager more times than it has been initialized.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
-		//TODO: Something if s_size > 0 (there are still existing TextStyles)
-
-		delete [] s_pLookupTable;
-
-		s_pLookupTable = nullptr;
-		s_capacity = 0;
-		s_size = 0;
-		s_nextAvailable = -1;
+		s_instanceCounter--;
+		
+		if( s_instanceCounter == 0 )
+		{
+			wg::TextStyle::s_pDefaultStyle = nullptr;
+			
+			if (s_size > 0)
+			{
+				Base::throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Exiting TextStyleManager before all TextStyles have been deleted. This can cause crashes later on.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+				return;
+			}
+			
+			//TODO: Something if s_size > 0 (there are still existing TextStyles)
+			
+			delete [] s_pLookupTable;
+			
+			s_pLookupTable = nullptr;
+			s_capacity = 0;
+			s_size = 0;
+			s_nextAvailable = -1;
+		}
 	}
 
 	//____ _reserveHandle()_____________________________________________________

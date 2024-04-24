@@ -74,11 +74,6 @@ namespace wg
 
 		TextStyleManager::init();
 
-		TextStyle::Blueprint textStyleBP;
-		textStyleBP.font = DummyFont::create();
-
-		TextStyle::s_pDefaultStyle = TextStyle::create( textStyleBP );
-
 		s_pGUIContext->pDefaultCaret = Caret::create();
 
 		s_pGUIContext->pDefaultTextLayout = BasicTextLayout::create({});
@@ -128,8 +123,6 @@ namespace wg
 
 		s_pGUIContext = nullptr;
 		
-		TextStyle::s_pDefaultStyle = nullptr;
-
 		s_clipboardText.clear();
 
 		TextStyleManager::exit();
