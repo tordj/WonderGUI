@@ -275,6 +275,23 @@ void WgTooltipLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pH
 				if (pHovered && pHovered->GetTooltipString().isEmpty())
 					pHovered = nullptr;
 				
+				if(pHovered)
+				{
+					// Check that there isn't another TooltipLayer between us (closest one should get the tooltip).
+					
+					WgWidget * pWidget = pHovered;
+					while( pWidget != this )
+					{
+						if( pWidget->Type() == WgTooltipLayer::GetClass() )
+						{
+							pHovered = nullptr;
+							break;
+						}
+						pWidget = pWidget->Parent();
+					}
+				}
+				
+				
 				if (m_tooltipHook.Widget())
 				{
 					if (pHovered != m_pHoverWidget)
