@@ -354,7 +354,27 @@ MetalGfxDevice::MetalGfxDevice()
         [m_defaultCanvasRenderPassDesc release];
 		m_drawableToAutoPresent = nil;
 		
+//		[m_metalCommandBuffer release];
 		m_metalCommandBuffer = nil;
+
+		[m_vertexBufferId release];
+		m_vertexBufferId = nil;
+		
+		[m_extrasBufferId release];
+		m_extrasBufferId = nil;
+		
+		[m_clipListBufferId release];
+		m_clipListBufferId = nil;
+		
+		[m_segEdgeBufferId release];
+		m_segEdgeBufferId = nil;
+		
+		[m_segPalTextureId release];
+		m_segPalTextureId = nil;
+
+		[m_segPalBufferId release];
+		m_segPalBufferId = nil;
+		
 		
 		delete [] m_pCommandBuffer;
 		
@@ -478,7 +498,19 @@ MetalGfxDevice::MetalGfxDevice()
 		}
 
 		
-		
+		for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+		{
+			[m_blurPipelines[0][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blurPipelines[0][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blurPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blurPipelines[0][blendMode][(int)DestFormat::BGRX8_sRGB]  release];
+
+			[m_blurPipelines[1][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blurPipelines[1][blendMode][(int)DestFormat::BGRX8_linear]  release];
+			[m_blurPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blurPipelines[1][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+		}
+
         int maxSegments = c_maxSegments;                // std::min can't operate on static const only present in header. Does some introspection that fails then.
         int nbShaders = std::min(maxSegments, 16);
         for( int shader = 1 ; shader < nbShaders ; shader++ )
@@ -2155,7 +2187,8 @@ MetalGfxDevice::MetalGfxDevice()
             Vertex * pNewBuffer = (Vertex *)[newId contents];
             memcpy( pNewBuffer, m_pVertexBuffer, m_vertexOfs * sizeof(Vertex));
             m_pVertexBuffer = pNewBuffer;
-            
+
+			[m_vertexBufferId release];
             m_vertexBufferId = newId;
         }
 
@@ -2172,6 +2205,7 @@ MetalGfxDevice::MetalGfxDevice()
             memcpy( pNewBuffer, m_pExtrasBuffer, m_extrasOfs * sizeof(float));
             m_pExtrasBuffer = pNewBuffer;
             
+			[m_extrasBufferId release];
             m_extrasBufferId = newId;
         }
 
@@ -2185,6 +2219,7 @@ MetalGfxDevice::MetalGfxDevice()
             memcpy( pNewBuffer, m_pClipListBuffer, m_clipWriteOfs * sizeof(RectI));
             m_pClipListBuffer = pNewBuffer;
             
+			[m_clipListBufferId release];
             m_clipListBufferId = newId;
         }
         
@@ -2201,6 +2236,7 @@ MetalGfxDevice::MetalGfxDevice()
             memcpy( pNewBuffer, m_pSegEdgeBuffer, m_segEdgeOfs * sizeof(float));
             m_pSegEdgeBuffer = pNewBuffer;
             
+			[m_segEdgeBufferId release];
             m_segEdgeBufferId = newId;
         }
 
@@ -3118,7 +3154,6 @@ MetalGfxDevice::MetalGfxDevice()
         
         [descriptor.vertexFunction release];
         [descriptor.fragmentFunction release];
-        
         [descriptor release];
         
         return pipelineState;
