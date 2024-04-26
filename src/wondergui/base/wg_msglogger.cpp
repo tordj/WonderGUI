@@ -322,6 +322,7 @@ namespace wg
 			case MsgType::TextEdit:
 			{
 				TextEditMsg_p pMsg = static_cast<TextEditMsg*>(_pMsg);
+				snprintf( params, c_paramLen, " offset=%d deleted=%d inserted=%d", pMsg->offset(), pMsg->deleted(), pMsg->inserted() );
 				break;
 			}
 

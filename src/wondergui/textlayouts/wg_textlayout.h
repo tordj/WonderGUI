@@ -123,6 +123,7 @@ namespace wg
 
 		virtual RectSPX	rectForRange( const TextItem * pText, int ofs, int length ) const = 0;
 		virtual RectSPX	rectForCaret( const TextItem * pText ) const = 0;
+		virtual RectSPX	rectForCaretWithMargin( const TextItem * pText, int whitespacesBeforeAfter ) const = 0;
 
 		virtual String	tooltip( const TextItem * pText ) const;
 

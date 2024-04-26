@@ -861,6 +861,29 @@ namespace wg
 
 		return pCaret->dirtyRect( charRect(pText, _caretOfs(pText) ), _scale(pText) );
 	}
+	
+	//____ rectForCaretWithMargin() ______________________________________________
+
+	RectSPX BasicTextLayout::rectForCaretWithMargin( const TextItem * pText, int whitespacesBeforeAfter ) const
+	{
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		if( !_caretVisible(pText) || !pCaret )
+			return RectSPX();
+
+		RectSPX cursorRect = pCaret->dirtyRect( charRect(pText, _caretOfs(pText) ), _scale(pText) );
+		
+		TextAttr		baseAttr;
+		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr, _scale(pText) );
+
+		baseAttr.pFont->setSize(baseAttr.size);
+		
+		spx whitespace = baseAttr.pFont->whitespaceAdvance();
+		
+		cursorRect.x -= whitespace * whitespacesBeforeAfter;
+		cursorRect.w += whitespace * whitespacesBeforeAfter*2;
+		
+		return cursorRect;
+	}
 
 
 	//____ textDirection() ____________________________________________________

@@ -1081,8 +1081,10 @@ namespace wg
 			std::swap(beg, end);
 
 		RectSPX niceToHave = _layout()->rectForRange(this, beg, end - beg);
-		RectSPX mustHave = _layout()->rectForCaret(this);
+		RectSPX mustHave = _layout()->rectForCaretWithMargin(this, 3);
 
+		niceToHave = RectSPX::bounds(niceToHave,mustHave);
+		
 		_requestVisibility(mustHave, niceToHave);
 	}
 

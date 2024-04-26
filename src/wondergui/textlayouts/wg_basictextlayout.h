@@ -111,6 +111,7 @@ namespace wg
 
 		virtual RectSPX	rectForRange( const TextItem * pText, int ofs, int length ) const override;
 		virtual RectSPX	rectForCaret( const TextItem * pText ) const override;
+		virtual RectSPX	rectForCaretWithMargin( const TextItem * pText, int whitespacesBeforeAfter ) const override;
 
 		virtual String 	tooltip( const TextItem * pText ) const override;
 
