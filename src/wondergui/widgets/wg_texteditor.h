@@ -110,6 +110,8 @@ namespace wg
 
 		bool			_markTest(const CoordSPX& ofs) override;
 
+		void			_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData ) override;
+
 		
 		KeyAction	m_returnKeyAction = KeyAction::Insert;
 		KeyAction	m_tabKeyAction = KeyAction::Insert;

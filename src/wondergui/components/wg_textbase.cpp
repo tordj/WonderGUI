@@ -190,47 +190,47 @@ namespace wg
 	{
 		int removed = m_charBuffer.length();
 		m_charBuffer.clear();
-		_layout()->onTextModified(this, 0, removed, 0);
+		_modified(0, removed, 0);
 	}
 
 	//___ _setText() ____________________________________________________________________
 
 	void TextBase::_setText(const CharSeq& seq)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
 
 		int removed = m_charBuffer.length();
 		m_charBuffer = seq;
-		_layout()->onTextModified(this, 0, removed, m_charBuffer.length());
+		_modified(0, removed, m_charBuffer.length());
 	}
 
 	void TextBase::_setText(const CharBuffer * buffer)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
 
 		int removed = m_charBuffer.length();
 		m_charBuffer = *buffer;
-		_layout()->onTextModified(this, 0, removed, m_charBuffer.length());
+		_modified(0, removed, m_charBuffer.length());
 	}
 
 	void TextBase::_setText(const String& str)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
 
 		int removed = m_charBuffer.length();
 		m_charBuffer = str;
-		_layout()->onTextModified(this, 0, removed, m_charBuffer.length());
+		_modified(0, removed, m_charBuffer.length());
 	}
 
 	//____ _append() ________________________________________________________________
 
 	int TextBase::_append(const CharSeq& seq)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
 
 		int ofs = m_charBuffer.length();
 		int len = m_charBuffer.pushBack(seq);
-		_layout()->onTextModified(this, ofs, 0, len);
+		_modified(ofs, 0, len);
 		return len;
 	}
 
@@ -238,10 +238,10 @@ namespace wg
 
 	int TextBase::_insert(int ofs, const CharSeq& seq)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
 
 		int len = m_charBuffer.insert(ofs, seq);
-		_layout()->onTextModified(this, ofs, 0, seq.length());
+		_modified(ofs, 0, seq.length());
 		return len;
 	}
 
@@ -249,10 +249,10 @@ namespace wg
 
 	int TextBase::_replace(int ofs, int nDelete, const CharSeq& seq)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
 
 		int diff = m_charBuffer.replace(ofs, nDelete, seq);
-		_layout()->onTextModified(this, ofs, nDelete, seq.length());
+		_modified(ofs, nDelete, seq.length());
 		return diff;
 	}
 
@@ -260,10 +260,10 @@ namespace wg
 
 	int TextBase::_erase(int ofs, int len)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
 
 		int removed = m_charBuffer.remove(ofs, len);
-		_layout()->onTextModified(this, ofs, len, 0);
+		_modified(ofs, len, 0);
 		return removed;
 	}
 
@@ -302,6 +302,14 @@ namespace wg
 		_requestRender(rect);
 	}
 
+	//____ _modified() _________________________________________________________
 
+	void TextBase::_modified( int ofs, int deleted, int inserted )
+	{
+		_layout()->onTextModified(this, ofs, deleted, inserted);
+
+		NotifData notif = { ofs, deleted, inserted };
+		_notify(ComponentNotif::TextModified, 0, &notif);
+	}
 
 } // namespace wg

@@ -43,6 +43,7 @@ public:
 
 	TextStyle_p		m_pTextStyle;
 	TextStyle_p		m_pLabelStyle;
+	TextStyle_p		m_pEditorStyle;
 
 	TextLayout_p	m_pTextLayoutCentered;
 

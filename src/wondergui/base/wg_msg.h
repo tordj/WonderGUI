@@ -1028,29 +1028,32 @@ namespace wg
 	//____ TextEditMsg _________________________________________________________
 
 	class TextEditMsg : public Msg
-	{
-	public:
-		//.____ Creation __________________________________________
-
-		inline static TextEditMsg_p create( const EditableText_p& pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
-
-		//.____ Identification __________________________________________
-
-		const TypeInfo&		typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
-		//.____ Content ________________________________________________________
-
-		EditableText_p		text() const;
-		bool				isFinal() const;
-
+{
+public:
+	//.____ Creation __________________________________________
+	
+	inline static TextEditMsg_p create( EditableText * pText, int offset, int deleted, int inserted ) { return new TextEditMsg( pText, offset, deleted, inserted ); }
+	
+	//.____ Identification __________________________________________
+	
+	const TypeInfo&		typeInfo(void) const override;
+	const static TypeInfo	TYPEINFO;
+	
+	//.____ Content ________________________________________________________
+	
+	EditableText_p		text() const;
+	int					offset() const { return m_offset; }
+	int					deleted() const { return m_nbDeleted; }
+	int					inserted() const { return m_nbInserted; }
+		
 	protected:
-		TextEditMsg( const EditableText_p& pText, bool bFinal );
+		TextEditMsg( EditableText * pText, int offset, int deleted, int inserted );
 
-		EditableText_p		m_pText;
-		bool				m_bFinal;
+		EditableText *		m_pText;
+		int					m_offset;
+		int					m_nbDeleted;
+		int					m_nbInserted;
 	};
-
 
 	//____ ItemInfo _______________________________
 

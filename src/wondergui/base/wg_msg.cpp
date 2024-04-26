@@ -855,20 +855,17 @@ namespace wg
 
 	EditableText_p TextEditMsg::text() const
 	{
-		return m_pText;
+		return EditableText_p(m_pSource,*m_pText);
 	}
 
-	TextEditMsg::TextEditMsg( const EditableText_p& pText, bool bFinal )
+	TextEditMsg::TextEditMsg( EditableText * pText, int offset, int deleted, int inserted )
 	{
 		m_type 		= MsgType::TextEdit;
 		m_pSource 	= pText->_widget();
 		m_pText 	= pText;
-		m_bFinal	= bFinal;
-	}
-
-	bool TextEditMsg::isFinal() const
-	{
-		return m_bFinal;
+		m_offset	= offset;
+		m_nbDeleted = deleted;
+		m_nbInserted = inserted;
 	}
 
 	const TypeInfo& TextEditMsg::typeInfo(void) const

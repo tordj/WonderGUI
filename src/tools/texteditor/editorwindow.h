@@ -36,9 +36,10 @@ protected:
 	~EditorWindow();
 
 	bool			_setupGUI();
-	Widget_p 		_createTopBar();
+	Widget_p		_createTopBar();
 
-	
+	void			_contentModified(Msg * pMsg);
+
 	void			_clear();
 	bool			_selectAndLoadFile();
 	bool			_selectAndSaveFile();
@@ -50,6 +51,9 @@ protected:
 
 	RootPanel_p		m_pRootPanel;
 	TextEditor_p	m_pEditor;
+
+	Button_p		m_pSaveButton;
+	Button_p		m_pSaveAsButton;
 
 	std::string		m_title;
 	std::string		m_path;

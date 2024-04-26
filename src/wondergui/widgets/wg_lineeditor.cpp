@@ -273,5 +273,16 @@ namespace wg
 		}
 	}
 
+	//____ _receiveComponentNotif() ______________________________________________
+
+	void LineEditor::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
+	{
+		if( notification == ComponentNotif::TextModified )
+		{
+			auto p = static_cast<TextBase::NotifData*>(pData);
+			
+			Base::msgRouter()->post(TextEditMsg::create(&editor, p->offset, p->deleted, p->inserted));
+		}
+	}
 
 } // namespace wg

@@ -111,6 +111,8 @@ namespace wg
 		void			_componentRequestResize( const Component * pComponent ) override;
 		void			_componentRequestInView(const Component * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave) override;
 
+		void			_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData ) override;
+
 	private:
 
 		spx				m_textScrollOfs;

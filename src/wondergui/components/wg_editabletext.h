@@ -106,7 +106,7 @@ namespace wg
 		void			_render(GfxDevice* pDevice, const RectSPX& _canvas) override;
 		void			_receive(Msg* pMsg) override;
 		void			_setState(State state) override;
-
+		
 	protected:
 
 		// Overloaded so we can update caret and selection
@@ -166,7 +166,7 @@ namespace wg
 			Mouse,
 			ApiCall
 		};
-
+		
 
 		bool			_moveCaret( int caretOfs, MoveMethod method );
 		void			_updateDisplayArea();

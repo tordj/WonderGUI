@@ -89,7 +89,9 @@ bool MyApp::setupGUI()
 									_.size = 16,
 									_.color = Color8::Black));
 
-
+	m_pEditorStyle = m_pTextStyle;
+					
+		
 	Base::setDefaultStyle(m_pTextStyle);
 
 	m_pTextLayoutCentered = BasicTextLayout::create(WGBP(BasicTextLayout,
@@ -201,10 +203,10 @@ bool MyApp::createEditorWindow( const std::string& windowTitle, const std::strin
 
 Button_p MyApp::createButton(const char* label)
 {
-	return Button::create(WGBP(Button,
-		_.skin = m_pButtonSkin,
-		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = label)
-	));
+	return Button::create({
+		.skin = m_pButtonSkin,
+		.label = { .layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = label }
+	});
 }
 
 //____ createScrollPanel() ____________________________________________________
@@ -228,7 +230,7 @@ ScrollPanel_p MyApp::createScrollPanel()
 	pScrollPanel->setAutohideScrollbars(true, true);
 	pScrollPanel->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
 
-	pScrollPanel->setTransition(CoordTransition::create(3000000));
+	pScrollPanel->setTransition(CoordTransition::create(300000));
 	
 	
 	return pScrollPanel;

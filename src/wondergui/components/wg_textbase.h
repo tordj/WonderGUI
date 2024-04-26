@@ -85,6 +85,13 @@ namespace wg
 
 		virtual int			_charAtPos(CoordSPX pos) const;
 
+		struct		NotifData
+		{
+			int offset;
+			int	deleted;
+			int inserted;
+		};
+		
 	protected:
 
 		virtual void		_clear();
@@ -109,6 +116,8 @@ namespace wg
 
 
 		virtual RectSPX		_rectForRange( int ofs, int length ) const;
+
+		void				_modified( int ofs, int deleted, int inserted );
 
 
 		// Needed by Text

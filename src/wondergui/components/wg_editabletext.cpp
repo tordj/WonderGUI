@@ -769,7 +769,7 @@ namespace wg
 
 			if( beg > end )
 				std::swap( beg, end );
-
+			
 			retVal = replace( beg, end-beg, &buffer );
 			
 			int newPos = beg + buffer.length();
@@ -777,9 +777,11 @@ namespace wg
 			m_editState.selectOfs = newPos;
 		}
 		else													// Just insert the put content
+		{
 			retVal = insert( m_editState.caretOfs, &buffer );
-
+		}
 //		_updateDisplayArea();		// Already done in both replace() and insert().
+
 		return retVal;
 	}
 
@@ -1090,7 +1092,6 @@ namespace wg
 	{
 
 	}
-
 
 
 } // namespace wg

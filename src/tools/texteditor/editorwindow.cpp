@@ -60,8 +60,11 @@ bool EditorWindow::_setupGUI()
 
 	// Create our TextEditor widget
 
-	auto pTextEditor = TextEditor::create( { .skin = m_pApp->m_pSectionSkin });
+	auto pTextEditor = TextEditor::create( { 	.editor = { .style = m_pApp->m_pEditorStyle },
+												.skin = m_pApp->m_pSectionSkin });
 
+	Base::msgRouter()->addRoute(pTextEditor, MsgType::TextEdit, [this](Msg * pMsg) { this->_contentModified(pMsg); } );
+	
 
 	// Create and setup a scrollpanel to wrap the text editor.
 
@@ -122,6 +125,9 @@ Widget_p EditorWindow::_createTopBar()
 	Base::msgRouter()->addRoute(pSaveButton, MsgType::Select, [this](Msg* pMsg) {this->_saveFile(); });
 	Base::msgRouter()->addRoute(pSaveAsButton, MsgType::Select, [this](Msg* pMsg) {this->_selectAndSaveFile(); });
 
+	m_pSaveButton = pSaveButton;
+	m_pSaveAsButton = pSaveAsButton;
+	
 	return pBar;
 }
 
@@ -193,5 +199,15 @@ bool EditorWindow::_saveFile()
 	
 	
 	return false;
+}
+
+//____ _contentModified() ____________________________________________________
+
+void EditorWindow::_contentModified(Msg* pMsg)
+{
+	bool bDisableSave = m_pEditor->editor.length() == 0;
+	
+	m_pSaveButton->setDisabled(bDisableSave);
+	m_pSaveAsButton->setDisabled(bDisableSave);
 }
 
