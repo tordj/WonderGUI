@@ -180,7 +180,7 @@ void WgTooltipLayer::_openTooltip()
         Placement& placement = m_activePlacement;
 
         WgRect center = placement.bTooltipAroundPointer ? WgRect(m_hoverPos) : hoveredGeo;
-        center += placement.spacing;
+        center += (placement.spacing * m_scale) / WG_SCALE_BASE;
 
         WgCoord tooltipPos;
 
