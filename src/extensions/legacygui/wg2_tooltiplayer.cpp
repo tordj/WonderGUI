@@ -177,6 +177,12 @@ void WgTooltipLayer::_openTooltip()
         pWidget->_setScale(m_scale);
         WgSize tooltipSize = pWidget->PreferredPixelSize();
 
+		if( tooltipSize.w > m_size.w )
+		{
+			tooltipSize.w = m_size.w;
+			tooltipSize.h = pWidget->MatchingPixelHeight(m_size.w);
+		}
+		
         Placement& placement = m_activePlacement;
 
         WgRect center = placement.bTooltipAroundPointer ? WgRect(m_hoverPos) : hoveredGeo;
