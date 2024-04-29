@@ -239,6 +239,9 @@ namespace wg
 
 	void InputHandler::setPointer( Root * pRoot, Coord pos, int64_t timestamp )
 	{
+		if( pos == m_pointerPos )
+			return;
+		
 		Coord	prevPointerPos = m_pointerPos;
 		CoordSPX	prevPointerPosSPX = m_pointerPosSPX;
 
