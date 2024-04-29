@@ -113,13 +113,14 @@ namespace wg
 	
 		// We need to make sure our objects are destroyed before continuing.
 		
+		s_pGUIContext->pMsgRouter = nullptr;
+		s_pGUIContext->pInputHandler = nullptr;
+		s_pGUIContext->pSkinSlotManager = nullptr;
+
 		s_pGUIContext->pDefaultCaret = nullptr;
 		s_pGUIContext->pDefaultTextLayout = nullptr;
 		s_pGUIContext->pDefaultNumberLayout = nullptr;
 		s_pGUIContext->pDefaultPackLayout = nullptr;
-		s_pGUIContext->pMsgRouter = nullptr;
-		s_pGUIContext->pInputHandler = nullptr;
-		s_pGUIContext->pSkinSlotManager = nullptr;
 
 		s_pGUIContext = nullptr;
 		
