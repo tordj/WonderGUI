@@ -84,7 +84,7 @@ namespace wg
 		int nLines = _countLines( pText, pChars );
 
 		_setTextDataBlock(pText,nullptr);					// Make sure pointer is null for the realloc call.
-		void * pBlock = _reallocBlock(pText,nLines, _scale(pText), {-1,-1}, {-1,-1} );
+		void * pBlock = _reallocBlock(pText,nLines, _scale(pText), _hasCharStyles(pChars), {-1,-1}, {-1,-1} );
 
 		_updateLineInfo( pText, pBlock, pChars, true );
 	}
@@ -735,6 +735,15 @@ namespace wg
 				}
 			}
 		}
+		
+		// Check if we might need to requestRender because of state change.
+		
+		//TODO: Optimize: Go through and check all char styles to see if we need to setTextDirty.
+		
+		auto bHasCharStyles = _header(_dataBlock(pText))->hasCharStyles;
+
+		if( bHasCharStyles || !_baseStyle(pText)->isStateIdentical(newState, oldState) )
+			_setTextDirty(pText);
 	}
 
 	//____ onStyleChanged() ______________________________________________________
@@ -776,10 +785,12 @@ namespace wg
 
 		void * pBlock = _dataBlock(pText);
 		if( !pBlock || _header(pBlock)->nbLines != nLines )
-			pBlock = _reallocBlock(pText,nLines, _scale(pText), _header(pBlock)->defaultSize, _header(pBlock)->textSize);
+			pBlock = _reallocBlock(pText,nLines, _scale(pText), _hasCharStyles(pChars), _header(pBlock)->defaultSize, _header(pBlock)->textSize);
 
 		_updateLineInfo( pText, pBlock, pChars, bAllowRequestResize );
 		_setTextDirty(pText);
+		
+		_header(pBlock)->hasCharStyles = _hasCharStyles(pChars);
 	}
 
 	//___ rectForRange() _________________________________________________________
@@ -1051,6 +1062,19 @@ namespace wg
 			return _countWrapLines(pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
 		else
 			return _countFixedLines(pChars);
+	}
+
+	//____ _hasCharStyles() ______________________________________________________
+
+	bool BasicTextLayout::_hasCharStyles( const Char * pChars ) const
+	{
+		while( !pChars->isEndOfText() )
+		{
+			if( pChars->styleHandle() != 0 )
+				return true;
+			pChars++;
+		}
+		return false;
 	}
 
 	//____ _countFixedLines() ___________________________________________________________
@@ -1399,7 +1423,7 @@ namespace wg
 
 	//____ _reallocBlock() _________________________________________________________
 
-	void * BasicTextLayout::_reallocBlock( TextItem * pText, int nLines, int scaleUsed, SizeSPX defaultSize, SizeSPX textSize )
+	void * BasicTextLayout::_reallocBlock( TextItem * pText, int nLines, int scaleUsed, bool bHasCharStyles, SizeSPX defaultSize, SizeSPX textSize )
 	{
 		void * pBlock = _dataBlock(pText);
 		if( pBlock )
@@ -1412,6 +1436,7 @@ namespace wg
 		((BlockHeader *)pBlock)->scaleUsed = scaleUsed;
 		((BlockHeader *)pBlock)->defaultSize = defaultSize;
 		((BlockHeader *)pBlock)->textSize = textSize;
+		((BlockHeader *)pBlock)->hasCharStyles = bHasCharStyles;
 
 		return pBlock;
 	}
@@ -1823,6 +1848,8 @@ namespace wg
 			else
 				pChars++;
 		}
+		
+		
 		return alignUp(size);
 	}
 

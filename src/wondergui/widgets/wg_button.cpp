@@ -108,14 +108,14 @@ namespace wg
 
 	void Button::_setState( State state )
 	{
-		//if (!_icon().isEmpty())
-		//{
-		//	//TODO: Remove once icon uses CSkinSlot.
-		//	_requestRender();
-		//}
+		if (!_icon().isEmpty())
+		{
+			//TODO: Remove once icon uses CSkinSlot.
+			_requestRender();
+		}
+
 		label._setState(state);
 		Widget::_setState(state);
-		_requestRender();
 	}
 
 	//____ _resize() ____________________________________________________________

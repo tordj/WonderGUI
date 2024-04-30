@@ -239,6 +239,9 @@ namespace wg
 
 	void InputHandler::setPointer( Root * pRoot, Coord pos, int64_t timestamp )
 	{
+		//TODO: How should we actually handle if pRoot == null?
+		
+		
 		if( pos == m_pointerPos )
 			return;
 		
@@ -250,7 +253,7 @@ namespace wg
 
 		m_pointerPos = pos;
 		m_pMarkedRoot = pRoot;
-		m_pointerPosSPX = Util::ptsToSpx(pos, pRoot->scale());
+		m_pointerPosSPX = Util::ptsToSpx(pos, pRoot ? pRoot->scale() : 64);
 
 		Widget_p pNowMarked = 0;
 		Widget_p pWidgetTarget = 0;

@@ -140,6 +140,7 @@ namespace wg
 			int scaleUsed;				// Scale used for calculating defaultSize and textSize.
 			SizeSPX defaultSize;
 			SizeSPX textSize;
+			bool hasCharStyles;
 		};
 
 		struct LineInfo
@@ -159,12 +160,13 @@ namespace wg
 		inline void		_getGlyphWithBitmap(Font* pFont, uint16_t charCode, Glyph& glyph) const;
 
 		int				_countLines( TextItem * pText, const Char * pChars ) const;
-
+		bool			_hasCharStyles( const Char * pChars ) const;
+		
 		int				_countFixedLines(const Char * pChars) const;
 		int				_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
 		spx				_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
 
-		void *			_reallocBlock( TextItem * pText, int lines, int scaleUsed, SizeSPX defaultSize, SizeSPX textSize );
+		void *			_reallocBlock( TextItem * pText, int lines, int scaleUsed, bool bHasCharStyles, SizeSPX defaultSize, SizeSPX textSize );
 
 		void			_updateLineInfo(TextItem * pText, void * pBlock, const Char * pChars, bool bAllowRequestResize );
 
