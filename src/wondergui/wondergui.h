@@ -35,6 +35,7 @@
 #include <wg_bitmapcache.h>
 #include <wg_bitmapfont.h>
 #include <wg_blob.h>
+#include <wg_blockingcapsule.h>
 #include <wg_blockskin.h>
 #include <wg_blockslideskin.h>
 #include <wg_boxskin.h>

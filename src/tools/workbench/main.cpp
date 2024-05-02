@@ -84,6 +84,8 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 bool	bQuit = false;
 
 BlockSkin_p m_pSimpleButtonSkin;
+BlockSkin_p m_pPressablePlateSkin;
+
 FreeTypeFont_p m_pFont;
 
 MyHostBridge * g_pHostBridge = nullptr;
@@ -154,6 +156,7 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot);
 bool scrollPanelTest(ComponentPtr<DynamicSlot> pEntry);
 bool packPanelStressTest(ComponentPtr<DynamicSlot> pEntry);
 bool packPanelStressTest2(ComponentPtr<DynamicSlot> pEntry);
+bool blockingCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -626,7 +629,7 @@ int main(int argc, char** argv)
 		Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGR_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 		SDL_FreeSurface(pSDLSurf);
 		//	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { State::Default, State::Hovered, State::Pressed, State::Disabled }, Border(3), Axis::X);
-		auto pPressablePlateSkin = BlockSkin::create(BlockSkin::Blueprint
+		m_pPressablePlateSkin = BlockSkin::create(BlockSkin::Blueprint
 		{
 			.axis = Axis::X,
 				.frame = 3,
@@ -768,7 +771,9 @@ int main(int argc, char** argv)
 		//  scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
 		//	packPanelStressTest(pSlot);
-			packPanelStressTest2(pSlot);
+		//	packPanelStressTest2(pSlot);
+			blockingCapsuleTest(pSlot);
+
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -3884,3 +3889,68 @@ bool packPanelStressTest2(ComponentPtr<DynamicSlot> pEntry)
 
 	return true;
 }
+
+//____ blockingCapsuleTest() ______________________________________________________
+
+bool blockingCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pPaneSkin = m_pPressablePlateSkin;
+	
+	auto pPane1 = Filler::create( { .skin = pPaneSkin });
+	auto pPane2 = Filler::create( { .skin = pPaneSkin });
+
+	auto pButtonSkin = m_pSimpleButtonSkin;
+
+	auto pCopyButton = Button::create( {
+		.label = { .text = "COPY" },
+		.skin = pButtonSkin
+	 });
+
+	auto pMoveButton = Button::create( {
+		.label = { .text = "MOVE" },
+		.skin = pButtonSkin
+	 });
+
+	auto pDeleteButton = Button::create( {
+		.label = { .text = "DELETE" },
+		.skin = pButtonSkin
+	 });
+
+	auto pMyMenubar = Filler::create( { .defaultSize = { 20, 20}, .skin = ColorSkin::create( {.color = Color8::Grey }) });
+
+	// The PackPanel way.
+	
+	PackLayout_p pLayout = PackLayout::create({ .expandFactor = PackLayout::Factor::Weight,
+												.shrinkFactor = PackLayout::Factor::Weight });
+
+	PackPanel_p pWindowPanel = PackPanel::create({ .axis = Axis::Y, .layout = pLayout });
+	PackPanel_p pMainSection = PackPanel::create({ .axis = Axis::X, .layout = pLayout, .skin = ColorSkin::create({.color = Color::Transparent, .padding = 5 }), .spacing = 5 });
+	PackPanel_p pButtonColumn = PackPanel::create({ .axis = Axis::Y, .layout = pLayout });
+
+	pButtonColumn->slots.pushBack({ {Filler::create(), {} },
+									{pCopyButton, {.weight = 0.f }},
+									{pMoveButton, {.weight = 0.f }},
+									{pDeleteButton, {.weight = 0.f }},
+									{Filler::create(), {} }
+		});
+
+	pMainSection->slots.pushBack({ {pPane1, {} },
+								   {pButtonColumn, {.weight = 0.f } },
+								   {pPane2, {} }
+		});
+
+	pWindowPanel->slots.pushBack({ {pMyMenubar, {.weight = 0.f}},
+								   {pMainSection, {} }
+		});
+
+	
+	auto pBlockingCapsule = BlockingCapsule::create();
+	pBlockingCapsule->blocked = { pCopyButton.rawPtr(), pDeleteButton.rawPtr() };
+	
+	pBlockingCapsule->slot = pWindowPanel;
+	
+	*pEntry = pBlockingCapsule;
+
+	return true;
+}
+

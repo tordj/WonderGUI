@@ -213,6 +213,8 @@ set( SOURCES
 	widgets/wg_widget.cpp
 	widgets/wg_widget.h
 
+	widgets/capsules/wg_blockingcapsule.cpp
+	widgets/capsules/wg_blockingcapsule.h
 	widgets/capsules/wg_canvascapsule.cpp
 	widgets/capsules/wg_canvascapsule.h
 	widgets/capsules/wg_capsule.cpp

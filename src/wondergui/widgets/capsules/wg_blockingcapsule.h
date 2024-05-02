@@ -19,35 +19,27 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_SCALECAPSULE_DOT_H
-#define WG_SCALECAPSULE_DOT_H
+#ifndef WG_BLOCKINGCAPSULE_DOT_H
+#define WG_BLOCKINGCAPSULE_DOT_H
 #pragma once
 
+#include <vector>
+
 #include <wg_capsule.h>
+
 
 //TODO: Need to support skin padding.
 
 namespace wg
 {
 
-	class ScaleCapsule;
-	typedef	StrongPtr<ScaleCapsule>		ScaleCapsule_p;
-	typedef	WeakPtr<ScaleCapsule>		ScaleCapsule_wp;
+	class BlockingCapsule;
+	typedef	StrongPtr<BlockingCapsule>		BlockingCapsule_p;
+	typedef	WeakPtr<BlockingCapsule>		BlockingCapsule_wp;
 
-	//____ ScaleCapsule ________________________________________________________
-	/**
-	* @brief	A widget that controls the scale of size of a single child.
-	*
-	* The ScaleCapsule is used to change the size of a widget. This is done either by imposing
-	* limits on its minimum and maximum size or by setting a specific default size.
-	*
-	* Width and height can be controlled separately
-	* The ScaleCapsule overrides the min, max and default size reported by its child, thus
-	* affecting its geometry. Exactly how the geometry is affected depends on the parent widget.
-	*
-	*/
+	//____ BlockingCapsule ________________________________________________________
 
-	class ScaleCapsule : public Capsule
+	class BlockingCapsule : public Capsule
 	{
 	public:
 
@@ -55,13 +47,13 @@ namespace wg
 
 		struct Blueprint
 		{
-
 			Object_p		baggage;
 			Widget_p		child;
 			bool			disabled = false;
 			bool			dropTarget = false;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
+			bool			invertedBlock = false;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
@@ -76,57 +68,41 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static ScaleCapsule_p	create();
-		static ScaleCapsule_p	create(const Blueprint& blueprint);
+		static BlockingCapsule_p	create();
+		static BlockingCapsule_p	create(const Blueprint& blueprint);
 
+		//.____ Components _______________________________________
+
+		std::vector<Widget_wp>		blocked;
+		
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
-
-		bool				setScale(int scale);
-		inline void			clearScale() { setScale(0); }
-		inline bool			isScaleSet() const { return m_bScaleSet; }	
-
 		//.____ Internal _________________________________________________
 
-		spx		_matchingHeight(spx width, int scale) const override;
-		spx		_matchingWidth(spx height, int scale) const override;
-
-		SizeSPX	_defaultSize(int scale) const override;
-		SizeSPX	_minSize(int scale) const override;
-		SizeSPX	_maxSize(int scale) const override;
+		Widget* _findWidget(const CoordSPX& ofs, SearchMode mode) override;
 
 
 	protected:
-		ScaleCapsule();
+		BlockingCapsule();
 		
-		template<class BP> ScaleCapsule( const BP& bp ) : Capsule(bp)
+		template<class BP> BlockingCapsule( const BP& bp ) : Capsule(bp)
 		{
-			if (bp.scale != 0)
-			{
-				m_scale = bp.scale;
-				m_bScaleSet = true;
-			}
-
+			m_bInvertedBlock = bp.invertedBlock;
+			
 			if (bp.child)
 				slot.setWidget(bp.child);
 		}
 		
-		virtual ~ScaleCapsule();
-
-		void		_resize(const SizeSPX& size, int scale) override;
-
-
+		virtual ~BlockingCapsule();
+		
 	private:
-
-		bool			m_bScaleSet = false;
-		uint16_t		m_scaleFromParent = 64;
 	
+		bool	m_bInvertedBlock = false;
 	};
 
 
 } // namespace wg
-#endif //WG_SCALECAPSULE_DOT_H
+#endif //WG_BLOCKINGCAPSULE_DOT_H
