@@ -265,7 +265,7 @@ set( SOURCES
 
 
 set(INCDIRS
-	${WONDERGLYPHS_INCDIRS}
+	${WONDERGFX_INCDIRS}
 	${CMAKE_CURRENT_LIST_DIR}
 	${CMAKE_CURRENT_LIST_DIR}/base/
 	${CMAKE_CURRENT_LIST_DIR}/c-api/
@@ -290,7 +290,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 add_library( wondergui STATIC ${SOURCES} )
 target_include_directories(wondergui PRIVATE ${INCDIRS} )
-target_link_libraries(wondergui PUBLIC wonderglyphs )
+target_link_libraries(wondergui PUBLIC wondergfx )
 
 list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
 set(WONDERGUI_SOURCES ${SOURCES} PARENT_SCOPE)

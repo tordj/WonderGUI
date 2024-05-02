@@ -26,13 +26,16 @@
 #include <wondergear_c.h>
 
 #include <wg_c_bitmapcache.h>
+#include <wg_c_bitmapfont.h>
 #include <wg_c_canvaslayers.h>
 #include <wg_c_color.h>
+#include <wg_c_font.h>
 #include <wg_c_geo.h>
 #include <wg_c_gfxbase.h>
 #include <wg_c_gfxdevice.h>
 #include <wg_c_gfxtypes.h>
 #include <wg_c_gradient.h>
+#include <wg_c_printer.h>
 #include <wg_c_surface.h>
 #include <wg_c_surfacefactory.h>
 #include <wg_c_surfacereader.h>

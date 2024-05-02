@@ -115,7 +115,6 @@ endif()
 
 add_subdirectory(wondergear)
 add_subdirectory(wondergfx)
-add_subdirectory(wonderglyphs)
 add_subdirectory(wondergui)
 
 if(APPLE)

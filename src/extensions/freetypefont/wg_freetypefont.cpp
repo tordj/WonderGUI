@@ -31,7 +31,7 @@
 #include <wg_freetypefont.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
-#include <wg_glyphsutil.h>
+#include <wg_gfxutil.h>
 
 
 #include <ft2build.h>

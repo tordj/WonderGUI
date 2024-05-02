@@ -21,7 +21,7 @@ target_compile_options(embeddedworkbench PRIVATE -lm -lstd=c99)
 target_working_directory(embeddedworkbench ${CMAKE_CURRENT_LIST_DIR} )
 
 target_include_directories(embeddedworkbench PRIVATE
-	${WONDERGLYPHS_INCDIRS}
+	${WONDERGFX_INCDIRS}
 	${WGSOFTGFX_INCDIRS}
 	${SDL2_INCDIR}
 )
@@ -32,7 +32,7 @@ target_link_directories(embeddedworkbench PRIVATE
 
 target_link_libraries(embeddedworkbench PRIVATE
 
-	wonderglyphs
+	wondergfx
 	wgsoftgfx	
 	${SDL2_LIBS}
 )

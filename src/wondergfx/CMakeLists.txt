@@ -3,16 +3,22 @@ set( SOURCES
 
 	wg_bitmapcache.cpp
 	wg_bitmapcache.h
+	wg_bitmapfont.cpp
+	wg_bitmapfont.h
 	wg_canvaslayers.cpp
 	wg_canvaslayers.h
 	wg_color.cpp
 	wg_color.h
+	wg_dummyfont.cpp
+	wg_dummyfont.h
 	wg_edgemap.cpp
 	wg_edgemap.h
 	wg_edgemapfactory.cpp
 	wg_edgemapfactory.h
 	wg_edgemaptools.cpp
 	wg_edgemaptools.h
+	wg_font.cpp
+	wg_font.h	
 	wg_geo.cpp
 	wg_geo.h
 	wg_gfxbase.cpp
@@ -26,12 +32,16 @@ set( SOURCES
 	wg_gfxutil.h
 	wg_gradient.cpp
 	wg_gradient.h
+	wg_gridwalker.cpp
+	wg_gridwalker.h
 	wg_nullgfxdevice.cpp
 	wg_nullgfxdevice.h
 	wg_patches.cpp
 	wg_patches.h
 	wg_pixeltools.cpp
 	wg_pixeltools.h
+	wg_printer.cpp
+	wg_printer.h
 	wg_surface.cpp
 	wg_surface.h
 	wg_surfacefactory.cpp
@@ -43,6 +53,8 @@ set( SOURCES
 	wg_surfacereader.h
 	wg_surfacewriter.cpp
 	wg_surfacewriter.h
+	wg_sysfont.cpp
+	wg_sysfont.h
 	wg_transitions.cpp
 	wg_transitions.h
 	wg_waveform.cpp
@@ -51,10 +63,14 @@ set( SOURCES
 
 	c-api/wg_c_bitmapcache.cpp
 	c-api/wg_c_bitmapcache.h
+	c-api/wg_c_bitmapfont.cpp
+	c-api/wg_c_bitmapfont.h	
 	c-api/wg_c_canvaslayers.cpp
 	c-api/wg_c_canvaslayers.h
 	c-api/wg_c_color.cpp
 	c-api/wg_c_color.h
+	c-api/wg_c_font.cpp
+	c-api/wg_c_font.h	
 	c-api/wg_c_geo.cpp
 	c-api/wg_c_geo.h
 	c-api/wg_c_gfxbase.cpp
@@ -68,6 +84,8 @@ set( SOURCES
 	c-api/wg_c_gradient.h
 	c-api/wg_c_internal.cpp
 	c-api/wg_c_internal.h
+	c-api/wg_c_printer.cpp
+	c-api/wg_c_printer.h
 	c-api/wg_c_surface.cpp
 	c-api/wg_c_surface.h
 	c-api/wg_c_surfacefactory.cpp
@@ -81,7 +99,6 @@ set( SOURCES
 	c-api/wg_c_edgemapfactory.cpp
 	c-api/wg_c_edgemapfactory.h
 	c-api/wondergfx_c.h
-
 )
 
 set(INCDIRS

@@ -32,9 +32,63 @@
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
-#include <wg_glyphsutil.h>
 #include <wg_bitmapfont.h>
 #include <wg_gridwalker.h>
+
+
+inline int readUTF8Char( const char *& _pStr )
+{
+	const uint8_t *& pStr = (const uint8_t *&) _pStr;
+
+	int g = * pStr++;
+	if( g < 128 )
+		return g;											// 1 byte character (7 bits data).
+
+	if( (g & 0xE0) == 0xC0 )					// 2 bytes character (11 bits data).
+	{
+		uint8_t c1 = pStr[0];
+		if( (c1 & 0xC0) != 0x80 )
+			return 0xFFFD;
+		
+		pStr += 1;
+		return ((g & 0x1F) << 6) | int(c1 & 0x3F);
+	}
+	else if( (g & 0xF0) == 0xE0 )			// 3 bytes character (16 bits data).
+	{
+		uint8_t c1 = pStr[0];
+		if( (c1 & 0xC0) != 0x80 )
+			return 0xFFFD;
+
+		uint8_t c2 = pStr[1];
+		if( (c2 & 0xC0) != 0x80 )
+			return 0xFFFD;
+
+		pStr += 2;
+		return ((g & 0x0F) << 12) | (int(c1 & 0x3F) << 6) | int(c2 & 0x3F) ;
+	}
+	else if( (g & 0xF8) == 0xF0 )			// 4 bytes character (21 bits data).
+	{
+		uint8_t c1 = pStr[0];
+		if( (c1 & 0xC0) != 0x80 )
+			return 0xFFFD;
+
+		uint8_t c2 = pStr[1];
+		if( (c2 & 0xC0) != 0x80 )
+			return 0xFFFD;
+
+		uint8_t c3 = pStr[2];
+		if( (c3 & 0xC0) != 0x80 )
+			return 0xFFFD;
+
+		pStr += 3;
+		return ((g & 0x07) << 18) | (int(c1 & 0x3F) << 12) | (int(c2 & 0x3F) << 6) | int(c3 & 0x3F);
+	}
+	else
+		return 0xFFFD;					// Broken character (or more than 4 bytes which we don't support)
+
+	return g;
+}
+
 
 namespace wg
 {
@@ -237,7 +291,7 @@ namespace wg
 
 		const char* pChar = pCharmapBeg;
 		while ((*pChar == 10 || *pChar == 13) && pChar < pCharmapEnd)
-			Util::readUTF8Char(pChar);
+			readUTF8Char(pChar);
 
 
 		PixelBuffer pixelBuffer = pSurf->allocPixelBuffer();
@@ -252,7 +306,7 @@ namespace wg
 
 		while (pChar < pCharmapEnd)
 		{
-			uint16_t ch = Util::readUTF8Char(pChar);
+			uint16_t ch = readUTF8Char(pChar);
 
 			if (ch != 10 && ch != 13)
 			{

@@ -16,7 +16,7 @@ add_library( wgfreetypefont STATIC ${SOURCES} )
 
 target_include_directories(wgfreetypefont PRIVATE
     ${INCDIRS}
-    ${WONDERGLYPHS_INCDIRS}
+    ${WONDERGFX_INCDIRS}
     ${FREETYPE2_INCDIR}
 )
 

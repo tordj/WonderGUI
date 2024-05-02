@@ -24,7 +24,7 @@
 #define WG_UTIL_DOT_H
 #pragma once
 
-#include <wg_glyphsutil.h>
+#include <wg_gfxutil.h>
 #include <wg_types.h>
 #include <wg_geo.h>
 #include <wg_patches.h>
