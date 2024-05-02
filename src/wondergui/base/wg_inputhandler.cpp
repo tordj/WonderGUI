@@ -236,25 +236,20 @@ namespace wg
 
 	//____ setPointer() ___________________________________________________________
 
-
 	void InputHandler::setPointer( Root * pRoot, Coord pos, int64_t timestamp )
-	{
+{
 		//TODO: How should we actually handle if pRoot == null?
-		
-		
-		if( pos == m_pointerPos )
-			return;
-		
+				
 		Coord	prevPointerPos = m_pointerPos;
 		CoordSPX	prevPointerPosSPX = m_pointerPosSPX;
-
+		
 		if( timestamp == 0 )
 			timestamp = m_timeStamp;
-
+				
 		m_pointerPos = pos;
 		m_pMarkedRoot = pRoot;
 		m_pointerPosSPX = Util::ptsToSpx(pos, pRoot ? pRoot->scale() : 64);
-
+		
 		Widget_p pNowMarked = 0;
 		Widget_p pWidgetTarget = 0;
 
@@ -279,37 +274,50 @@ namespace wg
 		if( button == 0 || pWidgetTarget.rawPtr() == m_latestPressWidgets[button].rawPtr() )
 			pNowMarked = pWidgetTarget;
 
-		// Post Leave events for widgets no longer marked,
-		// Post Enter events for new marked widgets
-		// and Move events for those already marked
+		// Post Leave events for widgets no longer marked and
+		// post Enter events for new marked widgets.
 
 		Widget * pFirstAlreadyMarked = _updateEnteredWidgets( pNowMarked.rawPtr(), timestamp );
 
-		if (pFirstAlreadyMarked)
-		{
-			MouseMoveMsg_p p = MouseMoveMsg::create(m_inputId, pFirstAlreadyMarked, m_modKeys, pos, m_pointerPosSPX, timestamp);
-			p->setCopyTo(pFirstAlreadyMarked);
-			Base::msgRouter()->post(p);
-		}
 		// Copy content of pNowMarked to m_pMarkedWidget
 
 		m_pMarkedWidget = pNowMarked.rawPtr();
 
-		// Post events for button drag
 
-		for (int i = 0; i < MouseButton_size; i++)
+ 		if( pos != prevPointerPos )
 		{
-			//TODO: The pRoot-check is just a quick hack to prevent crashes. How should this really work?
+			m_bPointerMovedSinceUpdate = true;
 
-			if (m_bButtonPressed[i] && pRoot)
+			// Post Move events for those already marked
+
+			if (pFirstAlreadyMarked)
 			{
-				CoordSPX pressPosSPX = Util::ptsToSpx(m_latestPressPosition[i], pRoot->scale());
-
-				MouseDragMsg_p p = MouseDragMsg::create(m_inputId, (MouseButton)i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, pressPosSPX, prevPointerPosSPX, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
-				p->setCopyTo(m_latestPressWidgets[i].rawPtr());
+				//TODO: Ideally we should still post mouseMove messages to widgets that have moved even if pointer has not moved.
+				
+				MouseMoveMsg_p p = MouseMoveMsg::create(m_inputId, pFirstAlreadyMarked, m_modKeys, pos, m_pointerPosSPX, timestamp);
+				p->setCopyTo(pFirstAlreadyMarked);
 				Base::msgRouter()->post(p);
 			}
+
+			// Post events for button drag
+
+			if( pRoot) 		//TODO: The pRoot-check is just a quick hack to prevent crashes. How should this really work?
+			{
+				for (int i = 0; i < MouseButton_size; i++)
+				{
+					if (m_bButtonPressed[i])
+					{
+						CoordSPX pressPosSPX = Util::ptsToSpx(m_latestPressPosition[i], pRoot->scale());
+						
+						MouseDragMsg_p p = MouseDragMsg::create(m_inputId, (MouseButton)i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, pressPosSPX, prevPointerPosSPX, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
+						p->setCopyTo(m_latestPressWidgets[i].rawPtr());
+						Base::msgRouter()->post(p);
+					}
+				}
+			}
 		}
+		
+		
 		// Update PointerStyle
 
 		PointerStyle newStyle = PointerStyle::Undefined;
@@ -807,6 +815,11 @@ namespace wg
 		_handleKeyRepeats( timestamp );
 
 		m_timeStamp = timestamp;
+		
+		if( !m_bPointerMovedSinceUpdate )
+			setPointer(m_pMarkedRoot, m_pointerPos);
+
+		m_bPointerMovedSinceUpdate = false;
 	}
 
 	//____ _handleButtonRepeats() _________________________________________

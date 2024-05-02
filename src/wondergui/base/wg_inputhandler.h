@@ -194,6 +194,8 @@ namespace wg
 
 		// Settings for keyboard/pointer input
 
+		bool			m_bPointerMovedSinceUpdate = false;	// Keep track of if pointer has moved between calls to _update.
+		
 		int				m_doubleClickTimeTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
 		int				m_doubleClickDistanceTreshold;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
 
