@@ -191,7 +191,11 @@ namespace wg
 			"ModalBlockedPress",
 			"ModalBlockedRelease",
 			"PianoKeyPress",
-			"PianoKeyRelease" };
+			"PianoKeyRelease",
+			"Activate",
+			"Deactivate",
+			"Custom"
+		};
 
 		return names[(int)i];
 	}

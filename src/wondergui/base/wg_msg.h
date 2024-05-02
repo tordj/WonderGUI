@@ -258,6 +258,13 @@ namespace wg
 	typedef	StrongPtr<ModalBlockedReleaseMsg>		ModalBlockedReleaseMsg_p;
 	typedef	WeakPtr<ModalBlockedReleaseMsg>	ModalBlockedReleaseMsg_wp;
 
+	class ActivateMsg;
+	typedef	StrongPtr<ActivateMsg>		ActivateMsg_p;
+	typedef	WeakPtr<ActivateMsg>		ActivateMsg_wp;
+
+	class DeactivateMsg;
+	typedef	StrongPtr<DeactivateMsg>	DeactivateMsg_p;
+	typedef	WeakPtr<DeactivateMsg>		DeactivateMsg_wp;
 
 
 	//____ Msg _________________________________________________________________
@@ -1344,6 +1351,41 @@ public:
 	};
 
 
+	//____ ActivateMsg _____________________________________________________
+
+	class ActivateMsg : public Msg
+	{
+	public:
+		//.____ Creation __________________________________________
+
+		static ActivateMsg_p	create( Object * pSource ) { return new ActivateMsg(pSource); }
+
+		//.____ Identification __________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+	protected:
+			ActivateMsg( Object * pSource );
+	};
+
+	//____ DeactivateMsg _____________________________________________________
+
+	class DeactivateMsg : public Msg
+	{
+	public:
+		//.____ Creation __________________________________________
+
+		static DeactivateMsg_p	create( Object * pSource ) { return new DeactivateMsg(pSource); }
+
+		//.____ Identification __________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+	protected:
+			DeactivateMsg( Object * pSource );
+	};
 
 	//____ Internally posted messages ____________________________________________
 

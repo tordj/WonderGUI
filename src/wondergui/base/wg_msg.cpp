@@ -1097,6 +1097,36 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ ActivateMsg ___________________________________________________
+
+	const TypeInfo ActivateMsg::TYPEINFO = { "ActivateMsg", &Msg::TYPEINFO };
+
+	ActivateMsg::ActivateMsg(Object * pSource )
+	{
+		m_type = MsgType::Activate;
+		m_pSource = pSource;
+	}
+
+	const TypeInfo& ActivateMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	//____ DeactivateMsg ___________________________________________________
+
+	const TypeInfo DeactivateMsg::TYPEINFO = { "DeactivateMsg", &Msg::TYPEINFO };
+
+	DeactivateMsg::DeactivateMsg(Object * pSource )
+	{
+		m_type = MsgType::Deactivate;
+		m_pSource = pSource;
+	}
+
+	const TypeInfo& DeactivateMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
 
 	//____ PianoKeyReleaseMsg _________________________________________________
 

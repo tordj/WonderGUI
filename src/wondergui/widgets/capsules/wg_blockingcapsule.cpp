@@ -21,6 +21,8 @@
 =========================================================================*/
 
 #include <wg_blockingcapsule.h>
+#include <wg_base.h>
+#include <wg_msgrouter.h>
 
 #include <algorithm>
 
@@ -63,36 +65,77 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ setActive() ___________________________________________________________
+
+	void BlockingCapsule::setActive(bool bActive)
+	{
+		m_bActive = bActive;
+	}
+
+	//____ setInverted() _________________________________________________________
+
+	void BlockingCapsule::setInverted(bool bInverted)
+	{
+		m_bInverted = bInverted;
+	}
+
+	//____ setAutoDeactivate() ___________________________________________________
+
+	void BlockingCapsule::setAutoDeactivate(bool bAutoDeactivate)
+	{
+		m_bAutoDeactivate = bAutoDeactivate;
+	}
+
 	//____ _findWidget() _________________________________________________________
 
 	Widget*  BlockingCapsule::_findWidget(const CoordSPX& ofs, SearchMode mode)
 	{
 		Widget * pFound = Capsule::_findWidget(ofs,mode);
-
-		if( pFound == this || mode != SearchMode::ActionTarget)
+		
+		if( !m_bActive || pFound == this || mode != SearchMode::ActionTarget)
 			return pFound;
 
-		bool bInList = false;			// Set if found widget or its ancestor is in list.
-		for( auto& weakptr : blocked )
+
+		bool bInList = false;			// Set if area or found widget or its ancestor is in list.
+
+		// Check against blocked rectangles.
+		
+		Coord ptsOfs = Coord(ofs)/m_scale;
+		
+		for( auto& rect : blockedAreas )
 		{
-			Widget * pTarget = weakptr.rawPtr();
-			if( pTarget == nullptr )
-				continue;
-			
-			Widget * pWidget = pFound;
-			while( pWidget )
+			if( rect.contains(ptsOfs) )
 			{
-				if( pWidget == pTarget )
-				{
-					bInList = true;
-					break;
-				}
-				
-				pWidget = pWidget->parent();
+				bInList = true;
+				break;
 			}
 		}
-
-		bool bBlock = m_bInvertedBlock ? !bInList : bInList;
+				
+		// Check against blocked widgets.
+		
+		if( !bInList )
+		{
+			for( auto& weakptr : blockedWidgets )
+			{
+				Widget * pTarget = weakptr.rawPtr();
+				if( pTarget == nullptr )
+					continue;
+				
+				Widget * pWidget = pFound;
+				while( pWidget )
+				{
+					if( pWidget == pTarget )
+					{
+						bInList = true;
+						break;
+					}
+					
+					pWidget = pWidget->parent();
+				}
+			}
+		}
+			
+		bool bBlock = m_bInverted ? !bInList : bInList;
 		
 		if( bBlock )
 			return this;
@@ -100,5 +143,17 @@ namespace wg
 			return pFound;
 	}
 
+	//____ _receive() ____________________________________________________________
+
+	void BlockingCapsule::_receive(Msg* pMsg)
+	{
+		if( pMsg->type() == MsgType::MouseClick && m_bActive && m_bAutoDeactivate )
+		{
+			m_bActive = false;
+			Base::msgRouter()->post( DeactivateMsg::create(this) );
+		}
+		
+		Capsule::_receive(pMsg);
+	}
 
 } // namespace wg

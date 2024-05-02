@@ -259,6 +259,9 @@ namespace wg
 
 		PianoKeyPress,
 		PianoKeyRelease,
+		
+		Activate,
+		Deactivate,
 		Custom
 
 	};

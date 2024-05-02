@@ -3944,8 +3944,8 @@ bool blockingCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 		});
 
 	
-	auto pBlockingCapsule = BlockingCapsule::create();
-	pBlockingCapsule->blocked = { pCopyButton.rawPtr(), pDeleteButton.rawPtr() };
+	auto pBlockingCapsule = BlockingCapsule::create( { .autoDeactivate = true } );
+	pBlockingCapsule->blockedWidgets = { pCopyButton.rawPtr(), pDeleteButton.rawPtr() };
 	
 	pBlockingCapsule->slot = pWindowPanel;
 	

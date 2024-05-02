@@ -61,7 +61,7 @@ namespace wg
 	const static MarkPolicy      MarkPolicy_max      = MarkPolicy::Geometry;
 	const static SizeConstraint  SizeConstraint_max  = SizeConstraint::GreaterOrEqual;
 	const static SizePolicy2D    SizePolicy2D_max    = SizePolicy2D::Scale;
-	const static MsgType         MsgType_max         = MsgType::PianoKeyRelease;
+	const static MsgType         MsgType_max         = MsgType::Custom;
 	const static SortOrder       SortOrder_max       = SortOrder::Descending;
 	const static SelectMode      SelectMode_max      = SelectMode::FlipOnSelect;
 	const static TextEditMode    TextEditMode_max    = TextEditMode::Editable;
@@ -75,7 +75,7 @@ namespace wg
 	const static int             MarkPolicy_size     = (int)MarkPolicy::Geometry + 1;
 	const static int             SizeConstraint_size = (int)SizeConstraint::GreaterOrEqual + 1;
 	const static int             SizePolicy2D_size   = (int)SizePolicy2D::Scale + 1;
-	const static int             MsgType_size        = (int)MsgType::PianoKeyRelease + 1;
+	const static int             MsgType_size        = (int)MsgType::Custom + 1;
 	const static int             SortOrder_size      = (int)SortOrder::Descending + 1;
 	const static int             SelectMode_size     = (int)SelectMode::FlipOnSelect + 1;
 	const static int             TextEditMode_size   = (int)TextEditMode::Editable + 1;

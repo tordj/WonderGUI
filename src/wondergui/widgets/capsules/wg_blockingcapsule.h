@@ -47,13 +47,15 @@ namespace wg
 
 		struct Blueprint
 		{
+			bool			active = true;
+			bool			autoDeactivate = false;
 			Object_p		baggage;
 			Widget_p		child;
 			bool			disabled = false;
 			bool			dropTarget = false;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
-			bool			invertedBlock = false;
+			bool			inverted = false;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
@@ -73,13 +75,27 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		std::vector<Widget_wp>		blocked;
+		std::vector<Widget_wp>		blockedWidgets;
+		std::vector<Rect>			blockedAreas;
+
 		
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Behavior ____________________________________________________________
+		
+		void	setActive(bool bActive);
+		bool	isActive() const { return m_bActive; };
+		
+		void	setInverted(bool bInverted);
+		bool	isInverted() const { return m_bInverted; }
+		
+		void	setAutoDeactivate(bool bAutoDeactivate);
+		bool	isAutoDeactivate() const { return m_bAutoDeactivate; }
+
+		
 		//.____ Internal _________________________________________________
 
 		Widget* _findWidget(const CoordSPX& ofs, SearchMode mode) override;
@@ -90,7 +106,9 @@ namespace wg
 		
 		template<class BP> BlockingCapsule( const BP& bp ) : Capsule(bp)
 		{
-			m_bInvertedBlock = bp.invertedBlock;
+			m_bAutoDeactivate	= bp.autoDeactivate;
+			m_bInverted			= bp.inverted;
+			m_bActive			= bp.active;
 			
 			if (bp.child)
 				slot.setWidget(bp.child);
@@ -98,9 +116,13 @@ namespace wg
 		
 		virtual ~BlockingCapsule();
 		
+		void	_receive(Msg* pMsg) override;
+		
 	private:
-	
-		bool	m_bInvertedBlock = false;
+		
+		bool	m_bInverted = false;			// Set to block all but the widgets in "blocked".
+		bool	m_bActive = true;
+		bool	m_bAutoDeactivate = false;
 	};
 
 
