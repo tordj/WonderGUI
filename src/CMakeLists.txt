@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 
+#set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development")
+#set(CMAKE_XCODE_ATTRIBUTE_CODE_DEVELOPMENT_TEAM XYZ123ABCD)
+
+set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS YES)
 
 project(WonderGUI VERSION 3.0 DESCRIPTION "WonderGUI User Interface Library")
@@ -135,3 +140,5 @@ add_subdirectory(wonderapp/wappsdl2)
 
 add_subdirectory(tools)
 add_subdirectory(examples)
+
+install(TARGETS example01 DESTINATION ${WG_ROOT}/distribution/examples)
