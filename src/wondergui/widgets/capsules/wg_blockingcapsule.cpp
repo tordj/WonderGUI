@@ -147,7 +147,7 @@ namespace wg
 
 	void BlockingCapsule::_receive(Msg* pMsg)
 	{
-		if( pMsg->type() == MsgType::MouseClick && m_bActive && m_bAutoDeactivate )
+		if( pMsg->type() == MsgType::MouseClick && m_bActive && m_bAutoDeactivate && !pMsg->reposted() )
 		{
 			m_bActive = false;
 			Base::msgRouter()->post( DeactivateMsg::create(this) );
