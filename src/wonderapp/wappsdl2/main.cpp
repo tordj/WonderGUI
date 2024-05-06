@@ -92,6 +92,8 @@ public:
 	void*			loadSymbol(WonderApp::LibId lib, const std::string& symbol) override;
 	bool			closeLibrary(WonderApp::LibId lib) override;
 
+	std::string		resourceDirectory() override;
+
 protected:
 	void			convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat);
 
@@ -1008,6 +1010,22 @@ bool MyAppVisitor::closeLibrary(WonderApp::LibId lib)
 #else														// Apple and Linux
 	return (dlclose(lib) == 0);
 #endif
+}
+
+//____ resourceDirectory() ____________________________________________________
+
+std::string MyAppVisitor::resourceDirectory()
+{
+	char * pBasePath = SDL_GetBasePath();
+	
+	if( pBasePath == NULL )
+		return "resources/";
+	else
+	{
+		std::string str = pBasePath;
+		SDL_free(pBasePath);
+		return str;
+	}
 }
 
 //____ hidePointer() __________________________________________________________

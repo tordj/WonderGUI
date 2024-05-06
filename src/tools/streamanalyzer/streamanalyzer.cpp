@@ -36,7 +36,7 @@ bool MyApp::init(Visitor* pVisitor)
 	}
 		
 	auto arguments = pVisitor->programArguments();
-
+/*
 	if ( !arguments.empty() )
 	{
 
@@ -46,7 +46,7 @@ bool MyApp::init(Visitor* pVisitor)
 			return false;
 		}
 	}
-
+*/
 
 	auto pSoftGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::defaultGfxDevice());
 	if( pSoftGfxDevice )
@@ -87,7 +87,9 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	
 	//
 
-	auto pFontBlob = pVisitor->loadBlob("resources/DroidSans.ttf");
+	auto path = pVisitor->resourceDirectory();
+	
+	auto pFontBlob = pVisitor->loadBlob( path + "DroidSans.ttf");
 	auto pFont = FreeTypeFont::create(pFontBlob);
 	m_pFont = pFont;
 	
@@ -727,8 +729,16 @@ Widget_p MyApp::createNavigationPanel()
 
 bool MyApp::_loadSkins(Visitor * pVisitor)
 {
-	string path = "resources/greyskin/";
+	
+	auto path = pVisitor->resourceDirectory();
 
+/*
+#ifdef __APPLE__
+	string path = "";
+#else
+	string path = "resources/greyskin/";
+#endif
+*/
 	auto pPlateSurf = pVisitor->loadSurface(path + "plate.bmp");
 	auto pButtonSurf = pVisitor->loadSurface(path + "button.bmp");
 	auto pStateButtonSurf = pVisitor->loadSurface(path + "state_button.bmp");
