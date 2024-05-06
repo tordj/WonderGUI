@@ -117,7 +117,7 @@ int main ( int argc, char** argv )
 		// First we load the 24-bit bmp containing the button graphics.
 		// No error handling or such to keep this example short and simple.
 
-		SDL_Surface * pSDLSurf = SDL_LoadBMP( "resources/simple_button.bmp" );
+		SDL_Surface * pSDLSurf = SDL_LoadBMP( "simple_button.bmp" );
 		SoftSurface_p pButtonSurface = SoftSurface::create( WGBP(Surface,
 																 _.size = SizeI( pSDLSurf->w, pSDLSurf->h ),
 																 _.format = PixelFormat::BGR_8 ),

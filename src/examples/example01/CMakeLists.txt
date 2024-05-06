@@ -1,13 +1,20 @@
 set(CMAKE_CXX_STANDARD 20)
 
+
+
 set(SOURCES
 	example01.cpp
+)
+
+set(RESOURCES
+	${WG_ROOT}/resources/simple_button.bmp
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 add_executable(example01 MACOSX_BUNDLE
-	${SOURCES} 
+	${SOURCES}
+	${RESOURCES}
 )
 
 target_include_directories(example01 PRIVATE
@@ -28,11 +35,13 @@ target_include_directories(example01 PRIVATE
 
 target_working_directory(example01 ${WG_ROOT} )
 
-target_link_libraries(example01 PRIVATE
+target_link_libraries(example01 PUBLIC
 	wgsoftgfx
 	wondergui 
 	${SDL2_LIBS}
 )
+
+SET_SOURCE_FILES_PROPERTIES(${RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
 set_target_properties(example01 PROPERTIES
 
@@ -54,5 +63,5 @@ set_target_properties(example01 PROPERTIES
     XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY FALSE
     XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY TRUE
  
-    XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/../Frameworks"
+    INSTALL_RPATH @executable_path/../Frameworks
 )
