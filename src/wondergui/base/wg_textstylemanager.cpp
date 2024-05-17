@@ -58,7 +58,7 @@ namespace wg
 		// If s_pLookupTable is set, we assume we have bailed out on an earlier exit, thus
 		// still have a lookup table with entries that are still alive.
         
-		if( s_instanceCounter == 0 )
+		if( s_capacity == 0 )			// This is correct, we DO want to check s_capacity instead of s_instanceCounter here.
 		{
 			int capacity = 16;
 
