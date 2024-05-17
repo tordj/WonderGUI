@@ -3695,7 +3695,7 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 		{
 			if( pEnd - pCurr < samplesWanted )
 			{
-				int nbSamples = pEnd - pCurr;
+				int nbSamples = int(pEnd - pCurr);
 				wpScrollChart->entries[0].addSamples(nbSamples, 50, pCurr, nullptr);
 				samplesWanted -= nbSamples;
 				pCurr = pBeg;
