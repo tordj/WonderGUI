@@ -33,11 +33,20 @@
 #include <wg_freetypefont.h>
 #include <wg_dummyfont.h>
 
+#include <wg2_widget.h>
+#include <wg2_container.h>
+
 #include <wg2_smartptr.h>
+
+#include <iostream>
 
 
 WgContext_p				WgBase::s_pContext = 0;
 int WgBase::s_iSoftubeNumberOfInstances = 0;
+
+bool						WgBase::s_bTrackingWidgets = false;
+std::vector<WgWidget*>		WgBase::s_trackedWidgets;
+
 
 
 //____ Init() __________________________________________________________________
@@ -198,4 +207,58 @@ WgKey WgBase::TranslateKey( int native_keycode )
 void WgBase::setDefaultStyle( wg::TextStyle* pStyle )
 {
 	wg::TextStyle::s_pDefaultStyle = pStyle;
+}
+
+
+//____ SetWidgetTracking() __________________________________________________________
+
+void WgBase::SetWidgetTracking(bool bTracking)
+{
+	s_bTrackingWidgets = bTracking;
+	if( !bTracking )
+		s_trackedWidgets.clear();
+}
+
+//____ PrintWidgetTrees() _________________________________________________
+
+void WgBase::PrintWidgetTrees(std::ostream& stream)
+{
+	stream << "Widget Trees" << std::endl;
+	stream << "----------------" << std::endl;
+
+	for( auto pWidget : s_trackedWidgets )
+	{
+		if( !pWidget->Parent() )
+		{
+			PrintWidgetTreeRecursively(stream, pWidget, 1);
+		}
+	}
+}
+
+//____ PrintWidgetTreeRecursively() _____________________________________________________
+
+void WgBase::PrintWidgetTreeRecursively(std::ostream& stream, WgWidget * pWidget, int recursion )
+{
+	auto geo = pWidget->PointGeo();
+	
+	char strBuffer[1024];
+	
+	snprintf(strBuffer,1024, "%s %s id: %d, geo: {%d,%d,%d,%d}\n", std::string(recursion*2, ' ').c_str(), pWidget->Type(), pWidget->Id(), geo.x, geo.y, geo.w, geo.h );
+	
+	stream << strBuffer;
+	
+	
+//	stream << std::string(recursion*2, ' ') << std::string(pWidget->Type()) << " Id: " << std::to_string(pWidget->Id()) << std::endl;
+
+	if( pWidget->IsContainer() )
+	{
+		WgContainer * pContainer = pWidget->CastToContainer();
+		WgWidget * pChild = pContainer->FirstWidget();
+		
+		while( pChild )
+		{
+			PrintWidgetTreeRecursively(stream, pChild, recursion + 1);
+			pChild = pChild->NextSibling();
+		}
+	}
 }

@@ -33,7 +33,6 @@
 #	include <wg2_rootpanel.h>
 #	include <wg2_eventhandler.h>
 
-
 //____ Constructor ____________________________________________________________
 
 WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WgPointerStyle::Arrow),
@@ -42,6 +41,8 @@ WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WgPointerStyle::Arrow),
 					m_bPickable(false), m_bDropTarget(false)
 {
 
+	if( WgBase::s_bTrackingWidgets )
+		WgBase::s_trackedWidgets.push_back(this);
 }
 
 //____ Destructor _____________________________________________________________
@@ -52,6 +53,9 @@ WgWidget::~WgWidget()
 	{
 		m_pHook->Parent()->ReleaseChild(this);
 	}
+
+	if( WgBase::s_bTrackingWidgets )
+		WgBase::s_trackedWidgets.erase(std::remove(WgBase::s_trackedWidgets.begin(), WgBase::s_trackedWidgets.end(), this));
 }
 
 

@@ -228,6 +228,8 @@ int main ( int argc, char** argv )
 
 	WgBase::Init( nullptr );
 	sdl_wglib::MapKeys();
+	
+	WgBase::SetWidgetTracking(true);
 
 
 //	WgBase::InitFreeType();
@@ -359,6 +361,9 @@ int main ( int argc, char** argv )
 //	flipCanvasTest(pRoot);
 //	mouseOverMovingObjectsTest(pRoot);
 
+	
+	WgBase::PrintWidgetTrees(std::cout);
+	
 /*
 	// Setup debug overlays
 	auto pOverlaySkin = wg::BoxSkin::create( { .color = WgColor(255,0,0,128), .outline = 1, .outlineColor = WgColor::Red,

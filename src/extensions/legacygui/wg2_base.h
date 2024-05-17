@@ -48,6 +48,7 @@
 
 
 class WgCursor;
+class WgWidget;
 
 namespace wg
 {
@@ -99,6 +100,8 @@ typedef	wg::WeakPtr<WgContext>		WgContext_wp;
 
 class WgBase : public wg::GfxBase
 {
+	friend class WgWidget;
+	
 public:
 	static void Init( wg::HostBridge * pHostBridge );
 	static void Exit();
@@ -134,10 +137,20 @@ public:
 	static void		setDefaultStyle( wg::TextStyle* pStyle );
 	static wg::TextStyle_p	defaultStyle() { return wg::TextStyle::s_pDefaultStyle; }
 
+	static void SetWidgetTracking(bool bTrack);
+	static void PrintWidgetTrees(std::ostream& stream);
+
+	
 private:
 
-	static int                              s_iSoftubeNumberOfInstances;
-	static WgContext_p						s_pContext;
+	static void 	PrintWidgetTreeRecursively(std::ostream& stream, WgWidget * pWidget, int recursion );
+	
+	static bool						s_bTrackingWidgets;
+	static std::vector<WgWidget*>	s_trackedWidgets;
+
+	
+	static int                      s_iSoftubeNumberOfInstances;
+	static WgContext_p				s_pContext;
 		
 };
 
