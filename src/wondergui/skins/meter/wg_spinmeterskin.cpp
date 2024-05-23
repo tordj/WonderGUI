@@ -82,7 +82,7 @@ namespace wg
 		// Scale zoom to fit content of default size into canvas size.
 
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 		if (!m_defaultSize.isEmpty() )
 		{
 			SizeSPX defaultSize = align(ptsToSpx(m_defaultSize, scale));
@@ -137,6 +137,8 @@ namespace wg
 		if (!canvas.contains(ofs))
 			return false;
 
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		if (m_bOpaque)
 			return true;
 
@@ -152,7 +154,7 @@ namespace wg
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (newValue != oldValue)
-			return canvas - align(ptsToSpx(m_margin, scale));
+			return canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		return RectSPX();
 	}

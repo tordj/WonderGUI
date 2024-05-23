@@ -100,7 +100,7 @@ namespace wg
 		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 		{
-			RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+			RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 			
 			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
@@ -124,6 +124,8 @@ namespace wg
 
 		if (!canvas.contains(ofs))
 			return false;
+		
+		canvas += align(ptsToSpx(m_overflow, scale));
 
 		auto pFrame = _valueToFrame(value);
 		if (pFrame)
@@ -155,7 +157,7 @@ namespace wg
 		if (pOldFrame == pNewFrame)
 			return RectSPX();
 		else
-			return canvas - align(ptsToSpx(m_margin, scale));
+			return canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

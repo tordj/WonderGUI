@@ -106,7 +106,7 @@ namespace wg
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		int i = state;
-		pDevice->fill( canvas - align(ptsToSpx(m_margin, scale)), m_color[i] );
+		pDevice->fill( canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale)), m_color[i] );
 	}
 
 	//____ _markTest() _____________________________________________________________
@@ -118,6 +118,8 @@ namespace wg
 		if( !canvas.contains(ofs) )
 			return false;
 
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 
 		return ( m_color[state].a >= alpha);
@@ -135,7 +137,7 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		if (m_color[i1] != m_color[i2])
 			return canvas;

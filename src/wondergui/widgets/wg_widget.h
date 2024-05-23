@@ -242,6 +242,8 @@ namespace wg
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);
 
 		virtual void		_resize(const SizeSPX& size, int scale);
+		virtual BorderSPX	_overflow() const;
+		
 		virtual void		_setState(State state);
 
 		virtual void		_receive(Msg* pMsg);

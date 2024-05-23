@@ -531,7 +531,7 @@ namespace wg
 		if( !m_pSurface )
 			return;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		int idx = state;
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
@@ -581,6 +581,11 @@ namespace wg
 
 		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
+		if( !canvas.contains(_ofs) )
+			return false;
+		
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		NinePatch	patch = m_ninePatch;
 		patch.block.setPos(m_stateBlocks[state]);
 
@@ -613,7 +618,7 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		if (m_stateBlocks[i1] != m_stateBlocks[i2])
 			return canvas;

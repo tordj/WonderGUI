@@ -758,6 +758,14 @@ namespace wg
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
 
+	//____ _overflow() __________________________________________________________
+
+	BorderSPX Widget::_overflow() const
+	{
+		return m_skin.overflow();
+	}
+
+
 	//____ _setState() _________________________________________________________
 
 	void Widget::_setState( State state )

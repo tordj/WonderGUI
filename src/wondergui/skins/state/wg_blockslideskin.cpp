@@ -170,7 +170,7 @@ namespace wg
 		if (!m_pSurface)
 			return;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		int idx = state;
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
@@ -255,6 +255,8 @@ namespace wg
 		if( !canvas.contains(ofs) )
 			return false;
 
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		//TODO: Implement the rest!
 
 		return true;
@@ -280,7 +282,7 @@ namespace wg
 	{
 		//TODO: Implement!
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		return canvas;
 

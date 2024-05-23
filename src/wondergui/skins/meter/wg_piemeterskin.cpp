@@ -110,7 +110,7 @@ namespace wg
 
 		bool	bFramed = false;
 
-		RectSPX outerCanvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX outerCanvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 		RectSPX canvas = outerCanvas;
 
 		// Shrink canvas with padding
@@ -290,6 +290,8 @@ namespace wg
 		if (!canvas.contains(ofs))
 			return false;
 
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		if (m_bOpaque)
 			return true;
 

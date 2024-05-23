@@ -67,7 +67,7 @@ namespace wg
 	{
 		if (m_renderFunc)
 		{
-			RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+			RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 
 			int prevLayer = -1;
 			if (m_layer != -1 && pDevice->renderLayer() != m_layer)
@@ -89,6 +89,11 @@ namespace wg
 	{
 		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
+		if( !canvas.contains(ofs) )
+			return false;
+		
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		int alpha = alphaOverride != -1 ? alphaOverride : m_markAlpha;
 		
 		if( alpha == 0 )
@@ -100,10 +105,7 @@ namespace wg
 			return m_markTestFunc(ofs,canvas,scale,state,value,value2,alpha);
 		else
 		{
-			if (canvas.contains(ofs))
-				return m_bOpaque;
-			else
-				return false;
+			return m_bOpaque;
 		}
 	}
 

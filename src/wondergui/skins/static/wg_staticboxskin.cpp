@@ -90,20 +90,22 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticBoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool StaticBoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
-		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
 				
-		if (!canvasWithoutMargin.contains(ofs))
+		if (!canvas.contains(ofs))
 			return false;
 
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		int opacity;
 
 		if (m_bOpaque)
 			opacity = 4096;
 		else
 		{
-			RectSPX center = canvasWithoutMargin - align(ptsToSpx(m_outline,scale));
+			RectSPX center = canvas - align(ptsToSpx(m_outline,scale));
 			opacity =  center.contains(ofs) ? m_fillColor.a : m_outlineColor.a;
 		}
 
@@ -118,8 +120,8 @@ namespace wg
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
-		
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow, scale));
+
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		BorderSPX outline = align(ptsToSpx(m_outline,scale));

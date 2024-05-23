@@ -187,7 +187,7 @@ namespace wg
 
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
-		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale));
+		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->blitNinePatch(canvasWithoutMargin, align(ptsToSpx(m_gfxFrame,scale)), m_ninePatch, scale);
@@ -195,13 +195,18 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 
-		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
 
-		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvasWithoutMargin, scale, alpha);
+		if( !canvas.contains(ofs) )
+			return false;
+		
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
+		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, scale, alpha);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

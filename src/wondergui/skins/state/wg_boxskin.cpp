@@ -105,7 +105,7 @@ namespace wg
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
@@ -182,6 +182,8 @@ namespace wg
 		if( !canvas.contains(ofs) )
 			return false;
 
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		int opacity;
 
 		if( m_bOpaque )
@@ -223,6 +225,8 @@ namespace wg
 		if( !canvas.contains(rect) )
 			return false;
 		
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		RectSPX center = RectSPX(canvasSize) - align(ptsToSpx(m_outline,scale));
 		int i = state;
 		if( center.contains(rect) )
@@ -245,7 +249,7 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		if (m_fillColor[i1] != m_fillColor[i2] || (!m_outline.isEmpty() && m_outlineColor[i1] != m_outlineColor[i2]))
 			return canvas;

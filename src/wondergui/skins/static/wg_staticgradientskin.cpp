@@ -83,7 +83,7 @@ namespace wg
 
 	void StaticGradientSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow, scale));
 
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, HiColor::White, canvas, m_gradient);
 		
@@ -99,6 +99,8 @@ namespace wg
 		if (!canvas.contains(ofs) )
 			return false;
 
+		canvas += align(ptsToSpx(m_overflow, scale))
+		
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 		
 		int xFrac = (ofs.x - canvas.x) * 4096 / canvas.w;

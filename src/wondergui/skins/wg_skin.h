@@ -91,6 +91,12 @@ namespace wg
 		virtual BorderSPX	_padding(int scale, State state) const;
 		virtual SizeSPX		_paddingSize(int scale) const;
 
+		inline  bool		_hasOverflow() const { return m_bOverflow;  }
+		virtual BorderSPX	_overflow(int scale, State state) const;
+
+		
+		virtual BorderSPX	_overflowFromBounds(int scale, State state) const;
+		
 		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;
 		virtual CoordSPX	_contentOfs(int scale, State state) const;
 		virtual RectSPX		_contentRect(const RectSPX& canvas, int scale, State state ) const;
@@ -133,7 +139,9 @@ namespace wg
 			m_margin	= bp.margin;
 			m_padding	= bp.padding;
 			m_markAlpha = bp.markAlpha;
-			m_overflow	= bp.overflow;
+
+			m_overflow = bp.overflow;
+			_adjustOverflow(bp.overflow)		// Overflow in BP is overflow from area within margin, m_overflow is overflow from canvas.
 
 			if (bp.finalizer)
 				setFinalizer(bp.finalizer);
@@ -147,17 +155,22 @@ namespace wg
 		virtual void	_incUseCount() { m_useCount++; }
 		virtual void	_decUseCount() { m_useCount--; }
 
-		Border			m_overflow;
-		int				m_markAlpha = 1;
+		void			_adjustOverflow();
+		
 
 		Border			m_margin;
 		Border			m_padding;
+		Border			m_overflow;
+
 		bool			m_bContentShifting = false;
 		bool			m_bIgnoresValue = true;
 		bool			m_bIgnoresState = true;
 		bool			m_bOpaque = false;
+		bool			m_bOverflow = false;
+
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
 		int				m_layer = -1;
+		int				m_markAlpha = 1;
 	};
 
 } // namespace wg

@@ -95,7 +95,7 @@ namespace wg
 
 	void FillMeterSkin::_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, HiColor::White, canvas, m_gradient );
 
@@ -148,6 +148,8 @@ namespace wg
 
 		if (!canvas.contains(ofs))
 			return false;
+		
+		canvas += align(ptsToSpx(m_overflow, scale));
 
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 
@@ -166,7 +168,7 @@ namespace wg
 		if (newValue == oldValue)
 			return RectSPX();
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		if (m_barColorFull != m_barColorEmpty)
 			return canvas;
@@ -194,7 +196,7 @@ namespace wg
 
 	RectSPX FillMeterSkin::_valueChangeRect(const RectSPX& _canvas, int scale, State state, float oldFraction, float newFraction ) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		if (m_bCenteredBarOrigin)
 		{
@@ -306,7 +308,7 @@ namespace wg
 
 	RectSPX FillMeterSkin::_barFillArea(const RectSPX& _canvas, int scale, float value, float value2) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_gfxPadding,scale)) - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_gfxPadding,scale)) - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		spx minFillLength = ptsToSpx(m_minBarLength, scale);
 

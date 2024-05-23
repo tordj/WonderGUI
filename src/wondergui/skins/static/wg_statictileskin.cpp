@@ -91,7 +91,7 @@ namespace wg
 		if (!m_pSurface)
 			return;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient );
 
@@ -107,6 +107,11 @@ namespace wg
 
 		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
 
+		if( !canvas.contains(ofs) )
+			return false;
+		
+		canvas += align(ptsToSpx(m_overflow, scale));
+		
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 		
 		return markTestTileRect(ofs, m_pSurface, canvas, scale, alpha);

@@ -140,12 +140,10 @@ namespace wg
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-
-
 		if (m_contentShift[newState] == m_contentShift[oldState])
 			return RectSPX();
 		else
-			return canvas - align(ptsToSpx(m_margin, scale));
+			return canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 	}
 
 	//____ _updateContentShift() _________________________________________________

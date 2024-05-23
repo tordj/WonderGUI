@@ -80,13 +80,13 @@ namespace wg
 
 	//____ _render() ______________________________________________________________
 
-	void StaticColorSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void StaticColorSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		pDevice->fill(canvasWithoutMargin, m_color);
+		pDevice->fill(canvas, m_color);
 	}
 
 	//____ _markTest() _________________________________________________________
