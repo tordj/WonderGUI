@@ -354,7 +354,7 @@ namespace wg
 			_firstSlotWithGeo( child );
 			while(child.pSlot)
 			{
-				RectSPX coverage = child.pSlot->_widget()->_coverage() + _canvas.pos();
+				RectSPX coverage = child.pSlot->_widget()->_coverage() + child.geo.pos() + _canvas.pos();
 
 				if( coverage.isOverlapping( dirtBounds ) )
 					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), child.geo + _canvas.pos(), coverage ) );
@@ -407,7 +407,7 @@ namespace wg
 			while(child.pSlot)
 			{
 				RectSPX canvas = child.geo + _canvas.pos();
-				RectSPX coverage = child.pSlot->_widget()->_coverage() + _canvas.pos();
+				RectSPX coverage = child.pSlot->_widget()->_coverage() + child.geo.pos() + _canvas.pos();
 
 				if (canvas.isOverlapping(dirtBounds))
 				{

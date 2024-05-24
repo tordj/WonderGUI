@@ -204,8 +204,8 @@ bool MyApp::createEditorWindow( const std::string& windowTitle, const std::strin
 Button_p MyApp::createButton(const char* label)
 {
 	return Button::create({
-		.skin = m_pButtonSkin,
-		.label = { .layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = label }
+		.label = {.layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = label },
+		.skin = m_pButtonSkin
 	});
 }
 

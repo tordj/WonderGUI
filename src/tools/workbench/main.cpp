@@ -761,7 +761,7 @@ int main(int argc, char** argv)
 		//	areaChartTest(pSlot);
 		//	areaChartTest2(pSlot);
 		//	plotChartTest(pSlot);
-		//	nortonCommanderTest(pSlot);
+			nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
@@ -772,7 +772,7 @@ int main(int argc, char** argv)
 		//  scrollPanelTest(pSlot);
 		//	packPanelStressTest(pSlot);
 		//	packPanelStressTest2(pSlot);
-			blockingCapsuleTest(pSlot);
+		//	blockingCapsuleTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -3237,11 +3237,22 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pPane1 = Filler::create( { .skin = pPaneSkin });
 	auto pPane2 = Filler::create( { .skin = pPaneSkin });
 
-	auto pButtonSkin = BoxSkin::create( { .color = Color8::Grey,
+	auto pShadowSkin = BoxSkin::create({ .color = Color8::Gray,
+										 .outlineColor = HiColor{4096,0,0,2048},
+										 .outlineThickness = {0,16,16,0},
+										 .overflow = {0,16,16,0},
+		});
+
+
+
+	auto pButtonContentSkin = BoxSkin::create( { .color = Color8::Grey,
 										  .outlineColor = Color8::Black,
 										  .outlineThickness = 1,
 										  .padding = 3
 	});
+
+	auto pButtonSkin = pShadowSkin; // DoubleSkin::create(pButtonContentSkin, pShadowSkin);
+
 
 	auto pCopyButton = Button::create( {
 		.label = { .text = "COPY" },
@@ -3263,7 +3274,7 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 
 	// The FlexPanel way.
 /*
-	auto pFlexPanel = FlexPanel::create();
+	auto pFlexPanel = FlexPanel::create( { .confineWidgets = true });
  
 	pFlexPanel->slots.pushBack({
 		{ pMyMenubar, {	.pin1 = { Placement::NorthWest },
@@ -3293,14 +3304,15 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 */
 
 
+
 	// The PackPanel way.
-	
+
 	PackLayout_p pLayout = PackLayout::create({ .expandFactor = PackLayout::Factor::Weight,
 												.shrinkFactor = PackLayout::Factor::Weight });
 
 	PackPanel_p pWindowPanel = PackPanel::create({ .axis = Axis::Y, .layout = pLayout });
 	PackPanel_p pMainSection = PackPanel::create({ .axis = Axis::X, .layout = pLayout, .skin = ColorSkin::create({.color = Color::Transparent, .padding = 5 }), .spacing = 5 });
-	PackPanel_p pButtonColumn = PackPanel::create({ .axis = Axis::Y, .layout = pLayout });
+	PackPanel_p pButtonColumn = PackPanel::create({ .axis = Axis::Y, .layout = pLayout , .spacing = 5 });
 
 	pButtonColumn->slots.pushBack({ {Filler::create(), {} },
 									{pCopyButton, {.weight = 0.f }},
