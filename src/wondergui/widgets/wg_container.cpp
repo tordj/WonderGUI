@@ -48,6 +48,37 @@ namespace wg
 		return true;
 	}
 
+	//____ setSkin() _____________________________________________________________
+
+	void Container::setSkin(Skin* pNewSkin)
+	{
+		Skin_p pOldSkin = m_skin.get();
+
+		m_skin.set(pNewSkin);
+
+		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
+
+		bool bOldSkinOverflows = pOldSkin ? pOldSkin->_overflowsGeo() : false;
+		bool bNewSkinOverflows = pNewSkin ? pNewSkin->_overflowsGeo() : false;
+
+		if( bNewSkinOverflows || bOldSkinOverflows )
+		{
+			RectSPX oldCoverage = pOldSkin ? RectSPX(m_size) : pOldSkin->_coverage(m_size, m_scale);
+			RectSPX newCoverage = pNewSkin ? RectSPX(m_size) : pNewSkin->_coverage(m_size, m_scale);
+			
+			if( oldCoverage != newCoverage )
+				_refreshCoverage();
+
+			_requestRender( RectSPX::bounds(oldCoverage,newCoverage) );
+		}
+		else
+			_requestRender();
+		
+		if (!pNewSkin || !pOldSkin || pNewSkin->_contentBorderSize(m_scale) != pOldSkin->_contentBorderSize(m_scale) ||
+			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
+			_requestResize();
+	}
+
 	//____ contains() _________________________________________________________
 
 	bool Container::contains(const Widget * pWidget ) const
@@ -135,6 +166,13 @@ namespace wg
 	int Container::_scale() const
 	{
 		return m_scale;
+	}
+
+	//____ _childOverflowChanged() _______________________________________________
+
+	void Container::_childOverflowChanged( StaticSlot * pSlot )
+	{
+		_refreshCoverage();
 	}
 
 	//____ _childRequestFocus() ______________________________________________________
@@ -288,10 +326,11 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pWidget(0) {}
-		WidgetRenderContext( Widget * pWidget, const RectSPX& geo ) : pWidget(pWidget), geo(geo) {}
+		WidgetRenderContext( Widget * pWidget, const RectSPX& geo, const RectSPX& coverage ) : pWidget(pWidget), geo(geo), coverage(coverage) {}
 
 		Widget *	pWidget;
 		RectSPX		geo;
+		RectSPX		coverage;
 		ClipPopData clipPop;
 	};
 
@@ -307,8 +346,6 @@ namespace wg
 
 		if( m_bSiblingsOverlap )
 		{
-
-
 			// Create WidgetRenderContext's for siblings that might get dirty patches
 
 			std::vector<WidgetRenderContext> renderList;
@@ -317,10 +354,10 @@ namespace wg
 			_firstSlotWithGeo( child );
 			while(child.pSlot)
 			{
-				RectSPX geo = child.geo + _canvas.pos();
+				RectSPX coverage = child.pSlot->_widget()->_coverage() + _canvas.pos();
 
-				if( geo.isOverlapping( dirtBounds ) )
-					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), geo ) );
+				if( coverage.isOverlapping( dirtBounds ) )
+					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), child.geo + _canvas.pos(), coverage ) );
 
 				_nextSlotWithGeo( child );
 			}
@@ -341,7 +378,7 @@ namespace wg
 			{
 				WidgetRenderContext * p = &renderList[i];
 
-				RectSPX	clipBounds = RectSPX::overlap(p->geo,_canvas);
+				RectSPX	clipBounds = RectSPX::overlap(p->coverage,_canvas);
 				
 				p->clipPop = patchesToClipList(pDevice, clipBounds, patches);
 				p->pWidget->_maskPatches( patches, p->geo, clipBounds, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
@@ -370,9 +407,11 @@ namespace wg
 			while(child.pSlot)
 			{
 				RectSPX canvas = child.geo + _canvas.pos();
+				RectSPX coverage = child.pSlot->_widget()->_coverage() + _canvas.pos();
+
 				if (canvas.isOverlapping(dirtBounds))
 				{
-					RectSPX	clipBounds = RectSPX::overlap(canvas,_canvas);
+					RectSPX	clipBounds = RectSPX::overlap(coverage,_canvas);
 
 					ClipPopData popData = limitClipList(pDevice, clipBounds );
 
@@ -384,6 +423,43 @@ namespace wg
 				_nextSlotWithGeo( child );
 			}
 
+		}
+	}
+
+	//____ _refreshCoverage() ____________________________________________________
+
+	void Container::_refreshCoverage()
+	{
+		RectSPX coverage;
+				
+		SlotWithGeo slot;
+		 _firstSlotWithGeo(slot);
+		if( slot.pSlot )
+		{
+			coverage = slot.pSlot->_widget()->_coverage() + slot.geo.pos();
+
+			_nextSlotWithGeo(slot);
+			while( slot.pSlot )
+			{
+				coverage.growToContain(slot.pSlot->_widget()->_coverage() + slot.geo.pos());
+				_nextSlotWithGeo(slot);
+			}
+			
+			if( !m_skin.isEmpty() )
+				coverage.growToContain(m_skin.coverage({0,0,m_size}, m_scale));
+		}
+		else if( !m_skin.isEmpty() )
+			coverage = m_skin.coverage({0,0,m_size}, m_scale);
+			
+		if( coverage != m_coverage )
+		{
+			m_coverage = coverage;
+			bool bOverflowsGeo = !RectSPX(m_size).contains(coverage);
+
+			// Signal if overflow has changed
+			
+			if( bOverflowsGeo || m_bOverflowsGeo )
+				_overflowChanged();
 		}
 	}
 
@@ -403,7 +479,7 @@ namespace wg
 			}
 		}
 		else
-			container.add( RectSPX::overlap( geo, clip ) );
+			Widget::_collectPatches(container, geo, clip);
 	}
 
 	//____ _maskPatches() __________________________________________________________

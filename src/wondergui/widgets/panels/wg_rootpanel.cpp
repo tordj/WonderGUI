@@ -654,6 +654,14 @@ namespace wg
 		return m_geo;
 	}
 
+	//____ _childOverflowChanged() _______________________________________________
+
+	void RootPanel::_childOverflowChanged( StaticSlot * pSlot )
+	{
+		
+	}
+
+
 	//____ _childLocalToGlobal() _______________________________________________
 
 	RectSPX RootPanel::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const

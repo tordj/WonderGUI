@@ -88,7 +88,10 @@ namespace wg
 			return m_pSkin ? m_pSkin->_markTest(ofs, canvas, scale, state, value, value2) : false;
 		}
 
-		inline bool		isContentShifting() { return m_pSkin ? m_pSkin->_isContentShifting() : false; }
+		inline bool		isContentShifting() const { return m_pSkin ? m_pSkin->_isContentShifting() : false; }
+
+		inline RectSPX	coverage( const RectSPX& geo, int scale) const { return m_pSkin ? m_pSkin->_coverage(geo, scale) : RectSPX(); }
+		inline 	bool	overflowsGeo() const { return m_pSkin ? m_pSkin->_overflowsGeo() : false; }
 
 
 	protected:

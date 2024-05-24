@@ -50,7 +50,8 @@ namespace wg
 		virtual const TypeInfo& _slotTypeInfo(const StaticSlot * pSlot) const = 0;
 
 		virtual RectSPX		_slotGeo( const StaticSlot * pSlot ) const = 0;
-
+		virtual void		_childOverflowChanged( StaticSlot * pSlot ) = 0;
+		
 		virtual RectSPX		_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const = 0;
 		virtual RectSPX		_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const = 0;
 

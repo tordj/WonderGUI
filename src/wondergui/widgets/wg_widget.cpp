@@ -357,9 +357,26 @@ namespace wg
 		Skin_p pOldSkin = m_skin.get();
 
 		m_skin.set(pNewSkin);
-		_requestRender();
 
 		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
+
+		bool bOldSkinOverflows = pOldSkin ? pOldSkin->_overflowsGeo() : false;
+		bool bNewSkinOverflows = pNewSkin ? pNewSkin->_overflowsGeo() : false;
+
+		if( bNewSkinOverflows || bOldSkinOverflows )
+		{
+			RectSPX oldCoverage = pOldSkin ? RectSPX(m_size) : pOldSkin->_coverage(m_size, m_scale);
+			RectSPX newCoverage = pNewSkin ? RectSPX(m_size) : pNewSkin->_coverage(m_size, m_scale);
+			
+			if( oldCoverage != newCoverage )
+				_overflowChanged();
+
+			_requestRender( RectSPX::bounds(oldCoverage,newCoverage) );
+		}
+		else
+			_requestRender();
+		
+		m_bOverflowsGeo = bNewSkinOverflows;
 
 		if (!pNewSkin || !pOldSkin || pNewSkin->_contentBorderSize(m_scale) != pOldSkin->_contentBorderSize(m_scale) ||
 			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
@@ -676,6 +693,9 @@ namespace wg
 
 	void Widget::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
+		if( !m_skin.isEmpty() )
+			container.add( RectSPX::overlap(m_skin.coverage(geo, m_scale), clip ));
+		else
 			container.add( RectSPX::overlap( geo, clip ) );
 	}
 
@@ -685,7 +705,10 @@ namespace wg
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
-			patches.sub( RectSPX::overlap( geo, clip ) );
+			if( !m_skin.isEmpty() )
+				patches.sub( RectSPX::overlap(m_skin.coverage(geo, m_scale), clip ));
+			else
+				patches.sub( RectSPX::overlap( geo, clip ) );
 		}
 	}
 
@@ -758,13 +781,15 @@ namespace wg
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
 
-	//____ _overflow() __________________________________________________________
+	//____ _coverage() __________________________________________________________
 
-	BorderSPX Widget::_overflow() const
+	RectSPX Widget::_coverage() const
 	{
-		return m_skin.overflow();
+		if( !m_skin.isEmpty() )
+			return m_skin.coverage({0,0,m_size}, m_scale);
+		else
+			return m_size;
 	}
-
 
 	//____ _setState() _________________________________________________________
 

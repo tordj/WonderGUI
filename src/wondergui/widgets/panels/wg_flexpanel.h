@@ -267,7 +267,6 @@ namespace wg
 
         virtual ~FlexPanel();
 
-
 		// Overloaded from Container
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
@@ -285,6 +284,7 @@ namespace wg
 		void		_hideSlots(StaticSlot *, int nb) override;
 		void		_unhideSlots(StaticSlot *, int nb) override;
 
+		
 	private:
 		void		_refreshRealGeo(FlexPanelSlot * pSlot, bool bForceRefresh = false);
 		SizeSPX		_size() const { return m_size; }
@@ -295,7 +295,7 @@ namespace wg
 
 		SizeSPX		_sizeNeededForGeo( FlexPanelSlot * pSlot, int scale ) const;
 
-		bool		m_bConfineWidgets = false;
+		bool		m_bConfineWidgets = false;		// In confine widget mode we don't clip overflow.
 		Size		m_defaultSize;
 	};
 

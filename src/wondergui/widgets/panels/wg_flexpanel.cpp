@@ -292,7 +292,7 @@ namespace wg
 				auto p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
+					RectSPX cover = RectSPX::overlap(pTo->_widget()->_coverage(), p->_widget()->_coverage());
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -306,7 +306,7 @@ namespace wg
 				auto p = pFrom;
 				while (p < pTo)
 				{
-					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
+					RectSPX cover = RectSPX::overlap(pTo->_widget()->_coverage(), p->_widget()->_coverage());
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -327,7 +327,7 @@ namespace wg
 			if( pSlot[i].m_bVisible == true )
 			{
 				_refreshRealGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i].m_geo, &pSlot[i]);
+				_onRequestRender(pSlot[i]._widget()->_coverage(), &pSlot[i]);
 			}
 		}
 	}
@@ -350,7 +350,7 @@ namespace wg
 		{
 			if( pSlot[i].m_bVisible == true )
 			{
-				_onRequestRender(pSlot[i].m_geo, &pSlot[i]);
+				_onRequestRender(pSlot[i]._widget()->_coverage(), &pSlot[i]);
 				pSlot[i].m_bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
@@ -368,7 +368,7 @@ namespace wg
 			{
 				pSlot[i].m_bVisible = true;
 				_refreshRealGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i].m_geo, &pSlot[i]);
+				_onRequestRender(pSlot[i]._widget()->_coverage(), &pSlot[i]);
 			}
 		}
 	}
@@ -376,7 +376,7 @@ namespace wg
 
 	//____ _onRequestRender() ______________________________________________________
 
-	void FlexPanel::_onRequestRender( const RectSPX& rect, const FlexPanelSlot * pSlot )
+	void FlexPanel::_onRequestRender( const RectSPX& _rect, const FlexPanelSlot * pSlot )
 	{
 		if( !pSlot->m_bVisible )
 			return;
@@ -384,13 +384,15 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		PatchesSPX patches;
-		patches.add( RectSPX::overlap( rect, RectSPX(0,0,m_size)) );
+		
+		RectSPX rect  = m_bConfineWidgets ? _rect : RectSPX::overlap( rect, RectSPX(0,0,m_size));
+		patches.add( rect );
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
 		for(auto pCover = slots.begin() ; pCover < pSlot ; pCover++ )
 		{
-			if( pCover->m_bVisible && pCover->m_geo.isOverlapping( rect ) )
+			if( pCover->m_bVisible && pCover->_widget()->_coverage().isOverlapping( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
 		}
 
@@ -419,7 +421,7 @@ namespace wg
 	void FlexPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
 		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
-		_onRequestRender( pSlot->m_geo, pSlot );
+		_onRequestRender( pSlot->_widget()->_coverage(), pSlot );
 	}
 
 	void FlexPanel::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
@@ -447,6 +449,8 @@ namespace wg
 
 	void FlexPanel::_releaseChild(StaticSlot * pSlot)
 	{
+		
+		
 		slots.erase(static_cast<FlexPanelSlot*>(pSlot));
 	}
 
@@ -468,7 +472,7 @@ namespace wg
 		if (pSlot->m_bVisible )
 		{
 			_refreshRealGeo(pSlot, true);
-			_onRequestRender(pSlot->m_geo, pSlot);
+			_onRequestRender(pSlot->_widget()->_coverage(), pSlot);
 		}
 	}
 
@@ -534,9 +538,24 @@ namespace wg
 
 		if (geo != pSlot->m_geo)
 		{
-			_onRequestRender(pSlot->m_geo, pSlot);
+			RectSPX localCoverage = pSlot->_widget()->_coverage();
+
+			RectSPX oldCoverage = localCoverage + pSlot->m_geo.pos();
+			RectSPX newCoverage = localCoverage + geo.pos();
+
 			pSlot->m_geo = geo;
-			_onRequestRender(pSlot->m_geo, pSlot);
+
+			_onRequestRender(oldCoverage, pSlot);
+			_onRequestRender(newCoverage, pSlot);
+			
+			if( m_bConfineWidgets && pSlot->_widget()->_overflowsGeo() )
+			{
+				RectSPX myGeo = m_size;
+				
+				if( !myGeo.contains(oldCoverage) || !myGeo.contains(newCoverage) )
+					_refreshCoverage();
+			}
+			
 		}
 
 		if (bForceResize || pSlot->_widget()->_size() != geo.size())

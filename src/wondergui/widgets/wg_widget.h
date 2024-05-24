@@ -242,7 +242,9 @@ namespace wg
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);
 
 		virtual void		_resize(const SizeSPX& size, int scale);
-		virtual BorderSPX	_overflow() const;
+		
+		virtual RectSPX		_coverage() const;
+		inline bool			_overflowsGeo() const { return m_bOverflowsGeo; }
 		
 		virtual void		_setState(State state);
 
@@ -306,7 +308,9 @@ namespace wg
 
 		// Convenient calls to holder
 
-		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
+		inline void			_overflowChanged() { if( m_pHolder ) m_pHolder->_childOverflowChanged( m_pSlot ); }
+
+		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, _coverage() ); }
 		inline void			_requestRender( const RectSPX& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
 		inline void			_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
 		inline void			_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
@@ -382,6 +386,7 @@ namespace wg
 		uint8_t			m_receivingUpdateCounter = 0;	//
 		bool			m_bPressed = false;				// Keeps track of pressed button when mouse leaves/re-enters widget.
 		bool			m_bStickyFocus = false;			// Set if widget should keep keyboard focus when mouse button pressed outside it.
+		bool			m_bOverflowsGeo = false;
 
 
 		SizeSPX			m_size = { 256 * 64,256 * 64 };	// Current size of widget.

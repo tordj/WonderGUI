@@ -99,7 +99,7 @@ namespace wg
 		if (!canvas.contains(ofs) )
 			return false;
 
-		canvas += align(ptsToSpx(m_overflow, scale))
+		canvas += align(ptsToSpx(m_overflow, scale));
 		
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 		

@@ -92,11 +92,9 @@ namespace wg
 		virtual SizeSPX		_paddingSize(int scale) const;
 
 		inline  bool		_hasOverflow() const { return m_bOverflow;  }
-		virtual BorderSPX	_overflow(int scale, State state) const;
+		inline 	bool		_overflowsGeo() const { return m_bOverflowsGeo; }
+//		inline  BorderSPX	_overflow(int scale, State state) const;
 
-		
-		virtual BorderSPX	_overflowFromBounds(int scale, State state) const;
-		
 		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;
 		virtual CoordSPX	_contentOfs(int scale, State state) const;
 		virtual RectSPX		_contentRect(const RectSPX& canvas, int scale, State state ) const;
@@ -114,7 +112,9 @@ namespace wg
 									float value = 1.f, float value2 = -1.f, int animPos = 0, 
 									float* pStateFractions = nullptr) const = 0;
 
-		virtual RectSPX		_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, 
+		virtual RectSPX		_coverage(const RectSPX& geo, int scale) const;
+
+		virtual RectSPX		_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState,
 									float newValue = 1.f, float oldValue = 1.f, 
 									float newValue2 = -1.f, float oldValue2 = -1.f, 
 									int newAnimPos = 0, int oldAnimPos = 0,
@@ -141,8 +141,12 @@ namespace wg
 			m_markAlpha = bp.markAlpha;
 
 			m_overflow = bp.overflow;
-			_adjustOverflow(bp.overflow)		// Overflow in BP is overflow from area within margin, m_overflow is overflow from canvas.
-
+			m_bOverflow = !bp.overflow.isEmpty();
+			
+			Border diff = m_overflow - m_margin;
+			if( diff.top > 0 || diff.right > 0 || diff.bottom > 0 || diff.left > 0 )
+				m_bOverflowsGeo = true;
+			
 			if (bp.finalizer)
 				setFinalizer(bp.finalizer);
 		}
@@ -166,7 +170,8 @@ namespace wg
 		bool			m_bIgnoresValue = true;
 		bool			m_bIgnoresState = true;
 		bool			m_bOpaque = false;
-		bool			m_bOverflow = false;
+		bool			m_bOverflow = false;				// Set when there is overflow, even if it might not overflow the geo.
+		bool			m_bOverflowsGeo = false;			// Set when overflow is larger than margin.
 
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
 		int				m_layer = -1;

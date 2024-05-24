@@ -79,6 +79,13 @@ namespace wg
 		return SizeSPX(align(ptsToSpx(m_padding, scale)));
 	}
 
+	//____ _coverage() ________________________________________________________
+
+	RectSPX Skin::_coverage(const RectSPX& geo, int scale) const
+	{
+		return geo - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+	}
+
 	//____ _contentOfs() ______________________________________________________________
 
 	CoordSPX Skin::_contentOfs(int scale, State state) const
@@ -157,27 +164,6 @@ namespace wg
 		const static int	transitionTimes[StateBits_Nb] = { 0,0,0,0,0,0 };
 
 		return transitionTimes;
-	}
-
-	//____ _adjustOverflow() _____________________________________________________
-
-	void Skin::_adjustOverflow()
-	{
-		if( !m_overflow.isEmpty() )
-		{
-			Border margin, overflow;
-			
-			margin = m_margin - m_overflow;			// Overflowed area should also be rendered.
-
-			overflow.top = std::max(0, m_overflow.top - m_margin.top);
-			overflow.right = std::max(0, m_overflow.right - m_margin.right);
-			overflow.bottom = std::max(0, m_overflow.bottom - m_margin.bottom);
-			overflow.left = std::max(0, m_overflow.left - m_margin.left);
-	
-			m_margin = margin;
-			m_overflow = overflow;			
-			m_bOverflow = !overflow.isEmpty();
-		}
 	}
 
 } // namespace wg

@@ -62,6 +62,11 @@ namespace wg
 			inline Widget_p			firstChild() const { return Widget_p(_firstChild()); }
 			inline Widget_p			lastChild() const { return Widget_p(_lastChild()); }
 
+		
+			//.____ Appearance ____________________________________________________
+
+			void		setSkin(Skin* pSkin) override;
+
 			//.____ Misc ______________________________________________________
 
 			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(Util::ptsToSpx(ofs,m_scale),mode)); }
@@ -79,7 +84,7 @@ namespace wg
 			Container() {};
 			template<class BP> Container( const BP& bp ) : Widget(bp) {}
 			virtual ~Container() {};
-
+		
 			// SlotHolder methods
 
 			Container *				_container() override;
@@ -87,6 +92,7 @@ namespace wg
 			virtual int				_scale() const override;									///< Default scale value for all children.
 
 			virtual RectSPX			_slotGeo( const StaticSlot * pSlot ) const override = 0;				///< Get the local position of a child.
+			virtual void			_childOverflowChanged( StaticSlot * pSlot ) override;
 
 			RectSPX					_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
 			RectSPX					_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
@@ -116,6 +122,8 @@ namespace wg
 			virtual void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 			virtual void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
 
+			
+		
 			//
 
 			virtual Widget *		_firstChild() const = 0;
@@ -125,6 +133,9 @@ namespace wg
 
 			virtual void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 
+			void					_refreshCoverage();
+		
+		
 			struct SlotWithGeo
 			{
 				RectSPX				geo;
@@ -137,7 +148,9 @@ namespace wg
 			virtual void			_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 			virtual void			_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip ) override;
 
-			bool					m_bSiblingsOverlap = true;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
+			bool					m_bSiblingsOverlap = true;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).		
+
+			RectSPX					m_coverage;
 
 	};
 
