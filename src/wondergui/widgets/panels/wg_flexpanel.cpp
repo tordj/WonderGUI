@@ -222,13 +222,13 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setConfineWidgets() ___________________________________________________
+	//____ setEdgePolicy() ___________________________________________________
 
-	void FlexPanel::setConfineWidgets( bool bConfineWidgets )
+	void FlexPanel::setEdgePolicy( EdgePolicy policy )
 	{
-		if( bConfineWidgets != m_bConfineWidgets )
+		if( policy != m_edgePolicy )
 		{
-			m_bConfineWidgets = bConfineWidgets;
+			m_edgePolicy = policy;
 
 			auto p = slots.begin();
 
@@ -385,7 +385,7 @@ namespace wg
 
 		PatchesSPX patches;
 		
-		RectSPX rect  = m_bConfineWidgets ? _rect : RectSPX::overlap( rect, RectSPX(0,0,m_size));
+		RectSPX rect  = m_edgePolicy == EdgePolicy::Confine ? RectSPX::overlap(rect, RectSPX(0, 0, m_size)) : _rect;
 		patches.add( rect );
 
 		// Remove portions of patches that are covered by opaque upper siblings
@@ -516,7 +516,7 @@ namespace wg
 
 			// Limit size/pos according to parent
 
-			if( isConfiningWidgets() )
+			if( m_edgePolicy == EdgePolicy::Confine )
 			{
 				if( sz.w > m_size.w )
 					sz.w = m_size.w;
@@ -548,7 +548,7 @@ namespace wg
 			_onRequestRender(oldCoverage, pSlot);
 			_onRequestRender(newCoverage, pSlot);
 			
-			if( m_bConfineWidgets && pSlot->_widget()->_overflowsGeo() )
+			if( m_edgePolicy == EdgePolicy::Confine && pSlot->_widget()->_overflowsGeo() )
 			{
 				RectSPX myGeo = m_size;
 				

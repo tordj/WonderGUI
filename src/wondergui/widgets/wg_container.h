@@ -135,6 +135,7 @@ namespace wg
 
 			void					_refreshCoverage();
 		
+			RectSPX					_coverage() const override;
 		
 			struct SlotWithGeo
 			{

@@ -77,6 +77,17 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ setEdgePolicy() ____________________________________________________
+
+	void LambdaPanel::setEdgePolicy(EdgePolicy policy)
+	{
+		if (policy != m_edgePolicy)
+		{
+			m_edgePolicy = policy;
+			_updateAllSlotsGeo();
+		}
+	}
+
 	//____ setMinSize() _________________________________________________________________
 
 	bool LambdaPanel::setMinSize(Size min)
@@ -352,39 +363,64 @@ namespace wg
 			_updateGeo(pSlot);
 	}
 
+	//____ _updateAllSlotsGeo() _______________________________________________
+
+	void LambdaPanel::_updateAllSlotsGeo()
+	{
+		for (auto& slot : slots)
+			_updateGeo(&slot);
+	}
+
 	//____ _updateGeo() _______________________________________________________
 
 	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize )
 	{
 		//TODO: Don't requestRender if slot is hidden.
 
+		auto pWidget = pSlot->_widget();
+
 		RectSPX geo;
+
+		// Get new geo
 
 		if (pSlot->m_func)
 		{
-			Rect ptsGeo = pSlot->m_func(pSlot->_widget(), spxToPts(m_size,m_scale));
+			Rect ptsGeo = pSlot->m_func(pWidget, spxToPts(m_size,m_scale));
 
 			geo = align(ptsToSpx(ptsGeo,m_scale));
 		}
 		else
-			geo = { 0,0, align(pSlot->_widget()->_defaultSize(m_scale)) };
+			geo = { 0,0, align(pWidget->_defaultSize(m_scale)) };
 
-		if (geo != pSlot->m_geo)
+		//
+
+		if (geo != pSlot->m_geo || pWidget->_scale() != m_scale)
 		{
+			// Store coverage and set size.
+
+			RectSPX oldCoverage = pWidget->_coverage() + pSlot->m_geo.pos();			
+			pSlot->_setSize(geo, m_scale);
+			RectSPX newCoverage = pWidget->_coverage() + geo.pos();
+
 			if (pSlot->m_bVisible)
 			{
-				// Clip our geometry and put it in a dirtyrect-list
+				// Clip our coverage and put it in a dirtyrect-list
 
 				PatchesSPX patches;
-				patches.add(RectSPX::overlap(pSlot->m_geo, RectSPX(0, 0, m_size)));
-				patches.add(RectSPX::overlap(geo, RectSPX(0, 0, m_size)));
+				patches.add(oldCoverage);
+				patches.add(newCoverage);
+
+				if (m_edgePolicy == EdgePolicy::Clip)
+					patches.clip(RectSPX(0, 0, m_size));
 
 				// Remove portions of patches that are covered by opaque upper siblings
 
 				auto pCover = pSlot + 1;
 				while (pCover < slots.end())
 				{
-					if (pCover->m_bVisible && (pCover->m_geo.isOverlapping(pSlot->m_geo) || pCover->m_geo.isOverlapping(geo)) )
+					RectSPX coverCoverage = pCover->_widget()->_coverage() + pCover->m_geo.pos();
+
+					if (pCover->m_bVisible && (coverCoverage.isOverlapping(oldCoverage) || coverCoverage.isOverlapping(newCoverage)) )
 						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 
 					pCover++;
@@ -395,14 +431,20 @@ namespace wg
 				for (const RectSPX * pRect = patches.begin(); pRect < patches.end(); pRect++)
 					_requestRender(*pRect);
 
+				// Update coverage
+
+				//TODO: Use faster method!
+
+				if (pWidget->_overflowsGeo() && m_edgePolicy != EdgePolicy::Clip)
+					_refreshCoverage();
 			}
+
+			pSlot->m_geo = geo;
+
 		}
-
-		pSlot->m_geo = geo;
-		auto pWidget = pSlot->_widget();
-
-		if (bForceResize || pWidget->_size() != geo.size() || pWidget->_scale() != m_scale )
+		else if(bForceResize)
 			pSlot->_setSize(geo, m_scale);
+
 	}
 
 	//____ _onRequestRender() ____________________________________________________
@@ -415,13 +457,15 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		PatchesSPX patches;
-		patches.add(RectSPX::overlap(rect, RectSPX(0, 0, m_size)));
+		patches.add(m_edgePolicy == EdgePolicy::Clip ? RectSPX::overlap(rect, RectSPX(0, 0, m_size)) : rect );
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
 		for (auto pCover = slots.begin(); pCover < pSlot ; pCover++)
 		{
-			if (pCover->m_bVisible && pCover->m_geo.isOverlapping(rect))
+			RectSPX coverCoverage = pCover->_widget()->_coverage() + pCover->m_geo.pos();
+
+			if (pCover->m_bVisible && coverCoverage.isOverlapping(rect))
 				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 		}
 
@@ -429,7 +473,6 @@ namespace wg
 
 		for (const RectSPX * pRect = patches.begin(); pRect < patches.end(); pRect++)
 			_requestRender(*pRect);
-
 	}
 
 

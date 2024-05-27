@@ -87,10 +87,38 @@ namespace wg
 
 		friend class LambdaPanelSlot;
 		
+		//.____ Blueprint _____________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			disabled = false;
+			bool			dropTarget = false;
+			EdgePolicy		edgePolicy = EdgePolicy::Confine;
+			Finalizer_p		finalizer = nullptr;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::Undefined;
+			MaskOp			maskOp = MaskOp::Recurse;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Undefined;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			stickyFocus = false;
+			bool			tabLock = false;
+			String			tooltip;
+
+			Size			maxSize;
+			Size			minSize;
+			Size			defaultSize;
+
+		};
+
 		
 		//.____ Creation __________________________________________
 
 		static LambdaPanel_p	create() { return LambdaPanel_p(new LambdaPanel()); }
+		static LambdaPanel_p	create( const Blueprint& blueprint ) { return LambdaPanel_p(new LambdaPanel(blueprint)); }
 
 		//.____ Identification __________________________________________
 
@@ -99,13 +127,25 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		bool				setMinSize(Size minSize);
-		bool				setMaxSize(Size maxSize);
-		bool				setSizeLimits( Size minSize, Size maxSize );
-		bool				setDefaultSize(Size defaultSize);
+		void			setEdgePolicy(EdgePolicy policy);
+		EdgePolicy		edgePolicy() const { return m_edgePolicy; }
+
+		bool			setMinSize(Size minSize);
+		bool			setMaxSize(Size maxSize);
+		bool			setSizeLimits( Size minSize, Size maxSize );
+		bool			setDefaultSize(Size defaultSize);
 		
 	protected:
 		LambdaPanel();
+		template<class BP> LambdaPanel(const BP& bp) : Panel(bp)
+		{
+			m_bSiblingsOverlap	= true;
+			m_edgePolicy		= bp.edgePolicy;
+			m_defaultSize		= bp.defaultSize;
+			m_minSize			= bp.minSize;
+			m_maxSize			= bp.maxSize;
+		}
+
 		virtual ~LambdaPanel();
 
 		// Overloaded from Container
@@ -134,12 +174,15 @@ namespace wg
 
 		void		_resize( const SizeSPX& size, int scale ) override;
 		void		_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize = false);
+		void		_updateAllSlotsGeo();
 
 		void		_onRequestRender( const RectSPX& rect, const LambdaPanelSlot * pSlot );
 
 		Size		m_minSize;
 		Size		m_maxSize;
 		Size		m_defaultSize;
+
+		EdgePolicy	m_edgePolicy = EdgePolicy::Confine;
 	};
 
 

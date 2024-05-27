@@ -215,10 +215,10 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
-			bool			confineWidgets	= false;
 			Size			defaultSize;
 			bool			disabled		= false;
 			bool			dropTarget		= false;
+			EdgePolicy		edgePolicy		= EdgePolicy::Confine;
 			Finalizer_p		finalizer		= nullptr;
 			int				id				= 0;
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
@@ -243,10 +243,10 @@ namespace wg
 		const TypeInfo&	typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Behavior ________________________________________________________
+		//.____ Geometry ________________________________________________________
 
-		void			setConfineWidgets( bool bConfineWidgets );
-		bool			isConfiningWidgets() const { return m_bConfineWidgets; }
+		void			setEdgePolicy( EdgePolicy policy );
+		EdgePolicy		edgePolicy() const { return m_edgePolicy; }
 
 		void			setDefaultSize( Size size );
 		bool			isDefaultSizeSet() const { return !m_defaultSize.isEmpty(); }
@@ -261,7 +261,7 @@ namespace wg
 		template<class BP> FlexPanel(const BP& bp) : Panel(bp)
 		{
 			m_bSiblingsOverlap = true;
-			m_bConfineWidgets = bp.confineWidgets;
+			m_edgePolicy = bp.edgePolicy;
             m_defaultSize = bp.defaultSize;
         }
 
@@ -295,7 +295,7 @@ namespace wg
 
 		SizeSPX		_sizeNeededForGeo( FlexPanelSlot * pSlot, int scale ) const;
 
-		bool		m_bConfineWidgets = false;		// In confine widget mode we don't clip overflow.
+		EdgePolicy	m_edgePolicy = EdgePolicy::Confine;		// In confine widget mode we don't clip overflow.
 		Size		m_defaultSize;
 	};
 

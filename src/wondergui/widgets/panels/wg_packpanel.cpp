@@ -609,10 +609,10 @@ namespace wg
 			return;
 		}
 		
-		//TODO: Looks like we need to refresh geometry here or something...
-
 		auto pSlot = static_cast<PackPanelSlot* > (_pSlot);
 		slots._releaseGuardPointer(pNewChild, &pSlot);
+
+		Widget_p pOldChild = pSlot->_widget();
 
 		pSlot->_setWidget(pNewChild);
 
@@ -620,7 +620,12 @@ namespace wg
 		{
 			pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(m_scale);
 			pSlot->_widget()->_resize(pSlot->m_geo.size(), m_scale);
-			_requestRender(pSlot->m_geo);
+
+			RectSPX coverage = pNewChild->_coverage() + pSlot->m_geo.pos();
+			if (pOldChild)
+				coverage.growToContain(pOldChild->_coverage() + pSlot->m_geo.pos() );
+			_requestRender(coverage);
+
 			m_totalSpacing = _calcTotalSpacing(m_scale);
 			_refreshGeometries();
 		}
@@ -886,6 +891,8 @@ namespace wg
 		{
 			if( p->m_bVisible )
 			{
+				RectSPX coverage = p->_widget()->_coverage() + p->m_geo.pos();
+
 				spx slotOfs = baselineOffset;
 				if( m_axis == Axis::X )
 				{
@@ -896,15 +903,14 @@ namespace wg
 						RectSPX geo = p->m_geo;
 						if( slotOfs < geo.y )
 						{
-							geo.h += geo.y - slotOfs;
-							geo.y = slotOfs;
+							coverage.h += geo.y - slotOfs;
+							coverage.y -= geo.y - slotOfs;
 						}
 						else
 						{
-							geo.h += slotOfs - geo.y;
+							coverage.h += slotOfs - geo.y;
 						}
 						
-						_requestRender(geo);
 						p->m_geo.y = slotOfs;
 					}
 				}
@@ -917,19 +923,20 @@ namespace wg
 						RectSPX geo = p->m_geo;
 						if( slotOfs < geo.x )
 						{
-							geo.w += geo.x - slotOfs;
-							geo.x = slotOfs;
+							coverage.w += geo.x - slotOfs;
+							coverage.x -= geo.x - slotOfs;
 						}
 						else
 						{
-							geo.w += slotOfs - geo.x;
+							coverage.w += slotOfs - geo.x;
 						}
 				
-						if( p->m_bVisible && bRequestRender )
-							_requestRender(geo);
 						p->m_geo.x = slotOfs;
 					}
 				}
+
+				if (bRequestRender)
+					_requestRender(coverage);
 			}
 		}
 	}
@@ -1056,10 +1063,7 @@ namespace wg
 					if( geo != p->m_geo )
 					{
 						if (bRequestRender)
-						{
-							_requestRender(geo);
-							_requestRender(p->m_geo);
-						}
+							_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
 
 						spx oldW = p->m_geo.w;
 						spx oldH = p->m_geo.h;
@@ -1070,12 +1074,15 @@ namespace wg
 							p->m_bResizeRequired = false;
 						}
 
+						if (bRequestRender)
+							_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
+
 					}
 				}
 				else
 				{
 					if( bRequestRender && p->m_geo.w != 0 && p->m_geo.h != 0 )
-						_requestRender(p->m_geo);
+						_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
 
 					p->m_geo.x = pos.x + contentOfs.x;
 					p->m_geo.y = pos.y + contentOfs.y;
@@ -1150,11 +1157,15 @@ namespace wg
 
 					if( geo != p->m_geo )
 					{
-						if( bRequestRender )
+						if (p->_widget()->_overflowsGeo())
 						{
-							_requestRender(geo);
-							_requestRender(p->m_geo);
+
 						}
+
+
+						if (bRequestRender)
+							_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
+
 						spx oldW = p->m_geo.w;
 						spx oldH = p->m_geo.h;
 						p->m_geo = geo;
@@ -1163,13 +1174,16 @@ namespace wg
 							p->_widget()->_resize( geo.size(), m_scale );
 							p->m_bResizeRequired = false;
 						}
+
+						if (bRequestRender)
+							_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
 					}
 					pOutput++;
 				}
 				else
 				{
 					if( bRequestRender && p->m_geo.w != 0 && p->m_geo.h != 0 )
-						_requestRender(p->m_geo);
+						_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
 
 					p->m_geo.x = pos.x + contentOfs.x;
 					p->m_geo.y = pos.y + contentOfs.y;
@@ -1196,6 +1210,11 @@ namespace wg
 
 			Base::memStackFree(arrayBytes);
 		}
+
+		//TODO: This should be baked into the loop above instead to make it faster.
+
+		_refreshCoverage();
+
 	}
 
 	//____ _populateLayoutArray() ___________________________________________

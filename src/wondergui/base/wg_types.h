@@ -190,6 +190,14 @@ namespace wg
 		Scale							///< Object is scaled to fill the space as much as possible, respecting original aspect ratio.
 	};
 
+	//____ EdgePolicy _________________________________________________________
+
+	enum class EdgePolicy : uint8_t		//. autoExtras
+	{
+		Confine,
+		Clip
+	};
+
 
 	//____ MsgType ______________________________________________________________
 

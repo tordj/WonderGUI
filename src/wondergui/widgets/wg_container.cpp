@@ -287,6 +287,14 @@ namespace wg
 			return 0;
 	}
 
+	//____ _coverage() ________________________________________________________
+
+	RectSPX Container::_coverage() const
+	{
+		return m_coverage;
+	}
+
+
 	//____ _setState() ______________________________________________________
 
 	void Container::_setState( State state )
@@ -378,10 +386,10 @@ namespace wg
 			{
 				WidgetRenderContext * p = &renderList[i];
 
-				RectSPX	clipBounds = RectSPX::overlap(p->coverage,_canvas);
+//				RectSPX	clipBounds = RectSPX::overlap(p->coverage,_canvas);
 				
-				p->clipPop = patchesToClipList(pDevice, clipBounds, patches);
-				p->pWidget->_maskPatches( patches, p->geo, clipBounds, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->clipPop = patchesToClipList(pDevice, p->coverage, patches);
+				p->pWidget->_maskPatches( patches, p->geo, p->coverage, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 				if( patches.isEmpty() )
 				{
@@ -411,9 +419,9 @@ namespace wg
 
 				if (canvas.isOverlapping(dirtBounds))
 				{
-					RectSPX	clipBounds = RectSPX::overlap(coverage,_canvas);
+//					RectSPX	clipBounds = RectSPX::overlap(coverage,_canvas);
 
-					ClipPopData popData = limitClipList(pDevice, clipBounds );
+					ClipPopData popData = limitClipList(pDevice, coverage );
 
 					if( pDevice->clipListSize() > 0 )
 						child.pSlot->_widget()->_render(pDevice, canvas, canvas);
@@ -430,6 +438,9 @@ namespace wg
 
 	void Container::_refreshCoverage()
 	{
+		// We can't start with skin coverage since an empty one would start at 0,0
+		// always creating coverage from top-left when adding childrens coverage.
+
 		RectSPX coverage;
 				
 		SlotWithGeo slot;
