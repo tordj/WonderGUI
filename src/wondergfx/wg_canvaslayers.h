@@ -91,6 +91,7 @@ namespace wg
 
 		struct LayerBP
 		{
+/*
 			LayerBP() {}
 			LayerBP(PixelFormat format) : format(format) {}
 			LayerBP(PixelFormat format, const std::function<void(GfxDevice* pDevice)>& blendFunc,
@@ -98,7 +99,7 @@ namespace wg
 				const std::function<void(GfxDevice* pDevice)>& preBlendFunc = nullptr,
 				const std::function<void(GfxDevice* pDevice)>& preBlendCanvasFunc = nullptr)
 				: format(format), blendFunc(blendFunc), clearFunc(clearFunc), preBlendCanvasFunc(preBlendCanvasFunc), preBlendFunc(preBlendFunc) {}
-
+*/
 
 			PixelFormat format = PixelFormat::BGRA_8;
 

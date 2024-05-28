@@ -88,6 +88,8 @@ namespace wg
 		void			_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 									float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
+		RectSPX			_coverage(const RectSPX& geo, int scale) const override;
+		
 		RectSPX			_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;

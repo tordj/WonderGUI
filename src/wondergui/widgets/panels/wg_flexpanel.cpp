@@ -385,7 +385,7 @@ namespace wg
 
 		PatchesSPX patches;
 		
-		RectSPX rect  = m_edgePolicy == EdgePolicy::Confine ? RectSPX::overlap(rect, RectSPX(0, 0, m_size)) : _rect;
+		RectSPX rect  = m_edgePolicy == EdgePolicy::Confine ? RectSPX::overlap(_rect, RectSPX(0, 0, m_size)) : _rect;
 		patches.add( rect );
 
 		// Remove portions of patches that are covered by opaque upper siblings
@@ -521,12 +521,10 @@ namespace wg
 				if( sz.w > m_size.w )
 					sz.w = m_size.w;
 				if( sz.h > m_size.h )
+					sz.h = m_size.h;
 
-				if( pos.x + sz.w > m_size.w )
-					pos.x = m_size.w - sz.w;
-
-				if( pos.y + sz.h > m_size.h )
-					pos.y = m_size.h - sz.h;
+				limit(pos.x, 0, m_size.w - sz.w);
+				limit(pos.y, 0, m_size.h - sz.h);
 			}
 
 			geo = RectSPX( pos, sz );

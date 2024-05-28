@@ -207,10 +207,10 @@ namespace wg
 		if( !m_margin.isEmpty() )
 			return false;
 		
-		if (m_pBackSkin->_isOpaque(state))
+		if (m_pBackSkin->_isOpaque(state) && !m_pFrontSkin->_hasOverflow() )
 			return true;
 
-		return m_pFrontSkin->_isOpaque(state) && (!m_bSkinInSkin || (!m_pBackSkin->_hasPadding() && !m_pBackSkin->_hasMargin()));
+		return m_pFrontSkin->_isOpaque(state) && (!m_bSkinInSkin || !m_pBackSkin->_hasPadding()) && !m_pBackSkin->_hasOverflow();
 	}
 
 	bool DoubleSkin::_isOpaque(const RectSPX& _rect, const SizeSPX& canvasSize, int scale, State state) const
@@ -274,6 +274,25 @@ namespace wg
 
 		if (oldLayer != -1)
 			pDevice->setRenderLayer(oldLayer);
+	}
+
+	//____ _coverage() _____________________________________________________
+
+	RectSPX DoubleSkin::_coverage(const RectSPX& geo, int scale) const
+	{
+		//TODO: State of BackSkin can affect coverage in DoubleSkin, what do do about that?
+		
+		RectSPX backCoverage = m_pBackSkin->_coverage(geo,scale);
+		
+		RectSPX frontGeo = m_bSkinInSkin ? m_pBackSkin->_contentRect(geo, scale, State::Default) : geo;
+		RectSPX frontCoverage = m_pFrontSkin->_coverage(geo,scale);
+		
+		RectSPX coverage = RectSPX::bounds(backCoverage, frontCoverage);
+
+		coverage -= align(ptsToSpx(m_margin, scale));
+		coverage += align(ptsToSpx(m_overflow, scale));
+
+		return coverage;
 	}
 
 	//____ _dirtyRect() ______________________________________________________
@@ -360,6 +379,9 @@ namespace wg
 			m_bIgnoresState = m_pBackSkin->_ignoresState();
 			m_bOpaque = m_pBackSkin->isOpaque();
 
+			if( m_pBackSkin->_hasOverflow() )
+				m_bOverflow = true;
+			
 			if (m_bSkinInSkin)
 				m_bContentShifting = m_pBackSkin->_isContentShifting();
 
@@ -375,8 +397,8 @@ namespace wg
 
 		if (m_pFrontSkin)
 		{
-			if (m_pFrontSkin->isOpaque() && (!m_pBackSkin || !m_bSkinInSkin || (!m_pBackSkin->_hasPadding() && !m_pBackSkin->_hasMargin()) ))
-				m_bOpaque = true;
+//			if (m_pFrontSkin->isOpaque() && ( !m_bSkinInSkin || (!m_pBackSkin->_hasPadding() && !m_pBackSkin->_hasMargin()) ))
+//				m_bOpaque = true;
 
 			if (!m_pFrontSkin->_ignoresValue())
 				m_bIgnoresValue = false;
@@ -384,6 +406,8 @@ namespace wg
 				m_bIgnoresState = false;
 			if (m_pFrontSkin->_isContentShifting())
 				m_bContentShifting = true;
+			if( m_pFrontSkin->_hasOverflow() )
+				m_bOverflow = true;
 
 			const int* p = m_pFrontSkin->_transitionTimes();
 			for (int i = 0; i < StateBits_Nb; i++)
@@ -392,7 +416,27 @@ namespace wg
 					m_transitionTimes[i] = std::max(m_transitionTimes[i],p[i]);
 			}
 		}
+		
+		// Update m_bOverflowsGeo
+		
+		if( !m_bOverflowsGeo && m_pBackSkin->_overflowsGeo() )
+		{
+			Border backOverflow = m_pBackSkin->overflow() - m_pBackSkin->margin() - m_margin;
+			
+			if( backOverflow.top > 0 || backOverflow.right > 0 || backOverflow.bottom > 0 || backOverflow.left > 0 )
+				m_bOverflowsGeo = true;
+		}
 
+		if( !m_bOverflowsGeo && m_pFrontSkin->_overflowsGeo() )
+		{
+			Border frontOverflow = m_pFrontSkin->overflow() - m_pFrontSkin->margin() - m_margin;
+			
+			if( m_bSkinInSkin )
+				frontOverflow -= m_pBackSkin->padding();
+			
+			if( frontOverflow.top > 0 || frontOverflow.right > 0 || frontOverflow.bottom > 0 || frontOverflow.left > 0 )
+				m_bOverflowsGeo = true;
+		}
 	}
 
 	//____ _incUseCount() _________________________________________________________

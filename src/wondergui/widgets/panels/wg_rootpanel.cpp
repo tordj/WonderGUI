@@ -453,7 +453,7 @@ namespace wg
 	{
 		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
 
-		if( !pGfxDevice || m_canvas.size.isEmpty() || !slot._widget() )
+		if( !pGfxDevice || m_canvas.size.isEmpty() )
 		{
 			//TODO: Error handling!
 			return false;						// No GFX-device or no widgets to render.
@@ -508,7 +508,7 @@ namespace wg
 	{
 		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
 
-		if( !pGfxDevice || m_canvas.size.isEmpty() || !slot._widget() )
+		if( !pGfxDevice || m_canvas.size.isEmpty() )
 		{
 			//TODO: Error handling!
 			return false;						// Missing GfxDevice or Canvas or widgets to render.
@@ -544,7 +544,8 @@ namespace wg
 
 			m_skin.render(pGfxDevice, geo, m_scale, State::Default);
 
-			slot._widget()->_render( pGfxDevice, geo, geo );
+			if( !slot.isEmpty() )
+				slot._widget()->_render( pGfxDevice, geo, geo );
 
 			pGfxDevice->endCanvasUpdate();
 		}
@@ -589,7 +590,7 @@ namespace wg
 	{
 		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
 
-		if( !pGfxDevice || m_canvas.size.isEmpty() || !slot._widget() )
+		if( !pGfxDevice || m_canvas.size.isEmpty() )
 		{
 			//TODO: Error handling!
 			return false;						// No GFX-device or no widgets to render.

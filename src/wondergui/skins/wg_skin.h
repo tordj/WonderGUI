@@ -78,6 +78,11 @@ namespace wg
 		inline bool		isOpaque() const { return m_bOpaque; }
 		inline bool		isOpaque(State state) const { return _isOpaque(state); };
 
+		inline Border	margin() const { return m_margin; }
+		inline Border	padding() const { return m_padding; }
+		inline Border	overflow() const { return m_overflow; }
+		
+		
 		//.____ Internal ________________________________________________________
 
 		virtual SizeSPX		_minSize(int scale) const;
