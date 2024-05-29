@@ -48,7 +48,7 @@ DLLEXPORTPREFIX int init( wg_plugin_interface * pInterface, void * pRealHostBrid
 	WgPluginBase::setDefaultGfxDevice(pGfxDevice);
 	
 	
-	auto pPluginRoot = new WgPluginRoot(hPluginCapsule);
+	auto pPluginRoot = new WgPluginRoot(hPluginCapsule, WgPluginBase::context() );
 
 	auto pFontBlob = loadBlob("resources/DroidSans.ttf");
 	auto pFont = FreeTypeFont::create(pFontBlob);

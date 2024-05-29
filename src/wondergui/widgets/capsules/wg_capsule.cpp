@@ -235,6 +235,7 @@ namespace wg
 	void Capsule::_releaseChild(StaticSlot * _pSlot)
 	{
 		slot._setWidget(nullptr);
+		_refreshCoverage();
 		_requestRender();
 		_requestResize();
 	}
@@ -251,6 +252,7 @@ namespace wg
 			pWidget->_resize(sz, m_scale);
 		}
 
+		_refreshCoverage();
 		_requestRender();
 		_requestResize();
 	}

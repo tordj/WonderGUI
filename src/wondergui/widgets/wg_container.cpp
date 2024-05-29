@@ -469,8 +469,11 @@ namespace wg
 
 			// Signal if overflow has changed
 			
-			if( bOverflowsGeo || m_bOverflowsGeo )
+			if (bOverflowsGeo || m_bOverflowsGeo)
+			{
+				m_bOverflowsGeo = bOverflowsGeo;
 				_overflowChanged();
+			}
 		}
 	}
 

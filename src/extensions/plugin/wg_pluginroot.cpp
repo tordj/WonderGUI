@@ -420,6 +420,14 @@ namespace wg
 		return RectSPX(0,0,m_size);
 	}
 
+	//____ _childOverflowChanged() ____________________________________________
+
+	void PluginRoot::_childOverflowChanged(StaticSlot* pSlot)
+	{
+		//TODO: Implement as part of overflow support.
+	}
+
+
 	//____ _childLocalToGlobal() __________________________________________________
 
 	RectSPX PluginRoot::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const

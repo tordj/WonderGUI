@@ -21,6 +21,8 @@ private:
 	bool		setupGUI(Visitor * pVisitor);
 	
 	Widget_p	createMovableBox( Skin * pSkin, FlexPanel * pParent );
+	Widget_p	makeMovable(const Widget_p& pWidget, FlexPanel* pParent);
+
 
 	Window_p	m_pWindow;
 	

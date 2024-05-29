@@ -377,7 +377,7 @@ namespace wg
 			
 			m_bIgnoresValue = m_pBackSkin->_ignoresValue();
 			m_bIgnoresState = m_pBackSkin->_ignoresState();
-			m_bOpaque = m_pBackSkin->isOpaque();
+			m_bOpaque = m_pBackSkin->isOpaque() && !m_pFrontSkin->_overflowsGeo();
 
 			if( m_pBackSkin->_hasOverflow() )
 				m_bOverflow = true;
@@ -397,8 +397,8 @@ namespace wg
 
 		if (m_pFrontSkin)
 		{
-//			if (m_pFrontSkin->isOpaque() && ( !m_bSkinInSkin || (!m_pBackSkin->_hasPadding() && !m_pBackSkin->_hasMargin()) ))
-//				m_bOpaque = true;
+			if (m_pFrontSkin->isOpaque() && !m_pBackSkin->_overflowsGeo() && ( !m_bSkinInSkin || (!m_pBackSkin->_hasPadding() && !m_pBackSkin->_hasMargin())) )
+				m_bOpaque = true;
 
 			if (!m_pFrontSkin->_ignoresValue())
 				m_bIgnoresValue = false;

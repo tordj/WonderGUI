@@ -102,19 +102,72 @@ bool MyApp::setupGUI(Visitor* pVisitor)
 		.outlineThickness = 2
 	});
 	
+	auto pRedBox = BoxSkin::create({
+	.color = Color::Red,
+	.outlineColor = Color::Black,
+	.outlineThickness = 2
+		});
+
 	auto pBoxWithShadow = DoubleSkin::create({
 		.skinInSkin = false,
 		.skins = { pGreenBox, pShadowSkin }
 	});
+
+	auto pRedBoxWithShadow = DoubleSkin::create({
+		.skinInSkin = false,
+		.skins = { pRedBox, pShadowSkin }
+		});
+
+
+	auto pSplashSurface = pVisitor->loadSurface("resources/splash.png");
+
+
+
+	auto pGlowSkin = BlockSkin::create({
+		.color = HiColor{4096,4096,4096,2048},
+		.layer = 3,
+		.overflow = {50,50,50,50},
+		.surface = pSplashSurface,
+	});
+
+	auto pBoxWithGlow = DoubleSkin::create({
+		.skins = { pGlowSkin, pGreenBox }
+		});
+
 	
 	// Setup layout
 	
 	auto pBaseFlex = FlexPanel::create();
 	pRoot->slot = pBaseFlex;
-	
+
+	pBaseFlex->slots << createMovableBox(pBoxWithGlow, pBaseFlex);
 	pBaseFlex->slots << createMovableBox(pBoxWithShadow,pBaseFlex);
 	pBaseFlex->slots << createMovableBox(pBoxWithShadow,pBaseFlex);
 	pBaseFlex->slots << createMovableBox(pBoxWithShadow,pBaseFlex);
+
+	// Create box with capsule
+
+	auto pBox = Filler::create({ .defaultSize = {64,64}, .skin = pRedBoxWithShadow });
+
+	pBaseFlex->slots << makeMovable(ScaleCapsule::create({ .child = pBox }), pBaseFlex);
+
+
+
+	// Create Pack Panel with boxes
+
+	auto pPack = PackPanel::create();
+
+	pPack->slots << Filler::create({ .defaultSize = {64,64}, .skin = pBoxWithShadow });
+	pPack->slots << Filler::create({ .defaultSize = {64,64}, .skin = pBoxWithGlow });
+	pPack->slots << Filler::create({ .defaultSize = {64,64}, .skin = pBoxWithShadow });
+
+	pBaseFlex->slots << makeMovable(pPack, pBaseFlex);
+
+
+
+
+
+
 
 	return true;
 }
@@ -128,14 +181,21 @@ Widget_p MyApp::createMovableBox( Skin * pSkin, FlexPanel * pParent )
 		.skin = pSkin
 	});
 	
-	Base::msgRouter()->addRoute(pBox, MsgType::MouseDrag, [pBox,pParent](Msg * _pMsg)
-	{
-		auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
-		
-		auto it = pParent->slots.find(pBox);
-		
-		it->move(pMsg->draggedNow());
-	});
-	
-	return pBox;
+	return makeMovable(pBox, pParent);
+}
+
+//____ makeMovable() __________________________________________________________
+
+Widget_p MyApp::makeMovable(const Widget_p& pWidget, FlexPanel* pParent)
+{
+	Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pWidget, pParent](Msg* _pMsg)
+		{
+			auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
+
+			auto it = pParent->slots.find(pWidget);
+
+			it->move(pMsg->draggedNow());
+		});
+
+	return pWidget;
 }
