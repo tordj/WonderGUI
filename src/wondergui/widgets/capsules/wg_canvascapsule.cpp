@@ -539,7 +539,7 @@ namespace wg
 
 	//____ _maskPatches() ________________________________________________________
 
-	void CanvasCapsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void CanvasCapsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
 		RectSPX skinRect = geo;
 		
@@ -570,7 +570,7 @@ namespace wg
 			if( Util::pixelFormatToDescription(m_canvasFormat).A_mask == 0 )
 				patches.sub(RectSPX::overlap(canvasArea, clip));
 			else
-				slot._widget()->_maskPatches(patches, canvasArea, clip, blendMode);
+				slot._widget()->_maskPatches(patches, canvasArea, clip);
 		}
 	}
 

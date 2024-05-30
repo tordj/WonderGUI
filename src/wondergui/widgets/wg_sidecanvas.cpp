@@ -91,9 +91,9 @@ namespace wg
 
 	//____ _maskPatches() _________________________________________________________________
 
-	void SideCanvas::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void SideCanvas::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		m_pHolder->_sideCanvasMaskPatches(this,patches,geo,clip,blendMode);
+		m_pHolder->_sideCanvasMaskPatches(this,patches,geo,clip);
 	}
 
 	//____ _render() _________________________________________________________________
@@ -168,9 +168,9 @@ namespace wg
 
 	//____ _Holder::_sideCanvasMaskPatches() ____________________________________________
 
-	void SideCanvas::Holder::_sideCanvasMaskPatches( SideCanvas * pCanvas, PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void SideCanvas::Holder::_sideCanvasMaskPatches( SideCanvas * pCanvas, PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		return pCanvas->Widget::_maskPatches(patches,geo,clip,blendMode);
+		return pCanvas->Widget::_maskPatches(patches,geo,clip);
 	}
 
 	//____ _Holder::_sideCanvasSetSkin() ____________________________________________

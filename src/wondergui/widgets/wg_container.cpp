@@ -389,7 +389,7 @@ namespace wg
 //				RectSPX	clipBounds = RectSPX::overlap(p->coverage,_canvas);
 				
 				p->clipPop = patchesToClipList(pDevice, p->coverage, patches);
-				p->pWidget->_maskPatches( patches, p->geo, p->coverage, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->pWidget->_maskPatches( patches, p->geo, p->coverage );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 				if( patches.isEmpty() )
 				{
@@ -417,7 +417,7 @@ namespace wg
 				RectSPX canvas = child.geo + _canvas.pos();
 				RectSPX coverage = child.pSlot->_widget()->_coverage() + child.geo.pos() + _canvas.pos();
 
-				if (canvas.isOverlapping(dirtBounds))
+				if (coverage.isOverlapping(dirtBounds))
 				{
 //					RectSPX	clipBounds = RectSPX::overlap(coverage,_canvas);
 
@@ -498,10 +498,10 @@ namespace wg
 
 	//____ _maskPatches() __________________________________________________________
 
-	void Container::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void Container::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
-		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
+		if( m_bOpaque )
 			patches.sub( RectSPX::overlap(geo,clip) );
 		else
 		{
@@ -510,7 +510,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				child.pSlot->_widget()->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+				child.pSlot->_widget()->_maskPatches( patches, child.geo + geo.pos(), clip );
 				_nextSlotWithGeo( child );
 			}
 		}

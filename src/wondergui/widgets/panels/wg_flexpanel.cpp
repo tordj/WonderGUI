@@ -393,7 +393,7 @@ namespace wg
 		for(auto pCover = slots.begin() ; pCover < pSlot ; pCover++ )
 		{
 			if( pCover->m_bVisible && pCover->_widget()->_coverage().isOverlapping( rect ) )
-				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0,65536,65536 ) );
 		}
 
 		// Make request render calls

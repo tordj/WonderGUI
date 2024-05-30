@@ -345,7 +345,7 @@ namespace wg
 		{
 			RectSPX geo = pCover->m_geo;
 			if( pCover->m_bVisible && geo.isOverlapping( rect ) )
-				pCover->_widget()->_maskPatches( patches, geo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, geo, RectSPX(0,0,65536,65536 ) );
 		}
 
 		// Make request render calls

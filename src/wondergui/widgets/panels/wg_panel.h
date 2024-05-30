@@ -143,7 +143,7 @@ namespace wg
 		
 		virtual ~Panel() {};
 
-		virtual void	_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
+		virtual void	_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip ) override;
 
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;

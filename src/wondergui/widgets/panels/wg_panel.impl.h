@@ -95,11 +95,11 @@ namespace wg
 	//____ _maskPatches() __________________________________________________________
 
 	template < class SlotType>
-	void Panel<SlotType>::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void Panel<SlotType>::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		//TODO: Should m_maskOp be moved to Container instead? Could remove many versions of _maskPatches()...
-		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
+		if( m_bOpaque )
 		{
 			patches.sub( RectSPX::overlap(geo,clip) );
 			return;
@@ -115,7 +115,7 @@ namespace wg
 
 				while(child.pSlot)
 				{
-					child.pSlot->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
+					child.pSlot->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip );
 					_nextSlotWithGeo( child );
 				}
 				break;

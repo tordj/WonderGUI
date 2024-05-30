@@ -986,7 +986,7 @@ namespace wg
 
 	//____ _maskPatches() _____________________________________________________
 
-	void ScrollPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
+	void ScrollPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)
 	{
 		if (!m_skin.isEmpty() && m_skin.isOpaque())
 			patches.sub(RectSPX::overlap(geo, clip));
@@ -995,7 +995,7 @@ namespace wg
 			// Lets make it easy, only mask against our child, not the scrollbars with all their details.
 
 			if (slot._widget())
-				slot._widget()->_maskPatches(patches, m_childCanvas + geo.pos(), RectSPX::overlap(clip, m_childWindow + geo.pos()), blendMode);
+				slot._widget()->_maskPatches(patches, m_childCanvas + geo.pos(), RectSPX::overlap(clip, m_childWindow + geo.pos()));
 		}
 	}
 

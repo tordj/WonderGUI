@@ -276,21 +276,21 @@ namespace wg
 
 	//____ _maskPatches() _____________________________________________________
 
-	void TwoSlotPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
+	void TwoSlotPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)
 	{
 		{
 			//TODO: Don't just check isOpaque() globally, check rect by rect.
-			if ((m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
+			if (m_bOpaque)
 				patches.sub(RectSPX::overlap(geo, clip));
 			else
 			{
 				RectSPX contentRect = _contentRect(geo);
 
 				if (slots[0]._widget())
-					slots[0]._widget()->_maskPatches(patches, _slotOneRect(contentRect), clip, blendMode );
+					slots[0]._widget()->_maskPatches(patches, _slotOneRect(contentRect), clip );
 
 				if (slots[1]._widget())
-					slots[1]._widget()->_maskPatches(patches, _slotTwoRect(contentRect), clip, blendMode );
+					slots[1]._widget()->_maskPatches(patches, _slotTwoRect(contentRect), clip );
 			}
 		}
 	}

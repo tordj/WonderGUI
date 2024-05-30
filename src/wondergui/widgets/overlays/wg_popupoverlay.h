@@ -197,7 +197,7 @@ namespace wg
 
 		// Overloaded from container
 
-//		void			_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode);
+//		void			_maskPatches(Patches& patches, const RectI& geo, const RectI& clip);
 //		void			_collectPatches(Patches& container, const RectI& geo, const RectI& clip);
 
 

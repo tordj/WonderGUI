@@ -556,22 +556,22 @@ namespace wg
 
 	//____ _maskPatches() _____________________________________________________
 
-	void SplitPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
+	void SplitPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)
 	{
 		{
 			//TODO: Don't just check isOpaque() globally, check rect by rect.
-			if ((m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
+			if (m_bOpaque)
 				patches.sub(RectSPX::overlap(geo, clip));
 			else
 			{
 				if (slots[0]._widget())
-					slots[0]._widget()->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip, blendMode );
+					slots[0]._widget()->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip );
 
 				if (m_handleSkin.isOpaque() )
 					patches.sub(RectSPX::overlap(m_handleGeo, clip));
 
 				if (slots[1]._widget())
-					slots[1]._widget()->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip, blendMode );
+					slots[1]._widget()->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip );
 			}
 		}
 	}

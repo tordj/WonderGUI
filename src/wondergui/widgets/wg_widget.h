@@ -236,7 +236,7 @@ namespace wg
 		virtual	bool		_markTest(const CoordSPX& ofs);
 
 		virtual void		_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip);
-		virtual void		_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode);
+		virtual void		_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip);
 
 		virtual void    	_preRender();
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);
@@ -292,8 +292,6 @@ namespace wg
 		void				_setSlot(StaticSlot * pSlot);
 		SlotHolder *		_holder() { return m_pHolder; }
 		const SlotHolder *	_holder() const { return m_pHolder; }
-
-		virtual BlendMode	_getBlendMode() const;
 
 		int					_listAncestors(Widget* array[], int max);
 

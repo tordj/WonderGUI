@@ -79,7 +79,7 @@ namespace wg
 		// Overloaded from Widget
 
 		void		_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip) override;
-		void		_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode) override;
+		void		_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip) override;
 		void		_resize(const SizeSPX& size, int scale) override;
 
 		// Overloaded from Container

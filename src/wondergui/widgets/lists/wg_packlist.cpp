@@ -301,11 +301,11 @@ namespace wg
 
 	//____ _maskPatches() _______________________________________________________
 
-	void PackList::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void PackList::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
+		if(m_bOpaque)
 			patches.sub( RectSPX::overlap(geo,clip) );
-		else if( m_bOpaqueEntries && blendMode == BlendMode::Blend )
+		else if( m_bOpaqueEntries )
 		{
 			if( m_bHorizontal )
 				patches.sub( RectSPX::overlap( RectSPX( geo.x, geo.y, std::min(geo.w,m_contentLength), geo.h ), clip ) );
@@ -320,11 +320,10 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				static_cast<const Slot*>(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
+				static_cast<const Slot*>(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip );
 				_nextSlotWithGeo( child );
 			}
 		}
-
 	}
 
 	//____ _render() _______________________________________________________

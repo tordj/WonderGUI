@@ -421,7 +421,7 @@ namespace wg
 					RectSPX coverCoverage = pCover->_widget()->_coverage() + pCover->m_geo.pos();
 
 					if (pCover->m_bVisible && (coverCoverage.isOverlapping(oldCoverage) || coverCoverage.isOverlapping(newCoverage)) )
-						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
+						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
 
 					pCover++;
 				}
@@ -466,7 +466,7 @@ namespace wg
 			RectSPX coverCoverage = pCover->_widget()->_coverage() + pCover->m_geo.pos();
 
 			if (pCover->m_bVisible && coverCoverage.isOverlapping(rect))
-				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
+				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
 		}
 
 		// Make request render calls

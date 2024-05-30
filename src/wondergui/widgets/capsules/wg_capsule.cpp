@@ -161,17 +161,17 @@ namespace wg
 
 	//____ _maskPatches() ________________________________________________________
 
-	void Capsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void Capsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
 		if (!m_skin.isEmpty())
 		{
 			if(m_skin.isOpaque( clip - geo.pos(), geo.size(), m_scale, m_state ) )
 				patches.sub(RectSPX::overlap(geo, clip));
 			else if( slot._widget() )
-				slot._widget()->_maskPatches(patches, _contentRect(geo), clip, blendMode);
+				slot._widget()->_maskPatches(patches, _contentRect(geo), clip);
 		}
 		else if( slot._widget() )
-			slot._widget()->_maskPatches( patches, geo, clip, blendMode );
+			slot._widget()->_maskPatches( patches, geo, clip  );
 	}
 
 	//____ _resize() ____________________________________________________________

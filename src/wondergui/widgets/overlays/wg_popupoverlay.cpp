@@ -389,7 +389,7 @@ namespace wg
 			while (pCover >= popupSlots._begin())
 			{
 				if (pCover->m_geo.isOverlapping(rect) && pCover->m_state != Slot::State::OpeningDelay && pCover->m_state != Slot::State::Opening && pCover->m_state != Slot::State::Closing)
-					pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, spx_max, spx_max), _getBlendMode());
+					pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, spx_max, spx_max));
 
 				pCover--;
 			}
@@ -452,7 +452,7 @@ namespace wg
 
 			p->clipPop = patchesToClipList(pDevice, p->geo, patches);
 			if( p->pSlot->m_state != Slot::State::Opening && p->pSlot->m_state != Slot::State::Closing )
-				p->pSlot->_widget()->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->pSlot->_widget()->_maskPatches(patches, p->geo, p->geo);		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 			if (patches.isEmpty())
 				break;
@@ -497,7 +497,7 @@ namespace wg
 
 	//____ _maskPatches() _____________________________________________________
 
-//	void PopupOverlay::_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode)
+//	void PopupOverlay::_maskPatches(Patches& patches, const RectI& geo, const RectI& clip)
 //	{
 //		Need to except children that are in states OpeningDelay, Opening and Closing.
 //	}

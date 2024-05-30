@@ -678,17 +678,6 @@ namespace wg
 		return n;
 	}
 
-	//____ _getBlendMode() _________________________________________________________
-
-	BlendMode Widget::_getBlendMode() const
-	{
-		Container * pParent = _parent();
-		if( pParent )
-			return pParent->_getBlendMode();
-		else
-			return BlendMode::Blend;		// We always start out with BlendMode::Blend.
-	}
-
 	//____ _collectPatches()  ____________________________________________________
 
 	void Widget::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
@@ -701,9 +690,9 @@ namespace wg
 
 	//____ _maskPatches() _______________________________________________________
 
-	void Widget::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void Widget::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
+		if( m_bOpaque )
 		{
 			if( !m_skin.isEmpty() )
 				patches.sub( RectSPX::overlap(m_skin.coverage(geo, m_scale), clip ));

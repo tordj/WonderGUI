@@ -184,7 +184,7 @@ namespace wg
 		void				_resize(const SizeSPX& size, int scale) override;
 
 		void				_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip) override;
-		void				_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode) override;
+		void				_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip) override;
 		
 		void				_releaseChild( StaticSlot * pSlot ) override;
 		void				_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
