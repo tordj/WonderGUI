@@ -988,15 +988,18 @@ namespace wg
 
 	void ScrollPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)
 	{
-		if (!m_skin.isEmpty() && m_skin.isOpaque())
-			patches.sub(RectSPX::overlap(geo, clip));
-		else
-		{
-			// Lets make it easy, only mask against our child, not the scrollbars with all their details.
+		RectSPX coverage = m_skin.contentRect(geo, m_scale, m_state);
+		
+		patches.sub( RectSPX::overlap(coverage,clip) );
 
-			if (slot._widget())
-				slot._widget()->_maskPatches(patches, m_childCanvas + geo.pos(), RectSPX::overlap(clip, m_childWindow + geo.pos()));
-		}
+		if( coverage.contains(_contentRect(geo)) );
+			return;										// No need to loop through children, skins coverage contains them all.
+
+
+		// Lets make it easy, only mask against our child, not the scrollbars with all their details.
+
+		if (slot._widget())
+			slot._widget()->_maskPatches(patches, m_childCanvas + geo.pos(), RectSPX::overlap(clip, m_childWindow + geo.pos()));
 	}
 
 	//____ _alphaTest() _______________________________________________________

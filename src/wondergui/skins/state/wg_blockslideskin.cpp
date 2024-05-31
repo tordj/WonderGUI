@@ -262,18 +262,6 @@ namespace wg
 		return true;
 	}
 
-	//____ _isOpaque() _____________________________________________________________
-
-	bool BlockSlideSkin::_isOpaque(State state) const
-	{
-		return m_bStateOpaque[state];
-	}
-
-	bool BlockSlideSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
-	{
-		return m_bStateOpaque[state];
-	}
-
 	//____ _dirtyRect() ______________________________________________________
 
 	RectSPX BlockSlideSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
@@ -318,39 +306,46 @@ namespace wg
 		return m_transitionTimes;
 	}
 
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX BlockSlideSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bStateOpaque[state] )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
+	}
+
 	//____ _updateOpaqueFlags() ________________________________________________
 
 	void BlockSlideSkin::_updateOpaqueFlags()
 	{
+		bool bOpaque = false;
 		bool bTintDecides = false;
 
-		if (!m_pSurface || !m_margin.isEmpty())
-			m_bOpaque = false;
+		if (!m_pSurface)
+			bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
-			m_bOpaque = true;
+			bOpaque = true;
 		else if (!m_gradient.isUndefined() && !m_gradient.isOpaque())
-			m_bOpaque = false;
+			bOpaque = false;
 		else if (m_blendMode == BlendMode::Blend)
 		{
-			m_bOpaque = m_pSurface->isOpaque();
-			bTintDecides = m_bOpaque;
+			bOpaque = m_pSurface->isOpaque();
+			bTintDecides = bOpaque;
 		}
 		else
-			m_bOpaque = false;
+			bOpaque = false;
 
 		if (bTintDecides)
 		{
 			for (int i = 0; i < State::IndexAmount; i++)
-			{
 				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
-				if (m_stateColors[i].a != 4096)
-					m_bOpaque = false;
-			}
 		}
 		else
 		{
 			for (int i = 0; i < State::IndexAmount; i++)
-				m_bStateOpaque[i] = m_bOpaque;
+				m_bStateOpaque[i] = bOpaque;
 		}
 	}
 

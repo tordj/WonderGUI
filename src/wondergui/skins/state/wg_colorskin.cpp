@@ -77,7 +77,6 @@ namespace wg
 
 		_updateContentShift();
 		_updateUnsetColors();
-		_updateOpaqueFlag();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -87,16 +86,14 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _isOpaque() _____________________________________________________________
+	//____ _coverage() ___________________________________________________________
 
-	bool ColorSkin::_isOpaque(State state) const
+	RectSPX ColorSkin::_coverage(const RectSPX& geo, int scale, State state) const
 	{
-		return (m_color[state].a == 4096 && m_margin.isEmpty());
-	}
-
-	bool ColorSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
-	{
-		return (m_color[state].a == 4096 && m_margin.isEmpty());
+		if( (m_color[state].a == 4096 && m_blendMode == BlendMode::Blend) || m_blendMode == BlendMode::Replace )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
 	}
 
 	//____ _render() _______________________________________________________________
@@ -144,38 +141,6 @@ namespace wg
 
 		return StateSkin::_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
-	}
-
-	//____ _updateOpaqueFlag() ____________________________________________________
-
-	void ColorSkin::_updateOpaqueFlag()
-	{
-		if( !m_margin.isEmpty() )
-		{
-			m_bOpaque = false;
-			return;
-		}
-		
-		switch (m_blendMode)
-		{
-			case BlendMode::Replace:
-				m_bOpaque = true;
-				break;
-
-			case BlendMode::Blend:
-			{
-				int alpha = 0;
-
-				for (int i = 0; i < State::IndexAmount; i++)
-					alpha += (int)m_color[i].a;
-
-				m_bOpaque = (alpha == 4096 * State::IndexAmount);
-				break;
-			}
-
-			default:
-				m_bOpaque = false;
-		}
 	}
 
 	//____ _updateUnsetColors() _______________________________________________

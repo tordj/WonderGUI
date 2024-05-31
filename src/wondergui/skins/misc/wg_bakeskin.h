@@ -78,9 +78,6 @@ namespace wg
 		CoordSPX		_contentOfs(int scale, State state) const override;
 		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
 
-		bool			_isOpaque( State state ) const override;
-		bool			_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
-
 		bool			_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 									float value = 1.f, float value2 = -1.f, int alphaOverride = -1 ) const override;
 
@@ -91,6 +88,8 @@ namespace wg
 									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
+		RectSPX			_coverage(const RectSPX& geo, int scale, State state) const override;
+		
 		int				_animationLength(State state) const override;
 
 		Bitmask<uint8_t>_transitioningStates() const override;
@@ -122,8 +121,6 @@ namespace wg
 		mutable SizeSPX		m_cachedMinSize;						// Calculated minSize for scale represented by m_cachedScale;
 		mutable SizeSPX		m_cachedDefaultSize;					// Calculated defaultSize for scale represented by m_cachedScale;
 		mutable BorderSPX	m_cachedContentPadding[State::IndexAmount];
-
-		Bitmask<uint32_t>	m_opaqueStates;
 
 		Bitmask<uint8_t>	m_transitioningStates;
 		int					m_transitionTimes[StateBits_Nb];

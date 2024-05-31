@@ -97,13 +97,13 @@ namespace wg
 	template < class SlotType>
 	void Panel<SlotType>::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		//TODO: Don't just check isOpaque() globally, check rect by rect.
-		//TODO: Should m_maskOp be moved to Container instead? Could remove many versions of _maskPatches()...
-		if( m_bOpaque )
-		{
-			patches.sub( RectSPX::overlap(geo,clip) );
-			return;
-		}
+		RectSPX coverage = m_skin.contentRect(geo, m_scale, m_state);
+		
+		patches.sub( RectSPX::overlap(coverage,clip) );
+
+		if( coverage.contains(_contentRect(geo)) );
+			return;										// No need to loop through children, skins coverage contains them all.
+
 
 		switch( m_maskOp )
 		{

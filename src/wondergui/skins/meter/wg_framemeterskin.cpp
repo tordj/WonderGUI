@@ -164,9 +164,7 @@ namespace wg
 
 	void FrameMeterSkin::_updateOpacityFlag()
 	{
-		if( m_margin.isEmpty() )
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Replace)
+		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{

@@ -75,13 +75,6 @@ namespace wg
 		inline CoordSPX	contentOfs(int scale, State state) const { return m_pSkin ? m_pSkin->_contentOfs(scale, state) : CoordSPX(); }
 		inline RectSPX	contentRect(const RectSPX& canvas, int scale, State state) const { return m_pSkin ? m_pSkin->_contentRect(canvas, scale, state) : canvas; }
 
-		inline bool		isOpaque() const { return m_pSkin ? m_pSkin->_isOpaque() : false; }
-		inline bool		isOpaque(State state) const { return m_pSkin ? m_pSkin->_isOpaque(state) : false; }
-		inline bool		isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
-		{
-			return m_pSkin ? m_pSkin->_isOpaque(rect, canvasSize, scale, state) : false;
-		}
-
 		inline bool		markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
 								float value = 1.f, float value2 = -1.f) const
 		{
@@ -90,8 +83,10 @@ namespace wg
 
 		inline bool		isContentShifting() const { return m_pSkin ? m_pSkin->_isContentShifting() : false; }
 
-		inline RectSPX	coverage( const RectSPX& geo, int scale) const { return m_pSkin ? m_pSkin->_coverage(geo, scale) : RectSPX(); }
+		inline RectSPX	spread( const RectSPX& geo, int scale) const { return m_pSkin ? m_pSkin->_spread(geo, scale) : RectSPX(); }
 		inline 	bool	overflowsGeo() const { return m_pSkin ? m_pSkin->_overflowsGeo() : false; }
+
+		virtual RectSPX	coverage(const RectSPX& geo, int scale, State state) const { return m_pSkin ? m_pSkin->_coverage(geo,scale, state) : RectSPX(); }
 
 
 	protected:

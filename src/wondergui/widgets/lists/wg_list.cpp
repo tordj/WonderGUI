@@ -76,7 +76,6 @@ namespace wg
 
 		m_pEntrySkin[0] = pSkin;
 		m_pEntrySkin[1] = pSkin;
-		m_bOpaqueEntries = pSkin ? pSkin->isOpaque() : false;
 
 		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->_contentBorderSize(m_scale) : SizeSPX() );
 	}
@@ -97,7 +96,6 @@ namespace wg
 
 		m_pEntrySkin[0] = pOddEntrySkin;
 		m_pEntrySkin[1] = pEvenEntrySkin;
-		m_bOpaqueEntries = (pOddEntrySkin->isOpaque() && pEvenEntrySkin->isOpaque());
 
 		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->_contentBorderSize(m_scale) : SizeSPX() );
 		return true;

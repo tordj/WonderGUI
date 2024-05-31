@@ -50,7 +50,6 @@ namespace wg
 			Size		defaultSize;						// Mandatory
 			Direction	direction = Direction::Right;
 			Finalizer_p	finalizer = nullptr;
-			Border		gfxPadding;
 			Gradient	gradient;
 
 			int			layer = -1;
@@ -89,6 +88,8 @@ namespace wg
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
+		RectSPX	_coverage(const RectSPX& geo, int scale, State state) const override;
+
 	private:
 		FillMeterSkin();
 		FillMeterSkin(	const Blueprint& blueprint );
@@ -100,7 +101,6 @@ namespace wg
 
 		BlendMode	m_blendMode = BlendMode::Blend;
 		Direction	m_direction;
-		Border		m_gfxPadding;
         pts		    m_minBarLength;
 		HiColor		m_barColorEmpty;
 		HiColor		m_barColorFull;
@@ -110,6 +110,7 @@ namespace wg
 
 		Gradient	m_gradient;
 		bool		m_bGradient = false;
+		bool		m_bOpaque;
 	};
 
 

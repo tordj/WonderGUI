@@ -75,9 +75,6 @@ namespace wg
 		
 		//.____ Misc ____________________________________________________
 
-		inline bool		isOpaque() const { return m_bOpaque; }
-		inline bool		isOpaque(State state) const { return _isOpaque(state); };
-
 		inline Border	margin() const { return m_margin; }
 		inline Border	padding() const { return m_padding; }
 		inline Border	overflow() const { return m_overflow; }
@@ -106,10 +103,6 @@ namespace wg
 		virtual BorderSPX	_contentBorder(int scale, State state) const;
 		virtual SizeSPX		_contentBorderSize(int scale) const;
 
-		bool				_isOpaque() const { return m_bOpaque; }
-		virtual bool		_isOpaque(State state) const;
-		virtual bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const;
-
 		virtual bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
 									float value = 1.f, float value2 = -1.f, int alphaOverride = -1 ) const = 0;
 
@@ -117,8 +110,11 @@ namespace wg
 									float value = 1.f, float value2 = -1.f, int animPos = 0, 
 									float* pStateFractions = nullptr) const = 0;
 
-		virtual RectSPX		_coverage(const RectSPX& geo, int scale) const;
+		virtual RectSPX		_spread(const RectSPX& geo, int scale) const;
 
+		virtual RectSPX		_coverage(const RectSPX& geo, int scale, State state) const = 0;
+
+		
 		virtual RectSPX		_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState,
 									float newValue = 1.f, float oldValue = 1.f, 
 									float newValue2 = -1.f, float oldValue2 = -1.f, 
@@ -174,7 +170,6 @@ namespace wg
 		bool			m_bContentShifting = false;
 		bool			m_bIgnoresValue = true;
 		bool			m_bIgnoresState = true;
-		bool			m_bOpaque = false;
 		bool			m_bOverflow = false;				// Set when there is overflow, even if it might not overflow the geo.
 		bool			m_bOverflowsGeo = false;			// Set when overflow is larger than margin.
 

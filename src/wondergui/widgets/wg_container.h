@@ -133,9 +133,9 @@ namespace wg
 
 			virtual void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 
-			void					_refreshCoverage();
+			void					_refreshSpread();
 		
-			RectSPX					_coverage() const override;
+			RectSPX					_spread() const override;
 		
 			struct SlotWithGeo
 			{
@@ -151,7 +151,7 @@ namespace wg
 
 			bool					m_bSiblingsOverlap = true;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).		
 
-			RectSPX					m_coverage;
+			RectSPX					m_spread;
 
 	};
 

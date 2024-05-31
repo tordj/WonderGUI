@@ -71,12 +71,15 @@ namespace wg
 		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
+		RectSPX		_coverage(const RectSPX& geo, int scale, State state) const override;
+
 	private:
 		StaticGradientSkin( const Blueprint& blueprint );
 		~StaticGradientSkin() {};
 
 		Gradient	m_gradient;
 		BlendMode	m_blendMode;
+		bool		m_bOpaque;
 
 	};
 

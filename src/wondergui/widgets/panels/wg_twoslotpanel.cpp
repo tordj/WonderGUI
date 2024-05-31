@@ -278,21 +278,21 @@ namespace wg
 
 	void TwoSlotPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)
 	{
-		{
-			//TODO: Don't just check isOpaque() globally, check rect by rect.
-			if (m_bOpaque)
-				patches.sub(RectSPX::overlap(geo, clip));
-			else
-			{
-				RectSPX contentRect = _contentRect(geo);
+		RectSPX coverage = m_skin.contentRect(geo, m_scale, m_state);
+		
+		patches.sub( RectSPX::overlap(coverage,clip) );
 
-				if (slots[0]._widget())
-					slots[0]._widget()->_maskPatches(patches, _slotOneRect(contentRect), clip );
+		if( coverage.contains(_contentRect(geo)) );
+			return;										// No need to loop through children, skins coverage contains them all.
 
-				if (slots[1]._widget())
-					slots[1]._widget()->_maskPatches(patches, _slotTwoRect(contentRect), clip );
-			}
-		}
+
+		RectSPX contentRect = _contentRect(geo);
+
+		if (slots[0]._widget())
+			slots[0]._widget()->_maskPatches(patches, _slotOneRect(contentRect), clip );
+
+		if (slots[1]._widget())
+			slots[1]._widget()->_maskPatches(patches, _slotTwoRect(contentRect), clip );
 	}
 
 	//____ _resize() _________________________________________________________

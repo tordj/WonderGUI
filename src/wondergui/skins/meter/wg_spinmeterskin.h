@@ -92,11 +92,11 @@ namespace wg
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
+		RectSPX	_coverage(const RectSPX& geo, int scale, State state) const override;
+
 	private:
 		SpinMeterSkin(	const Blueprint& blueprint );
 		~SpinMeterSkin() {};
-
-		void		_updateOpacityFlag();
 
 		Surface_p	m_pSurface;
 		Size		m_defaultSize;

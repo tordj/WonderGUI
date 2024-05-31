@@ -170,7 +170,6 @@ namespace wg
 
 		SelectMode		m_selectMode;
 		Skin_p			m_pEntrySkin[2];
-		bool			m_bOpaqueEntries;
 
 		CoordSPX		m_lassoBegin;
 		CoordSPX		m_lassoEnd;

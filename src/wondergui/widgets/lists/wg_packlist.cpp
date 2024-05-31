@@ -303,6 +303,12 @@ namespace wg
 
 	void PackList::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
+		// We skip containers mask patches since looping through and masking all children in a list
+		// usually costs way more than it is worth.
+		
+		Widget::_maskPatches(patches, geo, clip);
+		
+/*
 		if(m_bOpaque)
 			patches.sub( RectSPX::overlap(geo,clip) );
 		else if( m_bOpaqueEntries )
@@ -324,6 +330,7 @@ namespace wg
 				_nextSlotWithGeo( child );
 			}
 		}
+*/
 	}
 
 	//____ _render() _______________________________________________________

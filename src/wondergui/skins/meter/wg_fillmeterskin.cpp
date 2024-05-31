@@ -55,7 +55,6 @@ namespace wg
 			m_barColorFull	= bp.color;
 		}
 
-		m_gfxPadding		= bp.gfxPadding;
 		m_backColor			= bp.backColor;
 		m_blendMode			= bp.blendMode;
 		m_direction			= bp.direction;
@@ -104,13 +103,12 @@ namespace wg
 		RectSPX barCanvas = align(_barFillArea(canvas, scale, value, value2));
 		pDevice->fill(barCanvas, barColor);
 
-		BorderSPX	barPadding = align(ptsToSpx(m_gfxPadding, scale));
 
 		if (m_backColor.a != 0)
 		{
-			RectSPX backCanvas = (canvas - barPadding);
-			RectSPX backCanvas1 = backCanvas;
-			RectSPX backCanvas2 = backCanvas;
+			RectSPX backCanvas	= canvas;
+			RectSPX backCanvas1 = canvas;
+			RectSPX backCanvas2 = canvas;
 
 			switch (m_direction)
 			{
@@ -158,6 +156,17 @@ namespace wg
 
 		return (m_backColor.a >= alpha);
 	}
+
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX FillMeterSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bOpaque )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
+	}
+
 
 	//____ _dirtyRect() ________________________________________________________
 
@@ -308,7 +317,7 @@ namespace wg
 
 	RectSPX FillMeterSkin::_barFillArea(const RectSPX& _canvas, int scale, float value, float value2) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_gfxPadding,scale)) - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		spx minFillLength = ptsToSpx(m_minBarLength, scale);
 
@@ -403,9 +412,7 @@ namespace wg
 
 	void FillMeterSkin::_updateOpacity()
 	{
-		if( !m_margin.isEmpty() || !m_gfxPadding.isEmpty() )
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Replace)
+		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode != BlendMode::Blend)
 			m_bOpaque = false;

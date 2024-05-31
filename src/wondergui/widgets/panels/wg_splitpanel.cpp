@@ -558,22 +558,21 @@ namespace wg
 
 	void SplitPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)
 	{
-		{
-			//TODO: Don't just check isOpaque() globally, check rect by rect.
-			if (m_bOpaque)
-				patches.sub(RectSPX::overlap(geo, clip));
-			else
-			{
-				if (slots[0]._widget())
-					slots[0]._widget()->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip );
+		RectSPX coverage = m_skin.contentRect(geo, m_scale, m_state);
+		
+		patches.sub( RectSPX::overlap(coverage,clip) );
 
-				if (m_handleSkin.isOpaque() )
-					patches.sub(RectSPX::overlap(m_handleGeo, clip));
+		if( coverage.contains(_contentRect(geo)) );
+			return;										// No need to loop through children, skins coverage contains them all.
 
-				if (slots[1]._widget())
-					slots[1]._widget()->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip );
-			}
-		}
+		
+		if (slots[0]._widget())
+			slots[0]._widget()->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip );
+
+		patches.sub(RectSPX::overlap(m_handleSkin.coverage(m_handleGeo + geo.pos(), m_scale, m_handleState ), clip));
+
+		if (slots[1]._widget())
+			slots[1]._widget()->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip );
 	}
 
 	//____ _alphaTest() _______________________________________________________

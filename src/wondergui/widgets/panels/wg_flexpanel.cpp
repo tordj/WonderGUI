@@ -292,7 +292,7 @@ namespace wg
 				auto p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectSPX cover = RectSPX::overlap(pTo->_widget()->_coverage(), p->_widget()->_coverage());
+					RectSPX cover = RectSPX::overlap(pTo->_widget()->_spread(), p->_widget()->_spread());
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -306,7 +306,7 @@ namespace wg
 				auto p = pFrom;
 				while (p < pTo)
 				{
-					RectSPX cover = RectSPX::overlap(pTo->_widget()->_coverage(), p->_widget()->_coverage());
+					RectSPX cover = RectSPX::overlap(pTo->_widget()->_spread(), p->_widget()->_spread());
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -327,7 +327,7 @@ namespace wg
 			if( pSlot[i].m_bVisible == true )
 			{
 				_refreshRealGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i]._widget()->_coverage(), &pSlot[i]);
+				_onRequestRender(pSlot[i]._widget()->_spread(), &pSlot[i]);
 			}
 		}
 	}
@@ -350,7 +350,7 @@ namespace wg
 		{
 			if( pSlot[i].m_bVisible == true )
 			{
-				_onRequestRender(pSlot[i]._widget()->_coverage(), &pSlot[i]);
+				_onRequestRender(pSlot[i]._widget()->_spread(), &pSlot[i]);
 				pSlot[i].m_bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
@@ -368,7 +368,7 @@ namespace wg
 			{
 				pSlot[i].m_bVisible = true;
 				_refreshRealGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i]._widget()->_coverage(), &pSlot[i]);
+				_onRequestRender(pSlot[i]._widget()->_spread(), &pSlot[i]);
 			}
 		}
 	}
@@ -392,7 +392,7 @@ namespace wg
 
 		for(auto pCover = slots.begin() ; pCover < pSlot ; pCover++ )
 		{
-			if( pCover->m_bVisible && pCover->_widget()->_coverage().isOverlapping( rect ) )
+			if( pCover->m_bVisible && pCover->_widget()->_spread().isOverlapping( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0,65536,65536 ) );
 		}
 
@@ -421,7 +421,7 @@ namespace wg
 	void FlexPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
 		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
-		_onRequestRender( pSlot->_widget()->_coverage(), pSlot );
+		_onRequestRender( pSlot->_widget()->_spread(), pSlot );
 	}
 
 	void FlexPanel::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
@@ -472,7 +472,7 @@ namespace wg
 		if (pSlot->m_bVisible )
 		{
 			_refreshRealGeo(pSlot, true);
-			_onRequestRender(pSlot->_widget()->_coverage(), pSlot);
+			_onRequestRender(pSlot->_widget()->_spread(), pSlot);
 		}
 	}
 
@@ -536,22 +536,22 @@ namespace wg
 
 		if (geo != pSlot->m_geo)
 		{
-			RectSPX localCoverage = pSlot->_widget()->_coverage();
+			RectSPX localSpread = pSlot->_widget()->_spread();
 
-			RectSPX oldCoverage = localCoverage + pSlot->m_geo.pos();
-			RectSPX newCoverage = localCoverage + geo.pos();
+			RectSPX oldSpread = localSpread + pSlot->m_geo.pos();
+			RectSPX newSpread = localSpread + geo.pos();
 
 			pSlot->m_geo = geo;
 
-			_onRequestRender(oldCoverage, pSlot);
-			_onRequestRender(newCoverage, pSlot);
+			_onRequestRender(oldSpread, pSlot);
+			_onRequestRender(newSpread, pSlot);
 			
 			if( m_edgePolicy == EdgePolicy::Confine && pSlot->_widget()->_overflowsGeo() )
 			{
 				RectSPX myGeo = m_size;
 				
-				if( !myGeo.contains(oldCoverage) || !myGeo.contains(newCoverage) )
-					_refreshCoverage();
+				if( !myGeo.contains(oldSpread) || !myGeo.contains(newSpread) )
+					_refreshSpread();
 			}
 			
 		}

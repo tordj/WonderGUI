@@ -56,20 +56,18 @@ namespace wg
 
 		m_skin.set(pNewSkin);
 
-		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
-
 		bool bOldSkinOverflows = pOldSkin ? pOldSkin->_overflowsGeo() : false;
 		bool bNewSkinOverflows = pNewSkin ? pNewSkin->_overflowsGeo() : false;
 
 		if( bNewSkinOverflows || bOldSkinOverflows )
 		{
-			RectSPX oldCoverage = pOldSkin ? RectSPX(m_size) : pOldSkin->_coverage(m_size, m_scale);
-			RectSPX newCoverage = pNewSkin ? RectSPX(m_size) : pNewSkin->_coverage(m_size, m_scale);
+			RectSPX oldSpread = pOldSkin ? RectSPX(m_size) : pOldSkin->_spread(m_size, m_scale);
+			RectSPX newSpread = pNewSkin ? RectSPX(m_size) : pNewSkin->_spread(m_size, m_scale);
 			
-			if( oldCoverage != newCoverage )
-				_refreshCoverage();
+			if( oldSpread != newSpread )
+				_refreshSpread();
 
-			_requestRender( RectSPX::bounds(oldCoverage,newCoverage) );
+			_requestRender( RectSPX::bounds(oldSpread,newSpread) );
 		}
 		else
 			_requestRender();
@@ -172,7 +170,7 @@ namespace wg
 
 	void Container::_childOverflowChanged( StaticSlot * pSlot )
 	{
-		_refreshCoverage();
+		_refreshSpread();
 	}
 
 	//____ _childRequestFocus() ______________________________________________________
@@ -287,11 +285,11 @@ namespace wg
 			return 0;
 	}
 
-	//____ _coverage() ________________________________________________________
+	//____ _spread() ________________________________________________________
 
-	RectSPX Container::_coverage() const
+	RectSPX Container::_spread() const
 	{
-		return m_coverage;
+		return m_spread;
 	}
 
 
@@ -334,11 +332,11 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pWidget(0) {}
-		WidgetRenderContext( Widget * pWidget, const RectSPX& geo, const RectSPX& coverage ) : pWidget(pWidget), geo(geo), coverage(coverage) {}
+		WidgetRenderContext( Widget * pWidget, const RectSPX& geo, const RectSPX& spread ) : pWidget(pWidget), geo(geo), spread(spread) {}
 
 		Widget *	pWidget;
 		RectSPX		geo;
-		RectSPX		coverage;
+		RectSPX		spread;
 		ClipPopData clipPop;
 	};
 
@@ -362,10 +360,10 @@ namespace wg
 			_firstSlotWithGeo( child );
 			while(child.pSlot)
 			{
-				RectSPX coverage = child.pSlot->_widget()->_coverage() + child.geo.pos() + _canvas.pos();
+				RectSPX spread = child.pSlot->_widget()->_spread() + child.geo.pos() + _canvas.pos();
 
-				if( coverage.isOverlapping( dirtBounds ) )
-					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), child.geo + _canvas.pos(), coverage ) );
+				if( spread.isOverlapping( dirtBounds ) )
+					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), child.geo + _canvas.pos(), spread ) );
 
 				_nextSlotWithGeo( child );
 			}
@@ -386,10 +384,10 @@ namespace wg
 			{
 				WidgetRenderContext * p = &renderList[i];
 
-//				RectSPX	clipBounds = RectSPX::overlap(p->coverage,_canvas);
+//				RectSPX	clipBounds = RectSPX::overlap(p->spread,_canvas);
 				
-				p->clipPop = patchesToClipList(pDevice, p->coverage, patches);
-				p->pWidget->_maskPatches( patches, p->geo, p->coverage );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->clipPop = patchesToClipList(pDevice, p->spread, patches);
+				p->pWidget->_maskPatches( patches, p->geo, p->spread );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 				if( patches.isEmpty() )
 				{
@@ -415,13 +413,13 @@ namespace wg
 			while(child.pSlot)
 			{
 				RectSPX canvas = child.geo + _canvas.pos();
-				RectSPX coverage = child.pSlot->_widget()->_coverage() + child.geo.pos() + _canvas.pos();
+				RectSPX spread = child.pSlot->_widget()->_spread() + child.geo.pos() + _canvas.pos();
 
-				if (coverage.isOverlapping(dirtBounds))
+				if (spread.isOverlapping(dirtBounds))
 				{
-//					RectSPX	clipBounds = RectSPX::overlap(coverage,_canvas);
+//					RectSPX	clipBounds = RectSPX::overlap(spread,_canvas);
 
-					ClipPopData popData = limitClipList(pDevice, coverage );
+					ClipPopData popData = limitClipList(pDevice, spread );
 
 					if( pDevice->clipListSize() > 0 )
 						child.pSlot->_widget()->_render(pDevice, canvas, canvas);
@@ -434,38 +432,38 @@ namespace wg
 		}
 	}
 
-	//____ _refreshCoverage() ____________________________________________________
+	//____ _refreshSpread() ____________________________________________________
 
-	void Container::_refreshCoverage()
+	void Container::_refreshSpread()
 	{
-		// We can't start with skin coverage since an empty one would start at 0,0
-		// always creating coverage from top-left when adding childrens coverage.
+		// We can't start with skin spread since an empty one would start at 0,0
+		// always creating spread from top-left when adding childrens spread.
 
-		RectSPX coverage;
+		RectSPX spread;
 				
 		SlotWithGeo slot;
 		 _firstSlotWithGeo(slot);
 		if( slot.pSlot )
 		{
-			coverage = slot.pSlot->_widget()->_coverage() + slot.geo.pos();
+			spread = slot.pSlot->_widget()->_spread() + slot.geo.pos();
 
 			_nextSlotWithGeo(slot);
 			while( slot.pSlot )
 			{
-				coverage.growToContain(slot.pSlot->_widget()->_coverage() + slot.geo.pos());
+				spread.growToContain(slot.pSlot->_widget()->_spread() + slot.geo.pos());
 				_nextSlotWithGeo(slot);
 			}
 			
 			if( !m_skin.isEmpty() )
-				coverage.growToContain(m_skin.coverage({0,0,m_size}, m_scale));
+				spread.growToContain(m_skin.spread({0,0,m_size}, m_scale));
 		}
 		else if( !m_skin.isEmpty() )
-			coverage = m_skin.coverage({0,0,m_size}, m_scale);
+			spread = m_skin.spread({0,0,m_size}, m_scale);
 			
-		if( coverage != m_coverage )
+		if( spread != m_spread )
 		{
-			m_coverage = coverage;
-			bool bOverflowsGeo = !RectSPX(m_size).contains(coverage);
+			m_spread = spread;
+			bool bOverflowsGeo = !RectSPX(m_size).contains(spread);
 
 			// Signal if overflow has changed
 			
@@ -500,19 +498,20 @@ namespace wg
 
 	void Container::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		//TODO: Don't just check isOpaque() globally, check rect by rect.
-		if( m_bOpaque )
-			patches.sub( RectSPX::overlap(geo,clip) );
-		else
-		{
-			SlotWithGeo child;
-			_firstSlotWithGeo( child );
+		RectSPX coverage = m_skin.contentRect(geo, m_scale, m_state);
+		
+		patches.sub( RectSPX::overlap(coverage,clip) );
 
-			while(child.pSlot)
-			{
-				child.pSlot->_widget()->_maskPatches( patches, child.geo + geo.pos(), clip );
-				_nextSlotWithGeo( child );
-			}
+		if( coverage.contains(_contentRect(geo)) );
+			return;										// No need to loop through children, skins coverage contains them all.
+		
+		SlotWithGeo child;
+		_firstSlotWithGeo( child );
+
+		while(child.pSlot)
+		{
+			child.pSlot->_widget()->_maskPatches( patches, child.geo + geo.pos(), clip );
+			_nextSlotWithGeo( child );
 		}
 	}
 

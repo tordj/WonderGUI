@@ -549,14 +549,13 @@ namespace wg
 		if( m_bScaleCanvas && m_bSkinAroundCanvas )
 			skinRect = canvasArea + m_skin.contentBorder(m_scale, m_state);
 
-		if (!m_skin.isEmpty())
-		{
-			if(m_skin.isOpaque( clip - skinRect.pos(), skinRect.size(), m_scale, m_state ) )
-			{
-				patches.sub(RectSPX::overlap(skinRect, clip));
-				return;
-			}
-		}
+		RectSPX coverage = m_skin.contentRect(skinRect, m_scale, m_state);
+		
+		patches.sub( RectSPX::overlap(coverage,clip) );
+
+		if( coverage.contains(_contentRect(geo)) );
+			return;										// No need to loop through children, skins coverage contains them all.
+
 
 		// We can't mask against canvas content if canvas is applied with some transparency.
 		

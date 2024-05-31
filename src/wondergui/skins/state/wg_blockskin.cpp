@@ -171,7 +171,6 @@ namespace wg
 	BlockSkin::BlockSkin()
 	{
 		m_pSurface = nullptr;
-		m_bOpaque = false;
 
 		for (int i = 0; i < State::IndexAmount; i++)
 		{
@@ -185,11 +184,11 @@ namespace wg
 		m_pSurface			= pSurface;
 		m_ninePatch.block.setSize( block.size() );
 		m_ninePatch.frame	= frame;
-		m_bOpaque			= pSurface->isOpaque();
+		bool bOpaque		= pSurface->isOpaque();
 
 		for( int i = 0 ; i < State::IndexAmount ; i++ )
 		{
-			m_bStateOpaque[i] = m_bOpaque;
+			m_bStateOpaque[i] = bOpaque;
 			m_stateBlocks[i] = block.pos();
 			m_stateColors[i] = HiColor::Undefined;
 		}
@@ -199,7 +198,6 @@ namespace wg
 	{
 		m_pSurface = bp.surface;
 		m_ninePatch.frame = bp.frame;
-		m_bOpaque = bp.surface->isOpaque();
 		m_blendMode = bp.blendMode;
 		m_gradient = bp.gradient;
 
@@ -594,18 +592,6 @@ namespace wg
 		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, scale, alpha);
 	}
 
-	//____ _isOpaque() _____________________________________________________________
-
-	bool BlockSkin::_isOpaque( State state ) const
-	{
-		return m_bStateOpaque[state];
-	}
-
-	bool BlockSkin::_isOpaque( const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state ) const
-	{
-		return m_bStateOpaque[state];
-	}
-
 	//____ _dirtyRect() ______________________________________________________
 
 	RectSPX BlockSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
@@ -627,40 +613,46 @@ namespace wg
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX BlockSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bStateOpaque[state] )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
+	}
 
 	//____ _updateOpaqueFlags() ________________________________________________
 
 	void BlockSkin::_updateOpaqueFlags()
 	{
+		bool bOpaque = false;
 		bool bTintDecides = false;
 
-		if (!m_pSurface || !m_margin.isEmpty() )
-			m_bOpaque = false;
+		if (!m_pSurface)
+			bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
-			m_bOpaque = true;
+			bOpaque = true;
 		else if (!m_gradient.isUndefined() && !m_gradient.isOpaque())
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Blend )
+			bOpaque = false;
+		else if (m_blendMode == BlendMode::Blend)
 		{
-			m_bOpaque = m_pSurface->isOpaque();
-			bTintDecides = m_bOpaque;
+			bOpaque = m_pSurface->isOpaque();
+			bTintDecides = bOpaque;
 		}
 		else
-			m_bOpaque = false;
+			bOpaque = false;
 
 		if (bTintDecides)
 		{
 			for (int i = 0; i < State::IndexAmount; i++)
-			{
 				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
-				if (m_stateColors[i].a != 4096)
-					m_bOpaque = false;
-			}
 		}
 		else
 		{
 			for (int i = 0; i < State::IndexAmount; i++)
-				m_bStateOpaque[i] = m_bOpaque;
+				m_bStateOpaque[i] = bOpaque;
 		}
 	}
 

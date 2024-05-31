@@ -89,7 +89,6 @@ namespace wg
 
 		_updateContentShift();
 		_updateUnsetColors();
-		_updateOpaqueFlag();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -186,55 +185,15 @@ namespace wg
 		
 		int opacity;
 
-		if( m_bOpaque )
-			opacity = 255;
+		RectSPX center = canvas - align(ptsToSpx(m_outline,scale));
+		if( center.contains(ofs) )
+			opacity = m_fillColor[state].a;
 		else
-		{
-			int i = state;
-
-			RectSPX center = canvas - align(ptsToSpx(m_outline,scale));
-			if( center.contains(ofs) )
-				opacity = m_fillColor[i].a;
-			else
-				opacity = m_outlineColor[i].a;
-		}
+			opacity = m_outlineColor[state].a;
 
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 
 		return ( opacity >= alpha);
-	}
-
-	//____ _isOpaque() _____________________________________________________________
-
-	bool BoxSkin::_isOpaque( State state ) const
-	{
-		int i = state;
-		if( m_bOpaque || (m_margin.isEmpty() && m_fillColor[i].a == 4096 && (m_outlineColor[i].a == 4096 || (m_outline.width() + m_outline.height() == 0))) )
-			return true;
-
-		return false;
-	}
-
-	bool BoxSkin::_isOpaque( const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state ) const
-	{
-		if( m_bOpaque )
-			return true;
-		
-		RectSPX canvas = RectSPX(canvasSize) - align(ptsToSpx(m_margin, scale));
-
-		if( !canvas.contains(rect) )
-			return false;
-		
-		canvas += align(ptsToSpx(m_overflow, scale));
-		
-		RectSPX center = RectSPX(canvasSize) - align(ptsToSpx(m_outline,scale));
-		int i = state;
-		if( center.contains(rect) )
-			return m_fillColor[i].a == 4096;
-		else if( !center.isOverlapping(rect) )
-			return m_outlineColor[i].a == 4096;
-
-		return m_fillColor[i].a == 4096 && m_outlineColor[i].a == 4096;
 	}
 
 	//____ _dirtyRect() ______________________________________________________
@@ -258,46 +217,25 @@ namespace wg
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
-	//____ _updateOpaqueFlag() ____________________________________________________
+	//____ _coverage() ___________________________________________________________
 
-	void BoxSkin::_updateOpaqueFlag()
+	RectSPX BoxSkin::_coverage(const RectSPX& geo, int scale, State state) const
 	{
-		if( !m_margin.isEmpty() )
+		if( m_blendMode == BlendMode::Blend )
 		{
-			m_bOpaque = false;
-			return;
-		}
-		
-		switch (m_blendMode)
-		{
-			case BlendMode::Replace:
-				m_bOpaque = true;
-				break;
-
-			case BlendMode::Blend:
+			if( m_fillColor[state].a == 4096 )
 			{
-				int alpha = 0;
-				int outlineAlpha = 0;
-
-				for (int i = 0; i < State::IndexAmount; i++)
-				{
-					alpha += (int)m_fillColor[i].a;
-					outlineAlpha += (int)m_outlineColor[i].a;
-				}
-
-				bool hasFrame = (m_outline.width() + m_outline.height() > 0);
-
-				if (alpha == 4096 * State::IndexAmount && (!hasFrame || outlineAlpha == 4096 * State::IndexAmount))
-					m_bOpaque = true;
-				else
-					m_bOpaque = false;
-
-				break;
+				RectSPX coverage = geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+				if( m_outlineColor[state].a != 4096 )
+					coverage -= align(ptsToSpx(m_outline,scale));
+				
+				return coverage;
 			}
-
-			default:
-				m_bOpaque = false;
 		}
+		else if( m_blendMode == BlendMode::Replace )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+
+		return RectSPX();
 	}
 
 	//____ _updateUnsetColors() _______________________________________________

@@ -314,13 +314,21 @@ namespace wg
 		return RectSPX();
 	}
 
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX PieMeterSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bOpaque )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
+	}
+
 	//____ _updateOpacity() ___________________________________________________
 
 	void PieMeterSkin::_updateOpacity()
 	{
-		if( !m_margin.isEmpty() )
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Replace)
+		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode != BlendMode::Blend || m_backColor.a < 4096 || (m_hubSize > 0.f && m_hubColor.a < 4096) )
 			m_bOpaque = false;

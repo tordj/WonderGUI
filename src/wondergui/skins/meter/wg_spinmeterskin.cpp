@@ -60,10 +60,7 @@ namespace wg
 	{
 		//TODO: Also take frame opacity into account.
 
-		m_bOpaque = bp.surface->isOpaque();
 		m_bIgnoresValue = false;
-
-		_updateOpacityFlag();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -139,13 +136,20 @@ namespace wg
 
 		canvas += align(ptsToSpx(m_overflow, scale));
 		
-		if (m_bOpaque)
-			return true;
-
 		//TODO: Implement!
 
 		return true;
 	}
+
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX SpinMeterSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		//TOOD: Implement!
+		
+		return RectSPX();
+	}
+
 
 	//____ _dirtyRect() ________________________________________________________
 
@@ -157,25 +161,6 @@ namespace wg
 			return canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		return RectSPX();
-	}
-
-	//____ _updateOpacityFlag() _______________________________________________
-
-	void SpinMeterSkin::_updateOpacityFlag()
-	{
-		if( !m_margin.isEmpty() )
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Replace)
-			m_bOpaque = true;
-		else if (m_blendMode == BlendMode::Blend)
-		{
-			if ((!m_gradient.isUndefined() && !m_gradient.isOpaque()) || m_color.a != 4096)
-				m_bOpaque = false;
-			else
-				m_bOpaque = m_pSurface->isOpaque();
-		}
-		else
-			m_bOpaque = false;
 	}
 
 } // namespace wg

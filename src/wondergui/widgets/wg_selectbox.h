@@ -182,8 +182,6 @@ namespace wg
 				m_pEntrySkin = bp.entrySkin;
 				m_listCanvasDefaultSize.w += padding.w;
 				m_entryContentPaddingSize = padding;
-
-				_updateListCanvasOpacity();
 			}
 		}
 
@@ -206,7 +204,6 @@ namespace wg
 		typedef	StrongPtr<MySideCanvas>	MySideCanvas_p;
 		typedef	WeakPtr<MySideCanvas>	MySideCanvas_wp;
 
-		void		_updateListCanvasOpacity();
 		void		_requestRenderEntry(SelectBoxEntry* pEntry);
 		void		_markEntry(int idx);
 		void		_selectEntry(int idx);

@@ -61,8 +61,6 @@ namespace wg
 		m_pReturnTransition(bp.returnTransition)
 	{
 		//TODO: Also take frame opacity into account.
-
-		m_bOpaque = m_pSurface->isOpaque();
 	
 		if( m_pTransition == nullptr )
 			m_pTransition = ValueTransition::create(1000000);
@@ -71,7 +69,6 @@ namespace wg
 		if( m_pReturnTransition )
 			m_cycleDuration += m_pReturnTransition->duration();
 				
-		_updateOpacityFlag();
 	}
 
 	//____ destructor _________________________________________________________
@@ -167,12 +164,19 @@ namespace wg
 
 		canvas += align(ptsToSpx(m_overflow, scale));
 		
-		if (m_bOpaque)
-			return true;
 
 		//TODO: Implement!
 
 		return true;
+	}
+
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX SpinAnimSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		//TOOD: Implement!
+		
+		return RectSPX();
 	}
 
 
@@ -195,23 +199,5 @@ namespace wg
 		return m_cycleDuration;
 	}
 
-	//____ _updateOpacityFlag() _______________________________________________
-
-	void SpinAnimSkin::_updateOpacityFlag()
-	{
-		if (!m_margin.isEmpty())
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Replace)
-			m_bOpaque = true;
-		else if (m_blendMode == BlendMode::Blend)
-		{
-			if ((!m_gradient.isUndefined() && !m_gradient.isOpaque()) || m_color.a != 4096)
-				m_bOpaque = false;
-			else
-				m_bOpaque = m_pSurface->isOpaque();
-		}
-		else
-			m_bOpaque = false;
-	}
 
 } // namespace wg

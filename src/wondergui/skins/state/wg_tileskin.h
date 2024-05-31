@@ -98,9 +98,6 @@ namespace wg
 
 		SizeSPX	_defaultSize(int scale) const override;
 
-		bool	_isOpaque( State state ) const override;
-		bool	_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
-
 		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f, int alphaOverride = -1 ) const override;
 
@@ -111,6 +108,8 @@ namespace wg
 		RectSPX	_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+
+		RectSPX	_coverage(const RectSPX& geo, int scale, State state) const override;
 
 	private:
 

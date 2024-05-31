@@ -59,7 +59,6 @@ namespace wg
 	StaticTileSkin::StaticTileSkin(const Blueprint& bp) : Skin(bp)
 	{
 		m_pSurface	= bp.surface;
-		m_bOpaque	= m_pSurface->isOpaque();
 		m_blendMode	= bp.blendMode;
 		m_color		= bp.color;
 		m_gradient	= bp.gradient;
@@ -117,13 +116,21 @@ namespace wg
 		return markTestTileRect(ofs, m_pSurface, canvas, scale, alpha);
 	}
 
+	//____ _coverage() ________________________________________________________
+
+	RectSPX StaticTileSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bOpaque )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
+	}
+
 	//____ _updateOpacityFlag() _______________________________________________
 
 	void StaticTileSkin::_updateOpacityFlag()
 	{
-		if( !m_margin.isEmpty() )
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Replace)
+		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{

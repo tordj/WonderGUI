@@ -100,6 +100,8 @@ namespace wg
 							float value = 1.f, float value2 = -1.f, int animPos = 0,
 							float* pStateFractions = nullptr) const override;
 
+		RectSPX		_coverage(const RectSPX& geo, int scale, State state) const override;
+
 	private:
 		StaticBlockSkin( const Blueprint& blueprint );
 		~StaticBlockSkin() {};
@@ -116,6 +118,7 @@ namespace wg
 		BlendMode		m_blendMode;
 		HiColor			m_color;
 		Gradient		m_gradient;
+		bool			m_bOpaque;
 
 	};
 

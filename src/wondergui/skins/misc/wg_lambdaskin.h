@@ -85,6 +85,8 @@ namespace wg
 									int newAnimPos = 0, int oldAnimPos = 0,
 									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
+		RectSPX		_coverage(const RectSPX& geo, int scale, State state) const override;
+
 	private:
 		LambdaSkin( const Blueprint& blueprint );
 		~LambdaSkin() {};
@@ -92,6 +94,7 @@ namespace wg
 		MarkTestFunc	m_markTestFunc;
 		RenderFunc		m_renderFunc;
 		Size			m_defaultSize;
+		bool			m_bOpaque;
 	};
 
 

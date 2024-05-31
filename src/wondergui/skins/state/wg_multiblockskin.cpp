@@ -47,7 +47,6 @@ namespace wg
 	{
 		m_blockSizePoints	= blockSize;
 		m_frame				= frame;
-		m_bOpaque			= false;
 
 		for( int i = 0 ; i < State::IndexAmount ; i++ )
 		m_bStateOpaque[i] = false;
@@ -73,9 +72,6 @@ namespace wg
 		layer.pSurface = pSurf;
 		layer.stateBlockMask = 1;               // Only normal state is set.
 
-		if (pSurf->isOpaque())
-			m_bOpaque = true;
-
 
 		for (int i = 0; i < State::IndexAmount; i++)
 		{
@@ -99,9 +95,6 @@ namespace wg
 		layer.blendMode = BlendMode::Blend;
 		layer.pSurface = pSurf;
 		layer.stateBlockMask = 0;
-
-		if (pSurf->isOpaque())
-			m_bOpaque = true;
 
 		//
 
@@ -333,9 +326,6 @@ namespace wg
 		if (!canvas.contains(_ofs) || m_layers.empty() || blockSize.w <= 0 || blockSize.h <= 0)
 			return false;
 
-		if( m_bOpaque )
-			return true;
-
 		int stateIndex = state;
 
 		for (auto& layer : m_layers)
@@ -355,6 +345,17 @@ namespace wg
 
 		return false;
 	}
+
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX MultiBlockSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bStateOpaque[state] )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
+	}
+
 
 	//____ _dirtyRect() ______________________________________________________
 
@@ -393,21 +394,7 @@ namespace wg
 			}
 		}
 
-		if (bOpaque != m_bStateOpaque[stateIdx])
-		{
-			m_bStateOpaque[stateIdx] = bOpaque;
-
-			if (bOpaque != m_bOpaque)
-			{
-				m_bOpaque = true;
-				for( int i = 0 ; i < State::IndexAmount ; i++ )
-					if (m_bStateOpaque[i] )
-					{
-						m_bOpaque = false;
-						break;
-					}
-			}
-		}
+		m_bStateOpaque[stateIdx] = bOpaque;
 	}
 
 }

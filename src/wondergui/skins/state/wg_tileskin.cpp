@@ -164,18 +164,6 @@ namespace wg
 		return markTestTileRect(_ofs, pSurf, canvas, scale, alpha);
 	}
 
-	//____ _isOpaque() _____________________________________________________________
-
-	bool TileSkin::_isOpaque( State state ) const
-	{
-		return m_bStateOpaque[state];
-	}
-
-	bool TileSkin::_isOpaque( const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state ) const
-	{
-		return m_bStateOpaque[state];
-	}
-
 	//____ _dirtyRect() ______________________________________________________
 
 	RectSPX TileSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
@@ -197,47 +185,34 @@ namespace wg
 									newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX TileSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bStateOpaque[state] )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
+	}
+
 	//____ _updateOpaqueFlags() ________________________________________________
 
 	void TileSkin::_updateOpaqueFlags()
 	{
-
-		bool bTintDecides = false;
-
-		if( !m_margin.isEmpty() )
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Replace)
-			m_bOpaque = true;
-		else if (!m_gradient.isUndefined() && !m_gradient.isOpaque())
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Blend)
+		if (m_blendMode == BlendMode::Replace)
 		{
-			bool bOpaque = true;
-
 			for (int i = 0; i < State::IndexAmount; i++)
-			{
-				if (!m_stateSurfaces[i] || !m_stateSurfaces[i]->isOpaque())
-				{
-					bOpaque = false;
-					break;
-				}
-			}
-
-			m_bOpaque = bOpaque;
-			bTintDecides = m_bOpaque;
+				m_bStateOpaque[i] = true;
 		}
-		else
-			m_bOpaque = false;
-
-		if (bTintDecides)
+		else if ((!m_gradient.isUndefined() && !m_gradient.isOpaque()) || m_blendMode != BlendMode::Blend )
 		{
 			for (int i = 0; i < State::IndexAmount; i++)
-				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
+				m_bStateOpaque[i] = false;
 		}
 		else
 		{
 			for (int i = 0; i < State::IndexAmount; i++)
-				m_bStateOpaque[i] = m_bOpaque;
+				m_bStateOpaque[i] = (m_stateSurfaces[i]->isOpaque() && m_stateColors[i].a == 4096);
 		}
 	}
 

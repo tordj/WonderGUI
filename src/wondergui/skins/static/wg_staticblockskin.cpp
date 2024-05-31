@@ -75,8 +75,6 @@ namespace wg
 		m_ninePatch.frame	= bp.frame;
 		m_gfxFrame			= bp.frame;
 
-		m_bOpaque			= m_pSurface->isOpaque();
-
 		m_blendMode			= bp.blendMode;
 		m_color				= bp.color;
 		m_gradient			= bp.gradient;
@@ -193,6 +191,17 @@ namespace wg
 		pDevice->blitNinePatch(canvasWithoutMargin, align(ptsToSpx(m_gfxFrame,scale)), m_ninePatch, scale);
 	}
 
+	//____ _coverage() ________________________________________________________
+
+	RectSPX StaticBlockSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bOpaque )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
+	}
+
+
 	//____ _markTest() _________________________________________________________
 
 	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
@@ -213,9 +222,7 @@ namespace wg
 
 	void StaticBlockSkin::_updateOpacityFlag()
 	{
-		if( !m_margin.isEmpty() )
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Replace)
+		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{

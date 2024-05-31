@@ -87,12 +87,6 @@ namespace wg
 		inline CoordSPX	_contentOfs(int scale, State state) const { return m_pSkin ? m_pSkin->_contentOfs(scale, state) : CoordSPX(); }
 		inline RectSPX	_contentRect(const RectSPX& canvas, int scale, State state) const { return m_pSkin ? m_pSkin->_contentRect(canvas, scale, state) : canvas; }
 
-		inline bool		_isOpaque() const { return m_pSkin ? m_pSkin->_isOpaque() : false; }
-		inline bool		_isOpaque(State state) const { return m_pSkin ? m_pSkin->_isOpaque(state) : false; }
-		inline bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
-		{
-			return m_pSkin ? m_pSkin->_isOpaque(rect, canvasSize, scale, state) : false;
-		}
 
 		inline bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
 			float value = 1.f, float value2 = -1.f) const

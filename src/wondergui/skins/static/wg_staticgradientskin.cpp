@@ -59,12 +59,9 @@ namespace wg
 	StaticGradientSkin::StaticGradientSkin( const Blueprint& bp ) : Skin(bp)
 	{
 		m_gradient			= bp.gradient;
-		m_bOpaque			= m_gradient.isOpaque();
 		m_blendMode			= bp.blendMode;
 
-		if(!m_margin.isEmpty())
-			m_bOpaque = false;
-		else if (m_blendMode == BlendMode::Replace)
+		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 			m_bOpaque = m_gradient.isOpaque();
@@ -88,6 +85,16 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, HiColor::White, canvas, m_gradient);
 		
 		pDevice->fill(canvas, HiColor::White);
+	}
+
+	//____ _coverage() ________________________________________________________
+
+	RectSPX StaticGradientSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bOpaque )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
 	}
 
 	//____ _markTest() _________________________________________________________

@@ -78,7 +78,6 @@ namespace wg
 		}
 
 		m_pListCanvas->_requestRender();
-		_updateListCanvasOpacity();
 	}
 
 	//____ setEntryStyle() _____________________________________________________
@@ -304,19 +303,6 @@ namespace wg
 			pLayer->popupSlots.pop(m_pListCanvas.rawPtr());
 		}
 	}
-
-	//____ _updateListCanvasOpacity() ____________________________________________
-
-	void SelectBox::_updateListCanvasOpacity()
-	{
-		bool bOpaque = m_pListCanvas->m_skin.isOpaque();
-
-		if (m_pEntrySkin && m_pEntrySkin->isOpaque() && m_pListCanvas->m_skin.contentBorderSize(m_scale).isEmpty())
-			bOpaque = true;
-
-		m_pListCanvas->m_bOpaque = bOpaque;
-	}
-
 
 	//____ _requestRenderEntry() __________________________________________________
 
@@ -647,7 +633,6 @@ namespace wg
 	void SelectBox::_sideCanvasSetSkin(SideCanvas * pCanvas, Skin * pSkin)
 	{
 		m_pListCanvas->Widget::setSkin(pSkin);
-		_updateListCanvasOpacity();
 	}
 
 	//____ _sideCanvasSetState() ______________________________________________

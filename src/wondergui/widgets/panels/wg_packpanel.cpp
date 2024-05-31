@@ -621,10 +621,10 @@ namespace wg
 			pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(m_scale);
 			pSlot->_widget()->_resize(pSlot->m_geo.size(), m_scale);
 
-			RectSPX coverage = pNewChild->_coverage() + pSlot->m_geo.pos();
+			RectSPX spread = pNewChild->_spread() + pSlot->m_geo.pos();
 			if (pOldChild)
-				coverage.growToContain(pOldChild->_coverage() + pSlot->m_geo.pos() );
-			_requestRender(coverage);
+				spread.growToContain(pOldChild->_spread() + pSlot->m_geo.pos() );
+			_requestRender(spread);
 
 			m_totalSpacing = _calcTotalSpacing(m_scale);
 			_refreshGeometries();
@@ -891,7 +891,7 @@ namespace wg
 		{
 			if( p->m_bVisible )
 			{
-				RectSPX coverage = p->_widget()->_coverage() + p->m_geo.pos();
+				RectSPX spread = p->_widget()->_spread() + p->m_geo.pos();
 
 				spx slotOfs = baselineOffset;
 				if( m_axis == Axis::X )
@@ -903,12 +903,12 @@ namespace wg
 						RectSPX geo = p->m_geo;
 						if( slotOfs < geo.y )
 						{
-							coverage.h += geo.y - slotOfs;
-							coverage.y -= geo.y - slotOfs;
+							spread.h += geo.y - slotOfs;
+							spread.y -= geo.y - slotOfs;
 						}
 						else
 						{
-							coverage.h += slotOfs - geo.y;
+							spread.h += slotOfs - geo.y;
 						}
 						
 						p->m_geo.y = slotOfs;
@@ -923,12 +923,12 @@ namespace wg
 						RectSPX geo = p->m_geo;
 						if( slotOfs < geo.x )
 						{
-							coverage.w += geo.x - slotOfs;
-							coverage.x -= geo.x - slotOfs;
+							spread.w += geo.x - slotOfs;
+							spread.x -= geo.x - slotOfs;
 						}
 						else
 						{
-							coverage.w += slotOfs - geo.x;
+							spread.w += slotOfs - geo.x;
 						}
 				
 						p->m_geo.x = slotOfs;
@@ -936,7 +936,7 @@ namespace wg
 				}
 
 				if (bRequestRender)
-					_requestRender(coverage);
+					_requestRender(spread);
 			}
 		}
 	}
@@ -1063,7 +1063,7 @@ namespace wg
 					if( geo != p->m_geo )
 					{
 						if (bRequestRender)
-							_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
+							_requestRender(p->_widget()->_spread() + p->m_geo.pos());
 
 						spx oldW = p->m_geo.w;
 						spx oldH = p->m_geo.h;
@@ -1075,14 +1075,14 @@ namespace wg
 						}
 
 						if (bRequestRender)
-							_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
+							_requestRender(p->_widget()->_spread() + p->m_geo.pos());
 
 					}
 				}
 				else
 				{
 					if( bRequestRender && p->m_geo.w != 0 && p->m_geo.h != 0 )
-						_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
+						_requestRender(p->_widget()->_spread() + p->m_geo.pos());
 
 					p->m_geo.x = pos.x + contentOfs.x;
 					p->m_geo.y = pos.y + contentOfs.y;
@@ -1164,7 +1164,7 @@ namespace wg
 
 
 						if (bRequestRender)
-							_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
+							_requestRender(p->_widget()->_spread() + p->m_geo.pos());
 
 						spx oldW = p->m_geo.w;
 						spx oldH = p->m_geo.h;
@@ -1176,14 +1176,14 @@ namespace wg
 						}
 
 						if (bRequestRender)
-							_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
+							_requestRender(p->_widget()->_spread() + p->m_geo.pos());
 					}
 					pOutput++;
 				}
 				else
 				{
 					if( bRequestRender && p->m_geo.w != 0 && p->m_geo.h != 0 )
-						_requestRender(p->_widget()->_coverage() + p->m_geo.pos());
+						_requestRender(p->_widget()->_spread() + p->m_geo.pos());
 
 					p->m_geo.x = pos.x + contentOfs.x;
 					p->m_geo.y = pos.y + contentOfs.y;
@@ -1213,7 +1213,7 @@ namespace wg
 
 		//TODO: This should be baked into the loop above instead to make it faster.
 
-		_refreshCoverage();
+		_refreshSpread();
 
 	}
 

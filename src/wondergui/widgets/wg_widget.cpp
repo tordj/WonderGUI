@@ -358,20 +358,18 @@ namespace wg
 
 		m_skin.set(pNewSkin);
 
-		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
-
 		bool bOldSkinOverflows = pOldSkin ? pOldSkin->_overflowsGeo() : false;
 		bool bNewSkinOverflows = pNewSkin ? pNewSkin->_overflowsGeo() : false;
 
 		if( bNewSkinOverflows || bOldSkinOverflows )
 		{
-			RectSPX oldCoverage = pOldSkin ? RectSPX(m_size) : pOldSkin->_coverage(m_size, m_scale);
-			RectSPX newCoverage = pNewSkin ? RectSPX(m_size) : pNewSkin->_coverage(m_size, m_scale);
+			RectSPX oldSpread = pOldSkin ? RectSPX(m_size) : pOldSkin->_spread(m_size, m_scale);
+			RectSPX newSpread = pNewSkin ? RectSPX(m_size) : pNewSkin->_spread(m_size, m_scale);
 			
-			if( oldCoverage != newCoverage )
+			if( oldSpread != newSpread )
 				_overflowChanged();
 
-			_requestRender( RectSPX::bounds(oldCoverage,newCoverage) );
+			_requestRender( RectSPX::bounds(oldSpread,newSpread) );
 		}
 		else
 			_requestRender();
@@ -683,7 +681,7 @@ namespace wg
 	void Widget::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		if( !m_skin.isEmpty() )
-			container.add( RectSPX::overlap(m_skin.coverage(geo, m_scale), clip ));
+			container.add( RectSPX::overlap(m_skin.spread(geo, m_scale), clip ));
 		else
 			container.add( RectSPX::overlap( geo, clip ) );
 	}
@@ -692,13 +690,7 @@ namespace wg
 
 	void Widget::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		if( m_bOpaque )
-		{
-			if( !m_skin.isEmpty() )
-				patches.sub( RectSPX::overlap(m_skin.coverage(geo, m_scale), clip ));
-			else
-				patches.sub( RectSPX::overlap( geo, clip ) );
-		}
+		patches.sub( RectSPX::overlap(m_skin.coverage(geo, m_scale, m_state), clip ));
 	}
 
 	//____ _requestPreRenderCall() ___________________________________________________
@@ -770,12 +762,12 @@ namespace wg
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
 
-	//____ _coverage() __________________________________________________________
+	//____ _spread() __________________________________________________________
 
-	RectSPX Widget::_coverage() const
+	RectSPX Widget::_spread() const
 	{
 		if( !m_skin.isEmpty() )
-			return m_skin.coverage({0,0,m_size}, m_scale);
+			return m_skin.spread({0,0,m_size}, m_scale);
 		else
 			return m_size;
 	}
@@ -788,7 +780,6 @@ namespace wg
 		m_state = state;
 
 		m_skin.stateChanged(state, oldState);
-		m_bOpaque = m_skin.isOpaque(state);
 	}
 
 	//____ _receive() _____________________________________________________________

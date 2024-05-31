@@ -396,19 +396,19 @@ namespace wg
 
 		if (geo != pSlot->m_geo || pWidget->_scale() != m_scale)
 		{
-			// Store coverage and set size.
+			// Store spread and set size.
 
-			RectSPX oldCoverage = pWidget->_coverage() + pSlot->m_geo.pos();			
+			RectSPX oldSpread = pWidget->_spread() + pSlot->m_geo.pos();
 			pSlot->_setSize(geo, m_scale);
-			RectSPX newCoverage = pWidget->_coverage() + geo.pos();
+			RectSPX newSpread = pWidget->_spread() + geo.pos();
 
 			if (pSlot->m_bVisible)
 			{
-				// Clip our coverage and put it in a dirtyrect-list
+				// Clip our spread and put it in a dirtyrect-list
 
 				PatchesSPX patches;
-				patches.add(oldCoverage);
-				patches.add(newCoverage);
+				patches.add(oldSpread);
+				patches.add(newSpread);
 
 				if (m_edgePolicy == EdgePolicy::Clip)
 					patches.clip(RectSPX(0, 0, m_size));
@@ -418,9 +418,9 @@ namespace wg
 				auto pCover = pSlot + 1;
 				while (pCover < slots.end())
 				{
-					RectSPX coverCoverage = pCover->_widget()->_coverage() + pCover->m_geo.pos();
+					RectSPX coverSpread = pCover->_widget()->_spread() + pCover->m_geo.pos();
 
-					if (pCover->m_bVisible && (coverCoverage.isOverlapping(oldCoverage) || coverCoverage.isOverlapping(newCoverage)) )
+					if (pCover->m_bVisible && (coverSpread.isOverlapping(oldSpread) || coverSpread.isOverlapping(newSpread)) )
 						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
 
 					pCover++;
@@ -431,12 +431,12 @@ namespace wg
 				for (const RectSPX * pRect = patches.begin(); pRect < patches.end(); pRect++)
 					_requestRender(*pRect);
 
-				// Update coverage
+				// Update spread
 
 				//TODO: Use faster method!
 
 				if (pWidget->_overflowsGeo() && m_edgePolicy != EdgePolicy::Clip)
-					_refreshCoverage();
+					_refreshSpread();
 			}
 
 			pSlot->m_geo = geo;
@@ -463,9 +463,9 @@ namespace wg
 
 		for (auto pCover = slots.begin(); pCover < pSlot ; pCover++)
 		{
-			RectSPX coverCoverage = pCover->_widget()->_coverage() + pCover->m_geo.pos();
+			RectSPX coverSpread = pCover->_widget()->_spread() + pCover->m_geo.pos();
 
-			if (pCover->m_bVisible && coverCoverage.isOverlapping(rect))
+			if (pCover->m_bVisible && coverSpread.isOverlapping(rect))
 				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
 		}
 

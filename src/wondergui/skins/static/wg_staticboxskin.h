@@ -77,6 +77,8 @@ namespace wg
 								float value = 1.f, float value2 = -1.f, int animPos = 0, 
 								float* pStateFractions = nullptr) const override;
 
+		RectSPX		_coverage(const RectSPX& geo, int scale, State state) const override;
+
 	private:
 		StaticBoxSkin(const Blueprint& blueprint);
 		~StaticBoxSkin() {};
@@ -88,6 +90,8 @@ namespace wg
 
 		HiColor		m_fillColor;
 		HiColor		m_outlineColor;
+		
+		bool		m_bOpaque;
 	};
 
 

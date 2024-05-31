@@ -79,9 +79,9 @@ namespace wg
 		return SizeSPX(align(ptsToSpx(m_padding, scale)));
 	}
 
-	//____ _coverage() ________________________________________________________
+	//____ _spread() ________________________________________________________
 
-	RectSPX Skin::_coverage(const RectSPX& geo, int scale) const
+	RectSPX Skin::_spread(const RectSPX& geo, int scale) const
 	{
 		return geo - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 	}
@@ -119,19 +119,6 @@ namespace wg
 	SizeSPX Skin::_contentBorderSize(int scale) const
 	{
 		return SizeSPX(align(ptsToSpx(m_margin, scale))) + SizeSPX(align(ptsToSpx(m_padding, scale)));
-	}
-
-
-	//____ _isOpaque() ________________________________________________________
-
-	bool Skin::_isOpaque(State state) const
-	{
-		return m_bOpaque;
-	}
-
-	bool Skin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
-	{
-		return m_bOpaque;
 	}
 
 	//____ _dirtyRect() ________________________________________________________

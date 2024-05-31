@@ -163,15 +163,14 @@ namespace wg
 
 	void Capsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		if (!m_skin.isEmpty())
-		{
-			if(m_skin.isOpaque( clip - geo.pos(), geo.size(), m_scale, m_state ) )
-				patches.sub(RectSPX::overlap(geo, clip));
-			else if( slot._widget() )
-				slot._widget()->_maskPatches(patches, _contentRect(geo), clip);
-		}
-		else if( slot._widget() )
-			slot._widget()->_maskPatches( patches, geo, clip  );
+		RectSPX coverage = m_skin.contentRect(geo, m_scale, m_state);
+		
+		patches.sub( RectSPX::overlap(coverage,clip) );
+
+		if( coverage.contains(_contentRect(geo)) );
+			return;										// No need to loop through children, skins coverage contains them all.
+
+		slot._widget()->_maskPatches(patches, _contentRect(geo), clip);
 	}
 
 	//____ _resize() ____________________________________________________________
@@ -235,7 +234,7 @@ namespace wg
 	void Capsule::_releaseChild(StaticSlot * _pSlot)
 	{
 		slot._setWidget(nullptr);
-		_refreshCoverage();
+		_refreshSpread();
 		_requestRender();
 		_requestResize();
 	}
@@ -252,7 +251,7 @@ namespace wg
 			pWidget->_resize(sz, m_scale);
 		}
 
-		_refreshCoverage();
+		_refreshSpread();
 		_requestRender();
 		_requestResize();
 	}

@@ -197,49 +197,6 @@ namespace wg
 		return sz + m_pFrontSkin->_contentBorderSize(scale);
 	}
 
-	//____ _isOpaque() _________________________________________________________
-
-	bool DoubleSkin::_isOpaque(State state) const
-	{
-		if (m_bOpaque)
-			return true;
-
-		if( !m_margin.isEmpty() )
-			return false;
-		
-		if (m_pBackSkin->_isOpaque(state) && !m_pFrontSkin->_hasOverflow() )
-			return true;
-
-		return m_pFrontSkin->_isOpaque(state) && (!m_bSkinInSkin || !m_pBackSkin->_hasPadding()) && !m_pBackSkin->_hasOverflow();
-	}
-
-	bool DoubleSkin::_isOpaque(const RectSPX& _rect, const SizeSPX& canvasSize, int scale, State state) const
-	{
-		if (m_bOpaque)
-			return true;
-
-		RectSPX rect;
-		if( !m_margin.isEmpty() )
-		{
-			RectSPX canvas = RectSPX(canvasSize) - align(ptsToSpx(m_margin, scale));
-		
-			if( !canvas.contains(_rect) )
-				return false;				// Rect includes our margin
-		
-			rect = _rect - canvas.pos();
-		}
-		else
-			rect = _rect;
-		
-		if (m_pBackSkin->_isOpaque(rect, canvasSize, scale, state))
-			return true;
-	 
-		RectSPX canvas2 = m_bSkinInSkin ? m_pBackSkin->_contentRect(canvasSize, scale, state) : RectSPX(canvasSize)  - align(ptsToSpx(m_margin, scale));
-		RectSPX rect2 = RectSPX::bounds(rect, canvas2) - canvas2.pos();
-
-		return (!rect2.isEmpty() && m_pFrontSkin->_isOpaque(rect2, canvas2.size(), scale, state));
-	}
-
 	//____ _markTest() _________________________________________________________
 
 	bool DoubleSkin::_markTest(const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
@@ -276,24 +233,44 @@ namespace wg
 			pDevice->setRenderLayer(oldLayer);
 	}
 
-	//____ _coverage() _____________________________________________________
+	//____ _spread() _____________________________________________________
 
-	RectSPX DoubleSkin::_coverage(const RectSPX& geo, int scale) const
+	RectSPX DoubleSkin::_spread(const RectSPX& geo, int scale) const
 	{
-		//TODO: State of BackSkin can affect coverage in DoubleSkin, what do do about that?
-		
-		RectSPX backCoverage = m_pBackSkin->_coverage(geo,scale);
+		//TODO: State of BackSkin can affect spread in DoubleSkin, what do do about that?
+
+		RectSPX backSpread = m_pBackSkin->_spread(geo,scale);
 		
 		RectSPX frontGeo = m_bSkinInSkin ? m_pBackSkin->_contentRect(geo, scale, State::Default) : geo;
-		RectSPX frontCoverage = m_pFrontSkin->_coverage(geo,scale);
+		RectSPX frontSpread = m_pFrontSkin->_spread(frontGeo,scale);
 		
-		RectSPX coverage = RectSPX::bounds(backCoverage, frontCoverage);
+		RectSPX spread = RectSPX::bounds(backSpread, frontSpread);
 
-		coverage -= align(ptsToSpx(m_margin, scale));
-		coverage += align(ptsToSpx(m_overflow, scale));
+		spread -= align(ptsToSpx(m_margin, scale));
+		spread += align(ptsToSpx(m_overflow, scale));
 
-		return coverage;
+		return spread;
 	}
+
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX DoubleSkin::_coverage(const RectSPX& _geo, int scale, State state) const
+	{
+		RectSPX geo = _geo - align(ptsToSpx(m_margin, scale));
+
+		RectSPX backCoverage = m_pBackSkin->_coverage(geo, scale, state);
+		
+		RectSPX frontGeo = m_bSkinInSkin ? m_pBackSkin->_contentRect(geo, scale, State::Default) : geo;
+		RectSPX frontCoverage = m_pFrontSkin->_coverage(geo,scale, state);
+
+		// We make it easy for us and just take the largest coverage.
+		
+		if( int64_t(backCoverage.w) * backCoverage.h > int64_t(frontCoverage.w) * frontCoverage.h )
+			return backCoverage;
+		else
+			return frontCoverage;		
+	}
+
 
 	//____ _dirtyRect() ______________________________________________________
 
@@ -367,17 +344,12 @@ namespace wg
 	{
 		m_bIgnoresValue = true;
 		m_bIgnoresState = true;
-		m_bOpaque = false;
 		m_bContentShifting = false;
 
 		if (m_pBackSkin)
 		{
-			if( m_margin.isEmpty() && m_pBackSkin->isOpaque() )
-				m_bOpaque = true;
-			
 			m_bIgnoresValue = m_pBackSkin->_ignoresValue();
 			m_bIgnoresState = m_pBackSkin->_ignoresState();
-			m_bOpaque = m_pBackSkin->isOpaque() && !m_pFrontSkin->_overflowsGeo();
 
 			if( m_pBackSkin->_hasOverflow() )
 				m_bOverflow = true;
@@ -397,9 +369,6 @@ namespace wg
 
 		if (m_pFrontSkin)
 		{
-			if (m_pFrontSkin->isOpaque() && !m_pBackSkin->_overflowsGeo() && ( !m_bSkinInSkin || (!m_pBackSkin->_hasPadding() && !m_pBackSkin->_hasMargin())) )
-				m_bOpaque = true;
-
 			if (!m_pFrontSkin->_ignoresValue())
 				m_bIgnoresValue = false;
 			if (!m_pFrontSkin->_ignoresState())

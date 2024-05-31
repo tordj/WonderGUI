@@ -49,8 +49,6 @@ namespace wg
 	{
 		m_blendMode		= bp.blendMode;
 
-		m_bOpaque = false;
-
 		m_stateInfo[0].color = bp.color;
 		m_stateInfo[0].outlineColor = bp.outlineColor;
 		m_stateInfo[0].outlineThickness = bp.outlineThickness;
@@ -108,18 +106,6 @@ namespace wg
 	const TypeInfo& CircleSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ _isOpaque() _____________________________________________________________
-
-	bool CircleSkin::_isOpaque(State state) const
-	{
-		return false;
-	}
-
-	bool CircleSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
-	{
-		return false;
 	}
 
 	//____ _render() _______________________________________________________________
@@ -206,6 +192,15 @@ namespace wg
 			return (m_stateInfo[i].outlineColor.a >= alpha);
 
 		return false;
+	}
+
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX CircleSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		//TODO: Implement!
+		
+		return RectSPX();
 	}
 
 	//____ _dirtyRect() ______________________________________________________

@@ -93,6 +93,8 @@ namespace wg
 								float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 								float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
+		RectSPX		_coverage(const RectSPX& geo, int scale, State state) const override;
+
 	private:
 		FrameMeterSkin( const Blueprint& bp );
 		~FrameMeterSkin() {};
@@ -127,6 +129,8 @@ namespace wg
 		Size				m_size;
 		Surface_p			m_pSurface;
 		std::vector<Frame>	m_frames;
+		
+		bool				m_bOpaque;
 	};
 
 

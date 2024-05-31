@@ -197,8 +197,6 @@ namespace wg
 		bool				markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg ) override final;
 
-		inline bool			isOpaque() const;
-
 		void				setBaggage(Object * pBaggage);
 		bool				hasBaggage() const;
 		Object_p			baggage() const;
@@ -243,7 +241,7 @@ namespace wg
 
 		virtual void		_resize(const SizeSPX& size, int scale);
 		
-		virtual RectSPX		_coverage() const;
+		virtual RectSPX		_spread() const;
 		inline bool			_overflowsGeo() const { return m_bOverflowsGeo; }
 		
 		virtual void		_setState(State state);
@@ -280,7 +278,6 @@ namespace wg
 			if (bp.skin)
 			{
 				m_skin.set(bp.skin);
-				m_bOpaque = bp.skin->isOpaque(m_state);
 			}
 
 			if( bp.disabled )
@@ -308,7 +305,7 @@ namespace wg
 
 		inline void			_overflowChanged() { if( m_pHolder ) m_pHolder->_childOverflowChanged( m_pSlot ); }
 
-		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, _coverage() ); }
+		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, _spread() ); }
 		inline void			_requestRender( const RectSPX& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
 		inline void			_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
 		inline void			_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
@@ -915,12 +912,6 @@ namespace wg
 		return m_bDropTarget; 
 	}
 
-	//____ isOpaque() _________________________________________________________
-
-	bool Widget::isOpaque() const 
-	{ 
-		return m_bOpaque; 
-	}
 
 } // namespace wg
 #endif

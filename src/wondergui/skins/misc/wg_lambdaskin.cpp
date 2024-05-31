@@ -83,6 +83,16 @@ namespace wg
 		}
 	}
 
+	//____ _coverage() ___________________________________________________________
+
+	RectSPX LambdaSkin::_coverage(const RectSPX& geo, int scale, State state) const
+	{
+		if( m_bOpaque )
+			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+		else
+			return RectSPX();
+	}
+
 	//____ _markTest() _________________________________________________________
 
 	bool LambdaSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride ) const
