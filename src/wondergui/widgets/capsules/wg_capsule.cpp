@@ -234,7 +234,7 @@ namespace wg
 	void Capsule::_releaseChild(StaticSlot * _pSlot)
 	{
 		slot._setWidget(nullptr);
-		_refreshSpread();
+		_refreshInfluence();
 		_requestRender();
 		_requestResize();
 	}
@@ -251,7 +251,7 @@ namespace wg
 			pWidget->_resize(sz, m_scale);
 		}
 
-		_refreshSpread();
+		_refreshInfluence();
 		_requestRender();
 		_requestResize();
 	}

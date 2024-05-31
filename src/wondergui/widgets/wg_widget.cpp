@@ -358,21 +358,21 @@ namespace wg
 
 		m_skin.set(pNewSkin);
 
-		RectSPX oldSpread = pOldSkin ? pOldSkin->_spread(m_size, m_scale) : RectSPX(m_size);
-		RectSPX newSpread = pNewSkin ? pNewSkin->_spread(m_size, m_scale) : RectSPX(m_size);
+		RectSPX oldInfluence = pOldSkin ? pOldSkin->_influence(m_size, m_scale) : RectSPX(m_size);
+		RectSPX newInfluence = pNewSkin ? pNewSkin->_influence(m_size, m_scale) : RectSPX(m_size);
 
-		if( oldSpread != newSpread )
+		if( oldInfluence != newInfluence )
 		{
-			bool bOldSkinOverflows = pOldSkin ? pOldSkin->_overflowsGeo() : false;
-			bool bNewSkinOverflows = pNewSkin ? pNewSkin->_overflowsGeo() : false;
+			bool bOldSkinOverflows = pOldSkin ? pOldSkin->_hasInfluenceBeyondGeo() : false;
+			bool bNewSkinOverflows = pNewSkin ? pNewSkin->_hasInfluenceBeyondGeo() : false;
 
-			m_bOverflowsGeo = bNewSkinOverflows;
+			m_bInfluenceBeyondGeo = bNewSkinOverflows;
 
 			if( bNewSkinOverflows || bOldSkinOverflows )
 				_overflowChanged();
 		}
 
-		_requestRender(RectSPX::bounds(oldSpread, newSpread));
+		_requestRender(RectSPX::bounds(oldInfluence, newInfluence));
 
 		if (!pNewSkin || !pOldSkin || pNewSkin->_contentBorderSize(m_scale) != pOldSkin->_contentBorderSize(m_scale) ||
 			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
@@ -679,7 +679,7 @@ namespace wg
 	void Widget::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		if( !m_skin.isEmpty() )
-			container.add( RectSPX::overlap(m_skin.spread(geo, m_scale), clip ));
+			container.add( RectSPX::overlap(m_skin.influence(geo, m_scale), clip ));
 		else
 			container.add( RectSPX::overlap( geo, clip ) );
 	}
@@ -760,12 +760,12 @@ namespace wg
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
 
-	//____ _spread() __________________________________________________________
+	//____ _influence() __________________________________________________________
 
-	RectSPX Widget::_spread() const
+	RectSPX Widget::_influence() const
 	{
 		if( !m_skin.isEmpty() )
-			return m_skin.spread({0,0,m_size}, m_scale);
+			return m_skin.influence({0,0,m_size}, m_scale);
 		else
 			return m_size;
 	}

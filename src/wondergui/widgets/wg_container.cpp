@@ -56,13 +56,13 @@ namespace wg
 
 		m_skin.set(pNewSkin);
 
-		RectSPX oldSpread = pOldSkin ? pOldSkin->_spread(m_size, m_scale) : RectSPX(m_size);
-		RectSPX newSpread = pNewSkin ? pNewSkin->_spread(m_size, m_scale) : RectSPX(m_size);
+		RectSPX oldInfluence = pOldSkin ? pOldSkin->_influence(m_size, m_scale) : RectSPX(m_size);
+		RectSPX newInfluence = pNewSkin ? pNewSkin->_influence(m_size, m_scale) : RectSPX(m_size);
 			
-		if( oldSpread != newSpread )
-			_refreshSpread();
+		if( oldInfluence != newInfluence )
+			_refreshInfluence();
 
-		_requestRender( RectSPX::bounds(oldSpread,newSpread) );
+		_requestRender( RectSPX::bounds(oldInfluence,newInfluence) );
 		
 		if (!pNewSkin || !pOldSkin || pNewSkin->_contentBorderSize(m_scale) != pOldSkin->_contentBorderSize(m_scale) ||
 			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
@@ -162,7 +162,7 @@ namespace wg
 
 	void Container::_childOverflowChanged( StaticSlot * pSlot )
 	{
-		_refreshSpread();
+		_refreshInfluence();
 	}
 
 	//____ _childRequestFocus() ______________________________________________________
@@ -277,11 +277,11 @@ namespace wg
 			return 0;
 	}
 
-	//____ _spread() ________________________________________________________
+	//____ _influence() ________________________________________________________
 
-	RectSPX Container::_spread() const
+	RectSPX Container::_influence() const
 	{
-		return m_spread;
+		return m_influence;
 	}
 
 
@@ -324,11 +324,11 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pWidget(0) {}
-		WidgetRenderContext( Widget * pWidget, const RectSPX& geo, const RectSPX& spread ) : pWidget(pWidget), geo(geo), spread(spread) {}
+		WidgetRenderContext( Widget * pWidget, const RectSPX& geo, const RectSPX& influence ) : pWidget(pWidget), geo(geo), influence(influence) {}
 
 		Widget *	pWidget;
 		RectSPX		geo;
-		RectSPX		spread;
+		RectSPX		influence;
 		ClipPopData clipPop;
 	};
 
@@ -352,10 +352,10 @@ namespace wg
 			_firstSlotWithGeo( child );
 			while(child.pSlot)
 			{
-				RectSPX spread = child.pSlot->_widget()->_spread() + child.geo.pos() + _canvas.pos();
+				RectSPX influence = child.pSlot->_widget()->_influence() + child.geo.pos() + _canvas.pos();
 
-				if( spread.isOverlapping( dirtBounds ) )
-					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), child.geo + _canvas.pos(), spread ) );
+				if( influence.isOverlapping( dirtBounds ) )
+					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), child.geo + _canvas.pos(), influence ) );
 
 				_nextSlotWithGeo( child );
 			}
@@ -376,10 +376,10 @@ namespace wg
 			{
 				WidgetRenderContext * p = &renderList[i];
 
-//				RectSPX	clipBounds = RectSPX::overlap(p->spread,_canvas);
+//				RectSPX	clipBounds = RectSPX::overlap(p->influence,_canvas);
 				
-				p->clipPop = patchesToClipList(pDevice, p->spread, patches);
-				p->pWidget->_maskPatches( patches, p->geo, p->spread );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->clipPop = patchesToClipList(pDevice, p->influence, patches);
+				p->pWidget->_maskPatches( patches, p->geo, p->influence );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 				if( patches.isEmpty() )
 				{
@@ -405,13 +405,13 @@ namespace wg
 			while(child.pSlot)
 			{
 				RectSPX canvas = child.geo + _canvas.pos();
-				RectSPX spread = child.pSlot->_widget()->_spread() + child.geo.pos() + _canvas.pos();
+				RectSPX influence = child.pSlot->_widget()->_influence() + child.geo.pos() + _canvas.pos();
 
-				if (spread.isOverlapping(dirtBounds))
+				if (influence.isOverlapping(dirtBounds))
 				{
-//					RectSPX	clipBounds = RectSPX::overlap(spread,_canvas);
+//					RectSPX	clipBounds = RectSPX::overlap(influence,_canvas);
 
-					ClipPopData popData = limitClipList(pDevice, spread );
+					ClipPopData popData = limitClipList(pDevice, influence );
 
 					if( pDevice->clipListSize() > 0 )
 						child.pSlot->_widget()->_render(pDevice, canvas, canvas);
@@ -424,44 +424,44 @@ namespace wg
 		}
 	}
 
-	//____ _refreshSpread() ____________________________________________________
+	//____ _refreshInfluence() ____________________________________________________
 
-	void Container::_refreshSpread()
+	void Container::_refreshInfluence()
 	{
-		// We can't start with skin spread since an empty one would start at 0,0
-		// always creating spread from top-left when adding childrens spread.
+		// We can't start with skin influence since an empty one would start at 0,0
+		// always creating influence from top-left when adding childrens influence.
 
-		RectSPX spread;
+		RectSPX influence;
 				
 		SlotWithGeo slot;
 		 _firstSlotWithGeo(slot);
 		if( slot.pSlot )
 		{
-			spread = slot.pSlot->_widget()->_spread() + slot.geo.pos();
+			influence = slot.pSlot->_widget()->_influence() + slot.geo.pos();
 
 			_nextSlotWithGeo(slot);
 			while( slot.pSlot )
 			{
-				spread.growToContain(slot.pSlot->_widget()->_spread() + slot.geo.pos());
+				influence.growToContain(slot.pSlot->_widget()->_influence() + slot.geo.pos());
 				_nextSlotWithGeo(slot);
 			}
 			
 			if( !m_skin.isEmpty() )
-				spread.growToContain(m_skin.spread({0,0,m_size}, m_scale));
+				influence.growToContain(m_skin.influence({0,0,m_size}, m_scale));
 		}
 		else if( !m_skin.isEmpty() )
-			spread = m_skin.spread({0,0,m_size}, m_scale);
+			influence = m_skin.influence({0,0,m_size}, m_scale);
 			
-		if( spread != m_spread )
+		if( influence != m_influence )
 		{
-			m_spread = spread;
-			bool bOverflowsGeo = !RectSPX(m_size).contains(spread);
+			m_influence = influence;
+			bool bOverflowsGeo = !RectSPX(m_size).contains(influence);
 
 			// Signal if overflow has changed
 			
-			if (bOverflowsGeo || m_bOverflowsGeo)
+			if (bOverflowsGeo || m_bInfluenceBeyondGeo)
 			{
-				m_bOverflowsGeo = bOverflowsGeo;
+				m_bInfluenceBeyondGeo = bOverflowsGeo;
 				_overflowChanged();
 			}
 		}

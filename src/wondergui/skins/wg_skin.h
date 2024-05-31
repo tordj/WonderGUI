@@ -96,7 +96,7 @@ namespace wg
 		virtual SizeSPX		_paddingSize(int scale) const;
 
 		inline  bool		_hasOverflow() const { return m_bOverflow;  }
-		inline 	bool		_overflowsGeo() const { return m_bOverflowsGeo; }
+		inline 	bool		_hasInfluenceBeyondGeo() const { return m_bInfluenceBeyondGeo; }
 //		inline  BorderSPX	_overflow(int scale, State state) const;
 
 		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;
@@ -112,7 +112,7 @@ namespace wg
 									float value = 1.f, float value2 = -1.f, int animPos = 0, 
 									float* pStateFractions = nullptr) const = 0;
 
-		virtual RectSPX		_spread(const RectSPX& geo, int scale) const;
+		virtual RectSPX		_influence(const RectSPX& geo, int scale) const;
 
 		virtual RectSPX		_coverage(const RectSPX& geo, int scale, State state) const = 0;
 
@@ -148,7 +148,7 @@ namespace wg
 			
 			Border diff = m_overflow - m_margin;
 			if( diff.top > 0 || diff.right > 0 || diff.bottom > 0 || diff.left > 0 )
-				m_bOverflowsGeo = true;
+				m_bInfluenceBeyondGeo = true;
 			
 			if (bp.finalizer)
 				setFinalizer(bp.finalizer);
@@ -173,7 +173,7 @@ namespace wg
 		bool			m_bIgnoresValue = true;
 		bool			m_bIgnoresState = true;
 		bool			m_bOverflow = false;				// Set when there is overflow, even if it might not overflow the geo.
-		bool			m_bOverflowsGeo = false;			// Set when overflow is larger than margin.
+		bool			m_bInfluenceBeyondGeo = false;			// Set when overflow is larger than margin.
 
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
 		int				m_layer = -1;

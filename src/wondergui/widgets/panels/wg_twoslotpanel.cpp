@@ -252,7 +252,7 @@ namespace wg
 			return true;
 		}
 
-		_refreshSpread();
+		_refreshInfluence();
 
 		return false;
 	}

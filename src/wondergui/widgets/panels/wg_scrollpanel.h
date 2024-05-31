@@ -224,7 +224,7 @@ namespace wg
 
 		bool		_alphaTest(const CoordSPX& ofs) override;
 
-		void		_refreshSpread() override;
+		void		_refreshInfluence() override;
 
 
 		// Overloaded from Container

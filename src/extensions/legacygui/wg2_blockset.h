@@ -41,8 +41,8 @@ class WgBlockset
 {
 
 public:
-	static wg::BlockSkin_p CreateFromRow( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
-	static wg::BlockSkin_p CreateFromColumn( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
+	static wg::BlockSkin_p CreateFromRow( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int blockSpacing=0, int flags = 0 );
+	static wg::BlockSkin_p CreateFromColumn( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int blockSpacing=0, int flags = 0 );
 
 };
 

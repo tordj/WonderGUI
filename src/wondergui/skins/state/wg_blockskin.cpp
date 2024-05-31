@@ -217,13 +217,13 @@ namespace wg
 
 			if (bp.axis == Axis::X)
 			{
-				block.w = (m_pSurface->pointWidth() - bp.spacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.w = (m_pSurface->pointWidth() - bp.blockSpacing * (nStateBlocks - 1)) / nStateBlocks;
 				block.h = m_pSurface->pointHeight();
 			}
 			else
 			{
 				block.w = m_pSurface->pointWidth();
-				block.h = (m_pSurface->pointHeight() - bp.spacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.h = (m_pSurface->pointHeight() - bp.blockSpacing * (nStateBlocks - 1)) / nStateBlocks;
 			}
 		}
 
@@ -285,7 +285,7 @@ namespace wg
 
 		Coord blockOfs = block.pos();
 
-		Coord pitch = bp.axis == Axis::X ? Coord(block.w + bp.spacing, 0) : Coord(0, block.h + bp.spacing);
+		Coord pitch = bp.axis == Axis::X ? Coord(block.w + bp.blockSpacing, 0) : Coord(0, block.h + bp.blockSpacing);
 
 		int ofs = 0;
 		for (auto& stateInfo : bp.states)

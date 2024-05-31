@@ -245,9 +245,9 @@ namespace sdl_wglib
 
 		wg::BlockSkin::Blueprint	sliderBtnBP {
 			.axis = wg::Axis::X,
+			.blockSpacing = 2,
 			.frame = 3,
 			.padding = 4,
-			.spacing = 2,
 			.states = {
 				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
@@ -277,10 +277,10 @@ namespace sdl_wglib
 
 		auto pSliderBlocks	= wg::BlockSkin::create( {
 			.axis = wg::Axis::X,
+			.blockSpacing = 2,
 			.firstBlock = wg::Rect(1,SLIDER_OFS,8,8),
 			.frame = 2,
 			.padding = 3,
-			.spacing = 2,
 			.states = {
 				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
@@ -294,10 +294,10 @@ namespace sdl_wglib
 		
 		auto pResizeButtonBlocks = wg::BlockSkin::create( {
 			.axis = wg::Axis::X,
+			.blockSpacing = 2,
 			.firstBlock = wg::Rect(1,RESIZE_BUTTON_OFS,20,20),
 			.frame = 3,
 			.padding = 3,
-			.spacing = 2,
 			.states = {
 				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
@@ -309,10 +309,10 @@ namespace sdl_wglib
 		
 		auto pCheckboxIconSkin = wg::BlockSkin::create( {
 			.axis = wg::Axis::X,
+			.blockSpacing = 2,
 			.firstBlock = wg::Rect(1,CHECKBOX_OFS,11,11),
 			.frame = 2,
 			.padding = 3,
-			.spacing = 2,
 			.states = {
 				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
@@ -328,10 +328,10 @@ namespace sdl_wglib
 		
 		auto pRadiobuttonIconSkin = wg::BlockSkin::create( {
 			.axis = wg::Axis::X,
+			.blockSpacing = 2,
 			.firstBlock = wg::Rect(1,RADIOBUTTON_OFS,11,11),
 			.frame = 2,
 			.padding = 3,
-			.spacing = 2,
 			.states = {
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
@@ -346,10 +346,10 @@ namespace sdl_wglib
 		
 		auto pButtonBlocks = wg::BlockSkin::create( {
 			.axis = wg::Axis::X,
+			.blockSpacing = 2,
 			.firstBlock = wg::Rect( 1, BUTTON_OFS, 8, 8 ),
 			.frame = 3,
 			.padding = 4,
-			.spacing = 2,
 			.states = {
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
@@ -383,10 +383,10 @@ namespace sdl_wglib
 
 		auto pPlateBlocks	= wg::BlockSkin::create( {
 			.axis = wg::Axis::X,
+			.blockSpacing = 2,
 			.firstBlock = wg::Rect(1,PLATE_OFS,8,8),
 			.frame = 3,
 			.padding = 4,
-			.spacing = 2,
 			.states = {
 				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
@@ -405,10 +405,10 @@ namespace sdl_wglib
 
 		auto pComboBlocks	= wg::BlockSkin::create( {
 			.axis = wg::Axis::X,
+			.blockSpacing = 2,
 			.firstBlock = wg::Rect(1,COMBOBOX_OFS,23,20),
 			.frame = {1,1,20,1},
 			.padding = {2,2,21,2},
-			.spacing = 2,
 			.states = {
 				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},

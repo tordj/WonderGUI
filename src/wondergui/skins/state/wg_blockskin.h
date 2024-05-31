@@ -88,6 +88,7 @@ namespace wg
 		{
 			Axis		axis = Axis::Y;
 			BlendMode	blendMode = BlendMode::Blend;
+			pts			blockSpacing = 0;
 			HiColor		color = HiColor::Undefined;
 			Finalizer_p	finalizer = nullptr;
 			Rect		firstBlock;						// Mandatory!
@@ -102,7 +103,6 @@ namespace wg
 			RigidPartXBlueprint	rigidPartX;
 			RigidPartYBlueprint rigidPartY;
 
-			pts			spacing = 0;
 			std::vector<StateBP>	states;
 			
 			Surface_p	surface;					// Mandatory!

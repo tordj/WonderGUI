@@ -87,9 +87,9 @@ namespace wg
 		return SizeSPX(align(ptsToSpx(m_padding, scale)));
 	}
 
-	//____ _spread() ________________________________________________________
+	//____ _influence() ________________________________________________________
 
-	RectSPX Skin::_spread(const RectSPX& geo, int scale) const
+	RectSPX Skin::_influence(const RectSPX& geo, int scale) const
 	{
 		return geo - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
 	}

@@ -83,8 +83,8 @@ namespace wg
 
 		inline bool		isContentShifting() const { return m_pSkin ? m_pSkin->_isContentShifting() : false; }
 
-		inline RectSPX	spread( const RectSPX& geo, int scale) const { return m_pSkin ? m_pSkin->_spread(geo, scale) : RectSPX(); }
-		inline 	bool	overflowsGeo() const { return m_pSkin ? m_pSkin->_overflowsGeo() : false; }
+		inline RectSPX	influence( const RectSPX& geo, int scale) const { return m_pSkin ? m_pSkin->_influence(geo, scale) : RectSPX(); }
+		inline 	bool	hasInfluenceBeyondGeo() const { return m_pSkin ? m_pSkin->_hasInfluenceBeyondGeo() : false; }
 
 		virtual RectSPX	coverage(const RectSPX& geo, int scale, State state) const { return m_pSkin ? m_pSkin->_coverage(geo,scale, state) : RectSPX(); }
 

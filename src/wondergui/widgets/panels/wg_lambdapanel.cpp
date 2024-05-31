@@ -363,7 +363,7 @@ namespace wg
 			_updateGeo(pSlot);
 
 		if (slots.isEmpty())
-			_refreshSpread();
+			_refreshInfluence();
 	}
 
 	//____ _updateAllSlotsGeo() _______________________________________________
@@ -399,19 +399,19 @@ namespace wg
 
 		if (geo != pSlot->m_geo || pWidget->_scale() != m_scale)
 		{
-			// Store spread and set size.
+			// Store influence and set size.
 
-			RectSPX oldSpread = pWidget->_spread() + pSlot->m_geo.pos();
+			RectSPX oldInfluence = pWidget->_influence() + pSlot->m_geo.pos();
 			pSlot->_setSize(geo, m_scale);
-			RectSPX newSpread = pWidget->_spread() + geo.pos();
+			RectSPX newInfluence = pWidget->_influence() + geo.pos();
 
 			if (pSlot->m_bVisible)
 			{
-				// Clip our spread and put it in a dirtyrect-list
+				// Clip our influence and put it in a dirtyrect-list
 
 				PatchesSPX patches;
-				patches.add(oldSpread);
-				patches.add(newSpread);
+				patches.add(oldInfluence);
+				patches.add(newInfluence);
 
 				if (m_edgePolicy == EdgePolicy::Clip)
 					patches.clip(RectSPX(0, 0, m_size));
@@ -421,9 +421,9 @@ namespace wg
 				auto pCover = pSlot + 1;
 				while (pCover < slots.end())
 				{
-					RectSPX coverSpread = pCover->_widget()->_spread() + pCover->m_geo.pos();
+					RectSPX coverInfluence = pCover->_widget()->_influence() + pCover->m_geo.pos();
 
-					if (pCover->m_bVisible && (coverSpread.isOverlapping(oldSpread) || coverSpread.isOverlapping(newSpread)) )
+					if (pCover->m_bVisible && (coverInfluence.isOverlapping(oldInfluence) || coverInfluence.isOverlapping(newInfluence)) )
 						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
 
 					pCover++;
@@ -434,12 +434,12 @@ namespace wg
 				for (const RectSPX * pRect = patches.begin(); pRect < patches.end(); pRect++)
 					_requestRender(*pRect);
 
-				// Update spread
+				// Update influence
 
 				//TODO: Use faster method!
 
-				if (pWidget->_overflowsGeo() && m_edgePolicy != EdgePolicy::Clip)
-					_refreshSpread();
+				if (pWidget->_hasInfluenceBeyondGeo() && m_edgePolicy != EdgePolicy::Clip)
+					_refreshInfluence();
 			}
 
 			pSlot->m_geo = geo;
@@ -464,9 +464,9 @@ namespace wg
 
 		for (auto pCover = slots.begin(); pCover < pSlot ; pCover++)
 		{
-			RectSPX coverSpread = pCover->_widget()->_spread() + pCover->m_geo.pos();
+			RectSPX coverInfluence = pCover->_widget()->_influence() + pCover->m_geo.pos();
 
-			if (pCover->m_bVisible && coverSpread.isOverlapping(rect))
+			if (pCover->m_bVisible && coverInfluence.isOverlapping(rect))
 				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
 		}
 

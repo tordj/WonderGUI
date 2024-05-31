@@ -233,23 +233,23 @@ namespace wg
 			pDevice->setRenderLayer(oldLayer);
 	}
 
-	//____ _spread() _____________________________________________________
+	//____ _influence() _____________________________________________________
 
-	RectSPX DoubleSkin::_spread(const RectSPX& geo, int scale) const
+	RectSPX DoubleSkin::_influence(const RectSPX& geo, int scale) const
 	{
-		//TODO: State of BackSkin can affect spread in DoubleSkin, what do do about that?
+		//TODO: State of BackSkin can affect influence in DoubleSkin, what do do about that?
 
-		RectSPX backSpread = m_pBackSkin->_spread(geo,scale);
+		RectSPX backInfluence = m_pBackSkin->_influence(geo,scale);
 		
 		RectSPX frontGeo = m_bSkinInSkin ? m_pBackSkin->_contentRect(geo, scale, State::Default) : geo;
-		RectSPX frontSpread = m_pFrontSkin->_spread(frontGeo,scale);
+		RectSPX frontInfluence = m_pFrontSkin->_influence(frontGeo,scale);
 		
-		RectSPX spread = RectSPX::bounds(backSpread, frontSpread);
+		RectSPX influence = RectSPX::bounds(backInfluence, frontInfluence);
 
-		spread -= align(ptsToSpx(m_margin, scale));
-		spread += align(ptsToSpx(m_overflow, scale));
+		influence -= align(ptsToSpx(m_margin, scale));
+		influence += align(ptsToSpx(m_overflow, scale));
 
-		return spread;
+		return influence;
 	}
 
 	//____ _coverage() ___________________________________________________________
@@ -386,17 +386,17 @@ namespace wg
 			}
 		}
 		
-		// Update m_bOverflowsGeo
+		// Update m_bInfluenceBeyondGeo
 		
-		if( !m_bOverflowsGeo && m_pBackSkin->_overflowsGeo() )
+		if( !m_bInfluenceBeyondGeo && m_pBackSkin->_hasInfluenceBeyondGeo() )
 		{
 			Border backOverflow = m_pBackSkin->overflow() - m_pBackSkin->margin() - m_margin;
 			
 			if( backOverflow.top > 0 || backOverflow.right > 0 || backOverflow.bottom > 0 || backOverflow.left > 0 )
-				m_bOverflowsGeo = true;
+				m_bInfluenceBeyondGeo = true;
 		}
 
-		if( !m_bOverflowsGeo && m_pFrontSkin->_overflowsGeo() )
+		if( !m_bInfluenceBeyondGeo && m_pFrontSkin->_hasInfluenceBeyondGeo() )
 		{
 			Border frontOverflow = m_pFrontSkin->overflow() - m_pFrontSkin->margin() - m_margin;
 			
@@ -404,7 +404,7 @@ namespace wg
 				frontOverflow -= m_pBackSkin->padding();
 			
 			if( frontOverflow.top > 0 || frontOverflow.right > 0 || frontOverflow.bottom > 0 || frontOverflow.left > 0 )
-				m_bOverflowsGeo = true;
+				m_bInfluenceBeyondGeo = true;
 		}
 	}
 

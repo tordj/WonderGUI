@@ -851,7 +851,7 @@ namespace wg
 		_childWindowCorrection();
 		_updateScrollbars();
 
-		_refreshSpread();
+		_refreshInfluence();
 	}
 
 	//____ _update() __________________________________________________________
@@ -1017,27 +1017,27 @@ namespace wg
 		return false;
 	}
 
-	//____ _refreshSpread() ____________________________________________________
+	//____ _refreshInfluence() ____________________________________________________
 
-	void ScrollPanel::_refreshSpread()
+	void ScrollPanel::_refreshInfluence()
 	{
 		// Since we always clip our child we should ignore it in this calculation.
 
-		RectSPX spread  = m_skin.spread({ 0,0,m_size }, m_scale);
+		RectSPX influence  = m_skin.influence({ 0,0,m_size }, m_scale);
 
-		if (spread.isEmpty())
-			spread = m_size;
+		if (influence.isEmpty())
+			influence = m_size;
 
-		if (spread != m_spread)
+		if (influence != m_influence)
 		{
-			m_spread = spread;
-			bool bOverflowsGeo = !RectSPX(m_size).contains(spread);
+			m_influence = influence;
+			bool bOverflowsGeo = !RectSPX(m_size).contains(influence);
 
 			// Signal if overflow has changed
 
-			if (bOverflowsGeo || m_bOverflowsGeo)
+			if (bOverflowsGeo || m_bInfluenceBeyondGeo)
 			{
-				m_bOverflowsGeo = bOverflowsGeo;
+				m_bInfluenceBeyondGeo = bOverflowsGeo;
 				_overflowChanged();
 			}
 		}
