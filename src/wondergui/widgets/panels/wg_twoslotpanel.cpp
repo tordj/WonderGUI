@@ -384,14 +384,6 @@ namespace wg
 
 	//____ _childRequestRender() ______________________________________________
 
-	void TwoSlotPanel::_childRequestRender(StaticSlot * pSlot)
-	{
-		if (pSlot == &slots[0])
-			_requestRender(_slotOneRect(_contentRect()));
-		else
-			_requestRender(_slotTwoRect(_contentRect()));
-	}
-
 	void TwoSlotPanel::_childRequestRender(StaticSlot * pSlot, const RectSPX& rect)
 	{
 		CoordSPX contentPos = m_skin.contentOfs(m_scale, m_state);

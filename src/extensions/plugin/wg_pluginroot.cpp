@@ -472,12 +472,6 @@ namespace wg
 
 	//____ _childRequestRender() ______________________________________________
 
-	void PluginRoot::_childRequestRender(StaticSlot* pSlot)
-	{
-		if (m_pluginCapsule)
-			PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { 0,0,m_size.w,m_size.h });
-	}
-
 	void PluginRoot::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
 	{
 		if (m_pluginCapsule)

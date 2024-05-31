@@ -115,13 +115,6 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void Capsule::_childRequestRender( StaticSlot * pSlot )
-	{
-		_requestRender(m_skin.contentRect( m_size, m_scale, m_state ));
-	}
-
-	//____ _childRequestRender() _________________________________________________
-
 	void Capsule::_childRequestRender( StaticSlot * pSlot, const RectSPX& rect )
 	{
 		_requestRender( rect + m_skin.contentOfs( m_scale, m_state ));

@@ -252,7 +252,7 @@ namespace wg
 		RectSPX geo = _childGeo(pSlot);
 		pSlot->m_geo = geo;
 		pSlot->_setSize(geo.size(),m_scale);
-		_childRequestRender(pSlot);
+		_childRequestRender(pSlot, pSlot->_widget()->_influence() );
 		
 		return bRequestResize;
 	}
@@ -293,6 +293,8 @@ namespace wg
 		SizeSPX newDefault =_calcDefaultSize(m_scale);
 		if (newDefault != m_defaultSize || m_defaultSize != m_size)
 			_requestResize();
+
+		_refreshInfluence();
 	}
 
 	void StackPanel::_setSlotMargins(StaticSlot * _pSlot, int nb, const Border * pPaddings)
@@ -307,6 +309,8 @@ namespace wg
 		SizeSPX newDefault = _calcDefaultSize(m_scale);
 		if (newDefault != m_defaultSize || m_defaultSize != m_size)
 			_requestResize();
+
+		_refreshInfluence();
 	}
 
 	//____ _didMoveSlots() ________________________________________________________
@@ -317,13 +321,6 @@ namespace wg
 	}
 
 	//____ _childRequestRender() ______________________________________________
-
-	void StackPanel::_childRequestRender( StaticSlot * _pSlot )
-	{
-		auto pSlot = static_cast<StackPanelSlot*>(_pSlot);
-
-		_childRequestRender( pSlot, pSlot->m_geo );
-	}
 
 	void StackPanel::_childRequestRender( StaticSlot * _pSlot, const RectSPX& _rect )
 	{
@@ -343,9 +340,10 @@ namespace wg
 
 		for( auto pCover = slots.begin() ; pCover < pSlot ; pCover++ )
 		{
-			RectSPX geo = pCover->m_geo;
-			if( pCover->m_bVisible && geo.isOverlapping( rect ) )
-				pCover->_widget()->_maskPatches( patches, geo, RectSPX(0,0,65536,65536 ) );
+			RectSPX influence = pCover->_widget()->_influence() + pCover->m_geo.pos();
+
+			if( pCover->m_bVisible && influence.isOverlapping(rect))
+				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0,65536,65536 ) );
 		}
 
 		// Make request render calls
@@ -375,17 +373,20 @@ namespace wg
 
 			if (oldGeo != newGeo)
 			{
+				RectSPX oldInfluence = pSlot->_widget()->_influence() + oldGeo.pos();
+
 				pSlot->m_geo = newGeo;
 				pSlot->_setSize(newGeo.size(), m_scale);
 
 				if (pSlot->m_bVisible)
 				{
-					_requestRender(oldGeo);
-					_requestRender(newGeo);
+					_requestRender(oldInfluence);
+					_requestRender(pSlot->_widget()->_influence() + newGeo.pos() );
 				}
 			}
 		}
 
+		_refreshInfluence();
 	}
 
 	//____ _releaseChild() ____________________________________________________
@@ -398,7 +399,7 @@ namespace wg
 
 	//____ _replaceChild() ____________________________________________________
 
-	void StackPanel::_replaceChild(StaticSlot * pSlot, Widget * pNewChild)
+	void StackPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
 	{
 		if( pNewChild == nullptr )
 		{
@@ -406,9 +407,22 @@ namespace wg
 			return;
 		}
 		
-		static_cast<StackPanelSlot*>(pSlot)->_setWidget(pNewChild);
-		_childRequestRender(pSlot);
+		auto pSlot = static_cast<StackPanelSlot*>(_pSlot);
+
+		RectSPX oldInfluence = pSlot->isEmpty() ? RectSPX() : pSlot->_widget()->_influence();
+
+		pSlot->_setWidget(pNewChild);
+		pNewChild->_resize( pSlot->m_geo.size(), m_scale);
+
+		RectSPX influence = pSlot->_widget()->_influence();
+
+		if (!oldInfluence.isEmpty())
+			influence.growToContain(oldInfluence);
+
+		_childRequestRender(pSlot, influence);
 		_childRequestResize(pSlot);
+
+		_refreshInfluence();
 	}
 
 
@@ -430,6 +444,8 @@ namespace wg
 			pSlot++;
 		}
 
+		_refreshInfluence();
+
 		if( bRequestResize )
 			_requestResize();
 	}
@@ -446,7 +462,7 @@ namespace wg
 		{
 			if( pSlot->m_bVisible )
 			{
-				_childRequestRender( pSlot );
+				_childRequestRender( pSlot, pSlot->_widget()->_influence() );
 				pSlot->m_bVisible = false;
 			}
 			pSlot++;
@@ -481,6 +497,8 @@ namespace wg
 			bRequestResize = true;
 */
 		//
+
+		_refreshInfluence();
 
 		if( bRequestResize )
 			_requestResize();
@@ -532,18 +550,24 @@ namespace wg
 
 			if (pSlot->m_bResizeRequired || newGeo != pSlot->m_geo)
 			{
+				auto pWidget = pSlot->_widget();
+
 				if (pSlot->m_bVisible)
-				{
-					_requestRender(pSlot->m_geo);
-					_requestRender(newGeo);
-				}
+					_requestRender(pWidget->_influence() + pSlot->m_geo.pos() );
+
 				pSlot->m_geo = newGeo;
  				pSlot->_setSize(newGeo.size(), m_scale);
+
+				if (pSlot->m_bVisible)
+					_requestRender(pWidget->_influence() + pSlot->m_geo.pos() );
+
 				pSlot->m_bResizeRequired = false;
 			}
 
 			pSlot++;
 		}
+
+		_refreshInfluence();
 	}
 
 	//____ _childGeo() ___________________________________________________________

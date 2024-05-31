@@ -200,7 +200,6 @@ namespace wg
 		bool			_isChildVisible( const StaticSlot * pSlot ) const override;
 		RectSPX			_childWindowSection( const StaticSlot * pSlot ) const override;
 
-		void			_childRequestRender( StaticSlot * pSlot ) override;
 		void			_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
 		void			_childRequestResize( StaticSlot * pSlot ) override;
 

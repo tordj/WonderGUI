@@ -233,17 +233,6 @@ namespace wg
 
 	//____ _childRequestRender() _______________________________________________
 
-	void Overlay::_childRequestRender( StaticSlot * _pSlot )
-	{
-		if( _pSlot == &mainSlot )
-			_onRequestRender( RectSPX( 0,0, m_size ), 0 );		//TODO: Take padding into account
-		else
-		{
-			Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);
-			_onRequestRender( pSlot->m_geo, pSlot );
-		}
-	}
-
 	void Overlay::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
 		if( _pSlot == &mainSlot )

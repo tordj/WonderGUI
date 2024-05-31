@@ -243,12 +243,6 @@ namespace wg
 	//____ _childRequestRender() ______________________________________________
 
 	template < class SlotType>
-	void Panel<SlotType>::_childRequestRender(StaticSlot * pSlot)
-	{
-		_requestRender( ((PanelSlot*)pSlot)->m_geo );
-	}
-
-	template < class SlotType>
 	void Panel<SlotType>::_childRequestRender(StaticSlot * pSlot, const RectSPX& rect)
 	{
 		_requestRender(rect + ((PanelSlot*)pSlot)->m_geo.pos());

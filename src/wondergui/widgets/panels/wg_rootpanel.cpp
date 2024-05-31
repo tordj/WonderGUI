@@ -733,14 +733,6 @@ namespace wg
 		return m_scale;
 	}
 
-	//____ _childRequestRender() __________________________________________________
-
-	void RootPanel::_childRequestRender(StaticSlot* pSlot)
-	{
-		if (m_bVisible)
-			addDirtyPatch(m_geo);
-	}
-
 	void RootPanel::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
 	{
 		if (m_bVisible)

@@ -421,12 +421,6 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void FlexPanel::_childRequestRender( StaticSlot * _pSlot )
-	{
-		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
-		_onRequestRender( pSlot->_widget()->_influence(), pSlot );
-	}
-
 	void FlexPanel::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
 		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);

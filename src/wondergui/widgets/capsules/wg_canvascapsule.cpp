@@ -221,8 +221,14 @@ namespace wg
 
 	void CanvasCapsule::setClearColor( HiColor color )
 	{
-		m_clearColor = color;
-		_childRequestRender( &slot );
+		if (color != m_clearColor)
+		{
+			m_clearColor = color;
+
+			m_patches.clear();
+			m_patches.push(m_canvasSize);
+			_requestRender( _slotGeo(&slot) );
+		}
 	}
 
 	//____ _matchingHeight() _____________________________________________________
@@ -627,15 +633,6 @@ namespace wg
 		}
 		else
 			return Capsule::_findWidget(ofs, mode);
-	}
-
-	//____ _childRequestRender() _________________________________________________
-
-	void CanvasCapsule::_childRequestRender(StaticSlot* pSlot)
-	{
-		m_patches.clear();
-		m_patches.push(m_canvasSize);
-		Capsule::_childRequestRender(pSlot);
 	}
 
 	void CanvasCapsule::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)

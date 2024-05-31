@@ -61,7 +61,6 @@ namespace wg
 		virtual bool		_isChildVisible( const StaticSlot * pSlot ) const = 0;
 		virtual RectSPX		_childWindowSection( const StaticSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
 
-		virtual void		_childRequestRender( StaticSlot * pSlot ) = 0;
 		virtual void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) = 0;
 		virtual void		_childRequestResize( StaticSlot * pSlot ) = 0;
 

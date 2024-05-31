@@ -674,11 +674,6 @@ namespace wg
 
 	//____ _childRequestRender() ______________________________________________
 
-	void SplitPanel::_childRequestRender(StaticSlot * pSlot)
-	{
-		_requestRender(static_cast<Slot*>(pSlot)->m_geo);
-	}
-
 	void SplitPanel::_childRequestRender(StaticSlot * pSlot, const RectSPX& rect)
 	{
 		_requestRender(rect + static_cast<Slot*>(pSlot)->m_geo.pos());

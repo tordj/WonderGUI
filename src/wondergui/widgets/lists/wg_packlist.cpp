@@ -1280,15 +1280,6 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void PackList::_childRequestRender( StaticSlot * _pSlot )
-	{
-		Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);
-
-		RectSPX geo;
-		_getChildGeo(geo, pSlot);
-		_requestRender(geo);
-	}
-
 	void PackList::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
 		Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);

@@ -402,7 +402,7 @@ namespace wg
 		Slot * pSlot = (Slot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			_childRequestRender(pSlot+i);
+			_childRequestRender(pSlot+i, pSlot[i].m_geo.size());
 			pSlot[i].m_geo.clear();
 		}
 

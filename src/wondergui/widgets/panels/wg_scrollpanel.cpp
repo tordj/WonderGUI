@@ -1164,13 +1164,6 @@ namespace wg
 
 	//____ _childRequestRender() ______________________________________________
 
-	void ScrollPanel::_childRequestRender(StaticSlot* pSlot)
-	{
-		_requestRender(m_viewRegion);
-	}
-
-	//____ _childRequestRender() ______________________________________________
-
 	void ScrollPanel::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
 	{
 		RectSPX visible = RectSPX::overlap(rect + m_childCanvas.pos(), m_viewRegion);

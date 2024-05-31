@@ -305,12 +305,6 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot )
-	{
-		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-		_onRequestRender( pSlot->m_geo, pSlot );
-	}
-
 	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
 		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);

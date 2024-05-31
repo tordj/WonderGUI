@@ -156,7 +156,6 @@ namespace wg
 		SizeSPX		_minSize(int scale) const override;
 		SizeSPX		_maxSize(int scale) const override;
 
-		void		_childRequestRender( StaticSlot * pSlot ) override;
 		void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
 
