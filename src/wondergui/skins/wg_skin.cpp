@@ -37,6 +37,14 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ isOpaque() _________________________________________________________
+
+	bool Skin::isOpaque(State state) const
+	{
+		return (_coverage({ 0,0,100 * 64,100 * 64 }, 64, state) == RectSPX{0, 0, 100 * 64, 100 * 64});
+	}
+
+
 	//____ _minSize() ______________________________________________________________
 
 	SizeSPX Skin::_minSize(int scale) const

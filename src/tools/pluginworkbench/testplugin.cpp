@@ -172,17 +172,17 @@ bool areaChartTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pFlex = FlexPanel::create();
 
-	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+	pFlex->setSkin(ColorSkin::create(Color::LightYellow));
 
 	auto pGraph = AreaChart::create(WGBP(AreaChart,
 		_.displayCeiling = 0.5f,
 		_.displayFloor = - 0.5f,
-		_.displaySkin = StaticBoxSkin::create( WGBP(StaticBoxSkin,
-														_.color = Color::Black,
-														_.outlineColor = Color::Green,
-														_.padding = 2,
-														_.outline = 2 )),
-		_.skin = StaticColorSkin::create(Color::Pink)
+		_.displaySkin = BoxSkin::create( WGBP(BoxSkin,
+												_.color = Color::Black,
+												_.outlineColor = Color::Green,
+												_.padding = 2,
+												_.outlineThickness = 2 )),
+		_.skin = ColorSkin::create(Color::Pink)
 	));
 
 
@@ -280,7 +280,7 @@ bool areaChartTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pEntry)
 {
-	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::Black) });
+	auto pBack = FlexPanel::create({ .skin = ColorSkin::create(Color::Black) });
 	*pEntry = pBack;
 
 	auto pMyStyle = TextStyle::create( WGOVR(Base::defaultStyle()->blueprint(), _.size = 30, _.color = Color::White ));

@@ -678,7 +678,7 @@ int main(int argc, char** argv)
 		pDnDLayer->mainSlot = pPopupOverlay;
 
 		LambdaPanel_p pBasePanel = LambdaPanel::create();
-		pBasePanel->setSkin(StaticColorSkin::create(Color::Burlywood));
+		pBasePanel->setSkin(ColorSkin::create(Color::Burlywood));
 		pPopupOverlay->mainSlot = pBasePanel;
 
 		/*	Filler_p pBackground = Filler::create();
@@ -1256,7 +1256,7 @@ bool stretchBlitTest(ComponentPtr<DynamicSlot> pEntry)
 	Surface_p pImgSurface = loadSurface("resources/white_frame_256x256.png", { .format = PixelFormat::BGR_8, .sampleMethod = SampleMethod::Bilinear });
 
 	auto pBack = FlexPanel::create();
-	pBack->setSkin( StaticColorSkin::create(Color::Blue) );
+	pBack->setSkin( ColorSkin::create(Color::Blue) );
 	* pEntry = pBack;
 
 	auto pImage = Image::create();
@@ -1533,12 +1533,12 @@ bool splitPanelTest(ComponentPtr<DynamicSlot> pEntry)
 	pSplit->setHandleThickness(10);
 
 	auto pContent1 = TextEditor::create();
-	pContent1->setSkin( StaticColorSkin::create(Color::AntiqueWhite) );
+	pContent1->setSkin( ColorSkin::create(Color::AntiqueWhite) );
 	pSplit->slots[0] = pContent1;
 
 	
 	auto pContent2 = TextEditor::create();
-	pContent2->setSkin( StaticColorSkin::create(Color::BlanchedAlmond) );
+	pContent2->setSkin( ColorSkin::create(Color::BlanchedAlmond) );
 	pSplit->slots[1] = pContent2;
 
 
@@ -1848,7 +1848,7 @@ bool sliderTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pSliderX = Slider::create();
 	{
 //		auto pBgSkin = FillMeterSkin::create( Direction::Right, Color::Green, Color::Green, Color::Black, Border(0,10,0,10), Border(), true );
-		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black, .color = Color::Green, .gfxPadding = Border(0,10,0,10) } );
+		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black, .color = Color::Green, .margin = Border(0,10,0,10) } );
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->setSkin( pBgSkin );
@@ -1863,7 +1863,7 @@ bool sliderTest(ComponentPtr<DynamicSlot> pSlot)
 											    _.color = Color::Green,
 												_.backColor = Color::Black,
 												_.direction = Direction::Up,
-												_.gfxPadding = Border(10,0,10,0) ));
+												_.margin = Border(10,0,10,0) ));
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin( pBgSkin );
@@ -1891,7 +1891,7 @@ bool rangeSliderTest(ComponentPtr<DynamicSlot> pSlot)
 		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black,
 										.color = Color::Green,
 										.direction = Direction::Right,
-										.gfxPadding = Border(0,10,0,10) });
+										.margin = Border(0,10,0,10) });
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->setSkin( pBgSkin );
@@ -1905,7 +1905,7 @@ bool rangeSliderTest(ComponentPtr<DynamicSlot> pSlot)
 		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black,
 												.color = Color::Green,
 												.direction = Direction::Up,
-												.gfxPadding = Border(10,0,10,0) });
+												.margin = Border(10,0,10,0) });
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin( pBgSkin );
@@ -2172,7 +2172,7 @@ bool tileSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
-
+/*
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
 
@@ -2194,7 +2194,9 @@ bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 	pBaseLayer->slots.pushBack(pFiller2, { .pos = {10, 120}, .size = {400, 100} });
 
 	*pSlot = pBaseLayer;
+*/
 	return true;
+
 }
 
 
@@ -2286,15 +2288,15 @@ bool renderLayerTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::SlateGrey) );
 
-	auto pBoxSkin = StaticBoxSkin::create({ .color = Color::Green, .layer = 2, .outline = 2, .outlineColor = Color::Black });
+	auto pBoxSkin = BoxSkin::create({ .color = Color::Green, .layer = 2, .outlineColor = Color::Black, .outlineThickness = 2 });
 	
-	auto pShadowSkin = StaticBoxSkin::create({	.blendMode = BlendMode::Max,
-												.color = Color(255,255,255,32),
-												.layer = 1,
-												.outline = 20,
-												.outlineColor = Color::Transparent,
-												.padding = { 0,40,40,0},
-											} );
+	auto pShadowSkin = BoxSkin::create({	.blendMode = BlendMode::Max,
+											.color = Color(255,255,255,32),
+											.layer = 1,
+											.outlineColor = Color::Transparent,
+											.outlineThickness = 20,
+											.padding = { 0,40,40,0},
+										} );
 
 	auto pDaSkin = DoubleSkin::create({ .skinInSkin = true, .skins = { pBoxSkin, pShadowSkin } } );
 
@@ -2366,7 +2368,7 @@ bool scrollSkinTest(ComponentPtr<DynamicSlot> pSlot)
 											.states = { State::Default, {}, State::Hovered, {}, State::Disabled, {} },
 											.surface = pSliderSurf });
 
-	auto pCoverSkin = StaticBlockSkin::create(pCoverSurf);
+	auto pCoverSkin = BlockSkin::create(pCoverSurf);
 
 	auto pComboSkin = DoubleSkin::create(pCoverSkin, pSliderSkin, false);
 
@@ -2390,7 +2392,7 @@ bool tooltipLayerTest(ComponentPtr<DynamicSlot> pSlot)
 	s_pTooltip = TextDisplay::create();
 
 	Surface_p pTooltipBg = loadSurface("resources/tooltip_under_bg.png");
-	auto pSkin = StaticBlockSkin::create({
+	auto pSkin = BlockSkin::create({
 		.frame		= Border(10,4,3,4),
 		.padding	= { 10,4,4,4 },
 		.rigidPartX	= {5, 16, YSections::Top | YSections::Center | YSections::Bottom},
@@ -2846,11 +2848,11 @@ bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pEntry)
 	pPanel->setAxis(Axis::X);
 
 	auto pContent1 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } } );
-	pContent1->setSkin(StaticColorSkin::create(Color::Red));
+	pContent1->setSkin(ColorSkin::create(Color::Red));
 	pPanel->slots[0] = pContent1;
 
 	auto pContent2 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } });
-	pContent2->setSkin(StaticColorSkin::create(Color::Green));
+	pContent2->setSkin(ColorSkin::create(Color::Green));
 	pPanel->slots[1] = pContent2;
 
 
@@ -2868,7 +2870,7 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pFlex = FlexPanel::create();
 	
-	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+	pFlex->setSkin(ColorSkin::create(Color::LightYellow));
 	
 	auto pFiller = Filler::create();
 /*
@@ -2920,17 +2922,17 @@ bool areaChartTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pFlex = FlexPanel::create();
 
-	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+	pFlex->setSkin(ColorSkin::create(Color::LightYellow));
 
 	auto pGraph = AreaChart::create(WGBP(AreaChart,
 		_.displayCeiling = 0.5f,
 		_.displayFloor = - 0.5f,
-		_.displaySkin = StaticBoxSkin::create( WGBP(StaticBoxSkin,
-														_.color = Color::Black,
-														_.outlineColor = Color::Green,
-														_.padding = 2,
-														_.outline = 2 )),
-		_.skin = StaticColorSkin::create(Color::Pink)
+		_.displaySkin = BoxSkin::create( WGBP(BoxSkin,
+										_.color = Color::Black,
+										_.outlineColor = Color::Green,
+										_.padding = 2,
+										_.outlineThickness = 2 )),
+		_.skin = ColorSkin::create(Color::Pink)
 	));
 
 
@@ -3030,17 +3032,17 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pFlex = FlexPanel::create();
 
-	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+	pFlex->setSkin(ColorSkin::create(Color::LightYellow));
 
 	auto pGraph = AreaChart::create(WGBP(AreaChart,
 		_.displayCeiling = 0.5f,
 		_.displayFloor = -0.5f,
-		_.displaySkin = StaticBoxSkin::create(WGBP(StaticBoxSkin,
+		_.displaySkin = BoxSkin::create(WGBP(BoxSkin,
 			_.color = Color::White,
 			_.outlineColor = Color::Green,
 			_.padding = 2,
-			_.outline = 2)),
-		_.skin = StaticColorSkin::create(Color::Pink)
+			_.outlineThickness = 2)),
+		_.skin = ColorSkin::create(Color::Pink)
 	));
 
 
@@ -3131,17 +3133,17 @@ bool plotChartTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pFlex = FlexPanel::create();
 
-	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+	pFlex->setSkin(ColorSkin::create(Color::LightYellow));
 
 	auto pGraph = PlotChart::create(WGBP(PlotChart,
 		_.displayCeiling = 0.5f,
 		_.displayFloor = -0.5f,
-		_.displaySkin = StaticBoxSkin::create(WGBP(StaticBoxSkin,
+		_.displaySkin = BoxSkin::create(WGBP(BoxSkin,
 			_.color = Color::Black,
 			_.outlineColor = Color::Green,
 			_.padding = 2,
-			_.outline = 2)),
-		_.skin = StaticColorSkin::create(Color::Pink),
+			_.outlineThickness = 2)),
+		_.skin = ColorSkin::create(Color::Pink),
 		_.glow.active = true
 	));
 
@@ -3345,11 +3347,11 @@ bool skinMarginTest(ComponentPtr<DynamicSlot> pEntry)
 	pPanel->setAxis(Axis::X);
 
 	auto pContent1 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } } );
-	pContent1->setSkin(StaticColorSkin::create( { .color = Color::Red, .margin = 20 } ));
+	pContent1->setSkin(ColorSkin::create( { .color = Color::Red, .margin = 20 } ));
 	pPanel->slots[0] = pContent1;
 
 	auto pContent2 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } });
-	pContent2->setSkin(StaticColorSkin::create( { .color = Color::Green, .margin = 50 }));
+	pContent2->setSkin(ColorSkin::create( { .color = Color::Green, .margin = 50 }));
 	pPanel->slots[1] = pContent2;
 
 
@@ -3366,7 +3368,7 @@ bool skinMarginTest(ComponentPtr<DynamicSlot> pEntry)
 bool widgetRecording(ComponentPtr<DynamicSlot> pEntry)
 {
 
-	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::White) });
+	auto pBack = FlexPanel::create({ .skin = ColorSkin::create(Color::White) });
 	*pEntry = pBack;
 
 	//
@@ -3450,7 +3452,7 @@ bool widgetRecording(ComponentPtr<DynamicSlot> pEntry)
 bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
 {
 
-	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::White) });
+	auto pBack = FlexPanel::create({ .skin = ColorSkin::create(Color::White) });
 	*pEntry = pBack;
 
 	//
@@ -3523,21 +3525,21 @@ bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 {
-	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::White) });
+	auto pBack = FlexPanel::create({ .skin = ColorSkin::create(Color::White) });
 	*pEntry = pBack;
 
 	
 	auto pWrapTextLayout = BasicTextLayout::create( { .wrap = true });
 
-	auto pPanel = TwoSlotPanel::create({ .skin = StaticColorSkin::create(Color::Pink) });
+	auto pPanel = TwoSlotPanel::create({ .skin = ColorSkin::create(Color::Pink) });
 	pPanel->setAxis(Axis::X);
 
 	auto pContent1 = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .text = "TEST1" } } );
-	pContent1->setSkin(StaticColorSkin::create( { .color = Color::Red, .margin = 20 } ));
+	pContent1->setSkin(ColorSkin::create( { .color = Color::Red, .margin = 20 } ));
 	pPanel->slots[0] = pContent1;
 
 	auto pContent2 = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .text = "TEST2" } });
-	pContent2->setSkin(StaticColorSkin::create( { .color = Color::Green, .margin = 50 }));
+	pContent2->setSkin(ColorSkin::create( { .color = Color::Green, .margin = 50 }));
 	pPanel->slots[1] = pContent2;
 
 	
@@ -3573,7 +3575,7 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pEntry)
 {
-	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::Black) });
+	auto pBack = FlexPanel::create({ .skin = ColorSkin::create(Color::Black) });
 	*pEntry = pBack;
 
 	auto pMyStyle = TextStyle::create( WGOVR(Base::defaultStyle()->blueprint(), _.size = 30, _.color = Color::White ));

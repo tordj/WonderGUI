@@ -45,7 +45,7 @@
 #include <wg_bitmapfont.h>
 #include <wg_freetypefont.h>
 #include <wg_textstyle.h>
-#include <wg_staticblockskin.h>
+#include <wg_blockskin.h>
 #include <wg_tileskin.h>
 
 #include <wg2_volumemeter.h>
@@ -1112,7 +1112,7 @@ void shadowLayerTest( WgRootPanel * pRoot )
 {
 	auto pImgSurface = sdl_wglib::LoadSurface("resources/shadow.png", g_pSurfaceFactory );
 	
-	auto pShadowSkin = wg::StaticBlockSkin::create( { .block = {0,128,128,0}, .padding = {0,128,128,0}, .surface = pImgSurface } );
+	auto pShadowSkin = wg::BlockSkin::create( { .firstBlock = {0,128,128,0}, .padding = {0,128,128,0}, .surface = pImgSurface } );
 	
 	
 	auto pShadowLayer = new WgShadowLayer();
@@ -1248,7 +1248,7 @@ bool rangeSliderTest(WgRootPanel* pRoot)
 			.backColor = wg::Color::Black,
 			.color = wg::Color::Green,
 			.direction = wg::Direction::Right,
-			.gfxPadding = wg::Border(0, 10, 0, 10),
+			.margin = wg::Border(0, 10, 0, 10),
 			.padding = wg::Border()
 			});
 
@@ -1265,7 +1265,7 @@ bool rangeSliderTest(WgRootPanel* pRoot)
 			.backColor = wg::Color::Black,
 			.color = wg::Color::Green,
 			.direction = wg::Direction::Up,
-			.gfxPadding = wg::Border(10, 0, 10, 0),
+			.margin = wg::Border(10, 0, 10, 0),
 			.padding = wg::Border()
 			});
 		
@@ -1317,7 +1317,7 @@ bool tooltipLayerTest(WgRootPanel * pRoot)
 	auto pTooltipLayer = new WgTooltipLayer();
 
 	wg::Surface_p pTooltipBg = sdl_wglib::LoadSurface("resources/tooltip_under_bg.png", g_pSurfaceFactory);
-	auto pSkin = wg::StaticBlockSkin::create( { .frame = wg::Border( 10,4,3,4 ), .padding = { 10,4,4,4 }, .surface = pTooltipBg }  );
+	auto pSkin = wg::BlockSkin::create( { .frame = wg::Border( 10,4,3,4 ), .padding = { 10,4,4,4 }, .surface = pTooltipBg }  );
 //        pSkin->setRigidPartX(5, 16, wg::YSections::Top | wg::YSections::Center | wg::YSections::Bottom);
 
 /*

@@ -130,16 +130,6 @@ set( SOURCES
 	skins/state/wg_multiblockskin.h
 	skins/state/wg_tileskin.cpp
 	skins/state/wg_tileskin.h
-	skins/static/wg_staticblockskin.cpp
-	skins/static/wg_staticblockskin.h
-	skins/static/wg_staticboxskin.cpp
-	skins/static/wg_staticboxskin.h
-	skins/static/wg_staticcolorskin.cpp
-	skins/static/wg_staticcolorskin.h
-	skins/static/wg_staticgradientskin.cpp
-	skins/static/wg_staticgradientskin.h
-	skins/static/wg_statictileskin.cpp
-	skins/static/wg_statictileskin.h
 
 	slots/wg_slot.cpp
 	slots/wg_slot.h

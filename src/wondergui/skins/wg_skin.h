@@ -78,7 +78,9 @@ namespace wg
 		inline Border	margin() const { return m_margin; }
 		inline Border	padding() const { return m_padding; }
 		inline Border	overflow() const { return m_overflow; }
-		
+
+
+		bool			isOpaque(State state = State::Default) const;		//DEPRECATED! Only kept for LegacyGUI usage!
 		
 		//.____ Internal ________________________________________________________
 

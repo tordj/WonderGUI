@@ -143,14 +143,9 @@
 #include <wg_stackpanel.h>
 #include <wg_state.h>
 #include <wg_stateskin.h>
-#include <wg_staticblockskin.h>
-#include <wg_staticboxskin.h>
-#include <wg_staticcolorskin.h>
-#include <wg_staticgradientskin.h>
 #include <wg_staticnumber.h>
 #include <wg_staticslotvector.h>
 #include <wg_statictext.h>
-#include <wg_statictileskin.h>
 #include <wg_staticvector.h>
 #include <wg_string.h>
 #include <wg_strongptr.h>

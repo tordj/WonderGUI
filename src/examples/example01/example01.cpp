@@ -139,7 +139,7 @@ int main ( int argc, char** argv )
 		// of the FlexPanel.
 
 		Filler_p pBackground = Filler::create();
-		pBackground->setSkin( StaticColorSkin::create(Color::Bisque) );
+		pBackground->setSkin( ColorSkin::create(Color::Bisque) );
 		pFlexPanel->slots.pushBack(pBackground, { .pin1 = Placement::NorthWest, .pin2 = Placement::SouthEast } );
 
 		// Now we create the button, using a clickable skin built from the BMP

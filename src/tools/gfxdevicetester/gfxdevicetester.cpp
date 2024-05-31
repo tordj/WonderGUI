@@ -660,7 +660,7 @@ bool GfxDeviceTester::setup_chrome()
 		// Setup base layers
 
 	auto pLayerStack = StackPanel::create();
-	pLayerStack->setSkin( StaticColorSkin::create(Color::AntiqueWhite) );
+	pLayerStack->setSkin( ColorSkin::create(Color::AntiqueWhite) );
 	m_pWindow->rootPanel()->slot = pLayerStack;
 
 	auto pUniformLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::Default,
@@ -691,7 +691,7 @@ bool GfxDeviceTester::setup_chrome()
 	pViewNav->setSkin( m_pBackPlateSkin );
 
 	auto pViewPanel = ScrollPanel::create();
-	pViewPanel->setSkin( StaticColorSkin::create(Color8::SlateGrey) );
+	pViewPanel->setSkin( ColorSkin::create(Color8::SlateGrey) );
 	g_pViewPanel = pViewPanel;
 
 	pMidSection->slots << pCanvasPanel;
@@ -942,7 +942,7 @@ bool GfxDeviceTester::setup_chrome()
 	pTestScrollPanel->setSizeConstraints( SizeConstraint::Equal, SizeConstraint::None );
 	pTestScrollPanel->slot = pTestList;
 
-	pTestScrollPanel->scrollbarY.setBackground(StaticColorSkin::create(Color::Green));
+	pTestScrollPanel->scrollbarY.setBackground(ColorSkin::create(Color::Green));
 	pTestScrollPanel->scrollbarY.setBar(m_pButtonSkin);
 
 	pSidebar->slots << pTestScrollPanel;
@@ -961,7 +961,7 @@ bool GfxDeviceTester::setup_chrome()
 		pBase->setAxis(Axis::Y);
 
 		auto pList = PackList::create();
-		pList->setSkin( StaticColorSkin::create(Color::White) );
+		pList->setSkin( ColorSkin::create(Color::White) );
 
 		auto pOddEntrySkin = BoxSkin::create(0, Color::White, Color::White);
 		auto pEvenEntrySkin = BoxSkin::create(0, Color::PaleGreen, Color::PaleGreen);
