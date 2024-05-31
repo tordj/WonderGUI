@@ -224,6 +224,9 @@ namespace wg
 
 		bool		_alphaTest(const CoordSPX& ofs) override;
 
+		void		_refreshSpread() override;
+
+
 		// Overloaded from Container
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
@@ -237,6 +240,8 @@ namespace wg
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
 		RectSPX		_slotGeo(const StaticSlot * pSlot) const override;
+		void		_childOverflowChanged(StaticSlot* pSlot) override;
+
 		RectSPX		_childWindowSection(const StaticSlot * pSlot) const override;
 
 		RectSPX		_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;

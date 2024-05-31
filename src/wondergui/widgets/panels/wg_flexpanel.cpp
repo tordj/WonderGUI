@@ -414,6 +414,9 @@ namespace wg
 			_refreshRealGeo(p);
 			p++;
 		}
+
+		if (slots.isEmpty())
+			_refreshSpread();
 	}
 
 	//____ _childRequestRender() _________________________________________________

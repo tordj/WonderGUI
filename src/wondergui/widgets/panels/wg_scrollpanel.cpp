@@ -850,6 +850,8 @@ namespace wg
 		_updateCanvasSize();
 		_childWindowCorrection();
 		_updateScrollbars();
+
+		_refreshSpread();
 	}
 
 	//____ _update() __________________________________________________________
@@ -959,14 +961,9 @@ namespace wg
 
 		if (!slot.isEmpty())
 		{
-			if( m_childWindow.size() == m_size )
-				slot._widget()->_render(pDevice, m_childCanvas + canvas.pos(), m_childWindow + canvas.pos());
-			else
-			{
-				auto clipPop = limitClipList(pDevice, m_childWindow + canvas.pos() );
-				slot._widget()->_render(pDevice, m_childCanvas + canvas.pos(), m_childWindow + canvas.pos());
-				popClipList(pDevice, clipPop);
-			}
+			auto clipPop = limitClipList(pDevice, m_childWindow + canvas.pos() );
+			slot._widget()->_render(pDevice, m_childCanvas + canvas.pos(), m_childWindow + canvas.pos());
+			popClipList(pDevice, clipPop);
 		}
 
 		if (!m_scrollbarXRegion.isEmpty())
@@ -1018,6 +1015,32 @@ namespace wg
 			return true;
 
 		return false;
+	}
+
+	//____ _refreshSpread() ____________________________________________________
+
+	void ScrollPanel::_refreshSpread()
+	{
+		// Since we always clip our child we should ignore it in this calculation.
+
+		RectSPX spread  = m_skin.spread({ 0,0,m_size }, m_scale);
+
+		if (spread.isEmpty())
+			spread = m_size;
+
+		if (spread != m_spread)
+		{
+			m_spread = spread;
+			bool bOverflowsGeo = !RectSPX(m_size).contains(spread);
+
+			// Signal if overflow has changed
+
+			if (bOverflowsGeo || m_bOverflowsGeo)
+			{
+				m_bOverflowsGeo = bOverflowsGeo;
+				_overflowChanged();
+			}
+		}
 	}
 
 	//____ _slotTypeInfo() ____________________________________________________
@@ -1087,6 +1110,13 @@ namespace wg
 	RectSPX ScrollPanel::_slotGeo(const StaticSlot* pSlot) const
 	{
 		return m_viewRegion;
+	}
+
+	//____ _childOverflowChanged() ____________________________________________
+
+	void ScrollPanel::_childOverflowChanged(StaticSlot* pSlot)
+	{
+		// We can ignore this since we always clip our only child.
 	}
 
 	//____ _childWindowSection() ______________________________________________

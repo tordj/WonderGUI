@@ -358,23 +358,21 @@ namespace wg
 
 		m_skin.set(pNewSkin);
 
-		bool bOldSkinOverflows = pOldSkin ? pOldSkin->_overflowsGeo() : false;
-		bool bNewSkinOverflows = pNewSkin ? pNewSkin->_overflowsGeo() : false;
+		RectSPX oldSpread = pOldSkin ? pOldSkin->_spread(m_size, m_scale) : RectSPX(m_size);
+		RectSPX newSpread = pNewSkin ? pNewSkin->_spread(m_size, m_scale) : RectSPX(m_size);
 
-		if( bNewSkinOverflows || bOldSkinOverflows )
+		if( oldSpread != newSpread )
 		{
-			RectSPX oldSpread = pOldSkin ? RectSPX(m_size) : pOldSkin->_spread(m_size, m_scale);
-			RectSPX newSpread = pNewSkin ? RectSPX(m_size) : pNewSkin->_spread(m_size, m_scale);
-			
-			if( oldSpread != newSpread )
-				_overflowChanged();
+			bool bOldSkinOverflows = pOldSkin ? pOldSkin->_overflowsGeo() : false;
+			bool bNewSkinOverflows = pNewSkin ? pNewSkin->_overflowsGeo() : false;
 
-			_requestRender( RectSPX::bounds(oldSpread,newSpread) );
+			m_bOverflowsGeo = bNewSkinOverflows;
+
+			if( bNewSkinOverflows || bOldSkinOverflows )
+				_overflowChanged();
 		}
-		else
-			_requestRender();
-		
-		m_bOverflowsGeo = bNewSkinOverflows;
+
+		_requestRender(RectSPX::bounds(oldSpread, newSpread));
 
 		if (!pNewSkin || !pOldSkin || pNewSkin->_contentBorderSize(m_scale) != pOldSkin->_contentBorderSize(m_scale) ||
 			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))

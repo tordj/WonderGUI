@@ -252,6 +252,8 @@ namespace wg
 			return true;
 		}
 
+		_refreshSpread();
+
 		return false;
 	}
 

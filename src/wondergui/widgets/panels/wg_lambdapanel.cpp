@@ -361,6 +361,9 @@ namespace wg
 
 		for (auto pSlot = slots.begin() ; pSlot != slots.end() ; pSlot++)
 			_updateGeo(pSlot);
+
+		if (slots.isEmpty())
+			_refreshSpread();
 	}
 
 	//____ _updateAllSlotsGeo() _______________________________________________
@@ -440,11 +443,9 @@ namespace wg
 			}
 
 			pSlot->m_geo = geo;
-
 		}
 		else if(bForceResize)
 			pSlot->_setSize(geo, m_scale);
-
 	}
 
 	//____ _onRequestRender() ____________________________________________________

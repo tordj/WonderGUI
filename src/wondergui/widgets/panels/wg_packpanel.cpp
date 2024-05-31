@@ -711,6 +711,9 @@ namespace wg
 		
 		Panel::_resize(size, scale);
 		_refreshChildGeo(true);			// Needs to requestRender() if size was not changed.
+
+		if (slots.isEmpty())
+			_refreshSpread();
 	}
 
 	//____ _calcDefaultContentSize() ______________________________________________________
@@ -1157,12 +1160,6 @@ namespace wg
 
 					if( geo != p->m_geo )
 					{
-						if (p->_widget()->_overflowsGeo())
-						{
-
-						}
-
-
 						if (bRequestRender)
 							_requestRender(p->_widget()->_spread() + p->m_geo.pos());
 

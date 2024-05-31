@@ -133,7 +133,7 @@ namespace wg
 
 			virtual void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 
-			void					_refreshSpread();
+			virtual void			_refreshSpread();
 		
 			RectSPX					_spread() const override;
 		
