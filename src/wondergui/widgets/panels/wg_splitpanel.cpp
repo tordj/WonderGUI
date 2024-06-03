@@ -171,7 +171,6 @@ namespace wg
 
 		// Request render and set sizes
 
-
 		if (handleGeo != m_handleGeo || firstChildGeo != slots[0].m_geo || secondChildGeo != slots[1].m_geo)
 		{
 			_requestRender(contentGeo);

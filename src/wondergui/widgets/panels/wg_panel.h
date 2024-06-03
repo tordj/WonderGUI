@@ -160,6 +160,7 @@ namespace wg
 
 		
 		MaskOp		m_maskOp;			// Specifies how container masks background.
+
 	};
 
 

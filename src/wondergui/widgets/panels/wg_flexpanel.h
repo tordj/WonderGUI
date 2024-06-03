@@ -285,7 +285,7 @@ namespace wg
 
 		
 	private:
-		void		_refreshRealGeo(FlexPanelSlot * pSlot, bool bForceRefresh = false);
+		void		_refreshRealGeo(FlexPanelSlot * pSlot, bool bForceResize = false, bool bUpdateInfluence = true);
 		SizeSPX		_size() const { return m_size; }
 
 		void		_resize( const SizeSPX& size, int scale ) override;

@@ -96,7 +96,6 @@ namespace wg
 		virtual SizeSPX		_paddingSize(int scale) const;
 
 		inline  bool		_hasOverflow() const { return m_bOverflow;  }
-		inline 	bool		_hasInfluenceBeyondGeo() const { return m_bInfluenceBeyondGeo; }
 //		inline  BorderSPX	_overflow(int scale, State state) const;
 
 		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;
@@ -145,11 +144,7 @@ namespace wg
 
 			m_overflow = bp.overflow;
 			m_bOverflow = !bp.overflow.isEmpty();
-			
-			Border diff = m_overflow - m_margin;
-			if( diff.top > 0 || diff.right > 0 || diff.bottom > 0 || diff.left > 0 )
-				m_bInfluenceBeyondGeo = true;
-			
+						
 			if (bp.finalizer)
 				setFinalizer(bp.finalizer);
 		}
@@ -173,7 +168,6 @@ namespace wg
 		bool			m_bIgnoresValue = true;
 		bool			m_bIgnoresState = true;
 		bool			m_bOverflow = false;				// Set when there is overflow, even if it might not overflow the geo.
-		bool			m_bInfluenceBeyondGeo = false;			// Set when overflow is larger than margin.
 
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
 		int				m_layer = -1;

@@ -158,11 +158,11 @@ namespace wg
 		return m_scale;
 	}
 
-	//____ _childOverflowChanged() _______________________________________________
+	//____ _childInfluenceChanged() _______________________________________________
 
-	void Container::_childOverflowChanged( StaticSlot * pSlot )
+	void Container::_childInfluenceChanged( StaticSlot * pSlot, const RectSPX& oldInfluence, const RectSPX& newInfluence )
 	{
-		_refreshInfluence();
+		_influenceChanged( oldInfluence, newInfluence );
 	}
 
 	//____ _childRequestFocus() ______________________________________________________
@@ -454,18 +454,74 @@ namespace wg
 			
 		if( influence != m_influence )
 		{
+			auto oldInfluence = influence;
 			m_influence = influence;
-			bool bOverflowsGeo = !RectSPX(m_size).contains(influence);
-
-			// Signal if overflow has changed
 			
-			if (bOverflowsGeo || m_bInfluenceBeyondGeo)
+			_influenceChanged(oldInfluence, m_influence);
+		}
+	}
+
+	//____ _influenceAdded() ____________________________________________________
+
+	void Container::_influenceAdded( const RectSPX& childInfluence )
+	{
+		if( childInfluence.isEmpty() )
+			return;
+		
+		if( !m_influence.contains(childInfluence) )
+		{
+			auto oldInfluence = m_influence;
+			m_influence.growToContain(childInfluence);
+			
+			_influenceChanged(oldInfluence, m_influence);
+		}
+	}
+
+	//____ _influenceRemoved() ____________________________________________________
+
+	void Container::_influenceRemoved( const RectSPX& childInfluence )
+	{
+		if( childInfluence.isEmpty() )
+			return;
+
+		if( childInfluence.top() == m_influence.top() || childInfluence.right() == m_influence.right() ||
+			childInfluence.bottom() == m_influence.bottom() || childInfluence.left() == m_influence.left() )
+		{
+			_refreshInfluence();
+		}
+	}
+
+	//____ _influenceChanged() ____________________________________________________
+
+	void Container::_influenceChanged( const RectSPX& oldInfluence, const RectSPX& newInfluence )
+	{
+		if( !oldInfluence.isEmpty() &&
+		   ((oldInfluence.top() < newInfluence.top() && oldInfluence.top() == m_influence.top()) ||
+		    (oldInfluence.right() > newInfluence.right() && oldInfluence.right() == m_influence.right()) ||
+		    (oldInfluence.bottom() > newInfluence.bottom() && oldInfluence.bottom() == m_influence.bottom()) ||
+		    (oldInfluence.left() < newInfluence.left() && oldInfluence.left() == m_influence.left()) ))
+		{
+			// We have possibly shrunk in at least one dimension, full refresh needed.
+			
+			_refreshInfluence();
+		}
+		else
+		{
+			// We have not shrunk in any dimension, just possibly grown.
+
+			if( newInfluence.isEmpty() )
+				return;
+			
+			if( !m_influence.contains(newInfluence) )
 			{
-				m_bInfluenceBeyondGeo = bOverflowsGeo;
-				_overflowChanged();
+				auto oldInfluence = m_influence;
+				m_influence.growToContain(newInfluence);
+				
+				_influenceChanged(oldInfluence, m_influence);
 			}
 		}
 	}
+
 
 	//____ _collectPatches() _______________________________________________________
 

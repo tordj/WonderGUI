@@ -363,13 +363,7 @@ namespace wg
 
 		if( oldInfluence != newInfluence )
 		{
-			bool bOldSkinOverflows = pOldSkin ? pOldSkin->_hasInfluenceBeyondGeo() : false;
-			bool bNewSkinOverflows = pNewSkin ? pNewSkin->_hasInfluenceBeyondGeo() : false;
-
-			m_bInfluenceBeyondGeo = bNewSkinOverflows;
-
-			if( bNewSkinOverflows || bOldSkinOverflows )
-				_overflowChanged();
+			_influenceChanged(oldInfluence, newInfluence);
 		}
 
 		_requestRender(RectSPX::bounds(oldInfluence, newInfluence));

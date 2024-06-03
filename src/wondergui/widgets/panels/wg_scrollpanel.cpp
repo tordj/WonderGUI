@@ -1030,16 +1030,10 @@ namespace wg
 
 		if (influence != m_influence)
 		{
+			auto oldInfluence = m_influence;
 			m_influence = influence;
-			bool bOverflowsGeo = !RectSPX(m_size).contains(influence);
-
-			// Signal if overflow has changed
-
-			if (bOverflowsGeo || m_bInfluenceBeyondGeo)
-			{
-				m_bInfluenceBeyondGeo = bOverflowsGeo;
-				_overflowChanged();
-			}
+			
+			_influenceChanged(oldInfluence, influence);
 		}
 	}
 
@@ -1112,9 +1106,9 @@ namespace wg
 		return m_viewRegion;
 	}
 
-	//____ _childOverflowChanged() ____________________________________________
+	//____ _childInfluenceChanged() ____________________________________________
 
-	void ScrollPanel::_childOverflowChanged(StaticSlot* pSlot)
+	void ScrollPanel::_childInfluenceChanged( StaticSlot * pSlot, const RectSPX& oldInfluence, const RectSPX& newInfluence )
 	{
 		// We can ignore this since we always clip our only child.
 	}

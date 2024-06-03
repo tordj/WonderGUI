@@ -221,6 +221,8 @@ namespace wg
 				pSlot[i].m_bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
+		
+		_refreshInfluence();
 	}
 
 	//____ _unhideSlots() ________________________________________________________
@@ -238,6 +240,8 @@ namespace wg
 				_onRequestRender(pSlot[i].m_geo, pSlot);
 			}
 		}
+		
+		_refreshInfluence();
 	}
 
 
@@ -353,11 +357,7 @@ namespace wg
 	{
 		Panel::_resize( size, scale );
 
-		for (auto pSlot = slots.begin() ; pSlot != slots.end() ; pSlot++)
-			_updateGeo(pSlot);
-
-		if (slots.isEmpty())
-			_refreshInfluence();
+		_updateAllSlotsGeo();
 	}
 
 	//____ _updateAllSlotsGeo() _______________________________________________
@@ -365,12 +365,14 @@ namespace wg
 	void LambdaPanel::_updateAllSlotsGeo()
 	{
 		for (auto& slot : slots)
-			_updateGeo(&slot);
+			_updateGeo(&slot, false, false);
+		
+		_refreshInfluence();
 	}
 
 	//____ _updateGeo() _______________________________________________________
 
-	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize )
+	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize, bool bUpdateInfluence )
 	{
 		//TODO: Don't requestRender if slot is hidden.
 
@@ -389,8 +391,21 @@ namespace wg
 		else
 			geo = { 0,0, align(pWidget->_defaultSize(m_scale)) };
 
-		//
+		// Limit geo according to edgePolicy
 
+		if( m_edgePolicy == EdgePolicy::Confine )
+		{
+			if( geo.w > m_size.w )
+				geo.w = m_size.w;
+			if( geo.h > m_size.h )
+				geo.h = m_size.h;
+
+			limit(geo.x, 0, m_size.w - geo.w);
+			limit(geo.y, 0, m_size.h - geo.h);
+		}
+		
+		//
+		
 		if (geo != pSlot->m_geo || pWidget->_scale() != m_scale)
 		{
 			// Store influence and set size.
@@ -399,18 +414,27 @@ namespace wg
 			pSlot->_setSize(geo, m_scale);
 			RectSPX newInfluence = pWidget->_influence() + geo.pos();
 
+			pSlot->m_geo = geo;
+
 			if (pSlot->m_bVisible)
 			{
-				// Clip our influence and put it in a dirtyrect-list
+				// Clip our influence
 
+				if( m_edgePolicy == EdgePolicy::Clip )
+				{
+					RectSPX myGeo = m_size;
+					oldInfluence = RectSPX::overlap(oldInfluence, myGeo);
+					newInfluence = RectSPX::overlap(newInfluence, myGeo);
+				}
+				
+				// Add dirty patches for our influence
+				
 				PatchesSPX patches;
 				patches.add(oldInfluence);
 				patches.add(newInfluence);
 
-				if (m_edgePolicy == EdgePolicy::Clip)
-					patches.clip(RectSPX(0, 0, m_size));
 
-				// Remove portions of patches that are covered by opaque upper siblings
+				// Remove portions of patches that are covered by upper siblings opaque areas
 
 				auto pCover = pSlot + 1;
 				while (pCover < slots.end())
@@ -430,13 +454,10 @@ namespace wg
 
 				// Update influence
 
-				//TODO: Use faster method!
-
-				if (pWidget->_hasInfluenceBeyondGeo() && m_edgePolicy != EdgePolicy::Clip)
-					_refreshInfluence();
+				if( bUpdateInfluence )
+					_influenceChanged(oldInfluence, newInfluence);
 			}
 
-			pSlot->m_geo = geo;
 		}
 		else if(bForceResize)
 			pSlot->_setSize(geo, m_scale);

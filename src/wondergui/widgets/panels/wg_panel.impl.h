@@ -248,7 +248,6 @@ namespace wg
 		_requestRender(rect + ((PanelSlot*)pSlot)->m_geo.pos());
 	}
 
-
 } // namespace wg
 
 #endif //WG_PANEL_IMPL_DOT_H

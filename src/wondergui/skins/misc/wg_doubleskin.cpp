@@ -385,27 +385,6 @@ namespace wg
 					m_transitionTimes[i] = std::max(m_transitionTimes[i],p[i]);
 			}
 		}
-		
-		// Update m_bInfluenceBeyondGeo
-		
-		if( !m_bInfluenceBeyondGeo && m_pBackSkin->_hasInfluenceBeyondGeo() )
-		{
-			Border backOverflow = m_pBackSkin->overflow() - m_pBackSkin->margin() - m_margin;
-			
-			if( backOverflow.top > 0 || backOverflow.right > 0 || backOverflow.bottom > 0 || backOverflow.left > 0 )
-				m_bInfluenceBeyondGeo = true;
-		}
-
-		if( !m_bInfluenceBeyondGeo && m_pFrontSkin->_hasInfluenceBeyondGeo() )
-		{
-			Border frontOverflow = m_pFrontSkin->overflow() - m_pFrontSkin->margin() - m_margin;
-			
-			if( m_bSkinInSkin )
-				frontOverflow -= m_pBackSkin->padding();
-			
-			if( frontOverflow.top > 0 || frontOverflow.right > 0 || frontOverflow.bottom > 0 || frontOverflow.left > 0 )
-				m_bInfluenceBeyondGeo = true;
-		}
 	}
 
 	//____ _incUseCount() _________________________________________________________

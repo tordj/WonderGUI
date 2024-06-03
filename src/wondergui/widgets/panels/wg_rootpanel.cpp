@@ -655,9 +655,9 @@ namespace wg
 		return m_geo;
 	}
 
-	//____ _childOverflowChanged() _______________________________________________
+	//____ _childInfluenceChanged() _______________________________________________
 
-	void RootPanel::_childOverflowChanged( StaticSlot * pSlot )
+	void RootPanel::_childInfluenceChanged( StaticSlot * pSlot, const RectSPX& oldInfluence, const RectSPX& newInfluence )
 	{
 		
 	}

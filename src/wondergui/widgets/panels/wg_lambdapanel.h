@@ -172,7 +172,7 @@ namespace wg
 		void		_updateSlotGeo(StaticSlot * pSlot, int nb);
 
 		void		_resize( const SizeSPX& size, int scale ) override;
-		void		_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize = false);
+		void		_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize = false, bool bUpdateInfluence = true);
 		void		_updateAllSlotsGeo();
 
 		void		_onRequestRender( const RectSPX& rect, const LambdaPanelSlot * pSlot );

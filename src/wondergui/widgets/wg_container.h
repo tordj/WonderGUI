@@ -92,7 +92,7 @@ namespace wg
 			virtual int				_scale() const override;									///< Default scale value for all children.
 
 			virtual RectSPX			_slotGeo( const StaticSlot * pSlot ) const override = 0;				///< Get the local position of a child.
-			virtual void			_childOverflowChanged( StaticSlot * pSlot ) override;
+			virtual void			_childInfluenceChanged( StaticSlot * pSlot, const RectSPX& oldInfluence, const RectSPX& newInfluence ) override;
 
 			RectSPX					_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
 			RectSPX					_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
@@ -133,6 +133,9 @@ namespace wg
 			virtual void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 
 			virtual void			_refreshInfluence();
+			void					_influenceAdded( const RectSPX& childInfluence );
+			void 					_influenceRemoved( const RectSPX& childInfluence );
+			void					_influenceChanged( const RectSPX& oldInfluence, const RectSPX& newInfluence );
 		
 			RectSPX					_influence() const override;
 		

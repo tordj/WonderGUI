@@ -234,9 +234,11 @@ namespace wg
 
 			while( p < slots.end() )
 			{
-				_refreshRealGeo( p );
+				_refreshRealGeo( p, false, false );
 				p++;
 			}
+			
+			_refreshInfluence();
 		}
 	}
 
@@ -354,6 +356,11 @@ namespace wg
 				pSlot[i].m_bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
+		
+		if( nb == 1 )
+			_influenceRemoved(pSlot->_widget()->_influence() + pSlot->m_geo.pos() );
+		else
+			_refreshInfluence();
 	}
 
 	//____ _unhideSlots() _____________________________________________________________
@@ -367,10 +374,15 @@ namespace wg
 			if( pSlot[i].m_bVisible == false )
 			{
 				pSlot[i].m_bVisible = true;
-				_refreshRealGeo(&pSlot[i]);
+				_refreshRealGeo(&pSlot[i], false, false );
 				_onRequestRender(pSlot[i]._widget()->_influence(), &pSlot[i]);
 			}
 		}
+		
+		if( nb == 1 )
+			_influenceAdded(pSlot->_widget()->_influence() + pSlot->m_geo.pos() );
+		else
+			_refreshInfluence();
 	}
 
 
@@ -388,7 +400,7 @@ namespace wg
 		RectSPX rect  = m_edgePolicy == EdgePolicy::Confine ? RectSPX::overlap(_rect, RectSPX(0, 0, m_size)) : _rect;
 		patches.add( rect );
 
-		// Remove portions of patches that are covered by opaque upper siblings
+		// Remove portions of patches that are covered by upper siblings opaque areas
 
 		for(auto pCover = slots.begin() ; pCover < pSlot ; pCover++ )
 		{
@@ -411,12 +423,11 @@ namespace wg
 		auto p = slots.begin();
 		while( p < slots.end() )
 		{
-			_refreshRealGeo(p);
+			_refreshRealGeo(p, false, false);
 			p++;
 		}
 
-		if (slots.isEmpty())
-			_refreshInfluence();
+		_refreshInfluence();
 	}
 
 	//____ _childRequestRender() _________________________________________________
@@ -446,8 +457,6 @@ namespace wg
 
 	void FlexPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		
-		
 		slots.erase(static_cast<FlexPanelSlot*>(pSlot));
 	}
 
@@ -475,7 +484,7 @@ namespace wg
 
 	//____ _refreshRealGeo() ___________________________________________
 
-	void FlexPanel::_refreshRealGeo( FlexPanelSlot * pSlot, bool bForceResize )
+	void FlexPanel::_refreshRealGeo( FlexPanelSlot * pSlot, bool bForceResize, bool bUpdateInfluence )
 	{
 		RectSPX	geo;
 
@@ -540,17 +549,18 @@ namespace wg
 
 			pSlot->m_geo = geo;
 
+			if( m_edgePolicy == EdgePolicy::Clip )
+			{
+				RectSPX myGeo = m_size;
+				oldInfluence = RectSPX::overlap(oldInfluence, myGeo);
+				newInfluence = RectSPX::overlap(newInfluence, myGeo);
+			}
+			
 			_onRequestRender(oldInfluence, pSlot);
 			_onRequestRender(newInfluence, pSlot);
 			
-			if( m_edgePolicy == EdgePolicy::Confine && pSlot->_widget()->_hasInfluenceBeyondGeo() )
-			{
-				RectSPX myGeo = m_size;
-				
-				if( !myGeo.contains(oldInfluence) || !myGeo.contains(newInfluence) )
-					_refreshInfluence();
-			}
-			
+			if( bUpdateInfluence )
+				_influenceChanged(oldInfluence, newInfluence);
 		}
 
 		if (bForceResize || pSlot->_widget()->_size() != geo.size())

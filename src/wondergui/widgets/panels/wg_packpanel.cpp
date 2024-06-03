@@ -602,7 +602,7 @@ namespace wg
 	//____ _replaceChild() _____________________________________________________
 
 	void PackPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
-{
+	{
 		if( pNewChild == nullptr )
 		{
 			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Slot in PackPanel must contain pointer to widget and not nullptr.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
