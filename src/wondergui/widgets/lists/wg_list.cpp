@@ -478,15 +478,6 @@ namespace wg
 
 	//____ _skinRequestRender() __________________________________________
 
-	void List::_skinRequestRender(const SkinSlot* pSlot)
-	{
-		if (pSlot == &m_lassoSkin)
-			return _requestRender( RectSPX(m_lassoBegin, m_lassoEnd) );
-		else
-			return _requestRender();
-
-	}
-
 	void List::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		if (pSlot == &m_lassoSkin)

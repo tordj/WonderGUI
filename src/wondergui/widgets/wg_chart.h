@@ -109,7 +109,6 @@ class Chart;
 
 		SizeSPX			_skinSize(const SkinSlot* pSlot) const override;
 
-		void			_skinRequestRender(const SkinSlot* pSlot) override;
 		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
 

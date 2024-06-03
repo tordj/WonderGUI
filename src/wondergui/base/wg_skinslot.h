@@ -44,7 +44,6 @@ namespace wg
 
 			virtual SizeSPX	_skinSize(const SkinSlot* pSlot) const = 0;
 
-			virtual void	_skinRequestRender(const SkinSlot* pSlot) = 0;
 			virtual void	_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) = 0;
 
 			virtual int		_scale() const = 0;

@@ -893,12 +893,6 @@ namespace wg
 
 	//____ _skinRequestRender() _______________________________________________
 
-	void RootPanel::_skinRequestRender(const SkinSlot* pSlot)
-	{
-		m_dirtyPatches.clear();
-		m_dirtyPatches.push(m_geo);
-	}
-
 	void RootPanel::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		m_dirtyPatches.push(rect);

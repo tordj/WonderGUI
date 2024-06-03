@@ -1014,11 +1014,6 @@ namespace wg
 
 	//____ _skinRequestRender() _______________________________________________
 
-	void Widget::_skinRequestRender(const SkinSlot* pSlot)
-	{
-		_requestRender();
-	}
-
 	void Widget::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		_requestRender(rect);

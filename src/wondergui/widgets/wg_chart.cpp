@@ -722,11 +722,6 @@ namespace wg
 
 	//____ _skinRequestRender() _______________________________________________
 
-	void GridLine::_skinRequestRender(const SkinSlot* pSlot)
-	{
-		m_pDisplay->_requestRender(m_labelGeo);
-	}
-
 	void GridLine::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		m_pDisplay->_requestRender(rect + m_labelGeo.pos());

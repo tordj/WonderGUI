@@ -451,16 +451,6 @@ namespace wg
 
 	//____ _skinRequestRender() _______________________________________________
 
-	void RangeSlider::_skinRequestRender(const SkinSlot* pSlot)
-	{
-		if (pSlot == &m_beginHandleSkin)
-			_requestRender(_handleGeo(m_size, true));
-		else if (pSlot == &m_endHandleSkin)
-			_requestRender(_handleGeo(m_size, false));
-		else
-			_requestRender();
-	}
-
 	void RangeSlider::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		CoordSPX ofs;

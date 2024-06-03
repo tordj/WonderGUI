@@ -395,11 +395,6 @@ namespace wg
 		return m_size;
 	}
 
-	void ColumnHeader::_skinRequestRender(const SkinSlot* pSlot)
-	{
-		_requestRender();
-	}
-
 	void ColumnHeader::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		_requestRender(rect);

@@ -751,14 +751,6 @@ namespace wg
 
 	//____ _skinRequestRender() _______________________________________________
 
-	void SplitPanel::_skinRequestRender(const SkinSlot* pSlot)
-	{
-		if (pSlot == &m_handleSkin)
-			_requestRender(m_handleGeo);
-		else
-			_requestRender();
-	}
-
 	void SplitPanel::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		if (pSlot == &m_handleSkin)

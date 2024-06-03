@@ -388,14 +388,6 @@ namespace wg
 
 	//____ _skinRequestRender() _______________________________________________
 
-	void Slider::_skinRequestRender(const SkinSlot* pSlot)
-	{
-		if (pSlot == &m_handleSkin)
-			_requestRender(_handleGeo(m_size));
-		else
-			_requestRender();
-	}
-
 	void Slider::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		if (pSlot == &m_handleSkin)

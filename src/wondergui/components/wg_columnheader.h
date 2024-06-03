@@ -111,7 +111,6 @@ namespace wg
 		float		_skinValue2(const SkinSlot* pSlot) const override;
 		State		_skinState(const SkinSlot* pSlot) const override;
 		SizeSPX		_skinSize(const SkinSlot* pSlot) const override;
-		void		_skinRequestRender(const SkinSlot* pSlot) override;
 		void		_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
 	private:

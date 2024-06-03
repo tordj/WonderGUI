@@ -151,8 +151,7 @@ namespace wg
 		State			_skinState(const SkinSlot* pSlot) const override;
 		SizeSPX			_skinSize(const SkinSlot* pSlot) const override;
 
-		void			_skinRequestRender(const SkinSlot* pComponent) override;
-		void			_skinRequestRender(const SkinSlot* pComponent, const RectSPX& rect) override;
+		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
 
 		virtual Slot * _beginSlots() const = 0;
