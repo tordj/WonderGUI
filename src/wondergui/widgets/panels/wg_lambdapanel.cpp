@@ -357,7 +357,10 @@ namespace wg
 	{
 		Panel::_resize( size, scale );
 
-		_updateAllSlotsGeo();
+		for (auto& slot : slots)
+			_updateGeo(&slot, false, false);
+		
+		_refreshInfluence(false);
 	}
 
 	//____ _updateAllSlotsGeo() _______________________________________________

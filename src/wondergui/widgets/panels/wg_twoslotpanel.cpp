@@ -81,14 +81,11 @@ namespace wg
 			slots[0].m_length = 0;
 			slots[1].m_length = 0;
 
+			_updateGeo(false);
+			_refreshInfluence();
+			_requestRender();
+			
 			_requestResize();
-/*
-			// This should only be done if _requestResize() fails.
-			{
-				_requestRender();
-				_updateGeo();
-			}
-*/
 		}
 	}
 
@@ -100,9 +97,11 @@ namespace wg
 		{
 			m_pLayout = pLayout;
 			m_defaultSize = _calcDefaultSize(m_scale);
+
+			_updateGeo(false);
+			_refreshInfluence();
+			
 			_requestResize();
-// This will only be needed once _requestResize can fail.
-//			_updateGeo();
 		}
 	}
 
@@ -252,8 +251,6 @@ namespace wg
 			return true;
 		}
 
-		_refreshInfluence();
-
 		return false;
 	}
 
@@ -308,6 +305,7 @@ namespace wg
 			
 		Container::_resize(size,scale);
 		_updateGeo( bForceUpdate );
+		_refreshInfluence(false);
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -453,13 +451,13 @@ namespace wg
 		pNewWidget->_resize(rect.size(), m_scale);
 		
 		m_defaultSize = _calcDefaultSize(m_scale);
+
+		_updateGeo(false);
+		_refreshInfluence();
+		_requestRender();
+
 		_requestResize();
 	
-/*
-*	Needs to be called if we are not resized.
-* 
-		_updateGeo();
-*/
 	}
 
 

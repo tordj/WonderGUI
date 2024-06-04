@@ -132,7 +132,7 @@ namespace wg
 
 			virtual void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 
-			virtual void			_refreshInfluence();
+			virtual void			_refreshInfluence( bool notifyParent = true);
 			void					_influenceAdded( const RectSPX& childInfluence );
 			void 					_influenceRemoved( const RectSPX& childInfluence );
 			void					_influenceChanged( const RectSPX& oldInfluence, const RectSPX& newInfluence );

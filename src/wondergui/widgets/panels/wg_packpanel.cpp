@@ -710,10 +710,10 @@ namespace wg
 		}
 		
 		Panel::_resize(size, scale);
-		_refreshChildGeo(true);			// Needs to requestRender() if size was not changed.
+		_refreshChildGeo(true, false);			// Needs to requestRender() if size was not changed.
 
 		if (slots.isEmpty())
-			_refreshInfluence();
+			_refreshInfluence(false);
 	}
 
 	//____ _calcDefaultContentSize() ______________________________________________________
@@ -987,7 +987,7 @@ namespace wg
 
 	//____ _refreshChildGeo() _________________________________________________________
 
-	void PackPanel::_refreshChildGeo( bool bRequestRender )
+	void PackPanel::_refreshChildGeo( bool bRequestRender, bool notifyInfluence )
 	{
 		if( slots.isEmpty() )
 			return;
@@ -1210,8 +1210,7 @@ namespace wg
 
 		//TODO: This should be baked into the loop above instead to make it faster.
 
-		_refreshInfluence();
-
+		_refreshInfluence(notifyInfluence);
 	}
 
 	//____ _populateLayoutArray() ___________________________________________

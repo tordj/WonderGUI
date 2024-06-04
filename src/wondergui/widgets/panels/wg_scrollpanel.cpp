@@ -851,7 +851,7 @@ namespace wg
 		_childWindowCorrection();
 		_updateScrollbars();
 
-		_refreshInfluence();
+		_refreshInfluence(false);
 	}
 
 	//____ _update() __________________________________________________________
@@ -1019,7 +1019,7 @@ namespace wg
 
 	//____ _refreshInfluence() ____________________________________________________
 
-	void ScrollPanel::_refreshInfluence()
+	void ScrollPanel::_refreshInfluence(bool bNotifyParent)
 	{
 		// Since we always clip our child we should ignore it in this calculation.
 
@@ -1033,7 +1033,8 @@ namespace wg
 			auto oldInfluence = m_influence;
 			m_influence = influence;
 			
-			_influenceChanged(oldInfluence, influence);
+			if(bNotifyParent)
+				_influenceChanged(oldInfluence, influence);
 		}
 	}
 

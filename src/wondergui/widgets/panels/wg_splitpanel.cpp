@@ -66,7 +66,9 @@ namespace wg
 		if (bHorizontal != m_bHorizontal)
 		{
 			m_bHorizontal = bHorizontal;
+			_updateDefaultSize();
 			_updateGeo();
+			_refreshInfluence();
 		}
 	}
 
@@ -79,6 +81,7 @@ namespace wg
 			m_handleSkin.set(pSkin);
 			_updateDefaultSize();
 			_updateGeo();
+			_refreshInfluence();
 		}
 	}
 
@@ -94,6 +97,7 @@ namespace wg
 			m_handleThickness = thickness;
 			_updateDefaultSize();
 			_updateGeo();
+			_refreshInfluence();
 		}
 	}
 
@@ -123,6 +127,7 @@ namespace wg
 	{
 		m_resizeFunc = func;
 		_updateGeo();
+		_refreshInfluence();
 	}
 
 	//____ setSplit() _________________________________________________
@@ -173,17 +178,21 @@ namespace wg
 
 		if (handleGeo != m_handleGeo || firstChildGeo != slots[0].m_geo || secondChildGeo != slots[1].m_geo)
 		{
-			_requestRender(contentGeo);
+			RectSPX combinedInfluence = m_influence;
 
 			slots[0].m_geo = firstChildGeo;
 			if( slots[0]._widget() )
-				slots[0]._setSize(firstChildGeo, m_scale);
+				slots[0]._widget()->_resize(firstChildGeo, m_scale);
 
 			slots[1].m_geo = secondChildGeo;
 			if (slots[1]._widget())
-				slots[1]._setSize(secondChildGeo, m_scale);
+				slots[1]._widget()->_resize(secondChildGeo, m_scale);
 
 			m_handleGeo = handleGeo;
+
+			_refreshInfluence();
+			combinedInfluence.growToContain(m_influence);
+			_requestRender(combinedInfluence);
 		}
 	}
 
@@ -335,15 +344,15 @@ namespace wg
 
 		if (handleGeo != m_handleGeo || firstChildGeo != slots[0].m_geo || secondChildGeo != slots[1].m_geo)
 		{
-			_requestRender(contentGeo);
+			_requestRender(m_influence);
 
 			slots[0].m_geo = firstChildGeo;
 			if( slots[0]._widget() )
-				slots[0]._setSize(firstChildGeo, m_scale);
+				slots[0]._widget()->_resize(firstChildGeo, m_scale);
 
 			slots[1].m_geo = secondChildGeo;
 			if (slots[1]._widget())
-				slots[1]._setSize(secondChildGeo, m_scale);
+				slots[1]._widget()->_resize(secondChildGeo, m_scale);
 
 			m_handleGeo = handleGeo;
 
@@ -508,6 +517,7 @@ namespace wg
 					spx diff = (m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y) - m_handlePressOfs;
 
 					_updateGeo(diff);
+					_refreshInfluence();		// Yes, this could actually change influence...
 					pMsg->swallow();
 				}
 				break;
@@ -538,32 +548,22 @@ namespace wg
 
 	void SplitPanel::_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip)
 	{
-		if (m_skin.isEmpty())
-		{
-			if (slots[0]._widget())
-				slots[0]._widget()->_collectPatches(container, slots[0].m_geo + geo.pos(), clip);
-
-			if (!m_handleSkin.isEmpty())
-				container.add(RectSPX::overlap(m_handleGeo, clip));
-
-			if (slots[1]._widget())
-				slots[1]._widget()->_collectPatches(container, slots[1].m_geo + geo.pos(), clip);
-		}
-		else
-			container.add(RectSPX::overlap(geo, clip));
+		container.add( RectSPX::overlap(m_influence + geo.pos(), clip) );
 	}
 
 	//____ _maskPatches() _____________________________________________________
 
 	void SplitPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)
 	{
-		RectSPX coverage = m_skin.contentRect(geo, m_scale, m_state);
+		RectSPX coverage = m_skin.coverage(geo, m_scale, m_state);
 		
-		patches.sub( RectSPX::overlap(coverage,clip) );
-
-		if( coverage.contains(_contentRect(geo)) );
-			return;										// No need to loop through children, skins coverage contains them all.
-
+		if( !coverage.isEmpty() )
+		{
+			patches.sub( RectSPX::overlap(coverage,clip) );
+			
+			if( coverage.contains(_contentRect(geo)) );
+				return;										// No need to loop through children, skins coverage contains them all.
+		}
 		
 		if (slots[0]._widget())
 			slots[0]._widget()->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip );
@@ -592,6 +592,7 @@ namespace wg
 	{
 		Container::_resize(size,scale);
 		_updateGeo();
+		_refreshInfluence(false);
 	}
 
 	//____ _setState() ________________________________________________________
@@ -631,6 +632,39 @@ namespace wg
 			return slots[0]._widget();
 	}
 
+	//____ _refreshInfluence() ___________________________________________________
+					  
+	void SplitPanel::_refreshInfluence(bool bNotifyParent)
+	{
+		// We need our own _refreshInfluence because of our handleSkin that needs to
+		// be included.
+			
+		RectSPX influence = m_skin.influence(m_size, m_scale);
+		
+		if( influence.isEmpty() )
+			influence = m_size;
+			
+		if( slots[0]._widget() )
+			influence.growToContain(slots[0]._widget()->_influence() + slots[0].m_geo.pos() );
+
+		if( slots[1]._widget() )
+			influence.growToContain(slots[1]._widget()->_influence() + slots[1].m_geo.pos() );
+
+		if( !m_handleSkin.isEmpty() )
+			influence.growToContain(m_skin.influence(m_handleGeo, m_scale));
+			
+	    if( influence != m_influence )
+		{
+			auto oldInfluence = influence;
+			m_influence = influence;
+			
+			if( bNotifyParent )
+				_influenceChanged(oldInfluence, m_influence);
+		}
+	}
+
+					  
+					  
 	//_____ _firstSlotWithGeo() _______________________________________________
 
 	void SplitPanel::_firstSlotWithGeo(SlotWithGeo& package) const
@@ -721,12 +755,29 @@ namespace wg
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
+		RectSPX oldInfluence;
+		if( pSlot->_widget() )
+			oldInfluence = pSlot->_widget()->_influence() + pSlot->m_geo.pos();
+		
 		pSlot->_setWidget(pNewWidget);
 		pNewWidget->_resize(pSlot->m_geo, m_scale);
-		_updateDefaultSize();
 		bool bGeoChanged = _updateGeo();
 		if (!bGeoChanged)
-			_requestRender(pSlot->m_geo);
+		{
+			RectSPX newInfluence;
+			if( pSlot->_widget() )
+				newInfluence = pSlot->_widget()->_influence() + pSlot->m_geo.pos();
+
+			if( newInfluence.isEmpty() )
+				newInfluence = oldInfluence;
+			else if( !oldInfluence.isEmpty() )
+				newInfluence.growToContain(oldInfluence);
+			
+			_requestRender(newInfluence);
+		}
+
+		_updateDefaultSize();
+
 	}
 
 	//____ _skinState() _______________________________________________________

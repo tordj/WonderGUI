@@ -426,7 +426,7 @@ namespace wg
 
 	//____ _refreshInfluence() ____________________________________________________
 
-	void Container::_refreshInfluence()
+	void Container::_refreshInfluence(bool notifyParent)
 	{
 		// We can't start with skin influence since an empty one would start at 0,0
 		// always creating influence from top-left when adding childrens influence.
@@ -457,7 +457,8 @@ namespace wg
 			auto oldInfluence = influence;
 			m_influence = influence;
 			
-			_influenceChanged(oldInfluence, m_influence);
+			if( notifyParent )
+				_influenceChanged(oldInfluence, m_influence);
 		}
 	}
 

@@ -427,7 +427,7 @@ namespace wg
 			p++;
 		}
 
-		_refreshInfluence();
+		_refreshInfluence(false);
 	}
 
 	//____ _childRequestRender() _________________________________________________

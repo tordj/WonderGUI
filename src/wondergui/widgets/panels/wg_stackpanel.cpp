@@ -195,7 +195,7 @@ namespace wg
 		//TODO: Optimize. If size is same then we only need to update those that have requested resize.
 
 		Panel::_resize(size,scale);
-		_updateChildGeo(slots.begin(),slots.end());
+		_updateChildGeo(slots.begin(),slots.end(), false);
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -223,9 +223,14 @@ namespace wg
 
 			pSlot++;
 		}
-
+		
+		_refreshInfluence();
+		
 		if( bRequestResize )
 			_requestResize();
+		
+		
+		
 	}
 
 	//____ _makeWidgetAppear() _______________________________________________________
@@ -289,12 +294,11 @@ namespace wg
 			pSlot[i].m_margin	= padding;
 
 		_updateChildGeo(pSlot,pSlot+nb);
+		_refreshInfluence();
 
 		SizeSPX newDefault =_calcDefaultSize(m_scale);
 		if (newDefault != m_defaultSize || m_defaultSize != m_size)
 			_requestResize();
-
-		_refreshInfluence();
 	}
 
 	void StackPanel::_setSlotMargins(StaticSlot * _pSlot, int nb, const Border * pPaddings)
@@ -305,18 +309,18 @@ namespace wg
 			pSlot[i].m_margin	= *pPaddings++;
 
 		_updateChildGeo(pSlot,pSlot+nb);
+		_refreshInfluence();
 
 		SizeSPX newDefault = _calcDefaultSize(m_scale);
 		if (newDefault != m_defaultSize || m_defaultSize != m_size)
 			_requestResize();
-
-		_refreshInfluence();
 	}
 
 	//____ _didMoveSlots() ________________________________________________________
 
 	void StackPanel::_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb )
 	{
+		_refreshInfluence();
 		_requestRender();	//TODO: Optimize! Only re-render what might have changed.
 	}
 
@@ -380,8 +384,16 @@ namespace wg
 
 				if (pSlot->m_bVisible)
 				{
-					_requestRender(oldInfluence);
-					_requestRender(pSlot->_widget()->_influence() + newGeo.pos() );
+					RectSPX newInfluence = pSlot->_widget()->_influence() + oldGeo.pos();
+
+					RectSPX combInfluence = oldInfluence;
+					if( combInfluence.isEmpty() )
+						combInfluence = newInfluence;
+					else if( !newInfluence.isEmpty() )
+						combInfluence.growToContain(newInfluence);
+					
+					_requestRender(combInfluence);
+					_influenceChanged(oldInfluence, newInfluence);
 				}
 			}
 		}
@@ -414,15 +426,20 @@ namespace wg
 		pSlot->_setWidget(pNewChild);
 		pNewChild->_resize( pSlot->m_geo.size(), m_scale);
 
-		RectSPX influence = pSlot->_widget()->_influence();
+		RectSPX newInfluence = pSlot->_widget()->_influence();
 
-		if (!oldInfluence.isEmpty())
-			influence.growToContain(oldInfluence);
+		RectSPX combInfluence = oldInfluence;
+		
+		if( combInfluence.isEmpty() )
+			combInfluence = newInfluence;
+		else
+			combInfluence.growToContain(newInfluence);
 
-		_childRequestRender(pSlot, influence);
+		_childRequestRender(pSlot, combInfluence);
+
+		_influenceChanged(oldInfluence, newInfluence);
+
 		_childRequestResize(pSlot);
-
-		_refreshInfluence();
 	}
 
 
@@ -542,7 +559,7 @@ namespace wg
 
 	//____ _updateChildGeo() ___________________________________________________________
 
-	void StackPanel::_updateChildGeo(StackPanelSlot* pSlot, StackPanelSlot* pEnd)
+	void StackPanel::_updateChildGeo(StackPanelSlot* pSlot, StackPanelSlot* pEnd, bool bNotifyInfluence)
 	{
 		while( pSlot != pEnd )
 		{
@@ -567,7 +584,7 @@ namespace wg
 			pSlot++;
 		}
 
-		_refreshInfluence();
+		_refreshInfluence(bNotifyInfluence);
 	}
 
 	//____ _childGeo() ___________________________________________________________
