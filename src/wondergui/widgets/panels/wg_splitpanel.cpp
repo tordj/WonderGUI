@@ -543,14 +543,6 @@ namespace wg
 		m_handleSkin.render(pDevice, m_handleGeo + canvas.pos(), m_scale, m_handleState);
 	}
 
-
-	//____ _collectPatches() __________________________________________________
-
-	void SplitPanel::_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip)
-	{
-		container.add( RectSPX::overlap(m_influence + geo.pos(), clip) );
-	}
-
 	//____ _maskPatches() _____________________________________________________
 
 	void SplitPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)

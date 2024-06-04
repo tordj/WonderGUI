@@ -141,17 +141,6 @@ namespace wg
 		return nullptr;
 	}
 
-
-	//____ _collectPatches() _____________________________________________________
-
-	void Capsule::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
-	{
-		if( !m_skin.isEmpty() )
-			container.add(RectSPX::overlap(geo, clip));
-		else if( slot._widget() )
-			slot._widget()->_collectPatches(container, _contentRect(geo), clip);
-	}
-
 	//____ _maskPatches() ________________________________________________________
 
 	void Capsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )

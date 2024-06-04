@@ -502,15 +502,6 @@ namespace wg
 //		Need to except children that are in states OpeningDelay, Opening and Closing.
 //	}
 
-	//____ _collectPatches() ___________________________________________________
-
-//	void PopupOverlay::_collectPatches(Patches& container, const RectI& geo, const RectI& clip)
-//	{
-//		Need to make sure patches are not collected for children in mode "OpeningDelay"
-//		This might be handled by slotWithGeo() methods, depending on how what we choose.
-//	}
-
-
 
 	//____ _resize() ___________________________________________________________
 

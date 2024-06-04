@@ -283,22 +283,6 @@ namespace wg
 		}
 	}
 
-
-	//____ _collectPatches() ____________________________________________________
-
-	void PackList::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
-	{
-		if( m_skin.isEmpty() )
-		{
-			if (m_bHorizontal)
-				container.add(RectSPX::overlap(RectSPX(geo.x, geo.y, std::min(geo.w, m_contentLength), geo.h), clip));
-			else
-				container.add(RectSPX::overlap(RectSPX(geo.x, geo.y, geo.w, std::min(geo.h, m_contentLength)), clip));
-		}
-		else
-			container.add( RectSPX::overlap( geo, clip ) );
-	}
-
 	//____ _maskPatches() _______________________________________________________
 
 	void PackList::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )

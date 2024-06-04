@@ -618,15 +618,6 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 //		Need to except children that are in states OpeningDelay, Opening and Closing.
 //	}
 
-//____ _collectPatches() ___________________________________________________
-
-//	void WgPopupLayer::_collectPatches(Patches& container, const Rect& geo, const Rect& clip)
-//	{
-//		Need to make sure patches are not collected for children in mode "OpeningDelay"
-//		This might be handled by slotWithGeo() methods, depending on how what we choose.
-//	}
-
-
 
 //____ _onNewSize() ___________________________________________________________
 

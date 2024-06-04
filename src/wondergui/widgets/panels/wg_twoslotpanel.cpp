@@ -254,25 +254,6 @@ namespace wg
 		return false;
 	}
 
-
-	//____ _collectPatches() __________________________________________________
-
-	void TwoSlotPanel::_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip)
-	{
-		if (m_skin.isEmpty())
-		{
-			RectSPX contentRect = _contentRect(geo);
-
-			if (slots[0]._widget())
-				slots[0]._widget()->_collectPatches(container, _slotOneRect(contentRect), clip);
-
-			if (slots[1]._widget())
-				slots[1]._widget()->_collectPatches(container, _slotTwoRect(contentRect), clip);
-		}
-		else
-			container.add(RectSPX::overlap(geo, clip));
-	}
-
 	//____ _maskPatches() _____________________________________________________
 
 	void TwoSlotPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)

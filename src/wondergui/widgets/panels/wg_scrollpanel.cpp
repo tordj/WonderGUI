@@ -973,14 +973,6 @@ namespace wg
 			scrollbarY._render(pDevice, m_scrollbarYRegion + canvas.pos(), m_scale);
 	}
 
-	//____ _collectPatches() __________________________________________________
-
-	void ScrollPanel::_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip)
-	{
-//		if( !skin.isEmpty() )
-			container.add(RectSPX::overlap(geo, clip));
-	}
-
 	//____ _maskPatches() _____________________________________________________
 
 	void ScrollPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)

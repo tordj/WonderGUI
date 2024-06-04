@@ -828,18 +828,13 @@ namespace wg
 
 	void RootPanel::_replaceChild(StaticSlot* pSlot, Widget* pNewWidget)
 	{
-		RectSPX myGeo = m_geo;
-
-		if (slot._widget())
-			slot._widget()->_collectPatches(m_dirtyPatches, myGeo, myGeo);
-
 		slot._setWidget(pNewWidget);
 
 		if (pNewWidget)
-		{
-			pNewWidget->_resize(myGeo.size(),m_scale);
-			pNewWidget->_collectPatches(m_dirtyPatches, myGeo, myGeo);
-		}
+			pNewWidget->_resize(m_geo.size(),m_scale);
+
+		m_dirtyPatches.clear();
+		m_dirtyPatches.add(m_geo);
 	}
 
 	//____ _didAddSlots() _____________________________________________________

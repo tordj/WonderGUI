@@ -233,7 +233,6 @@ namespace wg
 
 		virtual	bool		_markTest(const CoordSPX& ofs);
 
-		virtual void		_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip);
 		virtual void		_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip);
 
 		virtual void    	_preRender();

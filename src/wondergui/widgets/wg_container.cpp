@@ -523,26 +523,6 @@ namespace wg
 		}
 	}
 
-
-	//____ _collectPatches() _______________________________________________________
-
-	void Container::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
-	{
-		if( m_skin.isEmpty() )
-		{
-			SlotWithGeo child;
-			_firstSlotWithGeo(child);
-
-			while (child.pSlot)
-			{
-				child.pSlot->_widget()->_collectPatches(container, child.geo + geo.pos(), clip);
-				_nextSlotWithGeo(child);
-			}
-		}
-		else
-			Widget::_collectPatches(container, geo, clip);
-	}
-
 	//____ _maskPatches() __________________________________________________________
 
 	void Container::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )

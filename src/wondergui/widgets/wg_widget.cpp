@@ -668,16 +668,6 @@ namespace wg
 		return n;
 	}
 
-	//____ _collectPatches()  ____________________________________________________
-
-	void Widget::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
-	{
-		if( !m_skin.isEmpty() )
-			container.add( RectSPX::overlap(m_skin.influence(geo, m_scale), clip ));
-		else
-			container.add( RectSPX::overlap( geo, clip ) );
-	}
-
 	//____ _maskPatches() _______________________________________________________
 
 	void Widget::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )

@@ -508,41 +508,6 @@ namespace wg
 		glow._setSize(size,scale);
 	}
 
-	//____ _collectPatches() _____________________________________________________
-
-	void CanvasCapsule::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
-	{
-		RectSPX contentRect = _contentRect(geo);
-		RectSPX canvasArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
-
-		// A skin always cover the most, if we have a skin we don't need to check the rest
-
-		if( !m_skin.isEmpty() )
-		{
-			RectSPX skinArea;
-
-			if( m_bScaleCanvas && m_bSkinAroundCanvas )
-				skinArea = canvasArea + m_skin.contentBorder(m_scale, m_state);
-			else
-				skinArea = geo;
-
-			container.add(RectSPX::overlap(skinArea, clip));
-			return;
-		}
-
-		// Glow covers whole contentRect as long as skin is not tightened around canvas.
-		
-		RectSPX dirt = canvasArea;
-		
-		if( glow.isActive() && !m_bSkinAroundCanvas )
-			dirt = contentRect;
-			
-		// We don't collect individual patches from within canvas,
-		// the canvas is considered one drawn area.
-
-		container.add(RectSPX::overlap(dirt, clip));
-	}
-
 	//____ _maskPatches() ________________________________________________________
 
 	void CanvasCapsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )

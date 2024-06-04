@@ -82,13 +82,6 @@ namespace wg
 		return m_pHolder->_sideCanvasMaxSize(this,scale);
 	}
 
-	//____ _collectPatches() _________________________________________________________________
-
-	void SideCanvas::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
-	{
-		m_pHolder->_sideCanvasCollectPatches(this,container, geo, clip);
-	}
-
 	//____ _maskPatches() _________________________________________________________________
 
 	void SideCanvas::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
@@ -157,13 +150,6 @@ namespace wg
 	SizeSPX SideCanvas::Holder::_sideCanvasMaxSize( const SideCanvas * pCanvas, int scale ) const
 	{
 		return pCanvas->Widget::_maxSize(scale);
-	}
-
-	//____ _Holder::_sideCanvasCollectPatches() ____________________________________________
-
-	void SideCanvas::Holder::_sideCanvasCollectPatches( SideCanvas * pCanvas, PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
-	{
-		return pCanvas->Widget::_collectPatches(container, geo, clip);
 	}
 
 	//____ _Holder::_sideCanvasMaskPatches() ____________________________________________
