@@ -86,8 +86,25 @@ public:
     void    ChangeText(std::string kStr);
     void    ChangeText(const char* kStr);
 
-	void	SetFixedBlendColor( wg::HiColor color );
-	
+    void	SetFixedBlendColor( wg::HiColor color );
+    void    StartRecieveTicks() {
+        _startReceiveTicks();
+    }
+
+    void StartScrollDelay()
+    {
+        m_bWrapTextAnim = true;
+        SetAutoEllipsis(false);
+        m_kSteadyTimeNow = std::chrono::steady_clock::now();
+    }
+
+    void StopScroll()
+    {
+        m_bWrapTextAnim = false;
+        SetAutoEllipsis(true);
+        m_scroll = false;
+    }
+
 protected:
 
     void    _onCloneContent( const WgWidget * _pOrg );
@@ -105,7 +122,6 @@ protected:
 
     void    _bringCursorInView();
 
-
     WgText                m_text;
     bool                  m_bHasFocus;
     int                   m_maxLines;
@@ -113,9 +129,15 @@ protected:
 private:
     void    _textModified();
     bool    _insertCharAtCursor( Uint16 c );
+    bool    m_bWrapTextAnim = false;
+    float   m_fAnimValue = 0.0f;
 
     wg::String			m_kStr;
-	wg::HiColor			m_fixedBlendColor = wg::HiColor::Undefined;
+    wg::HiColor			m_fixedBlendColor = wg::HiColor::Undefined;
+
+    std::chrono::steady_clock::time_point m_kSteadyTimeNow;
+    bool m_scroll = false;
+
 };
 
 #endif // WG2_TEXTDISPLAY_DOT_H
