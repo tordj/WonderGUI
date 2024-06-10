@@ -39,6 +39,9 @@ namespace wg
 	class HostBridge
 	{
 	public:
+		HostBridge() = default;
+		virtual ~HostBridge() = default;
+
 		virtual bool		hidePointer() = 0;
 		virtual bool		showPointer() = 0;
 
