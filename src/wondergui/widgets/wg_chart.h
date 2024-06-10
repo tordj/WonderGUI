@@ -84,6 +84,8 @@ class Chart;
 			
 		};
 
+		virtual ~GridLine() = default;
+
 	protected:
 
 		SizeSPX			_textSize() const override;

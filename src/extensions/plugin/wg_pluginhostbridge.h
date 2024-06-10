@@ -41,6 +41,8 @@ namespace wg
 	public:
 		
 		PluginHostBridge(void * pHostBridge) : m_pHostBridge(pHostBridge) {}
+		// Needed to avoid compiler warnings/errors, as HostBridge has virtual functions
+		virtual ~PluginHostBridge() = default;
 
 		
 		bool		hidePointer() override;
