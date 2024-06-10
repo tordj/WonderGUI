@@ -48,6 +48,7 @@ namespace wg
 		};
 		
 		SelectBoxEntry( const Blueprint& bp ) : m_id(bp.id), m_string(bp.text) {};
+		virtual ~SelectBoxEntry() = default;
 		
 		inline int		id() const { return m_id; }
 		inline String	text() const { return m_string; }

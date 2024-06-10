@@ -33,6 +33,9 @@ inline BitmapCache* getPtr(wg_obj obj) {
 class Listener : public BitmapCacheListener
 {
 public:
+	Listener() {};
+	virtual ~Listener() = default;
+
 	void _cacheSurfaceAdded(Surface* pSurface) override { m_data.addFunc(static_cast<Object*>(pSurface),m_data.addPtr,m_data.addInt); }
 	void _cacheSurfacesRemoved(int nSurfaces, Surface* pSurfaces[]) override
 	{
