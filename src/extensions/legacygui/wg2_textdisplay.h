@@ -93,9 +93,11 @@ public:
 
     void StartScrollDelay()
     {
+        m_textAnimPos = -1;
         m_bWrapTextAnim = true;
         SetAutoEllipsis(false);
-        m_kSteadyTimeNow = std::chrono::steady_clock::now();
+        m_kAnimTimeStart = std::chrono::steady_clock::now();
+        m_kAnimTimeStopDelay = std::chrono::steady_clock::now();
     }
 
     void StopScroll()
@@ -130,12 +132,15 @@ private:
     void    _textModified();
     bool    _insertCharAtCursor( Uint16 c );
     bool    m_bWrapTextAnim = false;
-    float   m_fAnimValue = 0.0f;
+    int     m_textAnimPos = -1;
+    const int     m_textAnimSpeed = 1;
+    bool m_reachedEnd = false;
 
     wg::String			m_kStr;
     wg::HiColor			m_fixedBlendColor = wg::HiColor::Undefined;
 
-    std::chrono::steady_clock::time_point m_kSteadyTimeNow;
+    std::chrono::steady_clock::time_point m_kAnimTimeStart;
+    std::chrono::steady_clock::time_point m_kAnimTimeStopDelay;
     bool m_scroll = false;
 
 };
