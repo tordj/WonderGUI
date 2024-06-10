@@ -239,9 +239,8 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	else
 		m_text.hideCursor();
 
-	auto kChronoDiff = std::chrono::steady_clock::now() - m_kSteadyTimeNow;
+	auto kChronoDiff = std::chrono::steady_clock::now() - m_kAnimTimeStart;
 	auto kMillisecDiff = std::chrono::duration_cast<std::chrono::milliseconds>(kChronoDiff);
-
 
 	if( m_fixedBlendColor != wg::HiColor::Undefined )
 	{
@@ -252,20 +251,46 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	}
 	else if(m_bWrapTextAnim && kMillisecDiff.count() > 1000)
     {
-        WgRect canvas2 = {canvas.x, canvas.y, m_text.unwrappedWidth(), canvas.h};
-        // change x, if newX is negative the text is already contained
-		int newX = m_fAnimValue * (m_text.unwrappedWidth() - canvas.w);
-        canvas2.x = newX <= 0 ? newX+10 : canvas.x;
-		// it's a speed among others
-        m_fAnimValue -= 0.005f;
-		m_fAnimValue = m_fAnimValue <= -1.0f ? 0.0f : m_fAnimValue;
-
-		if(m_fAnimValue == 0.0f)
+        // Only animate if the text is longer than the canvas
+        const int textCanvasDiff = (m_text.unwrappedWidth() - canvas.w);
+        if(textCanvasDiff < 0)
+        {
+            WgGfxDevice::PrintText( pDevice, pText, canvas );
+        }
+		else
 		{
-			m_kSteadyTimeNow = std::chrono::steady_clock::now();
-		}
+	        WgRect canvas2 = {canvas.x, canvas.y, m_text.unwrappedWidth(), canvas.h};
+			if(m_textAnimPos == -1)
+			{
+				m_textAnimPos = textCanvasDiff;
+			}
+			
+			canvas2.x = canvas.x + (m_textAnimPos - textCanvasDiff);
 
-        WgGfxDevice::PrintText( pDevice, pText, canvas2 );
+
+            if(m_textAnimPos <= 0 && !m_reachedEnd)
+            {
+                m_kAnimTimeStopDelay = std::chrono::steady_clock::now();
+				m_reachedEnd = true;
+            }
+            
+            auto stopDelay = std::chrono::steady_clock::now() - m_kAnimTimeStopDelay;
+            auto stopDelayDiff = std::chrono::duration_cast<std::chrono::milliseconds>(stopDelay);
+
+			if(stopDelayDiff.count() > 1000 && m_textAnimPos <= 0)
+			{
+				// it's a speed among others
+                m_textAnimPos = -1;
+                m_kAnimTimeStart = std::chrono::steady_clock::now();
+				m_reachedEnd = false;
+			}
+			else if( m_textAnimPos > 0)
+			{
+                m_textAnimPos = m_textAnimPos - m_textAnimSpeed;
+			}
+
+            WgGfxDevice::PrintText( pDevice, pText, canvas2 );
+		}
     }
     else
     {
@@ -274,7 +299,7 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 	if(!m_bWrapTextAnim)
 	{
-		m_fAnimValue = 0.0f;
+		m_textAnimPos = -1;
 	}
 
 	if( pText != &m_text )
