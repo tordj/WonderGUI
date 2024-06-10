@@ -40,6 +40,8 @@
 #    include <wg2_cursorinstance.h>
 #endif
 
+#include <chrono>
+
 
 class WgTextDisplay:public WgWidget, public WgInterfaceEditText
 {
