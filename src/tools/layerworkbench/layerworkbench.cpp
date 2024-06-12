@@ -167,8 +167,8 @@ bool MyApp::setupGUI(Visitor* pVisitor)
 
 	auto pHandleSkin = BoxSkin::create( { 
 		.color = Color::LightCoral,
-		.outlineThickness = 2,
 		.outlineColor = Color::Black,
+		.outlineThickness = 2,
 		.padding = 8
 	});
 	

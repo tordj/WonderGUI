@@ -195,7 +195,7 @@ namespace wg
 		//TODO: Optimize. If size is same then we only need to update those that have requested resize.
 
 		Panel::_resize(size,scale);
-		_updateChildGeo(slots.begin(),slots.end(), false);
+		_updateChildGeo(slots.begin(),slots.end());
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -554,7 +554,7 @@ namespace wg
 
 	//____ _updateChildGeo() ___________________________________________________________
 
-	void StackPanel::_updateChildGeo(StackPanelSlot* pSlot, StackPanelSlot* pEnd, bool bNotifyOverflow)
+	void StackPanel::_updateChildGeo(StackPanelSlot* pSlot, StackPanelSlot* pEnd)
 	{
 		while( pSlot != pEnd )
 		{
@@ -579,7 +579,7 @@ namespace wg
 			pSlot++;
 		}
 
-		_refreshOverflow(bNotifyOverflow);
+		_refreshOverflow();
 	}
 
 	//____ _childGeo() ___________________________________________________________

@@ -585,7 +585,7 @@ namespace wg
 	{
 		Container::_resize(size,scale);
 		_updateGeo();
-		_refreshOverflow(false);
+		_refreshOverflow();
 	}
 
 	//____ _setState() ________________________________________________________
@@ -627,7 +627,7 @@ namespace wg
 
 	//____ _refreshOverflow() ___________________________________________________
 					  
-	void SplitPanel::_refreshOverflow(bool bNotifyParent)
+	void SplitPanel::_refreshOverflow()
 	{
 		// We need our own _refreshOverflow because of our handleSkin that needs to
 		// be included.
@@ -652,8 +652,7 @@ namespace wg
 			auto oldOverflow = overflow;
 			m_overflow = overflow;
 			
-			if( bNotifyParent )
-				_overflowChanged(oldOverflow, m_overflow);
+			_overflowChanged(oldOverflow, m_overflow);
 		}
 	}
 

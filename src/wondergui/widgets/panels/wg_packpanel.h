@@ -219,7 +219,7 @@ namespace wg
 
 		//
 
-		void		_refreshChildGeo(bool bRequestRender, bool bNotifyInfluence = true);
+		void		_refreshChildGeo(bool bRequestRender);
 		void		_realignChildGeo(bool bRequestRender);
 
 		void		_hideChildren(PackPanelSlot * pSlot, int nb);

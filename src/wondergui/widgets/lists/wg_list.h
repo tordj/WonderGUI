@@ -175,6 +175,10 @@ namespace wg
 
 		Widget_wp		m_pFocusedChild;
 		Widget_wp		m_pHoveredChild;
+
+		BorderSPX		m_maxEntryOverflow;			// Max overflow in each direction for the entries, 
+													// includes the two entry-skins and overflow of entry widgets.
+
 	};
 
 

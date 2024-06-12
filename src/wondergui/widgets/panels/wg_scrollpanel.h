@@ -223,7 +223,7 @@ namespace wg
 
 		bool		_alphaTest(const CoordSPX& ofs) override;
 
-		void		_refreshOverflow(bool bNotifyParent = true) override;
+		void		_refreshOverflow() override;
 
 
 		// Overloaded from Container

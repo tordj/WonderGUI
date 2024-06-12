@@ -1009,7 +1009,7 @@ namespace wg
 
 	//____ _refreshOverflow() ____________________________________________________
 
-	void ScrollPanel::_refreshOverflow(bool bNotifyParent)
+	void ScrollPanel::_refreshOverflow()
 	{
 		// Since we always clip our child we should ignore it in this calculation.
 
@@ -1020,8 +1020,7 @@ namespace wg
 			auto oldOverflow = m_overflow;
 			m_overflow = overflow;
 			
-			if(bNotifyParent)
-				_overflowChanged(oldOverflow, overflow);
+			_overflowChanged(oldOverflow, overflow);
 		}
 	}
 

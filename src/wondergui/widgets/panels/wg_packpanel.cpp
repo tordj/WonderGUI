@@ -710,7 +710,7 @@ namespace wg
 		}
 		
 		Panel::_resize(size, scale);
-		_refreshChildGeo(true, true);			// Needs to requestRender() if size was not changed.
+		_refreshChildGeo(true);			// Needs to requestRender() if size was not changed.
 
 		if (slots.isEmpty())
 			_refreshOverflow();
@@ -987,7 +987,7 @@ namespace wg
 
 	//____ _refreshChildGeo() _________________________________________________________
 
-	void PackPanel::_refreshChildGeo( bool bRequestRender, bool notifyOverflow )
+	void PackPanel::_refreshChildGeo( bool bRequestRender )
 	{
 		if( slots.isEmpty() )
 			return;
@@ -1210,7 +1210,7 @@ namespace wg
 
 		//TODO: This should be baked into the loop above instead to make it faster.
 
-		_refreshOverflow(notifyOverflow);
+		_refreshOverflow();
 	}
 
 	//____ _populateLayoutArray() ___________________________________________

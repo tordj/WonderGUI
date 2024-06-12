@@ -732,13 +732,11 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 	
 	auto path = pVisitor->resourceDirectory();
 
-/*
-#ifdef __APPLE__
-	string path = "";
-#else
-	string path = "resources/greyskin/";
+
+#ifndef __APPLE__
+	path.append("greyskin/");
 #endif
-*/
+
 	auto pPlateSurf = pVisitor->loadSurface(path + "plate.bmp");
 	auto pButtonSurf = pVisitor->loadSurface(path + "button.bmp");
 	auto pStateButtonSurf = pVisitor->loadSurface(path + "state_button.bmp");

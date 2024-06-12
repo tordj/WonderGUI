@@ -132,10 +132,10 @@ namespace wg
 
 			virtual void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 
-			virtual void			_refreshOverflow( bool notifyParent = true);
-			void					_addChildOverflow( const RectSPX& childGeo, const BorderSPX& childOverflow );
-			void 					_removeChildOverflow( const RectSPX& childGeo, const BorderSPX& childOverflow );
-			void					_childWithOverflowGeoChanged(StaticSlot * pSlot, const RectSPX& oldGeo, const RectSPX& newGeo);
+			virtual void			_refreshOverflow();
+			virtual void			_addChildOverflow( const RectSPX& childGeo, const BorderSPX& childOverflow );
+			virtual void 			_removeChildOverflow( const RectSPX& childGeo, const BorderSPX& childOverflow );
+			virtual void			_childWithOverflowGeoChanged(StaticSlot * pSlot, const RectSPX& oldGeo, const RectSPX& newGeo);
 
 		
 			BorderSPX				_overflow() const override;

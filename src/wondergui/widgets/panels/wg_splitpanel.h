@@ -191,7 +191,7 @@ namespace wg
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;
 
-		void		_refreshOverflow( bool notifyParent = true) override;
+		void		_refreshOverflow() override;
 		
 		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;

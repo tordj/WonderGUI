@@ -371,8 +371,6 @@ namespace wg
 
 			// Go through WidgetRenderContexts, push and mask dirt
 
-			int test = int(renderList.size());
-			
 			int lastWithDirt = int(renderList.size()) -1;
 			for (unsigned int i = 0 ; i < renderList.size(); i++)
 			{
@@ -428,7 +426,7 @@ namespace wg
 
 	//____ _refreshOverflow() ____________________________________________________
 
-	void Container::_refreshOverflow(bool notifyParent)
+	void Container::_refreshOverflow()
 	{
 		BorderSPX 	overflow	= m_skin.overflow(m_scale);
 		RectSPX		overflowGeo	= RectSPX{0,0,m_size} + overflow;
@@ -452,8 +450,7 @@ namespace wg
 
 			m_bOverflow = !overflow.isEmpty();
 			
-			if( notifyParent )
-				_overflowChanged(oldOverflow, m_overflow);
+			_overflowChanged(oldOverflow, m_overflow);
 		}
 	}
 

@@ -1092,6 +1092,7 @@ namespace wg
 			box.h = end - beg;
 		}
 
+		box += m_maxEntryOverflow;
 		_requestRender(box);
 	}
 
@@ -1274,6 +1275,9 @@ namespace wg
 		geo.y += rect.y;
 		geo.w = rect.w;
 		geo.h = rect.h;
+
+		geo += pSlot->_widget()->_overflow();
+
 		_requestRender(geo);
 	}
 

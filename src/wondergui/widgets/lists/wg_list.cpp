@@ -134,11 +134,11 @@ namespace wg
 					if( m_pHoveredChild )
 					{
 						_getEntryGeo( geo, (Slot*) m_pHoveredChild->_slot() );
-						_requestRender(geo);
+						_requestRender(geo + m_pHoveredChild->_overflow());
 					}
 
 					_getEntryGeo( geo, pEntry );
-					_requestRender(geo);
+					_requestRender(geo + pEntry->_widget()->_overflow());
 					m_pHoveredChild = pEntry->_widget();
 				}
 				break;
@@ -151,7 +151,7 @@ namespace wg
 				{
 					RectSPX geo;
 					_getEntryGeo( geo, (Slot*) m_pHoveredChild->_slot() );
-					_requestRender(geo);
+					_requestRender(geo + m_pHoveredChild->_overflow());
 					m_pHoveredChild = nullptr;
 				}
 				break;
@@ -383,11 +383,13 @@ namespace wg
 
 		// Request render for the range
 
+		//TODO: This will only work for linear lists. Not FlowLists.
+
 		RectSPX geoFirst;
 		RectSPX geoLast;
 		_getEntryGeo( geoFirst, pBegin );
 		_getEntryGeo( geoLast, pLast );
-		_requestRender( RectSPX::bounds(geoFirst,geoLast) );
+		_requestRender( RectSPX::bounds(geoFirst + pBegin->_widget()->_overflow(), geoLast + pEnd->_widget()->_overflow()));
 
 		// Reserve ItemInfo array of right size if we are going to post message
 

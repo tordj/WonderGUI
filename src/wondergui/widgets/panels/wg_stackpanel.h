@@ -187,7 +187,7 @@ namespace wg
 		// Internal to StackPanel
 
 		SizeSPX _calcDefaultSize(int scale) const;
-		void	_updateChildGeo(StackPanelSlot * pBegin, StackPanelSlot * pEnd, bool bNotifyOverflow = true);
+		void	_updateChildGeo(StackPanelSlot * pBegin, StackPanelSlot * pEnd);
 
 		void	_hideChildren( StackPanelSlot * pBegin, StackPanelSlot * pEnd );
 		void	_unhideChildren( StackPanelSlot * pBegin, StackPanelSlot * pEnd );
