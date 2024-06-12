@@ -223,7 +223,7 @@ namespace wg
 
 		bool		_alphaTest(const CoordSPX& ofs) override;
 
-		void		_refreshInfluence(bool bNotifyParent = true) override;
+		void		_refreshOverflow(bool bNotifyParent = true) override;
 
 
 		// Overloaded from Container
@@ -239,7 +239,7 @@ namespace wg
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
 		RectSPX		_slotGeo(const StaticSlot * pSlot) const override;
-		void		_childInfluenceChanged( StaticSlot * pSlot, const RectSPX& oldInfluence, const RectSPX& newInfluence ) override;
+		void		_childOverflowChanged( StaticSlot * pSlot, const BorderSPX& oldOverflow, const BorderSPX& newOverflow ) override;
 
 		RectSPX		_childWindowSection(const StaticSlot * pSlot) const override;
 

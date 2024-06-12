@@ -93,7 +93,7 @@ namespace wg
 
 		while( pCover <  pEnd )
 		{
-			if( pCover->m_geo.isOverlapping( rect ) )
+			if( (pCover->m_geo + pCover->_widget()->_overflow()).isOverlapping( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0, m_size ) );
 
 			pCover = _incOverlaySlot(pCover,incNext);
@@ -189,7 +189,7 @@ namespace wg
 		if (pSlot == &mainSlot)
 		{
 			mainSlot._setWidget(nullptr);
-			_onRequestRender(RectSPX(0, 0, m_size), 0);
+			_requestRender();
 			_requestResize();
 		}
 	}
@@ -203,7 +203,7 @@ namespace wg
 			mainSlot._setWidget(pNewWidget);
 			if( pNewWidget )
 				pNewWidget->_resize(m_size, m_scale);			//TODO: Should be content size here (and in all other _setWidget() methods?)
-			_onRequestRender(RectSPX(0, 0, m_size), 0);
+			_requestRender();
 			_requestResize();
 		}
 	}
@@ -236,7 +236,7 @@ namespace wg
 	void Overlay::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
 		if( _pSlot == &mainSlot )
-			_onRequestRender( rect, 0 );		//TODO: Take padding into account
+			_onRequestRender( rect + m_skin.contentOfs(m_scale, m_state), 0 );		//TODO: Take padding into account
 		else
 		{
 			Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);

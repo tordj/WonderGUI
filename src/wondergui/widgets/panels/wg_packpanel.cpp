@@ -621,10 +621,10 @@ namespace wg
 			pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(m_scale);
 			pSlot->_widget()->_resize(pSlot->m_geo.size(), m_scale);
 
-			RectSPX influence = pNewChild->_influence() + pSlot->m_geo.pos();
+			RectSPX renderArea = pSlot->m_geo + pNewChild->_overflow();
 			if (pOldChild)
-				influence.growToContain(pOldChild->_influence() + pSlot->m_geo.pos() );
-			_requestRender(influence);
+				renderArea.growToContain(pSlot->m_geo + pOldChild->_overflow() );
+			_requestRender(renderArea);
 
 			m_totalSpacing = _calcTotalSpacing(m_scale);
 			_refreshGeometries();
@@ -710,10 +710,10 @@ namespace wg
 		}
 		
 		Panel::_resize(size, scale);
-		_refreshChildGeo(true, false);			// Needs to requestRender() if size was not changed.
+		_refreshChildGeo(true, true);			// Needs to requestRender() if size was not changed.
 
 		if (slots.isEmpty())
-			_refreshInfluence(false);
+			_refreshOverflow();
 	}
 
 	//____ _calcDefaultContentSize() ______________________________________________________
@@ -894,7 +894,7 @@ namespace wg
 		{
 			if( p->m_bVisible )
 			{
-				RectSPX influence = p->_widget()->_influence() + p->m_geo.pos();
+				RectSPX renderArea = p->m_geo + p->_widget()->_overflow();
 
 				spx slotOfs = baselineOffset;
 				if( m_axis == Axis::X )
@@ -906,12 +906,12 @@ namespace wg
 						RectSPX geo = p->m_geo;
 						if( slotOfs < geo.y )
 						{
-							influence.h += geo.y - slotOfs;
-							influence.y -= geo.y - slotOfs;
+							renderArea.h += geo.y - slotOfs;
+							renderArea.y -= geo.y - slotOfs;
 						}
 						else
 						{
-							influence.h += slotOfs - geo.y;
+							renderArea.h += slotOfs - geo.y;
 						}
 						
 						p->m_geo.y = slotOfs;
@@ -926,12 +926,12 @@ namespace wg
 						RectSPX geo = p->m_geo;
 						if( slotOfs < geo.x )
 						{
-							influence.w += geo.x - slotOfs;
-							influence.x -= geo.x - slotOfs;
+							renderArea.w += geo.x - slotOfs;
+							renderArea.x -= geo.x - slotOfs;
 						}
 						else
 						{
-							influence.w += slotOfs - geo.x;
+							renderArea.w += slotOfs - geo.x;
 						}
 				
 						p->m_geo.x = slotOfs;
@@ -939,7 +939,7 @@ namespace wg
 				}
 
 				if (bRequestRender)
-					_requestRender(influence);
+					_requestRender(renderArea);
 			}
 		}
 	}
@@ -987,7 +987,7 @@ namespace wg
 
 	//____ _refreshChildGeo() _________________________________________________________
 
-	void PackPanel::_refreshChildGeo( bool bRequestRender, bool notifyInfluence )
+	void PackPanel::_refreshChildGeo( bool bRequestRender, bool notifyOverflow )
 	{
 		if( slots.isEmpty() )
 			return;
@@ -1066,7 +1066,7 @@ namespace wg
 					if( geo != p->m_geo )
 					{
 						if (bRequestRender)
-							_requestRender(p->_widget()->_influence() + p->m_geo.pos());
+							_requestRender(p->m_geo + p->_widget()->_overflow());
 
 						spx oldW = p->m_geo.w;
 						spx oldH = p->m_geo.h;
@@ -1078,14 +1078,14 @@ namespace wg
 						}
 
 						if (bRequestRender)
-							_requestRender(p->_widget()->_influence() + p->m_geo.pos());
+							_requestRender(p->m_geo + p->_widget()->_overflow());
 
 					}
 				}
 				else
 				{
 					if( bRequestRender && p->m_geo.w != 0 && p->m_geo.h != 0 )
-						_requestRender(p->_widget()->_influence() + p->m_geo.pos());
+						_requestRender(p->m_geo + p->_widget()->_overflow());
 
 					p->m_geo.x = pos.x + contentOfs.x;
 					p->m_geo.y = pos.y + contentOfs.y;
@@ -1161,7 +1161,7 @@ namespace wg
 					if( geo != p->m_geo )
 					{
 						if (bRequestRender)
-							_requestRender(p->_widget()->_influence() + p->m_geo.pos());
+							_requestRender(p->m_geo + p->_widget()->_overflow());
 
 						spx oldW = p->m_geo.w;
 						spx oldH = p->m_geo.h;
@@ -1173,14 +1173,14 @@ namespace wg
 						}
 
 						if (bRequestRender)
-							_requestRender(p->_widget()->_influence() + p->m_geo.pos());
+							_requestRender(p->m_geo + p->_widget()->_overflow());
 					}
 					pOutput++;
 				}
 				else
 				{
 					if( bRequestRender && p->m_geo.w != 0 && p->m_geo.h != 0 )
-						_requestRender(p->_widget()->_influence() + p->m_geo.pos());
+						_requestRender(p->m_geo + p->_widget()->_overflow());
 
 					p->m_geo.x = pos.x + contentOfs.x;
 					p->m_geo.y = pos.y + contentOfs.y;
@@ -1210,7 +1210,7 @@ namespace wg
 
 		//TODO: This should be baked into the loop above instead to make it faster.
 
-		_refreshInfluence(notifyInfluence);
+		_refreshOverflow(notifyOverflow);
 	}
 
 	//____ _populateLayoutArray() ___________________________________________

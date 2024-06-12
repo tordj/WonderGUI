@@ -82,7 +82,7 @@ namespace wg
 			slots[1].m_length = 0;
 
 			_updateGeo(false);
-			_refreshInfluence();
+			_refreshOverflow();
 			_requestRender();
 			
 			_requestResize();
@@ -99,7 +99,7 @@ namespace wg
 			m_defaultSize = _calcDefaultSize(m_scale);
 
 			_updateGeo(false);
-			_refreshInfluence();
+			_refreshOverflow();
 			
 			_requestResize();
 		}
@@ -286,7 +286,7 @@ namespace wg
 			
 		Container::_resize(size,scale);
 		_updateGeo( bForceUpdate );
-		_refreshInfluence(false);
+		_refreshOverflow();
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -434,7 +434,7 @@ namespace wg
 		m_defaultSize = _calcDefaultSize(m_scale);
 
 		_updateGeo(false);
-		_refreshInfluence();
+		_refreshOverflow();
 		_requestRender();
 
 		_requestResize();

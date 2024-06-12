@@ -94,9 +94,7 @@ namespace wg
 		inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale()); }
 
 	protected:
-		
-		inline RectSPX  _influence() const { return m_pWidget ? m_pWidget->_influence() + m_geo.pos() : RectSPX(); }
-		
+				
 		RectSPX		m_geo;
 		bool		m_bVisible = true;
 	};

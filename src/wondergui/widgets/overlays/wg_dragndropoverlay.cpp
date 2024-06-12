@@ -110,7 +110,9 @@ namespace wg
 			SizeSPX pref = p->_widget()->_defaultSize(m_scale);
 			SizeSPX max = SizeSPX::max(pref, p->m_geo.size());
 
-			_requestRender(RectSPX::overlap({ 0,0,m_size }, { p->m_geo.pos(), max }));
+			RectSPX renderBounds = RectSPX{ p->m_geo.pos(), max } + p->_widget()->_overflow();
+			
+			_requestRender(RectSPX::overlap({ 0,0,m_size }, renderBounds));
 			p->_setSize(pref, m_scale);
 		}
 	}
@@ -193,9 +195,11 @@ namespace wg
 
 						// Move the drag-widget onscreen.
 
-						_requestRender(m_dragSlot.m_geo);
+						BorderSPX overflow = m_dragSlot._widget() ? m_dragSlot._widget()->_overflow() : BorderSPX();
+						
+						_requestRender(m_dragSlot.m_geo + overflow);
 						m_dragSlot.m_geo.setPos( pointerPos + m_dragWidgetOfs );
-						_requestRender(m_dragSlot.m_geo);
+						_requestRender(m_dragSlot.m_geo + overflow);
 
 // MOVE TO TICK!						// Check if we entered/left a (possible) target.
 
@@ -221,9 +225,11 @@ namespace wg
 
 						// Move the drag-widget onscreen.
 
-						_requestRender(m_dragSlot.m_geo);
+						BorderSPX overflow = m_dragSlot._widget() ? m_dragSlot._widget()->_overflow() : BorderSPX();
+
+						_requestRender(m_dragSlot.m_geo + overflow);
 						m_dragSlot.m_geo.setPos( pointerPos + m_dragWidgetOfs );
-						_requestRender(m_dragSlot.m_geo);
+						_requestRender(m_dragSlot.m_geo + overflow);
 
 
 // MOVE TO TICK!                        // Check if our target has changed
@@ -357,7 +363,9 @@ namespace wg
 
 					CoordSPX mousePos = _toLocal(ptsToSpx(pMsg->pointerPos(),m_scale));
 					m_dragSlot.m_geo = { align((mousePos + m_dragWidgetOfs)), dragWidgetSize };
-					_requestRender(m_dragSlot.m_geo);
+
+					RectSPX renderBounds = m_dragSlot.m_geo + (pDragWidget ? pDragWidget->_overflow() : BorderSPX());
+					_requestRender(renderBounds);
 					m_dragState = DragState::Dragging;
 				}
 				else
@@ -438,7 +446,9 @@ namespace wg
 	{
 		if( m_dragSlot._widget())
 		{
-			_requestRender(m_dragSlot.m_geo);
+			BorderSPX overflow = m_dragSlot._widget() ? m_dragSlot._widget()->_overflow() : BorderSPX();
+			
+			_requestRender(m_dragSlot.m_geo + overflow);
 			m_dragSlot._setWidget(nullptr);
 		}
 
@@ -462,7 +472,9 @@ namespace wg
 
 		if( m_dragSlot._widget())
 		{
-			_requestRender(m_dragSlot.m_geo);
+			BorderSPX overflow = m_dragSlot._widget() ? m_dragSlot._widget()->_overflow() : BorderSPX();
+
+			_requestRender(m_dragSlot.m_geo + overflow);
 			m_dragSlot._setWidget(nullptr);
 		}
 
@@ -476,17 +488,22 @@ namespace wg
 
 	void DragNDropOverlay::_replaceDragWidget( Widget * pNewWidget )
 	{
-
 		if (pNewWidget)
 			pNewWidget->releaseFromParent();
-		m_dragSlot._setWidget(pNewWidget );
 
+		RectSPX oldRenderBounds = m_dragSlot._widget() ? m_dragSlot._widget()->_renderBounds() : RectSPX();
+
+		m_dragSlot._setWidget(pNewWidget );
 		SizeSPX newSize = pNewWidget ? m_dragSlot._widget()->_defaultSize(m_scale) : SizeSPX();
-		SizeSPX maxSize = SizeSPX::max(m_dragSlot.m_geo.size(), newSize);
+		RectSPX newRenderBounds = pNewWidget ? RectSPX{0,0,newSize} + pNewWidget->_overflow() : RectSPX();
 
 		m_dragSlot.m_geo.setSize(newSize);
+		
+		RectSPX combRenderBounds = RectSPX::boundsExcludingEmpty(oldRenderBounds, newRenderBounds) + m_dragSlot.m_geo.pos();
 
-		_requestRender({ m_dragSlot.m_geo.pos(), maxSize });
+		if( !combRenderBounds.isEmpty() )
+			_requestRender( combRenderBounds );
+
 	}
 
 

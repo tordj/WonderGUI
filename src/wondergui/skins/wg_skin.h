@@ -95,8 +95,8 @@ namespace wg
 		virtual BorderSPX	_padding(int scale, State state) const;
 		virtual SizeSPX		_paddingSize(int scale) const;
 
-		inline  bool		_hasOverflow() const { return m_bOverflow;  }
-//		inline  BorderSPX	_overflow(int scale, State state) const;
+		inline  bool		_hasOverflow() const { return m_overflow.isEmpty();  }
+		virtual BorderSPX	_overflow(int scale) const;
 
 		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;
 		virtual CoordSPX	_contentOfs(int scale, State state) const;
@@ -111,9 +111,9 @@ namespace wg
 									float value = 1.f, float value2 = -1.f, int animPos = 0, 
 									float* pStateFractions = nullptr) const = 0;
 
-		virtual RectSPX		_influence(const RectSPX& geo, int scale) const;
 
 		virtual RectSPX		_coverage(const RectSPX& geo, int scale, State state) const = 0;
+		virtual RectSPX		_renderBounds(const RectSPX& geo, int scale) const;
 
 		
 		virtual RectSPX		_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState,
@@ -127,6 +127,10 @@ namespace wg
 
 		inline bool			_isContentShifting() const { return m_bContentShifting; }
 
+		inline  bool		_overflowsGeo() const { return m_bGeoOverflow;  }
+		virtual BorderSPX	_geoOverflow(int scale) const;
+
+		
 
 		virtual int			_animationLength(State state) const;
 
@@ -141,10 +145,18 @@ namespace wg
 			m_margin	= bp.margin;
 			m_padding	= bp.padding;
 			m_markAlpha = bp.markAlpha;
+		
+			if( !bp.overflow.isEmpty() )
+			{
+				m_overflow = bp.overflow;
 
-			m_overflow = bp.overflow;
-			m_bOverflow = !bp.overflow.isEmpty();
-						
+				auto realOverflow = bp.overflow - bp.margin;
+				if( bp.overflow.top - bp.margin.top > 0 || bp.overflow.right - bp.margin.right > 0 ||
+				   bp.overflow.bottom - bp.margin.bottom > 0 || bp.overflow.left - bp.margin.left > 0 )
+					m_bGeoOverflow = true;
+			}
+			
+			
 			if (bp.finalizer)
 				setFinalizer(bp.finalizer);
 		}
@@ -167,7 +179,7 @@ namespace wg
 		bool			m_bContentShifting = false;
 		bool			m_bIgnoresValue = true;
 		bool			m_bIgnoresState = true;
-		bool			m_bOverflow = false;				// Set when there is overflow, even if it might not overflow the geo.
+		bool			m_bGeoOverflow = false;				// Set when there is actual overflow that (maybe, depending on scale) overflows geo.
 
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
 		int				m_layer = -1;

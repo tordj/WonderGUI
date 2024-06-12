@@ -56,13 +56,13 @@ namespace wg
 
 		m_skin.set(pNewSkin);
 
-		RectSPX oldInfluence = pOldSkin ? pOldSkin->_influence(m_size, m_scale) : RectSPX(m_size);
-		RectSPX newInfluence = pNewSkin ? pNewSkin->_influence(m_size, m_scale) : RectSPX(m_size);
+		BorderSPX oldOverflow = pOldSkin ? pOldSkin->_overflow(m_scale) : BorderSPX();
+		BorderSPX newOverflow = pNewSkin ? pNewSkin->_overflow(m_scale) : BorderSPX();
 			
-		if( oldInfluence != newInfluence )
-			_refreshInfluence();
+		if( oldOverflow != newOverflow )
+			_refreshOverflow();
 
-		_requestRender( RectSPX::bounds(oldInfluence,newInfluence) );
+		_requestRender( RectSPX(m_size) + BorderSPX::max(oldOverflow,newOverflow) );
 		
 		if (!pNewSkin || !pOldSkin || pNewSkin->_contentBorderSize(m_scale) != pOldSkin->_contentBorderSize(m_scale) ||
 			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
@@ -158,11 +158,11 @@ namespace wg
 		return m_scale;
 	}
 
-	//____ _childInfluenceChanged() _______________________________________________
+	//____ _childOverflowChanged() _______________________________________________
 
-	void Container::_childInfluenceChanged( StaticSlot * pSlot, const RectSPX& oldInfluence, const RectSPX& newInfluence )
+	void Container::_childOverflowChanged( StaticSlot * pSlot, const BorderSPX& oldOverflow, const BorderSPX& newOverflow )
 	{
-		_influenceChanged( oldInfluence, newInfluence );
+		_overflowChanged( oldOverflow, newOverflow );
 	}
 
 	//____ _childRequestFocus() ______________________________________________________
@@ -277,11 +277,11 @@ namespace wg
 			return 0;
 	}
 
-	//____ _influence() ________________________________________________________
+	//____ _overflow() ________________________________________________________
 
-	RectSPX Container::_influence() const
+	BorderSPX Container::_overflow() const
 	{
-		return m_influence;
+		return m_overflow;
 	}
 
 
@@ -324,11 +324,11 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pWidget(0) {}
-		WidgetRenderContext( Widget * pWidget, const RectSPX& geo, const RectSPX& influence ) : pWidget(pWidget), geo(geo), influence(influence) {}
+		WidgetRenderContext( Widget * pWidget, const RectSPX& geo, const RectSPX& renderArea ) : pWidget(pWidget), geo(geo), renderArea(renderArea) {}
 
 		Widget *	pWidget;
 		RectSPX		geo;
-		RectSPX		influence;
+		RectSPX		renderArea;
 		ClipPopData clipPop;
 	};
 
@@ -352,10 +352,10 @@ namespace wg
 			_firstSlotWithGeo( child );
 			while(child.pSlot)
 			{
-				RectSPX influence = child.pSlot->_widget()->_influence() + child.geo.pos() + _canvas.pos();
+				RectSPX renderArea = (child.geo + _canvas.pos()) + child.pSlot->_widget()->_overflow();
 
-				if( influence.isOverlapping( dirtBounds ) )
-					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), child.geo + _canvas.pos(), influence ) );
+				if( renderArea.isOverlapping( dirtBounds ) )
+					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), child.geo + _canvas.pos(), renderArea ) );
 
 				_nextSlotWithGeo( child );
 			}
@@ -371,6 +371,8 @@ namespace wg
 
 			// Go through WidgetRenderContexts, push and mask dirt
 
+			int test = int(renderList.size());
+			
 			int lastWithDirt = int(renderList.size()) -1;
 			for (unsigned int i = 0 ; i < renderList.size(); i++)
 			{
@@ -378,8 +380,8 @@ namespace wg
 
 //				RectSPX	clipBounds = RectSPX::overlap(p->influence,_canvas);
 				
-				p->clipPop = patchesToClipList(pDevice, p->influence, patches);
-				p->pWidget->_maskPatches( patches, p->geo, p->influence );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->clipPop = patchesToClipList(pDevice, p->renderArea, patches);
+				p->pWidget->_maskPatches( patches, p->geo, p->renderArea );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 				if( patches.isEmpty() )
 				{
@@ -405,13 +407,13 @@ namespace wg
 			while(child.pSlot)
 			{
 				RectSPX canvas = child.geo + _canvas.pos();
-				RectSPX influence = child.pSlot->_widget()->_influence() + child.geo.pos() + _canvas.pos();
+				RectSPX renderArea = (child.geo + _canvas.pos()) + child.pSlot->_widget()->_overflow();
 
-				if (influence.isOverlapping(dirtBounds))
+				if (renderArea.isOverlapping(dirtBounds))
 				{
 //					RectSPX	clipBounds = RectSPX::overlap(influence,_canvas);
 
-					ClipPopData popData = limitClipList(pDevice, influence );
+					ClipPopData popData = limitClipList(pDevice, renderArea );
 
 					if( pDevice->clipListSize() > 0 )
 						child.pSlot->_widget()->_render(pDevice, canvas, canvas);
@@ -424,105 +426,84 @@ namespace wg
 		}
 	}
 
-	//____ _refreshInfluence() ____________________________________________________
+	//____ _refreshOverflow() ____________________________________________________
 
-	void Container::_refreshInfluence(bool notifyParent)
+	void Container::_refreshOverflow(bool notifyParent)
 	{
-		// We can't start with skin influence since an empty one would start at 0,0
-		// always creating influence from top-left when adding childrens influence.
-
-		RectSPX influence;
-				
+		BorderSPX 	overflow	= m_skin.overflow(m_scale);
+		RectSPX		overflowGeo	= RectSPX{0,0,m_size} + overflow;
+		
 		SlotWithGeo slot;
 		 _firstSlotWithGeo(slot);
-		if( slot.pSlot )
+		while( slot.pSlot )
 		{
-			influence = slot.pSlot->_widget()->_influence() + slot.geo.pos();
-
-			_nextSlotWithGeo(slot);
-			while( slot.pSlot )
+			if( slot.pSlot->_widget()->_hasOverflow() )
 			{
-				influence.growToContain(slot.pSlot->_widget()->_influence() + slot.geo.pos());
-				_nextSlotWithGeo(slot);
+				RectSPX childOverflowGeo = slot.geo + slot.pSlot->_widget()->_overflow();
+				overflow = BorderSPX::max(overflow, BorderSPX::diff(overflowGeo, childOverflowGeo) );
 			}
-			
-			if( !m_skin.isEmpty() )
-				influence.growToContain(m_skin.influence({0,0,m_size}, m_scale));
+			_nextSlotWithGeo(slot);
 		}
-		else if( !m_skin.isEmpty() )
-			influence = m_skin.influence({0,0,m_size}, m_scale);
-			
-		if( influence != m_influence )
+
+		if( overflow != m_overflow )
 		{
-			auto oldInfluence = influence;
-			m_influence = influence;
+			auto oldOverflow = m_overflow;
+			m_overflow = overflow;
+
+			m_bOverflow = !overflow.isEmpty();
 			
 			if( notifyParent )
-				_influenceChanged(oldInfluence, m_influence);
+				_overflowChanged(oldOverflow, m_overflow);
 		}
 	}
 
-	//____ _influenceAdded() ____________________________________________________
+	//____ _addChildOverflow() ____________________________________________________
 
-	void Container::_influenceAdded( const RectSPX& childInfluence )
+	void Container::_addChildOverflow( const RectSPX& childGeo, const BorderSPX& childOverflow )
 	{
-		if( childInfluence.isEmpty() )
+		if( m_overflow.top >= childOverflow.top && m_overflow.right >= childOverflow.right && m_overflow.bottom >= childOverflow.bottom || m_overflow.left >= childOverflow.left )
 			return;
 		
-		if( !m_influence.contains(childInfluence) )
-		{
-			auto oldInfluence = m_influence;
-			m_influence.growToContain(childInfluence);
-			
-			_influenceChanged(oldInfluence, m_influence);
-		}
+		RectSPX childOverflowGeo = childGeo + childOverflow;
+		RectSPX overflowGeo = RectSPX{0,0,m_size} + m_overflow;
+
+		if( overflowGeo.contains(childOverflowGeo) )
+			return;
+		
+		auto oldOverflow = m_overflow;
+		m_overflow.growToContain(BorderSPX::diff(overflowGeo, childOverflowGeo));
+
+//		m_bOverflow = !m_overflow.isEmpty();
+		
+		_overflowChanged(oldOverflow, m_overflow);
 	}
 
-	//____ _influenceRemoved() ____________________________________________________
+	//____ _removeChildOverflow() ____________________________________________________
 
-	void Container::_influenceRemoved( const RectSPX& childInfluence )
+	void Container::_removeChildOverflow( const RectSPX& childGeo, const BorderSPX& childOverflow )
 	{
-		if( childInfluence.isEmpty() )
+		if( childOverflow.isEmpty() )
 			return;
 
-		if( childInfluence.top() == m_influence.top() || childInfluence.right() == m_influence.right() ||
-			childInfluence.bottom() == m_influence.bottom() || childInfluence.left() == m_influence.left() )
+		RectSPX childOverflowGeo = childGeo + childOverflow;
+		RectSPX overflowGeo = RectSPX{0,0,m_size} + m_overflow;
+		
+		if( childOverflowGeo.top() == overflowGeo.top() || childOverflowGeo.right() == overflowGeo.right() ||
+		   childOverflowGeo.bottom() == overflowGeo.bottom() || childOverflowGeo.left() == overflowGeo.left() )
 		{
-			_refreshInfluence();
+			_refreshOverflow();
 		}
 	}
 
-	//____ _influenceChanged() ____________________________________________________
-
-	void Container::_influenceChanged( const RectSPX& oldInfluence, const RectSPX& newInfluence )
+	//____ _childWithOverflowGeoChanged() _______________________________________________
+		   
+	void Container::_childWithOverflowGeoChanged(StaticSlot * pSlot, const RectSPX& oldGeo, const RectSPX& newGeo)
 	{
-		if( !oldInfluence.isEmpty() &&
-		   ((oldInfluence.top() < newInfluence.top() && oldInfluence.top() == m_influence.top()) ||
-		    (oldInfluence.right() > newInfluence.right() && oldInfluence.right() == m_influence.right()) ||
-		    (oldInfluence.bottom() > newInfluence.bottom() && oldInfluence.bottom() == m_influence.bottom()) ||
-		    (oldInfluence.left() < newInfluence.left() && oldInfluence.left() == m_influence.left()) ))
-		{
-			// We have possibly shrunk in at least one dimension, full refresh needed.
+		//TODO: Implement optimized solution.
 			
-			_refreshInfluence();
-		}
-		else
-		{
-			// We have not shrunk in any dimension, just possibly grown.
-
-			if( newInfluence.isEmpty() )
-				return;
-			
-			if( !m_influence.contains(newInfluence) )
-			{
-				auto oldInfluence = m_influence;
-				m_influence.growToContain(newInfluence);
-				
-				_influenceChanged(oldInfluence, m_influence);
-			}
-		}
+		_refreshOverflow();
 	}
-
+		   
 	//____ _maskPatches() __________________________________________________________
 
 	void Container::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )

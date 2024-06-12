@@ -276,9 +276,11 @@ namespace wg
 
 		if (geo != pSlot->m_geo)
 		{
-			_onRequestRender(pSlot->m_geo, pSlot);
+			BorderSPX overflow = pSlot->_widget()->_overflow();
+			
+			_onRequestRender(pSlot->m_geo + overflow, pSlot);
 			pSlot->m_geo = geo;
-			_onRequestRender(pSlot->m_geo, pSlot);
+			_onRequestRender(pSlot->m_geo + overflow, pSlot);
 		}
 
 		if (bDoResize)
@@ -388,7 +390,7 @@ namespace wg
 
 			while (pCover >= popupSlots._begin())
 			{
-				if (pCover->m_geo.isOverlapping(rect) && pCover->m_state != Slot::State::OpeningDelay && pCover->m_state != Slot::State::Opening && pCover->m_state != Slot::State::Closing)
+				if ((pCover->_widget()->_renderBounds() + pCover->m_geo.pos()).isOverlapping(rect) && pCover->m_state != Slot::State::OpeningDelay && pCover->m_state != Slot::State::Opening && pCover->m_state != Slot::State::Closing)
 					pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, spx_max, spx_max));
 
 				pCover--;
@@ -430,8 +432,9 @@ namespace wg
 		for( auto pSlot = popupSlots._begin() ; pSlot != popupSlots._end() ; pSlot++ )
 		{
 			RectSPX geo = pSlot->m_geo + _canvas.pos();
+			RectSPX renderBounds = pSlot->_widget()->_renderBounds() + geo.pos();
 
-			if (geo.isOverlapping(dirtBounds) && pSlot->m_state != Slot::State::OpeningDelay)
+			if (renderBounds.isOverlapping(dirtBounds) && pSlot->m_state != Slot::State::OpeningDelay)
 				renderList.push_back(WidgetRenderContext(pSlot, geo));
 		}
 
@@ -988,7 +991,7 @@ namespace wg
 		{
 			if( pEH )
 				pEH->post( new PopupClosedMsg( pSlot[i]._widget(), pSlot[i].m_pOpener ) );
-			_requestRender(pSlot[i].m_geo);
+			_requestRender(pSlot[i]._widget()->_renderBounds() + pSlot[i].m_geo.pos());
 			pSlot[i]._setWidget(nullptr);
 		}
 

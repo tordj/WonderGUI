@@ -222,7 +222,7 @@ namespace wg
 			}
 		}
 		
-		_refreshInfluence();
+		_refreshOverflow();
 	}
 
 	//____ _unhideSlots() ________________________________________________________
@@ -241,7 +241,7 @@ namespace wg
 			}
 		}
 		
-		_refreshInfluence();
+		_refreshOverflow();
 	}
 
 
@@ -360,7 +360,7 @@ namespace wg
 		for (auto& slot : slots)
 			_updateGeo(&slot, false, false);
 		
-		_refreshInfluence(false);
+		_refreshOverflow();
 	}
 
 	//____ _updateAllSlotsGeo() _______________________________________________
@@ -370,12 +370,12 @@ namespace wg
 		for (auto& slot : slots)
 			_updateGeo(&slot, false, false);
 		
-		_refreshInfluence();
+		_refreshOverflow();
 	}
 
 	//____ _updateGeo() _______________________________________________________
 
-	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize, bool bUpdateInfluence )
+	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize, bool bUpdateOverflow )
 	{
 		//TODO: Don't requestRender if slot is hidden.
 
@@ -411,30 +411,32 @@ namespace wg
 		
 		if (geo != pSlot->m_geo || pWidget->_scale() != m_scale)
 		{
-			// Store influence and set size.
-
-			RectSPX oldInfluence = pWidget->_influence() + pSlot->m_geo.pos();
-			pSlot->_setSize(geo, m_scale);
-			RectSPX newInfluence = pWidget->_influence() + geo.pos();
+			// Set geo and size.
 
 			pSlot->m_geo = geo;
+			pSlot->_setSize(geo, m_scale);
 
 			if (pSlot->m_bVisible)
 			{
-				// Clip our influence
+				// Calculate render areas
+				
+				RectSPX oldRenderArea = pSlot->m_geo + pWidget->_overflow();
+				RectSPX newRenderArea = geo + pWidget->_overflow();
+
+				// Clip our render areas
 
 				if( m_edgePolicy == EdgePolicy::Clip )
 				{
 					RectSPX myGeo = m_size;
-					oldInfluence = RectSPX::overlap(oldInfluence, myGeo);
-					newInfluence = RectSPX::overlap(newInfluence, myGeo);
+					oldRenderArea = RectSPX::overlap(oldRenderArea, myGeo);
+					newRenderArea = RectSPX::overlap(newRenderArea, myGeo);
 				}
 				
-				// Add dirty patches for our influence
+				// Add dirty patches for our render areas
 				
 				PatchesSPX patches;
-				patches.add(oldInfluence);
-				patches.add(newInfluence);
+				patches.add(oldRenderArea);
+				patches.add(newRenderArea);
 
 
 				// Remove portions of patches that are covered by upper siblings opaque areas
@@ -442,9 +444,9 @@ namespace wg
 				auto pCover = pSlot + 1;
 				while (pCover < slots.end())
 				{
-					RectSPX coverInfluence = pCover->_widget()->_influence() + pCover->m_geo.pos();
+					RectSPX coverArea = pCover->m_geo + pCover->_widget()->_overflow();
 
-					if (pCover->m_bVisible && (coverInfluence.isOverlapping(oldInfluence) || coverInfluence.isOverlapping(newInfluence)) )
+					if (pCover->m_bVisible && (coverArea.isOverlapping(oldRenderArea) || coverArea.isOverlapping(newRenderArea)) )
 						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
 
 					pCover++;
@@ -455,10 +457,10 @@ namespace wg
 				for (const RectSPX * pRect = patches.begin(); pRect < patches.end(); pRect++)
 					_requestRender(*pRect);
 
-				// Update influence
+				// Update overflow
 
-				if( bUpdateInfluence )
-					_influenceChanged(oldInfluence, newInfluence);
+				if( bUpdateOverflow )
+					_refreshOverflow();
 			}
 
 		}
@@ -482,9 +484,9 @@ namespace wg
 
 		for (auto pCover = slots.begin(); pCover < pSlot ; pCover++)
 		{
-			RectSPX coverInfluence = pCover->_widget()->_influence() + pCover->m_geo.pos();
+			RectSPX coverArea = pCover->m_geo + pCover->_widget()->_overflow();
 
-			if (pCover->m_bVisible && coverInfluence.isOverlapping(rect))
+			if (pCover->m_bVisible && coverArea.isOverlapping(rect))
 				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
 		}
 

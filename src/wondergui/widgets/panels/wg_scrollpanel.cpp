@@ -843,15 +843,13 @@ namespace wg
 				auto childSize = pChild->_defaultSize(scale);
 				m_childCanvas.setSize(childSize);
 				pChild->_resize(childSize, scale);
-			}			
+			}
 		}
 
 		_updateRegions();
 		_updateCanvasSize();
 		_childWindowCorrection();
 		_updateScrollbars();
-
-		_refreshInfluence(false);
 	}
 
 	//____ _update() __________________________________________________________
@@ -1009,24 +1007,21 @@ namespace wg
 		return false;
 	}
 
-	//____ _refreshInfluence() ____________________________________________________
+	//____ _refreshOverflow() ____________________________________________________
 
-	void ScrollPanel::_refreshInfluence(bool bNotifyParent)
+	void ScrollPanel::_refreshOverflow(bool bNotifyParent)
 	{
 		// Since we always clip our child we should ignore it in this calculation.
 
-		RectSPX influence  = m_skin.influence({ 0,0,m_size }, m_scale);
+		BorderSPX overflow  = m_skin.overflow(m_scale);
 
-		if (influence.isEmpty())
-			influence = m_size;
-
-		if (influence != m_influence)
+		if (overflow != m_overflow)
 		{
-			auto oldInfluence = m_influence;
-			m_influence = influence;
+			auto oldOverflow = m_overflow;
+			m_overflow = overflow;
 			
 			if(bNotifyParent)
-				_influenceChanged(oldInfluence, influence);
+				_overflowChanged(oldOverflow, overflow);
 		}
 	}
 
@@ -1099,9 +1094,9 @@ namespace wg
 		return m_viewRegion;
 	}
 
-	//____ _childInfluenceChanged() ____________________________________________
+	//____ _childOverflowChanged() ____________________________________________
 
-	void ScrollPanel::_childInfluenceChanged( StaticSlot * pSlot, const RectSPX& oldInfluence, const RectSPX& newInfluence )
+	void ScrollPanel::_childOverflowChanged( StaticSlot * pSlot, const BorderSPX& oldOverflow, const BorderSPX& newOverflow )
 	{
 		// We can ignore this since we always clip our only child.
 	}

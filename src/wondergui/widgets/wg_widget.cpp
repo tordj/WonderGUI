@@ -355,18 +355,19 @@ namespace wg
 	void Widget::setSkin(Skin* pNewSkin)
 	{
 		Skin_p pOldSkin = m_skin.get();
+		bool	bOldOverflow = m_bOverflow;
 
 		m_skin.set(pNewSkin);
+		m_bOverflow = pNewSkin ? pNewSkin->_overflowsGeo() : false;
 
-		RectSPX oldInfluence = pOldSkin ? pOldSkin->_influence(m_size, m_scale) : RectSPX(m_size);
-		RectSPX newInfluence = pNewSkin ? pNewSkin->_influence(m_size, m_scale) : RectSPX(m_size);
+		BorderSPX oldOverflow = pOldSkin ? pOldSkin->_geoOverflow(m_scale) : BorderSPX();
+		BorderSPX newOverflow = pNewSkin ? pNewSkin->_geoOverflow(m_scale) : BorderSPX();
+		
+		if( (oldOverflow != newOverflow) )
+			_overflowChanged(oldOverflow, newOverflow);
 
-		if( oldInfluence != newInfluence )
-		{
-			_influenceChanged(oldInfluence, newInfluence);
-		}
-
-		_requestRender(RectSPX::bounds(oldInfluence, newInfluence));
+		
+		_requestRender(RectSPX::bounds(RectSPX{0,0,m_size} + oldOverflow, RectSPX{0,0,m_size} + newOverflow));
 
 		if (!pNewSkin || !pOldSkin || pNewSkin->_contentBorderSize(m_scale) != pOldSkin->_contentBorderSize(m_scale) ||
 			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
@@ -744,15 +745,20 @@ namespace wg
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
 
-	//____ _influence() __________________________________________________________
+	//____ _overflow() __________________________________________________________
 
-	RectSPX Widget::_influence() const
+	BorderSPX Widget::_overflow() const
 	{
-		if( !m_skin.isEmpty() )
-			return m_skin.influence({0,0,m_size}, m_scale);
-		else
-			return m_size;
+		return m_skin.overflow(m_scale);
 	}
+
+	//____ _renderBounds() __________________________________________
+
+	RectSPX Widget::_renderBounds() const
+	{
+		return m_skin.renderBounds(m_size,m_scale);
+	}
+
 
 	//____ _setState() _________________________________________________________
 

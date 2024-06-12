@@ -29,6 +29,7 @@
 
 #include <utility>
 #include <cstdlib>
+#include <algorithm>
 
 namespace wg
 {
@@ -191,8 +192,15 @@ namespace wg
 		inline Type		height() const { return top+bottom; }
 		inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }		///< @brief Sets the thickness of all sides to 0.
 		inline bool		isEmpty() const { return (left + top + right + bottom) == 0; }
-
+		
 		inline BorderT<Type>	scale(int scale) const { return BorderT<Type>( top*scale / 4096,right*scale / 4096,bottom*scale / 4096,left*scale / 4096); } // Only for WG2 compatibility!
+
+		void growToContain( const BorderT<Type>& border );
+
+		
+		static inline BorderT<Type> min( const BorderT<Type>& r1, const BorderT<Type>& r2 );
+		static inline BorderT<Type> max( const BorderT<Type>& r1, const BorderT<Type>& r2 );
+		static inline BorderT<Type> diff( const RectT<Type>& inner, const RectT<Type>& outer );
 
 		//.____ Operators ___________________________________________
 
@@ -230,6 +238,56 @@ namespace wg
 		Type		top, right, bottom, left;
 	};
 
+
+	//____ min() ________________________________________________________________
+	/**
+	 * @brief Get the smallest values of the two borders.
+	 *
+	 * Compares each side of the two borders and returns a border with the smallest values.
+	 *
+	 * @return	A border with the smallest values.
+	 **/
+
+	template<typename Type>
+	BorderT<Type> BorderT<Type>::min( const BorderT<Type>& b1, const BorderT<Type>& b2 )
+	{
+		return { std::min( b1.top, b2.top ), std::min( b1.right, b2.right ), std::min( b1.bottom, b2.bottom ), std::min( b1.left, b2.left ) };
+	}
+
+	//____ max() ________________________________________________________________
+	/**
+	 * @brief Get the largest values of the two borders.
+	 *
+	 * Compares each side of the two borders and returns a border with the largest values.
+	 *
+	 * @return	A border with the largest values.
+	 **/
+
+	template<typename Type>
+	BorderT<Type> BorderT<Type>::max( const BorderT<Type>& b1, const BorderT<Type>& b2 )
+	{
+		return { std::max( b1.top, b2.top ), std::max( b1.right, b2.right ), std::max( b1.bottom, b2.bottom ), std::max( b1.left, b2.left ) };
+	}
+
+	//____ diff() ________________________________________________________________
+
+	template<typename Type>
+	BorderT<Type> BorderT<Type>::diff( const RectT<Type>& inner, const RectT<Type>& outer )
+	{
+		return {inner.y - outer.y, (outer.x + outer.w) - (inner.x + inner.w),
+				(outer.y + outer.h) - (inner.y + inner.h), inner.x - outer.x };
+	}
+
+	//____ growToContain() ________________________________________________________________
+
+	template<typename Type>
+	void BorderT<Type>::growToContain( const BorderT<Type>& border )
+	{
+		top		= std::max( top, border.top );
+		right	= std::max( right, border.right );
+		bottom	= std::max( bottom, border.bottom );
+		left	= std::max( left, border.left );
+	}
 
 	//____ SizeT<T> ________________________________________________________
 
@@ -423,6 +481,8 @@ namespace wg
 
 
 		static RectT<Type> bounds( const RectT<Type>& r1, const RectT<Type>& r2 );
+		static RectT<Type> boundsExcludingEmpty( const RectT<Type>& r1, const RectT<Type>& r2 );
+
 		static RectT<Type> overlap(const RectT<Type>& r1, const RectT<Type>& r2);
 
 		void growToContain( const RectT<Type>& rect );
@@ -1027,6 +1087,38 @@ namespace wg
 		 return out;
 	 }
 
+	//____ boundsExcludingEmpty() ________________________________________________________________
+	/**
+	 * @brief Get the bounds of the non-empty specified rectangles.
+	 *
+	 * Get the bounds of the non-empty specified rectangles.
+	 *
+	 * @param r1	First rectangle.
+	 * @param r2	Second rectangle.
+	 *
+	 * The bounds of the rectangles is the smallest rectangle that fully contains both. If one of the rectangles are empty
+	 *  the other rectangle is returned without modification. If both are emtpy, an empty rectangle is returned.
+	 *
+	 * @return	A rectangle that is the bounds of the non-empty specified rectangles.
+	 **/
+
+	template<typename Type>
+	RectT<Type> RectT<Type>::boundsExcludingEmpty(const RectT<Type>& r1, const RectT<Type>& r2)
+	{
+		if( r1.isEmpty() )
+			return r2;
+		
+		if( r2.isEmpty() )
+			return r1;
+
+		RectT<Type> out;
+		
+		out.x = r1.x < r2.x ? r1.x : r2.x;
+		out.y = r1.y < r2.y ? r1.y : r2.y;
+		out.w = (r1.x + r1.w > r2.x + r2.w ? r1.x + r1.w : r2.x + r2.w) - out.x;
+		out.h = (r1.y + r1.h > r2.y + r2.h ? r1.y + r1.h : r2.y + r2.h) - out.y;
+		return out;
+	}
 
 	 //____ shrink() _____________________________________________________________
 	 /**

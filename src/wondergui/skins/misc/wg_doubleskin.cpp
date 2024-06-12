@@ -233,23 +233,19 @@ namespace wg
 			pDevice->setRenderLayer(oldLayer);
 	}
 
-	//____ _influence() _____________________________________________________
+	//____ _geoOverflow() _____________________________________________________
 
-	RectSPX DoubleSkin::_influence(const RectSPX& geo, int scale) const
+	BorderSPX DoubleSkin::_geoOverflow(int scale) const
 	{
-		//TODO: State of BackSkin can affect influence in DoubleSkin, what do do about that?
+		//TODO: State of BackSkin can affect geoOverflow in DoubleSkin, what do do about that?
 
-		RectSPX backInfluence = m_pBackSkin->_influence(geo,scale);
+		BorderSPX backOverflow = m_pBackSkin->_geoOverflow(scale);
 		
-		RectSPX frontGeo = m_bSkinInSkin ? m_pBackSkin->_contentRect(geo, scale, State::Default) : geo;
-		RectSPX frontInfluence = m_pFrontSkin->_influence(frontGeo,scale);
+		BorderSPX frontPadding = m_bSkinInSkin ? m_pBackSkin->_contentBorder(scale, State::Default) : BorderSPX();
+		BorderSPX frontOverflow = m_pFrontSkin->_geoOverflow(scale) - frontPadding;
 		
-		RectSPX influence = RectSPX::bounds(backInfluence, frontInfluence);
-
-		influence -= align(ptsToSpx(m_margin, scale));
-		influence += align(ptsToSpx(m_overflow, scale));
-
-		return influence;
+		BorderSPX overflow = BorderSPX::max(backOverflow, frontOverflow);
+		return overflow;
 	}
 
 	//____ _coverage() ___________________________________________________________
@@ -342,6 +338,8 @@ namespace wg
 
 	void DoubleSkin::_onModified()
 	{
+		//TODO: Better handling of geoOverflow
+		
 		m_bIgnoresValue = true;
 		m_bIgnoresState = true;
 		m_bContentShifting = false;
@@ -350,10 +348,10 @@ namespace wg
 		{
 			m_bIgnoresValue = m_pBackSkin->_ignoresValue();
 			m_bIgnoresState = m_pBackSkin->_ignoresState();
-
-			if( m_pBackSkin->_hasOverflow() )
-				m_bOverflow = true;
 			
+			if( m_pBackSkin->_overflowsGeo() )
+				m_bGeoOverflow = true;
+
 			if (m_bSkinInSkin)
 				m_bContentShifting = m_pBackSkin->_isContentShifting();
 
@@ -375,8 +373,12 @@ namespace wg
 				m_bIgnoresState = false;
 			if (m_pFrontSkin->_isContentShifting())
 				m_bContentShifting = true;
-			if( m_pFrontSkin->_hasOverflow() )
-				m_bOverflow = true;
+			if( m_pFrontSkin->_overflowsGeo() )
+			{
+				// We could do more calculations here to check if it really overflows geo of the double skin.
+				
+				m_bGeoOverflow = true;
+			}
 
 			const int* p = m_pFrontSkin->_transitionTimes();
 			for (int i = 0; i < StateBits_Nb; i++)

@@ -68,7 +68,7 @@ namespace wg
 			m_bHorizontal = bHorizontal;
 			_updateDefaultSize();
 			_updateGeo();
-			_refreshInfluence();
+			_refreshOverflow();
 		}
 	}
 
@@ -81,7 +81,7 @@ namespace wg
 			m_handleSkin.set(pSkin);
 			_updateDefaultSize();
 			_updateGeo();
-			_refreshInfluence();
+			_refreshOverflow();
 		}
 	}
 
@@ -97,7 +97,7 @@ namespace wg
 			m_handleThickness = thickness;
 			_updateDefaultSize();
 			_updateGeo();
-			_refreshInfluence();
+			_refreshOverflow();
 		}
 	}
 
@@ -127,7 +127,7 @@ namespace wg
 	{
 		m_resizeFunc = func;
 		_updateGeo();
-		_refreshInfluence();
+		_refreshOverflow();
 	}
 
 	//____ setSplit() _________________________________________________
@@ -178,7 +178,7 @@ namespace wg
 
 		if (handleGeo != m_handleGeo || firstChildGeo != slots[0].m_geo || secondChildGeo != slots[1].m_geo)
 		{
-			RectSPX combinedInfluence = m_influence;
+			BorderSPX oldOverflow = m_overflow;
 
 			slots[0].m_geo = firstChildGeo;
 			if( slots[0]._widget() )
@@ -190,9 +190,10 @@ namespace wg
 
 			m_handleGeo = handleGeo;
 
-			_refreshInfluence();
-			combinedInfluence.growToContain(m_influence);
-			_requestRender(combinedInfluence);
+			_refreshOverflow();
+			
+			RectSPX renderArea = RectSPX(m_size) + BorderSPX::max(oldOverflow, m_overflow);
+			_requestRender(renderArea);
 		}
 	}
 
@@ -344,7 +345,7 @@ namespace wg
 
 		if (handleGeo != m_handleGeo || firstChildGeo != slots[0].m_geo || secondChildGeo != slots[1].m_geo)
 		{
-			_requestRender(m_influence);
+			_requestRender(RectSPX{0,0,m_size} + m_overflow);
 
 			slots[0].m_geo = firstChildGeo;
 			if( slots[0]._widget() )
@@ -358,7 +359,7 @@ namespace wg
 
 			return true;
 		}
-
+		
 		return false;
 	}
 
@@ -517,7 +518,7 @@ namespace wg
 					spx diff = (m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y) - m_handlePressOfs;
 
 					_updateGeo(diff);
-					_refreshInfluence();		// Yes, this could actually change influence...
+					_refreshOverflow();		// Yes, this could actually change influence...
 					pMsg->swallow();
 				}
 				break;
@@ -584,7 +585,7 @@ namespace wg
 	{
 		Container::_resize(size,scale);
 		_updateGeo();
-		_refreshInfluence(false);
+		_refreshOverflow(false);
 	}
 
 	//____ _setState() ________________________________________________________
@@ -624,34 +625,35 @@ namespace wg
 			return slots[0]._widget();
 	}
 
-	//____ _refreshInfluence() ___________________________________________________
+	//____ _refreshOverflow() ___________________________________________________
 					  
-	void SplitPanel::_refreshInfluence(bool bNotifyParent)
+	void SplitPanel::_refreshOverflow(bool bNotifyParent)
 	{
-		// We need our own _refreshInfluence because of our handleSkin that needs to
+		// We need our own _refreshOverflow because of our handleSkin that needs to
 		// be included.
 			
-		RectSPX influence = m_skin.influence(m_size, m_scale);
-		
-		if( influence.isEmpty() )
-			influence = m_size;
+		RectSPX overflowArea = RectSPX{ 0,0, m_size } + m_skin.overflow(m_scale);
 			
-		if( slots[0]._widget() )
-			influence.growToContain(slots[0]._widget()->_influence() + slots[0].m_geo.pos() );
+		if( slots[0]._widget() && slots[0]._widget()->_hasOverflow() )
+			overflowArea.growToContain(slots[0].m_geo + slots[0]._widget()->_overflow() );
 
-		if( slots[1]._widget() )
-			influence.growToContain(slots[1]._widget()->_influence() + slots[1].m_geo.pos() );
+		if( slots[1]._widget() && slots[1]._widget()->_hasOverflow() )
+			overflowArea.growToContain(slots[1].m_geo + slots[1]._widget()->_overflow() );
 
 		if( !m_handleSkin.isEmpty() )
-			influence.growToContain(m_skin.influence(m_handleGeo, m_scale));
+			overflowArea.growToContain(m_handleGeo + m_handleSkin.overflow(m_scale));
 			
-	    if( influence != m_influence )
+		BorderSPX overflow = BorderSPX::diff( RectSPX{0,0,m_size}, overflowArea );
+		
+	    if( overflow != m_overflow )
 		{
-			auto oldInfluence = influence;
-			m_influence = influence;
+			m_bOverflow = !overflow.isEmpty();
+			
+			auto oldOverflow = overflow;
+			m_overflow = overflow;
 			
 			if( bNotifyParent )
-				_influenceChanged(oldInfluence, m_influence);
+				_overflowChanged(oldOverflow, m_overflow);
 		}
 	}
 
@@ -747,25 +749,25 @@ namespace wg
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		RectSPX oldInfluence;
-		if( pSlot->_widget() )
-			oldInfluence = pSlot->_widget()->_influence() + pSlot->m_geo.pos();
+		RectSPX oldRenderArea = pSlot->m_geo;
+		if( pSlot->_widget() && pSlot->_widget()->_hasOverflow() )
+			oldRenderArea += pSlot->_widget()->_overflow();
 		
 		pSlot->_setWidget(pNewWidget);
 		pNewWidget->_resize(pSlot->m_geo, m_scale);
 		bool bGeoChanged = _updateGeo();
 		if (!bGeoChanged)
 		{
-			RectSPX newInfluence;
-			if( pSlot->_widget() )
-				newInfluence = pSlot->_widget()->_influence() + pSlot->m_geo.pos();
+			RectSPX newRenderArea = pSlot->m_geo;
+			if( pSlot->_widget() && pSlot->_widget()->_hasOverflow() )
+				newRenderArea += pSlot->_widget()->_overflow();
 
-			if( newInfluence.isEmpty() )
-				newInfluence = oldInfluence;
-			else if( !oldInfluence.isEmpty() )
-				newInfluence.growToContain(oldInfluence);
+			if( newRenderArea.isEmpty() )
+				newRenderArea = oldRenderArea;
+			else if( !oldRenderArea.isEmpty() )
+				newRenderArea.growToContain(oldRenderArea);
 			
-			_requestRender(newInfluence);
+			_requestRender(newRenderArea);
 		}
 
 		_updateDefaultSize();

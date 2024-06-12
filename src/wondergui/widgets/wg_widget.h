@@ -240,7 +240,9 @@ namespace wg
 
 		virtual void		_resize(const SizeSPX& size, int scale);
 		
-		virtual RectSPX		_influence() const;
+		inline bool			_hasOverflow() { return m_bOverflow; }
+		virtual BorderSPX	_overflow() const;
+		virtual RectSPX		_renderBounds() const;
 		
 		virtual void		_setState(State state);
 
@@ -276,6 +278,7 @@ namespace wg
 			if (bp.skin)
 			{
 				m_skin.set(bp.skin);
+				m_bOverflow = bp.skin->_overflowsGeo();
 			}
 
 			if( bp.disabled )
@@ -301,9 +304,9 @@ namespace wg
 
 		// Convenient calls to holder
 
-		inline void			_influenceChanged( const RectSPX& oldInfluence, const RectSPX& newInfluence ) { if( m_pHolder ) m_pHolder->_childInfluenceChanged( m_pSlot, oldInfluence, newInfluence ); }
+		inline void			_overflowChanged( const BorderSPX& oldOverflow, const BorderSPX& newOverflow ) { if( m_pHolder ) m_pHolder->_childOverflowChanged( m_pSlot, oldOverflow, newOverflow ); }
 
-		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, _influence() ); }
+		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, _renderBounds() ); }
 		inline void			_requestRender( const RectSPX& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
 		inline void			_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
 		inline void			_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
@@ -378,6 +381,7 @@ namespace wg
 		uint8_t			m_receivingUpdateCounter = 0;	//
 		bool			m_bPressed = false;				// Keeps track of pressed button when mouse leaves/re-enters widget.
 		bool			m_bStickyFocus = false;			// Set if widget should keep keyboard focus when mouse button pressed outside it.
+		bool			m_bOverflow = false;
 
 
 		SizeSPX			m_size = { 256 * 64,256 * 64 };	// Current size of widget.

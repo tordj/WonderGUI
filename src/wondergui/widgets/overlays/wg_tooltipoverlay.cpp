@@ -166,7 +166,7 @@ namespace wg
 			//
 
 			m_tooltipSlot._setGeo({ align(tooltipPos), tooltipSize }, m_scale);
-			_requestRender(m_tooltipSlot.m_geo);
+			_requestRender( pWidget->_renderBounds() + m_tooltipSlot.m_geo.pos() );
 		}
 	}
 
@@ -178,7 +178,7 @@ namespace wg
 		{
 			if (!m_tooltipSlot.m_geo.isEmpty())
 			{
-				_requestRender(m_tooltipSlot.m_geo);
+				_requestRender(m_tooltipSlot._widget()->_renderBounds() + m_tooltipSlot.m_geo.pos());
 				m_tooltipSlot.m_geo.clear();
 			}
 

@@ -87,11 +87,29 @@ namespace wg
 		return SizeSPX(align(ptsToSpx(m_padding, scale)));
 	}
 
-	//____ _influence() ________________________________________________________
+	//____ _overflow() ______________________________________________________________
 
-	RectSPX Skin::_influence(const RectSPX& geo, int scale) const
+	BorderSPX Skin::_overflow(int scale) const
 	{
-		return geo - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		return align(ptsToSpx(m_overflow, scale));
+	}
+
+	//____ _geoOverflow() ________________________________________________________
+
+	BorderSPX Skin::_geoOverflow(int scale) const
+	{
+		BorderSPX overflow = align(ptsToSpx(m_overflow, scale)) - align(ptsToSpx(m_margin, scale));
+
+		if( overflow.top < 0 )
+			overflow.top = 0;
+		if( overflow.right < 0 )
+			overflow.right = 0;
+		if( overflow.bottom < 0 )
+			overflow.bottom = 0;
+		if( overflow.left < 0 )
+			overflow.left = 0;
+		
+		return overflow;
 	}
 
 	//____ _contentOfs() ______________________________________________________________
@@ -128,6 +146,14 @@ namespace wg
 	{
 		return SizeSPX(align(ptsToSpx(m_margin, scale))) + SizeSPX(align(ptsToSpx(m_padding, scale)));
 	}
+
+	//____ _renderBounds() _______________________________________________________
+
+	RectSPX Skin::_renderBounds(const RectSPX& geo, int scale) const
+	{
+		return geo - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+	}
+
 
 	//____ _dirtyRect() ________________________________________________________
 

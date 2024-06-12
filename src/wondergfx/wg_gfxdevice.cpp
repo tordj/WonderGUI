@@ -1815,8 +1815,8 @@ namespace wg
 		//TODO: Replace with fill if no hub, no slices.
 
 		RectI canvas = _canvas/64;
-		canvas.w = canvas.w + 1 & 0xFFFFFFFC;
-		canvas.h = canvas.h + 1 & 0xFFFFFFFC;
+		canvas.w = (canvas.w + 1) & 0xFFFFFFFC;
+		canvas.h = (canvas.h + 1) & 0xFFFFFFFC;
 
 		if (canvas.w <= 0 || canvas.h <= 0 || (hubSize == 1.f && !bRectangular))
 			return;

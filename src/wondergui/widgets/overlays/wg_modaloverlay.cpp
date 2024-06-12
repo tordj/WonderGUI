@@ -118,9 +118,9 @@ namespace wg
 
 		if (geo != pSlot->m_geo)
 		{
-			_onRequestRender(pSlot->m_geo, pSlot);
+			_onRequestRender(pSlot->m_geo + pSlot->_widget()->_overflow(), pSlot);
 			pSlot->m_geo = geo;
-			_onRequestRender(pSlot->m_geo, pSlot);
+			_onRequestRender(pSlot->m_geo + pSlot->_widget()->_overflow(), pSlot);
 		}
 
 		if (bForceResize || pSlot->_widget()->_size() != geo.size())
@@ -371,7 +371,7 @@ namespace wg
 			Slot * p = pTo+1;
 			while (p <= pFrom)
 			{
-				RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
+				RectSPX cover = RectSPX::overlap(pTo->_widget()->_renderBounds() + pTo->m_geo.pos(), p->_widget()->_renderBounds() + p->m_geo.pos());
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, pTo);
@@ -385,7 +385,7 @@ namespace wg
 			Slot * p = pFrom;
 			while (p < pTo)
 			{
-				RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
+				RectSPX cover = RectSPX::overlap(pTo->_widget()->_renderBounds() + pTo->m_geo.pos(), p->_widget()->_renderBounds() + p->m_geo.pos());
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, p);
@@ -402,7 +402,7 @@ namespace wg
 		Slot * pSlot = (Slot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			_childRequestRender(pSlot+i, pSlot[i].m_geo.size());
+			_childRequestRender(pSlot+i, pSlot->_widget()->_renderBounds() );
 			pSlot[i].m_geo.clear();
 		}
 

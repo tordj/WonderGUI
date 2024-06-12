@@ -420,9 +420,9 @@ namespace wg
 		return RectSPX(0,0,m_size);
 	}
 
-	//____ _childInfluenceChanged() ____________________________________________
+	//____ _childOverflowChanged() ____________________________________________
 
-	void PluginRoot::_childInfluenceChanged( StaticSlot * pSlot, const RectSPX& oldInfluence, const RectSPX& newInfluence )
+	void PluginRoot::_childOverflowChanged( StaticSlot * pSlot, const BorderSPX& oldOverflow, const BorderSPX& newOverflow )
 	{
 		//TODO: Implement as part of overflow support.
 	}

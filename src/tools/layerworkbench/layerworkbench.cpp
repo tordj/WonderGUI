@@ -151,8 +151,6 @@ bool MyApp::setupGUI(Visitor* pVisitor)
 
 	pBaseFlex->slots << makeMovable(ScaleCapsule::create({ .child = pBox }), pBaseFlex);
 
-
-
 	// Create Pack Panel with boxes
 
 	auto pPack = PackPanel::create();
@@ -163,11 +161,41 @@ bool MyApp::setupGUI(Visitor* pVisitor)
 
 	pBaseFlex->slots << makeMovable(pPack, pBaseFlex);
 
+	pBaseFlex->slots.clear();
+	
+	// Create Split Panel
 
+	auto pHandleSkin = BoxSkin::create( { 
+		.color = Color::LightCoral,
+		.outlineThickness = 2,
+		.outlineColor = Color::Black,
+		.padding = 8
+	});
+	
+	auto pSplit = SplitPanel::create( { .axis = Axis::Y, .handleSkin = pHandleSkin });
 
+	pSplit->slots[0] = Filler::create({ .defaultSize = {64,64}, .skin = pBoxWithGlow });
+	pSplit->slots[1] = Filler::create({ .defaultSize = {64,64}, .skin = pBoxWithGlow });
 
+	pBaseFlex->slots << makeMovable(pSplit, pBaseFlex);
 
+	// Create ScrollPanel
+	
+	auto pScrollContent = PackPanel::create();
 
+	pScrollContent->slots << Filler::create({ .defaultSize = {64,64}, .skin = pBoxWithShadow });
+	pScrollContent->slots << Filler::create({ .defaultSize = {64,64}, .skin = pBoxWithGlow });
+	pScrollContent->slots << Filler::create({ .defaultSize = {64,64}, .skin = pBoxWithShadow });
+	
+	
+	auto pScroll = ScrollPanel::create({
+		
+		
+	});
+	
+	pScroll->slot = pPack;
+	
+	pBaseFlex->slots << makeMovable(pScroll, pBaseFlex);
 
 	return true;
 }
@@ -192,6 +220,9 @@ Widget_p MyApp::makeMovable(const Widget_p& pWidget, FlexPanel* pParent)
 		{
 			auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 
+			if( pMsg->button() != MouseButton::Right )
+				return;
+		
 			auto it = pParent->slots.find(pWidget);
 
 			it->move(pMsg->draggedNow());

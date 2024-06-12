@@ -190,7 +190,7 @@ namespace wg
 		int				_scale() const override;
 
 		RectSPX			_slotGeo( const StaticSlot * pSlot ) const override;
-		void			_childInfluenceChanged( StaticSlot * pSlot, const RectSPX& oldInfluence, const RectSPX& newInfluence ) override;
+		void			_childOverflowChanged( StaticSlot * pSlot, const BorderSPX& oldOverflow, const BorderSPX& newOverflow ) override;
 
 		RectSPX			_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
 		RectSPX			_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
