@@ -52,6 +52,7 @@ public:
 
 	//.____ Creation __________________________________________________________
 
+	static SurfaceReader_p	create() { return create( Blueprint() ); }
 	static SurfaceReader_p	create( const Blueprint& blueprint );
 
 	//.____ Identification ____________________________________________________

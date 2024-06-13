@@ -215,7 +215,7 @@ namespace wg
 
 		virtual void _resize(const SizeSPX& size, int scale) override;
 
-		void		_update(int microPassed, int64_t microsecTimestamp);
+		void		_update(int microPassed, int64_t microsecTimestamp) override;
 
 		void		_receive(Msg * pMsg) override;
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

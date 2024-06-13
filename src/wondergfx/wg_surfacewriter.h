@@ -64,6 +64,7 @@ public:
 
 	//.____ Creation __________________________________________
 
+	static SurfaceWriter_p	create() { return create( Blueprint() ); }
 	static SurfaceWriter_p	create( const Blueprint& blueprint );
 
 	//.____ Identification _________________________________________________

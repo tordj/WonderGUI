@@ -403,6 +403,55 @@ namespace wg
 		_requestInView( mustHaveArea, mustHaveArea + Util::ptsToSpx(margin,m_scale) );
 	}
 
+	//____ screenshot() __________________________________________________________
+
+	Surface_p Widget::screenshot( const Surface::Blueprint& bp )
+	{
+		return screenshot( Rect() );
+	}
+
+	Surface_p Widget::screenshot(const Rect& _rect, const Surface::Blueprint& _bp )
+	{
+		//TOOD: Support layers!
+		
+		auto pDevice = Base::defaultGfxDevice();
+		auto pFactory = Base::defaultSurfaceFactory();
+
+		if( !pDevice || !pFactory )
+			return nullptr;
+
+		RectSPX rect = _rect.isEmpty() ? RectSPX(0,0,m_size) : RectSPX::overlap( m_size, RectSPX(_rect*m_scale));
+
+		wg::Surface::Blueprint bp = _bp;
+		bp.size = (rect.size()+63)/64;
+		bp.format = wg::PixelFormat::BGRA_8;
+		bp.canvas = true;
+		bp.scale = m_scale;
+		
+		auto pCanvas = pFactory->createSurface( bp );
+		if(!pCanvas)
+			return nullptr;
+
+		RectSPX geoWithOffset = { -rect.pos(), m_size };
+		
+		bool    bWasRendering = pDevice->isRendering();
+		
+		if( !bWasRendering )
+			pDevice->beginRender();
+
+		pDevice->beginCanvasUpdate(pCanvas);
+		pDevice->setBlendMode(wg::BlendMode::Replace);
+		pDevice->fill( HiColor::Transparent );
+		pDevice->setBlendMode(wg::BlendMode::Blend);
+		_render(pDevice, geoWithOffset, geoWithOffset);
+		pDevice->endCanvasUpdate();
+
+		if( !bWasRendering )
+			pDevice->endRender();
+
+		return pCanvas;
+	}
+
 
 	//____ markTest() _____________________________________________________________
 	/**
