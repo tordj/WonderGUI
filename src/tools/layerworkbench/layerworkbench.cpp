@@ -197,6 +197,61 @@ bool MyApp::setupGUI(Visitor* pVisitor)
 	
 	pBaseFlex->slots << makeMovable(pScroll, pBaseFlex);
 
+	pBaseFlex->slots.clear();
+	
+	// Create PackList
+	
+	auto pEntryOverflow = BoxSkin::create( {
+		.color = HiColor::Transparent,
+		.layer = 3,
+		.outlineColor = HiColor::Transparent,
+		.outlineThickness = 3,
+		.overflow = 8,
+		.states = {
+			{State::Hovered, HiColor::Transparent, HiColor(0,4096,0,2048)},
+			{State::Selected, HiColor::Transparent, HiColor(0,0,4096,2048)},
+			{State::SelectedHovered, HiColor::Transparent, HiColor(0,4096,4096,2048)}
+		}
+	});
+	
+	auto pEntryMain1 = BoxSkin::create( {
+		.color = Color::LightYellow,
+		.margin = 2,
+		.outlineColor = Color::Black,
+		.outlineThickness = 1,
+		.padding = 4
+	});
+
+	auto pEntryMain2 = BoxSkin::create( {
+		.color = Color::LightBlue,
+		.margin = 2,
+		.outlineColor = Color::Black,
+		.outlineThickness = 1,
+		.padding = 4
+	});
+
+	
+	auto pEntrySkin1 = DoubleSkin::create({
+		.skinInSkin = false,
+		.skins = { pEntryMain1, pEntryOverflow }
+	});
+
+	auto pEntrySkin2 = DoubleSkin::create({
+		.skinInSkin = false,
+		.skins = { pEntryMain2, pEntryOverflow }
+	});
+
+	
+	auto pList = PackList::create( { .entrySkin = pEntrySkin1, .entrySkin2 = pEntrySkin2, .skin = ColorSkin::create(Color::White) } );
+	
+	pList->slots << Filler::create({ .defaultSize = {100,40} });
+	pList->slots << Filler::create({ .defaultSize = {100,40} });
+	pList->slots << Filler::create({ .defaultSize = {100,40} });
+	pList->slots << Filler::create({ .defaultSize = {100,40} });
+
+	pBaseFlex->slots << makeMovable(pList, pBaseFlex);
+
+	
 	return true;
 }
 
