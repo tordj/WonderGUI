@@ -205,6 +205,10 @@ namespace wg
 
 		void				bringIntoView( Border margin = 0);
 		void				bringIntoView( Rect area, Border margin = 0 );
+		
+		Surface_p			screenshot( const Surface::Blueprint& bp = Surface::Blueprint() );
+		Surface_p			screenshot(const Rect& rect, const Surface::Blueprint& bp = Surface::Blueprint() );
+
 
 		//.____ Internal ______________________________________________________
 
