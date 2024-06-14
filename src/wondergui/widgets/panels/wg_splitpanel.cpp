@@ -625,9 +625,9 @@ namespace wg
 			return slots[0]._widget();
 	}
 
-	//____ _refreshOverflow() ___________________________________________________
+	//____ _calcOverflow() ___________________________________________________
 					  
-	void SplitPanel::_refreshOverflow()
+	BorderSPX SplitPanel::_calcOverflow()
 	{
 		// We need our own _refreshOverflow because of our handleSkin that needs to
 		// be included.
@@ -645,18 +645,8 @@ namespace wg
 			
 		BorderSPX overflow = BorderSPX::diff( RectSPX{0,0,m_size}, overflowArea );
 		
-	    if( overflow != m_overflow )
-		{
-			m_bOverflow = !overflow.isEmpty();
-			
-			auto oldOverflow = overflow;
-			m_overflow = overflow;
-			
-			_overflowChanged(oldOverflow, m_overflow);
-		}
+		return overflow;
 	}
-
-					  
 					  
 	//_____ _firstSlotWithGeo() _______________________________________________
 

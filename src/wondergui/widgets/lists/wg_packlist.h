@@ -241,7 +241,7 @@ namespace wg
 		RectSPX			_listWindow() const override;
 		RectSPX			_listCanvas() const override;
 
-		void			_onEntrySkinChanged(SizeSPX oldPadding, SizeSPX newPadding) override;
+		void			_onEntryPaddingChanged(BorderSPX oldPadding, BorderSPX newPadding) override;
 		void			_onLassoUpdated(const RectSPX& oldLasso, const RectSPX& newLasso) override;
 
 		List::Slot *	_beginSlots() const override;
@@ -328,7 +328,6 @@ namespace wg
 		spx					m_contentBreadth;
 		spx					m_contentLength;
 
-		SizeSPX				m_entryPadding;
 		SizeSPX				m_minEntrySizeSPX = { 0,0 };
 		SizeSPX				m_maxEntrySizeSPX = { spx_max, spx_max };
 

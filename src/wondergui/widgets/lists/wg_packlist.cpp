@@ -243,12 +243,12 @@ namespace wg
 			width -= pad.w;
 			height += pad.h;
 
-			width -= m_entryPadding.w;
+			width -= m_entryPadding.width();
 
 			for (auto pSlot = slots.begin(); pSlot < slots.end(); pSlot++)
 				height += pSlot->_widget()->_matchingHeight(width,scale);
 
-			height += m_entryPadding.h*slots.size();
+			height += m_entryPadding.height()*slots.size();
 			return height;
 		}
 	}
@@ -267,12 +267,12 @@ namespace wg
 			height -= pad.w;
 			width += pad.h;
 
-			height -= m_entryPadding.h;
+			height -= m_entryPadding.height();
 
 			for (auto pSlot = slots.begin(); pSlot < slots.end(); pSlot++)
 				width += pSlot->_widget()->_matchingWidth(width, scale);
 
-			width += m_entryPadding.w*slots.size();
+			width += m_entryPadding.width()*slots.size();
 			return width;
 		}
 		else
@@ -432,7 +432,7 @@ namespace wg
 			m_maxEntrySizeSPX = align(ptsToSpx(m_maxEntrySize, scale));
 			
 			if( m_pEntrySkin[0] )
-				m_entryPadding = m_pEntrySkin[0]->_contentBorderSize(scale);
+				m_entryPadding = m_pEntrySkin[0]->_contentBorder(scale, State::Default);
 			
 			m_contentDefaultLength = 0;
 			m_contentDefaultBreadth = 0;
@@ -572,7 +572,7 @@ namespace wg
 	void PackList::_refreshList()
 	{
 		if( m_pEntrySkin[0] )
-			m_entryPadding = m_pEntrySkin[0]->_contentBorderSize(m_scale);
+			m_entryPadding = m_pEntrySkin[0]->_contentBorder(m_scale, State::Default);
 
 		m_contentDefaultLength = 0;
 		m_contentDefaultBreadth = 0;
@@ -791,6 +791,7 @@ namespace wg
 	void PackList::_hideSlots(StaticSlot * _pSlot, int nb)
 	{
 		Slot * pSlot = static_cast<Slot*>(_pSlot);
+		bool	bRefreshOverflow = false;
 
 		_requestRenderChildren(pSlot,slots.end());	// Request render on dirty area
 
@@ -808,8 +809,14 @@ namespace wg
 
 				m_contentLength -= pSlot[i].m_length;
 				pSlot[i].m_length = 0;
+
+				if (pSlot[i]._widget()->_hasOverflow())
+					bRefreshOverflow = true;
 			}
 		}
+
+		if (bRefreshOverflow)
+			_refreshOverflow();
 
 		_updateChildOfsFrom(pSlot);
 		_requestResize();
@@ -861,6 +868,9 @@ namespace wg
 				RectSPX childGeo;
 				_getChildGeo(childGeo, pSlot + i);
 				pChild->_resize(childGeo, m_scale);
+
+				if (pChild->_hasOverflow())
+					_addEntryOverflow(pChild->_overflow() - m_entryPadding);
 			}
 		}
 
@@ -1113,27 +1123,26 @@ namespace wg
 		}
 	}
 
-	//____ _onEntrySkinChanged() __________________________________________________
+	//____ _onEntryPaddingChanged() __________________________________________________
 
-	void PackList::_onEntrySkinChanged( SizeSPX oldPadding, SizeSPX newPadding )
+	void PackList::_onEntryPaddingChanged( BorderSPX oldPadding, BorderSPX newPadding )
 	{
 		_requestRender();
 
 		if( oldPadding != newPadding )
 		{
-			m_entryPadding = newPadding;
 			int nEntries = slots.size();
 
 			spx	lengthDiff, breadthDiff;
 			if( m_bHorizontal )
 			{
-				lengthDiff = (newPadding.w - oldPadding.w)*nEntries;
-				breadthDiff = (newPadding.h - oldPadding.h);
+				lengthDiff = (newPadding.width() - oldPadding.width()) * nEntries;
+				breadthDiff = (newPadding.height() - oldPadding.height());
 			}
 			else
 			{
-				lengthDiff = (newPadding.h - oldPadding.h)*nEntries;
-				breadthDiff = (newPadding.w - oldPadding.w);
+				lengthDiff = (newPadding.height() - oldPadding.height()) * nEntries;
+				breadthDiff = (newPadding.width() - oldPadding.width());
 			}
 
 			if( lengthDiff != 0 || breadthDiff != 0 )
@@ -1203,7 +1212,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		spx height = pSlot->_widget()->_matchingHeight( paddedWidth - m_entryPadding.w, m_scale ) + m_entryPadding.h;
+		spx height = pSlot->_widget()->_matchingHeight( paddedWidth - m_entryPadding.width(), m_scale) + m_entryPadding.height();
 		limit( height, m_minEntrySizeSPX.h, m_maxEntrySizeSPX.h );
 		return height;
 	}
@@ -1214,7 +1223,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		spx width = pSlot->_widget()->_matchingWidth( paddedHeight - m_entryPadding.h, m_scale ) + m_entryPadding.w;
+		spx width = pSlot->_widget()->_matchingWidth( paddedHeight - m_entryPadding.height(), m_scale) + m_entryPadding.width();
 		limit( width, m_minEntrySizeSPX.w, m_maxEntrySizeSPX.w );
 		return width;
 	}
@@ -1237,13 +1246,13 @@ namespace wg
 
 		if( sz.w > m_maxEntrySizeSPX.w )
 		{
-			spx h = pSlot->_widget()->_matchingHeight(m_maxEntrySizeSPX.w-m_entryPadding.w, scale) + m_entryPadding.h;
+			spx h = pSlot->_widget()->_matchingHeight(m_maxEntrySizeSPX.w-m_entryPadding.width(), scale) + m_entryPadding.height();
 			limit(h, m_minEntrySizeSPX.h, m_maxEntrySizeSPX.h );
 			sz.h = h;
 		}
 		else if( sz.h > m_maxEntrySizeSPX.h )
 		{
-			spx w = pSlot->_widget()->_matchingWidth(m_maxEntrySizeSPX.h-m_entryPadding.h, scale) + m_entryPadding.w;
+			spx w = pSlot->_widget()->_matchingWidth(m_maxEntrySizeSPX.h-m_entryPadding.height(), scale) + m_entryPadding.width();
 			limit(w, m_minEntrySizeSPX.w, m_maxEntrySizeSPX.w );
 			sz.w = w;
 		}

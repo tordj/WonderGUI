@@ -70,34 +70,42 @@ namespace wg
 
 	//____ setEntrySkin() _________________________________________________________
 
-	void List::setEntrySkin( Skin * pSkin )
+	bool List::setEntrySkin( Skin * pSkin )
 	{
-		SizeSPX oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentBorderSize(m_scale) : SizeSPX();
+		if (pSkin && pSkin->_isContentShifting())
+			return false;
+
+		BorderSPX oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentBorder(m_scale, State::Default) : BorderSPX();
 
 		m_pEntrySkin[0] = pSkin;
 		m_pEntrySkin[1] = pSkin;
 
-		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->_contentBorderSize(m_scale) : SizeSPX() );
+		m_entryPadding = pSkin ? pSkin->_contentBorder(m_scale, State::Default) : BorderSPX();
+		_onEntryPaddingChanged( oldPadding, m_entryPadding );
+		_refreshOverflow();
+		return true;
 	}
 
 	bool List::setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin )
 	{
-//		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentBorderSize() : SizeI();
-		SizeSPX padding[2];
-
-		if( pOddEntrySkin )
-			padding[0] = pOddEntrySkin->_contentBorderSize(m_scale);
-
-		if( pEvenEntrySkin )
-			padding[1] = pEvenEntrySkin->_contentBorderSize(m_scale);
-
-		if( (padding[0].w != padding[1].w) || (padding[0].h != padding[1].h) )
+		if (!pOddEntrySkin || !pEvenEntrySkin)
 			return false;
+
+		if (pOddEntrySkin->_isContentShifting())
+			return false;
+
+		if (pOddEntrySkin->_contentBorder(m_scale,State::Default) != pEvenEntrySkin->_contentBorder(m_scale,State::Default) ||
+			pOddEntrySkin->_geoOverflow(m_scale) != pEvenEntrySkin->_geoOverflow(m_scale))
+			return false;
+
+		BorderSPX oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentBorder(m_scale, State::Default) : BorderSPX();
 
 		m_pEntrySkin[0] = pOddEntrySkin;
 		m_pEntrySkin[1] = pEvenEntrySkin;
 
-		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->_contentBorderSize(m_scale) : SizeSPX() );
+		m_entryPadding = pOddEntrySkin->_contentBorder(m_scale, State::Default);
+		_onEntryPaddingChanged( oldPadding, m_entryPadding );
+		_refreshOverflow();
 		return true;
 	}
 
@@ -134,24 +142,24 @@ namespace wg
 					if( m_pHoveredChild )
 					{
 						_getEntryGeo( geo, (Slot*) m_pHoveredChild->_slot() );
-						_requestRender(geo + m_pHoveredChild->_overflow());
+						_requestRender(geo + m_maxEntryOverflow);
 					}
 
 					_getEntryGeo( geo, pEntry );
-					_requestRender(geo + pEntry->_widget()->_overflow());
+					_requestRender(geo + m_maxEntryOverflow);
 					m_pHoveredChild = pEntry->_widget();
 				}
 				break;
 			}
 			case MsgType::MouseLeave:
 			{
-				MouseLeaveMsg_p pMsg = static_cast<MouseLeaveMsg*>(_pMsg);
+				MouseLeaveMsg * pMsg = static_cast<MouseLeaveMsg*>(_pMsg);
 				Slot * pEntry = _findEntry(_toLocal(pMsg->pointerSpxPos()));
 				if( m_pHoveredChild && !pEntry )
 				{
 					RectSPX geo;
 					_getEntryGeo( geo, (Slot*) m_pHoveredChild->_slot() );
-					_requestRender(geo + m_pHoveredChild->_overflow());
+					_requestRender(geo + m_maxEntryOverflow);
 					m_pHoveredChild = nullptr;
 				}
 				break;
@@ -160,7 +168,7 @@ namespace wg
 			{
 				grabFocus(true);
 
-				MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
+				MouseButtonMsg * pMsg = static_cast<MouseButtonMsg*>(_pMsg);
 				if( m_selectMode != SelectMode::Unselectable && pMsg->button() == MouseButton::Left )
 				{
 					CoordSPX ofs = _toLocal(pMsg->pointerSpxPos());
@@ -341,6 +349,10 @@ namespace wg
 		{
 			if( p->m_bVisible && bSelected != p->m_bSelected && (p->_widget()->isSelectable() || bSelected == false))
 			{
+				RectSPX entryGeo;
+				_getEntryGeo(entryGeo, p);
+				_requestRender( entryGeo + m_maxEntryOverflow);
+
 				p->m_bSelected = bSelected;
 
 				State	state = p->_widget()->state();
@@ -487,5 +499,44 @@ namespace wg
 		else
 			return _requestRender(rect);
 	}
+
+	//____ _calcOverflow() _________________________________________________
+
+	BorderSPX List::_calcOverflow()
+	{
+		// Calculate and set m_maxEntryOverflow
+
+		BorderSPX	maxChildOverflow;
+
+		auto pEnd = _endSlots();
+		for (Slot* pSlot = _beginSlots(); pSlot != pEnd; pSlot = _nextSlot(pSlot))
+		{
+			if (pSlot->_widget()->_hasOverflow())
+				maxChildOverflow.growToContain(pSlot->_widget()->_overflow());
+		}
+
+		if (m_pEntrySkin[0])
+			m_maxEntryOverflow = BorderSPX::max(m_pEntrySkin[0]->_geoOverflow(m_scale), maxChildOverflow - m_entryPadding);
+		else
+			m_maxEntryOverflow = maxChildOverflow;
+
+		//
+
+		BorderSPX 	overflow = m_skin.overflow(m_scale);
+		overflow.growToContain(m_maxEntryOverflow - m_skin.contentBorder(m_scale, State::Default));
+		return overflow;
+	}
+
+	//____ _addEntryOverflow() _____________________________________________
+
+	void List::_addEntryOverflow(const BorderSPX& entryOverflow)
+	{
+		if (m_maxEntryOverflow.contains(entryOverflow))
+			return;
+
+		m_maxEntryOverflow = BorderSPX::max(m_maxEntryOverflow, entryOverflow);
+		_addChildOverflow(_contentRect(), entryOverflow);
+	}
+
 
 } // namespace wg

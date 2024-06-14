@@ -223,7 +223,7 @@ namespace wg
 
 		bool		_alphaTest(const CoordSPX& ofs) override;
 
-		void		_refreshOverflow() override;
+		BorderSPX	_calcOverflow() override;
 
 
 		// Overloaded from Container

@@ -1007,21 +1007,13 @@ namespace wg
 		return false;
 	}
 
-	//____ _refreshOverflow() ____________________________________________________
+	//____ _calcOverflow() ____________________________________________________
 
-	void ScrollPanel::_refreshOverflow()
+	BorderSPX ScrollPanel::_calcOverflow()
 	{
 		// Since we always clip our child we should ignore it in this calculation.
 
-		BorderSPX overflow  = m_skin.overflow(m_scale);
-
-		if (overflow != m_overflow)
-		{
-			auto oldOverflow = m_overflow;
-			m_overflow = overflow;
-			
-			_overflowChanged(oldOverflow, overflow);
-		}
+		return m_skin.overflow(m_scale);
 	}
 
 	//____ _slotTypeInfo() ____________________________________________________

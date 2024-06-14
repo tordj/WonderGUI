@@ -585,7 +585,7 @@ namespace wg
 				newRenderArea = RectSPX::overlap(newRenderArea, myGeo);
 			}
 			else if( bUpdateOverflow && pSlot->_widget()->_hasOverflow() )
-				_childWithOverflowGeoChanged(pSlot, oldGeo, newGeo);
+				_moveChildOverflow(pSlot, oldGeo, newGeo);
 
 			_onRequestRender(oldRenderArea, pSlot);
 			_onRequestRender(newRenderArea, pSlot);

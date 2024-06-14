@@ -424,24 +424,34 @@ namespace wg
 		}
 	}
 
+	//____ _calcOverflow() ____________________________________________________
+
+	BorderSPX Container::_calcOverflow()
+	{
+		BorderSPX 	overflow = m_skin.overflow(m_scale);
+		RectSPX		overflowGeo = RectSPX{ 0,0,m_size } + overflow;
+
+		SlotWithGeo slot;
+		_firstSlotWithGeo(slot);
+		while (slot.pSlot)
+		{
+			if (slot.pSlot->_widget()->_hasOverflow())
+				overflowGeo.growToContain(slot.geo + slot.pSlot->_widget()->_overflow());
+
+			_nextSlotWithGeo(slot);
+		}
+
+		overflow = BorderSPX::diff(RectSPX{ 0,0,m_size }, overflowGeo);
+
+		return overflow;
+	}
+
+
 	//____ _refreshOverflow() ____________________________________________________
 
 	void Container::_refreshOverflow()
 	{
-		BorderSPX 	overflow	= m_skin.overflow(m_scale);
-		RectSPX		overflowGeo	= RectSPX{0,0,m_size} + overflow;
-		
-		SlotWithGeo slot;
-		 _firstSlotWithGeo(slot);
-		while( slot.pSlot )
-		{
-			if( slot.pSlot->_widget()->_hasOverflow() )
-			{
-				RectSPX childOverflowGeo = slot.geo + slot.pSlot->_widget()->_overflow();
-				overflow = BorderSPX::max(overflow, BorderSPX::diff(overflowGeo, childOverflowGeo) );
-			}
-			_nextSlotWithGeo(slot);
-		}
+		auto overflow = _calcOverflow();
 
 		if( overflow != m_overflow )
 		{
@@ -470,7 +480,7 @@ namespace wg
 		auto oldOverflow = m_overflow;
 		m_overflow.growToContain(BorderSPX::diff(overflowGeo, childOverflowGeo));
 
-//		m_bOverflow = !m_overflow.isEmpty();
+		m_bOverflow = true;
 		
 		_overflowChanged(oldOverflow, m_overflow);
 	}
@@ -492,9 +502,9 @@ namespace wg
 		}
 	}
 
-	//____ _childWithOverflowGeoChanged() _______________________________________________
+	//____ _moveChildOverflow() _______________________________________________
 		   
-	void Container::_childWithOverflowGeoChanged(StaticSlot * pSlot, const RectSPX& oldGeo, const RectSPX& newGeo)
+	void Container::_moveChildOverflow(StaticSlot * pSlot, const RectSPX& oldGeo, const RectSPX& newGeo)
 	{
 		//TODO: Implement optimized solution.
 			

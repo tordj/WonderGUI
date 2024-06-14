@@ -195,6 +195,8 @@ namespace wg
 		
 		inline BorderT<Type>	scale(int scale) const { return BorderT<Type>( top*scale / 4096,right*scale / 4096,bottom*scale / 4096,left*scale / 4096); } // Only for WG2 compatibility!
 
+		inline bool	contains(const BorderT<Type>& border) const;			///< @brief Check if border is smaller in all directions.
+
 		void growToContain( const BorderT<Type>& border );
 
 		
@@ -276,6 +278,14 @@ namespace wg
 	{
 		return {inner.y - outer.y, (outer.x + outer.w) - (inner.x + inner.w),
 				(outer.y + outer.h) - (inner.y + inner.h), inner.x - outer.x };
+	}
+
+	//____ contains() ________________________________________________________________
+
+	template<typename Type>
+	bool BorderT<Type>::contains(const BorderT<Type>& border) const
+	{
+		return (top >= border.top && right >= border.right && bottom >= border.bottom && left >= border.left);
 	}
 
 	//____ growToContain() ________________________________________________________________

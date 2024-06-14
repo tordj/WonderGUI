@@ -101,7 +101,7 @@ namespace wg
 		void				setLassoSkin(Skin* pSkin);
 		Skin_p				lassoSkin() const { return m_lassoSkin.get(); }
 
-		virtual void		setEntrySkin( Skin * pSkin );
+		virtual bool		setEntrySkin( Skin * pSkin );
 		virtual bool		setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin );
 		Skin_p				oddEntrySkin() const { return m_pEntrySkin[0]; }
 		Skin_p				evenEntrySkin() const { return m_pEntrySkin[1]; }
@@ -118,8 +118,25 @@ namespace wg
 		template<class BP> List(const BP& bp) : m_lassoSkin(this), m_selectMode(SelectMode::SingleEntry), Container(bp)
 		{
 			m_lassoSkin.set(bp.lassoSkin);
-			m_pEntrySkin[0] = bp.entrySkin;
-			m_pEntrySkin[1] = bp.entrySkin2;
+
+			if (bp.entrySkin)
+			{
+				m_pEntrySkin[0] = bp.entrySkin;
+
+				if (bp.entrySkin && bp.entrySkin2)
+					m_pEntrySkin[1] = bp.entrySkin2;
+				else
+					m_pEntrySkin[1] = bp.entrySkin;
+
+				m_entryPadding = bp.entrySkin->_contentBorder(m_scale, State::Default);
+				m_maxEntryOverflow = bp.entrySkin->_geoOverflow(m_scale);
+
+				if (!m_maxEntryOverflow.isEmpty())
+				{
+					m_overflow.growToContain(m_maxEntryOverflow - m_skin.contentBorder(m_scale, State::Default));
+					m_bOverflow = !m_overflow.isEmpty();
+				}
+			}
 		}
 		
 		virtual ~List();
@@ -145,13 +162,16 @@ namespace wg
 		virtual RectSPX	_listWindow() const = 0;
 		virtual RectSPX	_listCanvas() const = 0;
 
-		virtual void	_onEntrySkinChanged( SizeSPX oldPadding, SizeSPX newPadding ) = 0;
+		virtual void	_onEntryPaddingChanged( BorderSPX oldPadding, BorderSPX newPadding ) = 0;
 		virtual void	_onLassoUpdated( const RectSPX& oldLasso, const RectSPX& newLasso ) = 0;
 
 		State			_skinState(const SkinSlot* pSlot) const override;
 		SizeSPX			_skinSize(const SkinSlot* pSlot) const override;
 
 		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
+
+		BorderSPX		_calcOverflow() override;
+		void			_addEntryOverflow( const BorderSPX& entryOverflow );
 
 
 		virtual Slot * _beginSlots() const = 0;
@@ -176,6 +196,7 @@ namespace wg
 		Widget_wp		m_pFocusedChild;
 		Widget_wp		m_pHoveredChild;
 
+		BorderSPX		m_entryPadding;				// Content padding of entry.
 		BorderSPX		m_maxEntryOverflow;			// Max overflow in each direction for the entries, 
 													// includes the two entry-skins and overflow of entry widgets.
 
