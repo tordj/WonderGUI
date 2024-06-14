@@ -223,9 +223,12 @@ WgPointerStyle WgTextDisplay::GetPointerStyle() const
 
 void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
+
 	WgWidget::_onRender(pDevice,_canvas,_window);
 
 	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, m_state, m_scale) : _canvas;
+
+	auto popData = ::wg::Util::limitClipList(pDevice, canvas*64);
 
     m_text.setState(m_state);       // TODO: _setState not called from SetSelected/SetNormal
 
@@ -236,6 +239,9 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	else
 		m_text.hideCursor();
 
+	auto kChronoDiff = std::chrono::steady_clock::now() - m_kAnimTimeStart;
+	auto kMillisecDiff = std::chrono::duration_cast<std::chrono::milliseconds>(kChronoDiff);
+
 	if( m_fixedBlendColor != wg::HiColor::Undefined )
 	{
 		pDevice->setFixedBlendColor(m_fixedBlendColor);
@@ -243,13 +249,64 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 		WgGfxDevice::PrintText( pDevice, pText, canvas );
 		pDevice->setBlendMode(wg::BlendMode::Blend);
 	}
-	else
-		WgGfxDevice::PrintText( pDevice, pText, canvas );
+	else if(m_bWrapTextAnim && kMillisecDiff.count() > 1000)
+    {
+        // Only animate if the text is longer than the canvas
+        const int textCanvasDiff = (m_text.unwrappedWidth() - canvas.w);
+        if(textCanvasDiff < 0)
+        {
+            WgGfxDevice::PrintText( pDevice, pText, canvas );
+        }
+		else
+		{
+	        WgRect canvas2 = {canvas.x, canvas.y, m_text.unwrappedWidth(), canvas.h};
+			if(m_textAnimPos == -1)
+			{
+				m_textAnimPos = textCanvasDiff;
+			}
+			
+			canvas2.x = canvas.x + (m_textAnimPos - textCanvasDiff);
 
-	
-	
+
+            if(m_textAnimPos <= 0 && !m_reachedEnd)
+            {
+                m_kAnimTimeStopDelay = std::chrono::steady_clock::now();
+				m_reachedEnd = true;
+            }
+            
+            auto stopDelay = std::chrono::steady_clock::now() - m_kAnimTimeStopDelay;
+            auto stopDelayDiff = std::chrono::duration_cast<std::chrono::milliseconds>(stopDelay);
+
+			if(stopDelayDiff.count() > 1000 && m_textAnimPos <= 0)
+			{
+				// it's a speed among others
+                m_textAnimPos = -1;
+                m_kAnimTimeStart = std::chrono::steady_clock::now();
+				m_reachedEnd = false;
+			}
+			else if( m_textAnimPos > 0)
+			{
+                m_textAnimPos = m_textAnimPos - m_textAnimSpeed;
+			}
+
+            WgGfxDevice::PrintText( pDevice, pText, canvas2 );
+		}
+    }
+    else
+    {
+        WgGfxDevice::PrintText( pDevice, pText, canvas );
+    }
+
+	if(!m_bWrapTextAnim)
+	{
+		m_textAnimPos = -1;
+	}
+
 	if( pText != &m_text )
 		delete pText;
+
+	wg::Util::popClipList(pDevice, popData);
+
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -274,11 +331,19 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if( type == WG_EVENT_TICK )
 	{
+
+
 		if( IsSelectable() && m_bFocused )
 		{
 			m_pText->incTime( ((const WgEvent::Tick*)(pEvent))->Millisec() );
 			_requestRender();					//TODO: Should only render the cursor and selection!
 		}
+
+        if(m_bWrapTextAnim)
+        {
+            _requestRender();
+        }
+
 		return;
 	}
 
@@ -286,11 +351,13 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 	if (type == WG_EVENT_MOUSE_ENTER)
 	{
         m_state.setHovered(true);
+
 	}
 
 	if (type == WG_EVENT_MOUSE_LEAVE)
 	{
 		m_state.setHovered(false);
+
 	}
 
 	if(type == WG_EVENT_MOUSEBUTTON_PRESS)
