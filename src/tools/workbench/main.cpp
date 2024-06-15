@@ -723,7 +723,7 @@ int main(int argc, char** argv)
 		//	stretchBlitTest(pRoot->child.ptr());
 		//	scrollIntoViewTest(pRoot->child.ptr());
 		//	textClipTest(pSlot);
-			textEditorTest(pSlot);
+		//	textEditorTest(pSlot);
 		//	lineEditorTest(pSlot);
 		//	popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
@@ -733,7 +733,7 @@ int main(int argc, char** argv)
 		//	pianoKeyboardTest(pSlot);
 		//	sliderTest(pSlot);
 		//	rangeSliderTest(pSlot);
-			pieKnobTest(pSlot);
+		//	pieKnobTest(pSlot);
 		//	spinKnobTest(pSlot);
 		//  animKnobTest(pSlot);
 		//	canvasStackTest(pSlot);
@@ -742,7 +742,7 @@ int main(int argc, char** argv)
 		//	animPlayerTest(pSlot);
 		//	selectBoxTest(pSlot);
 		//	tileSkinTest(pSlot);
-		//	gradientSkinTest(pSlot);
+			gradientSkinTest(pSlot);
 		//	bakeSkinTest(pSlot);
 		//	animSkinTest(pSlot);
 		//	renderLayerTest(pSlot);
@@ -761,7 +761,7 @@ int main(int argc, char** argv)
 		//	areaChartTest(pSlot);
 		//	areaChartTest2(pSlot);
 		//	plotChartTest(pSlot);
-			nortonCommanderTest(pSlot);
+		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
@@ -2172,13 +2172,13 @@ bool tileSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
-/*
+
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
 
-	auto pSkin1 = StaticGradientSkin::create(wg::Gradient(wg::Placement::South, wg::HiColor(0.0f, 0.0f, 0.0f, 0.0f), wg::HiColor(0.0f, 0.0f, 0.0f, 0.2f)));
+	auto pSkin1 = GradientSkin::create(wg::Gradient(wg::Placement::South, wg::HiColor(0.0f, 0.0f, 0.0f, 0.0f), wg::HiColor(0.0f, 0.0f, 0.0f, 0.2f)));
 
-	auto pSkin2 = StaticGradientSkin::create(wg::Gradient(wg::Placement::South, wg::HiColor(1.0f, 0.0f, 0.0f, 0.0f), wg::HiColor(0.0f, 0.0f, 0.0f, 0.2f)));
+	auto pSkin2 = GradientSkin::create(wg::Gradient(wg::Placement::South, wg::HiColor(0.5f, 0.0f, 0.0f, 1.0f), wg::HiColor(0.0f, 0.0f, 0.0f, 1.0f)));
 
 
 	auto pFiller1 = Filler::create();
@@ -2188,13 +2188,13 @@ bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 	pFiller2->setSkin(pSkin2);
 
 
-
+	 
 
 	pBaseLayer->slots.pushBack(pFiller1, { .pos = {10, 10}, .size = {100, 100} });
 	pBaseLayer->slots.pushBack(pFiller2, { .pos = {10, 120}, .size = {400, 100} });
 
 	*pSlot = pBaseLayer;
-*/
+
 	return true;
 
 }
