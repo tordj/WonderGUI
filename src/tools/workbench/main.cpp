@@ -746,7 +746,7 @@ int main(int argc, char** argv)
 		//	animPlayerTest(pSlot);
 		//	selectBoxTest(pSlot);
 		//	tileSkinTest(pSlot);
-		//	gradientSkinTest(pSlot);
+			gradientSkinTest(pSlot);
 		//	bakeSkinTest(pSlot);
 		//	animSkinTest(pSlot);
 		//	renderLayerTest(pSlot);
@@ -2192,9 +2192,6 @@ bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pFiller2 = Filler::create();
 	pFiller2->setSkin(pSkin2);
-
-
-	 
 
 	pBaseLayer->slots.pushBack(pFiller1, { .pos = {10, 10}, .size = {100, 100} });
 	pBaseLayer->slots.pushBack(pFiller2, { .pos = {10, 120}, .size = {400, 100} });
