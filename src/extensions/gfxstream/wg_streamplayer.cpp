@@ -201,9 +201,17 @@ namespace wg
 			int nUpdateRects = (header.size - 4) / 16;
 
 			auto pRects = _pushClipListCanvas(nUpdateRects);
-
+			
 			if( surfaceId > 0 )
+			{
+				if( surfaceId > m_vSurfaces.size() || m_vSurfaces[surfaceId] == nullptr )
+				{
+					GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "BeginCanvasUpdate with invalid surfaceId", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					break;
+				}
+				
 				m_pDevice->beginCanvasUpdate(m_vSurfaces[surfaceId], nUpdateRects, pRects );
+			}
 			else
 				m_pDevice->beginCanvasUpdate(canvasRef, nUpdateRects, pRects );
 
@@ -322,7 +330,7 @@ namespace wg
 
 			if( surfaceId > m_vSurfaces.size() || m_vSurfaces[surfaceId] == nullptr )
 			{
-				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "SurfaceID is not valid", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "SetBlitSource wiht invalid surfaceId", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				break;
 			}
 
@@ -928,7 +936,7 @@ namespace wg
 
 			bp.buffered = false;
 			bp.palette = nullptr;
-
+			
 			if (bp.paletteSize > 0)
 			{
 				auto pPalette = (Color8*) GfxBase::memStackAlloc(bp.paletteSize*4);
@@ -938,7 +946,11 @@ namespace wg
 
 			if (m_vSurfaces.size() <= surfaceId)
 				m_vSurfaces.resize(surfaceId + 16, nullptr);
-
+			else if( m_vSurfaces[surfaceId] != nullptr )
+			{
+				GfxBase::throwError(ErrorLevel::Warning, ErrorCode::InvalidParam, "CreateSurface with surfaceId that already is in use. The old surface will be replaced.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			}
+			
 			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(bp);
 
 			if (bp.palette)
@@ -955,6 +967,13 @@ namespace wg
 			*m_pDecoder >> surfaceId;
 			*m_pDecoder >> rect;
 
+			if( surfaceId > m_vSurfaces.size() || m_vSurfaces[surfaceId] == nullptr )
+			{
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "BeginSurfaceUpdate with invalid SurfaceId", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				break;
+			}
+
+			
 			m_pUpdatingSurface = m_vSurfaces[surfaceId];
 			m_pixelBuffer = m_pUpdatingSurface->allocPixelBuffer(rect);
 
@@ -1021,6 +1040,12 @@ namespace wg
 			*m_pDecoder >> region;
 			*m_pDecoder >> col;
 
+			if( surfaceId > m_vSurfaces.size() || m_vSurfaces[surfaceId] == nullptr )
+			{
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "FillSurface with invalid surfaceId", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				break;
+			}
+
 			m_vSurfaces[surfaceId]->fill(region, col);
 			break;
 		}
@@ -1049,6 +1074,12 @@ namespace wg
 			uint16_t	surfaceId;
 
 			*m_pDecoder >> surfaceId;
+
+			if( surfaceId > m_vSurfaces.size() || m_vSurfaces[surfaceId] == nullptr )
+			{
+				GfxBase::throwError(ErrorLevel::Warning, ErrorCode::InvalidParam, "DeleteSurface with invalid surfaceId", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				break;
+			}
 
 			m_vSurfaces[surfaceId] = nullptr;
 			break;
