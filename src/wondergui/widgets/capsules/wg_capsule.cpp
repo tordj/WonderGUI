@@ -145,14 +145,15 @@ namespace wg
 
 	void Capsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		RectSPX coverage = m_skin.contentRect(geo, m_scale, m_state);
+		RectSPX coverage = m_skin.coverage(geo, m_scale, m_state);
 		
 		patches.sub( RectSPX::overlap(coverage,clip) );
 
-		if( coverage.contains(_contentRect(geo)) );
+		if( coverage.contains(_contentRect(geo)) )
 			return;										// No need to loop through children, skins coverage contains them all.
 
-		slot._widget()->_maskPatches(patches, _contentRect(geo), clip);
+		if( slot._widget() )
+			slot._widget()->_maskPatches(patches, _contentRect(geo), clip);
 	}
 
 	//____ _resize() ____________________________________________________________

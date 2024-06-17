@@ -554,7 +554,7 @@ namespace wg
 		{
 			patches.sub( RectSPX::overlap(coverage,clip) );
 			
-			if( coverage.contains(_contentRect(geo)) );
+			if( coverage.contains(_contentRect(geo)) )
 				return;										// No need to loop through children, skins coverage contains them all.
 		}
 		

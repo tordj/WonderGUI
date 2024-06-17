@@ -97,7 +97,7 @@ namespace wg
 	template < class SlotType>
 	void Panel<SlotType>::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
-		RectSPX coverage = m_skin.contentRect(geo, m_scale, m_state);
+		RectSPX coverage = m_skin.coverage(geo, m_scale, m_state);
 		
 		patches.sub( RectSPX::overlap(coverage,clip) );
 

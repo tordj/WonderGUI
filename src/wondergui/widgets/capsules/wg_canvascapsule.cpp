@@ -520,11 +520,11 @@ namespace wg
 		if( m_bScaleCanvas && m_bSkinAroundCanvas )
 			skinRect = canvasArea + m_skin.contentBorder(m_scale, m_state);
 
-		RectSPX coverage = m_skin.contentRect(skinRect, m_scale, m_state);
+		RectSPX coverage = m_skin.coverage(skinRect, m_scale, m_state);
 		
 		patches.sub( RectSPX::overlap(coverage,clip) );
 
-		if( coverage.contains(_contentRect(geo)) );
+		if( coverage.contains(_contentRect(geo)) )
 			return;										// No need to loop through children, skins coverage contains them all.
 
 
