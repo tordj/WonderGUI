@@ -372,10 +372,8 @@ namespace wg
 
 	//____ _sendCreateSurface() _______________________________________________
 
-	uint16_t StreamSurface::_sendCreateSurface(StreamEncoder* pEncoder)
+	void StreamSurface::_sendCreateSurface(StreamEncoder* pEncoder)
 	{
-		uint16_t surfaceId = m_pEncoder->allocObjectId();
-
 		uint16_t blockSize = 38 + m_paletteSize*4;
 
 		*pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, GfxStream::SpxFormat::Int32_dec, blockSize };
@@ -394,8 +392,6 @@ namespace wg
 
 		if (m_pPalette)
 			* pEncoder << GfxStream::WriteBytes{ m_paletteSize*4, m_pPalette };
-
-		return surfaceId;
 	}
 
 	//____ _genAlphaLayer() _________________________________________________________

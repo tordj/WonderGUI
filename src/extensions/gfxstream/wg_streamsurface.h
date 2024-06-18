@@ -92,7 +92,7 @@ namespace wg
 
 		~StreamSurface();
 
-		uint16_t	_sendCreateSurface(StreamEncoder* pEncoder);
+		void		_sendCreateSurface(StreamEncoder* pEncoder);
 		void		_sendPixels(StreamEncoder* pEncoder, RectI rect, const uint8_t * pSource, int pitch);
 		void		_sendDeleteSurface();
 		uint8_t*	_genAlphaLayer(const char * pSource, int pitch);
