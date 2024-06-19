@@ -47,9 +47,23 @@ namespace wg
 	{
 	public:
 
+
+		//.____ Blueprint __________________________________________________
+
+		struct Blueprint
+		{
+			int				bufferBytes		= GfxStream::c_maxBlockSize*2;
+			Finalizer_p		finalizer;
+			uint16_t		objectIdStart	= 0;
+			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
+			SampleMethod	sampleMethod	= SampleMethod::Nearest;
+			StreamSink_p	sink;
+		};
+		
 		//.____ Creation __________________________________________
 
 		static StreamTrimEncoder_p	create( const StreamSink_p& pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return StreamTrimEncoder_p(new StreamTrimEncoder(pStream, bufferBytes)); }
+		static StreamTrimEncoder_p	create( const Blueprint& blueprint ) { return StreamTrimEncoder_p(new StreamTrimEncoder(blueprint)); }
 
 		//.____ Identification __________________________________________
 
@@ -62,6 +76,10 @@ namespace wg
 
 	protected:
 		StreamTrimEncoder( const StreamSink_p& pStream, int bufferBytes );
+		template<class BP> StreamTrimEncoder( const BP& bp ) : StreamEncoder(bp)
+		{
+			m_outputBuffer.reserve(4096);		// Good starting value.
+		}
 		~StreamTrimEncoder();
 
 		void _beginChunk(GfxStream::Header header) override;
@@ -105,7 +123,7 @@ namespace wg
 		bool 				_processSetClipList( ChunkInfo * pSetClipListChunk, RectSPX * pActiveRects, int nActiveRects, RectSPX * pMyRects, int nMyRects );
 
 		
-		int						m_activeScope;
+		int						m_activeScope = -1;
 		
 		std::vector<Scope>		m_scopes;
 		
