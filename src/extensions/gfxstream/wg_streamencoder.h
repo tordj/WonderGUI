@@ -45,6 +45,18 @@ namespace wg
 	{
 	public:
 
+		//.____ Blueprint __________________________________________________
+/*
+		struct Blueprint
+		{
+			Finalizer_p		finalizer,
+			uint16_t		objectIdStart	= 0;
+			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
+			SampleMethod	sampleMethod	= SampleMethod::Nearest;
+			StreamSink_p	sink,
+			
+		};
+*/
 		//.____ Identification __________________________________________
 
 		const TypeInfo& typeInfo(void) const override;
@@ -109,6 +121,18 @@ namespace wg
 
 	protected:
 		StreamEncoder( const StreamSink_p& pStream );
+		template<class BP> StreamEncoder( const BP& bp )
+		{
+			m_pStream = bp.sink;
+			
+			if( bp.finalizer )
+				setFinalizer(bp.finalizer);
+			
+			m_defaultPixelFormat = bp.pixelFormat;
+			m_defaultSampleMethod = bp.sampleMethod;
+			m_idCounter = bp.objectIdStart;
+		}
+		
 		~StreamEncoder() {};
 
 		virtual void _beginChunk(GfxStream::Header header) = 0;

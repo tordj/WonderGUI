@@ -34,7 +34,6 @@ namespace wg
 	StreamTrimEncoder::StreamTrimEncoder(const StreamSink_p& pStream, int bufferBytes)
 	: StreamEncoder(pStream)
 	{
-		m_activeScope = -1;
 		m_outputBuffer.reserve(4096);		// Good starting value.
 	}
 

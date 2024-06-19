@@ -38,17 +38,31 @@ namespace wg
 {
 	class StreamFastEncoder;
 	typedef	StrongPtr<StreamFastEncoder>	StreamFastEncoder_p;
-	typedef	WeakPtr<StreamFastEncoder>	StreamFastEncoder_wp;
+	typedef	WeakPtr<StreamFastEncoder>		StreamFastEncoder_wp;
 
 	//____ StreamFastEncoder ___________________________________________________
 
 	class StreamFastEncoder : public StreamEncoder
 	{
 	public:
+		
+		//.____ Blueprint __________________________________________________
 
+		struct Blueprint
+		{
+			int				bufferBytes		= GfxStream::c_maxBlockSize*2;
+			Finalizer_p		finalizer;
+			uint16_t		objectIdStart	= 0;
+			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
+			SampleMethod	sampleMethod	= SampleMethod::Nearest;
+			StreamSink_p	sink;
+
+		};
+		
 		//.____ Creation __________________________________________
 
 		static StreamFastEncoder_p	create( const StreamSink_p& pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return StreamFastEncoder_p(new StreamFastEncoder(pStream, bufferBytes)); }
+		static StreamFastEncoder_p	create( const Blueprint& blueprint ) { return StreamFastEncoder_p(new StreamFastEncoder(blueprint)); }
 
 		//.____ Identification __________________________________________
 
@@ -61,6 +75,13 @@ namespace wg
 
 	protected:
 		StreamFastEncoder( const StreamSink_p& pStream, int bufferBytes );
+		template<class BP> StreamFastEncoder( const BP& bp ) : StreamEncoder(bp)
+		{
+			m_pBuffer = new uint8_t[bp.bufferBytes];
+			m_capacity = bp.bufferBytes;
+			m_pWriteData = m_pBuffer;
+		}
+		
 		~StreamFastEncoder();
 
 		void _beginChunk(GfxStream::Header header) override;
