@@ -378,10 +378,10 @@ void WgTooltipLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pH
     case WG_EVENT_MOUSE_LEAVE:
         _stopReceiveTicks();
         m_hoverPos = { -1,-1 };
-			
-		if (m_tooltipHook.Widget())
-			_closeTooltip();
-			
+
+        if (m_tooltipHook.Widget())
+            _closeTooltip();
+
         break;
 
     default:
