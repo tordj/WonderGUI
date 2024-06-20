@@ -470,7 +470,7 @@ namespace wg
 
 	void Container::_addChildOverflow( const RectSPX& childGeo, const BorderSPX& childOverflow )
 	{
-		if( m_overflow.top >= childOverflow.top && m_overflow.right >= childOverflow.right && m_overflow.bottom >= childOverflow.bottom || m_overflow.left >= childOverflow.left )
+		if( m_overflow.top >= childOverflow.top && m_overflow.right >= childOverflow.right && m_overflow.bottom >= childOverflow.bottom && m_overflow.left >= childOverflow.left )
 			return;
 		
 		RectSPX childOverflowGeo = childGeo + childOverflow;

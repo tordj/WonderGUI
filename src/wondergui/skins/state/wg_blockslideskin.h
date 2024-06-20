@@ -72,13 +72,13 @@ namespace wg
 			BlendMode		blendMode = BlendMode::Blend;
 
 			pts				blockLength;					// Required!
+			pts				blockSpacing = 0;
 			HiColor			color = HiColor::Undefined;
 
 			Finalizer_p		finalizer = nullptr;
 			Rect			firstLane;
 			Gradient		gradient;
 			int				layer = -1;
-			Border			margin;
 			int				markAlpha = 1;
 			Border			overflow;
 			Border			padding;
@@ -87,7 +87,7 @@ namespace wg
 			int				slideDuration = 250;
 			StateBits		slideState = StateBits::Selected;
 
-			pts				spacing = 0;
+			Border			spacing;
 			std::vector<StateBP> states;
 			Surface_p		surface;
 		};

@@ -104,7 +104,7 @@ namespace wg
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
@@ -149,7 +149,7 @@ namespace wg
 		SizeSPX content = StateSkin::_minSize(scale);
 		SizeSPX outline = align(ptsToSpx(m_outline,scale));
 
-		return SizeSPX::max(content,outline) + align(ptsToSpx(m_margin, scale));
+		return SizeSPX::max(content,outline) + align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _defaultSize() ________________________________________________________
@@ -159,7 +159,7 @@ namespace wg
 		SizeSPX content = StateSkin::_minSize(scale);
 		SizeSPX outline = align(ptsToSpx(m_outline, scale));
 
-		return SizeSPX::max(content, outline) + align(ptsToSpx(m_margin, scale));
+		return SizeSPX::max(content, outline) + align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _sizeForContent() _______________________________________________________
@@ -169,14 +169,14 @@ namespace wg
 		SizeSPX content = StateSkin::_sizeForContent(contentSize,scale);
 		SizeSPX outline = align(ptsToSpx(m_outline, scale));
 
-		return SizeSPX::max(content, outline) + align(ptsToSpx(m_margin, scale));
+		return SizeSPX::max(content, outline) + align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _markTest() _____________________________________________________________
 
 	bool BoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale));
 
 		if( !canvas.contains(ofs) )
 			return false;
@@ -208,7 +208,7 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		if (m_fillColor[i1] != m_fillColor[i2] || (!m_outline.isEmpty() && m_outlineColor[i1] != m_outlineColor[i2]))
 			return canvas;
@@ -225,7 +225,7 @@ namespace wg
 		{
 			if( m_fillColor[state].a == 4096 )
 			{
-				RectSPX coverage = geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+				RectSPX coverage = geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
 				if( m_outlineColor[state].a != 4096 )
 					coverage -= align(ptsToSpx(m_outline,scale));
 				
@@ -233,7 +233,7 @@ namespace wg
 			}
 		}
 		else if( m_blendMode == BlendMode::Replace )
-			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+			return geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
 
 		return RectSPX();
 	}

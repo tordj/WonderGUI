@@ -495,7 +495,9 @@ namespace wg
 			case MarkPolicy::Ignore:
 				return false;
 			case MarkPolicy::Geometry:
+			{
 				return (ofs.x >= 0 && ofs.y >= 0 && ofs.x < m_size.w&& ofs.y < m_size.h);
+			}
 			case MarkPolicy::AlphaTest:
 			default:
 				return _alphaTest(ofs);

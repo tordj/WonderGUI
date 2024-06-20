@@ -79,7 +79,7 @@ namespace wg
 		// Scale zoom to fit content of default size into canvas size.
 
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 		if (!m_defaultSize.isEmpty() )
 		{
 			SizeSPX defaultSize = align(ptsToSpx(m_defaultSize, scale));
@@ -122,14 +122,14 @@ namespace wg
 
 	SizeSPX SpinMeterSkin::_defaultSize(int scale) const
 	{
-		return align(ptsToSpx(m_defaultSize, scale)) +  align(ptsToSpx(m_margin, scale)).size();
+		return align(ptsToSpx(m_defaultSize, scale)) +  align(ptsToSpx(m_spacing, scale)).size();
 	}
 
 	//____ _markTest() _________________________________________________________
 
 	bool SpinMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale));
 
 		if (!canvas.contains(ofs))
 			return false;
@@ -158,7 +158,7 @@ namespace wg
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (newValue != oldValue)
-			return canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+			return canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		return RectSPX();
 	}

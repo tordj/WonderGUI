@@ -351,7 +351,7 @@ namespace wg
 	RectSPX MultiBlockSkin::_coverage(const RectSPX& geo, int scale, State state) const
 	{
 		if( m_bStateOpaque[state] )
-			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+			return geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
 		else
 			return RectSPX();
 	}

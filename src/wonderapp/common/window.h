@@ -72,7 +72,7 @@ public:
     //.____ Appearance ____________________________________________________
 
     virtual bool            setTitle(std::string& title) = 0;
-    virtual std::string        title() const = 0;
+    virtual std::string     title() const = 0;
 
     virtual bool            setIcon(wg::Surface * pIcon) = 0;
 

@@ -171,7 +171,7 @@ namespace wg
 
 	RectSPX BakeSkin::_coverage(const RectSPX& _geo, int scale, State state) const
 	{
-		RectSPX geo = _geo - align(ptsToSpx(m_margin, scale));
+		RectSPX geo = _geo - align(ptsToSpx(m_spacing, scale));
 
 		RectSPX bestCoverage;
 		
@@ -216,7 +216,7 @@ namespace wg
 
 		// 
 
-		RectSPX canvas = _canvas  - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas  - align(ptsToSpx(m_spacing, scale));
 
 		
 		RectSPX bakeCanvas = canvas.size();

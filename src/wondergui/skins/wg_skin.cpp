@@ -49,28 +49,28 @@ namespace wg
 
 	SizeSPX Skin::_minSize(int scale) const
 	{
-		return SizeSPX(align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_padding,scale)));
+		return SizeSPX(align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_padding,scale)));
 	}
 
 	//____ _defaultSize() ______________________________________________________________
 
 	SizeSPX Skin::_defaultSize(int scale) const
 	{
-		return SizeSPX(align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_padding,scale)));
+		return SizeSPX(align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_padding,scale)));
 	}
 
 	//____ _margin() ______________________________________________________________
 
 	BorderSPX Skin::_margin(int scale, State state) const
 	{
-		return align(ptsToSpx(m_margin, scale));
+		return align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _marginSize() ______________________________________________________________
 
 	SizeSPX Skin::_marginSize(int scale) const
 	{
-		return SizeSPX(align(ptsToSpx(m_margin, scale)));
+		return SizeSPX(align(ptsToSpx(m_spacing, scale)));
 	}
 
 	//____ _padding() ______________________________________________________________
@@ -98,7 +98,7 @@ namespace wg
 
 	BorderSPX Skin::_geoOverflow(int scale) const
 	{
-		BorderSPX overflow = align(ptsToSpx(m_overflow, scale)) - align(ptsToSpx(m_margin, scale));
+		BorderSPX overflow = align(ptsToSpx(m_overflow, scale)) - align(ptsToSpx(m_spacing, scale));
 
 		if( overflow.top < 0 )
 			overflow.top = 0;
@@ -116,42 +116,42 @@ namespace wg
 
 	CoordSPX Skin::_contentOfs(int scale, State state) const
 	{
-		return align(ptsToSpx(Coord(m_margin.left, m_margin.top), scale)) + align(ptsToSpx(Coord(m_padding.left, m_padding.top), scale));
+		return align(ptsToSpx(Coord(m_spacing.left, m_spacing.top), scale)) + align(ptsToSpx(Coord(m_padding.left, m_padding.top), scale));
 	}
 
 	//____ _sizeForContent() ___________________________________________________
 
 	SizeSPX Skin::_sizeForContent(const SizeSPX& contentSize, int scale) const
 	{
-		return contentSize + SizeSPX(align(ptsToSpx(m_margin, scale))) + SizeSPX(align(ptsToSpx(m_padding, scale)));
+		return contentSize + SizeSPX(align(ptsToSpx(m_spacing, scale))) + SizeSPX(align(ptsToSpx(m_padding, scale)));
 	}
 
 	//____ _contentRect() ______________________________________________________
 
 	RectSPX Skin::_contentRect(const RectSPX& canvas, int scale, State state) const
 	{
-		return canvas - align(ptsToSpx(m_margin, scale)) - align(ptsToSpx(m_padding, scale));
+		return canvas - align(ptsToSpx(m_spacing, scale)) - align(ptsToSpx(m_padding, scale));
 	}
 
 	//____ _contentBorder() ___________________________________________________
 
 	BorderSPX Skin::_contentBorder(int scale, State state) const
 	{
-		return align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_padding, scale));
+		return align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_padding, scale));
 	}
 
 	//____ _contentBorderSize() _______________________________________________
 
 	SizeSPX Skin::_contentBorderSize(int scale) const
 	{
-		return SizeSPX(align(ptsToSpx(m_margin, scale))) + SizeSPX(align(ptsToSpx(m_padding, scale)));
+		return SizeSPX(align(ptsToSpx(m_spacing, scale))) + SizeSPX(align(ptsToSpx(m_padding, scale)));
 	}
 
 	//____ _renderBounds() _______________________________________________________
 
 	RectSPX Skin::_renderBounds(const RectSPX& geo, int scale) const
 	{
-		return geo - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		return geo - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 	}
 
 

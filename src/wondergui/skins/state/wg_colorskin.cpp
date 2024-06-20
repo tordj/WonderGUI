@@ -91,7 +91,7 @@ namespace wg
 	RectSPX ColorSkin::_coverage(const RectSPX& geo, int scale, State state) const
 	{
 		if( (m_color[state].a == 4096 && m_blendMode == BlendMode::Blend) || m_blendMode == BlendMode::Replace )
-			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+			return geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
 		else
 			return RectSPX();
 	}
@@ -103,14 +103,14 @@ namespace wg
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		int i = state;
-		pDevice->fill( canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale)), m_color[i] );
+		pDevice->fill( canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale)), m_color[i] );
 	}
 
 	//____ _markTest() _____________________________________________________________
 
 	bool ColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale));
 
 		if( !canvas.contains(ofs) )
 			return false;
@@ -134,7 +134,7 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		if (m_color[i1] != m_color[i2])
 			return canvas;

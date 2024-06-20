@@ -75,7 +75,7 @@ namespace wg
 		
 		//.____ Misc ____________________________________________________
 
-		inline Border	margin() const { return m_margin; }
+		inline Border	margin() const { return m_spacing; }
 		inline Border	padding() const { return m_padding; }
 		inline Border	overflow() const { return m_overflow; }
 
@@ -87,7 +87,7 @@ namespace wg
 		virtual SizeSPX		_minSize(int scale) const;
 		virtual SizeSPX		_defaultSize(int scale) const;
 
-		inline  bool		_hasMargin() const { return m_margin.isEmpty();  }
+		inline  bool		_hasMargin() const { return m_spacing.isEmpty();  }
 		virtual BorderSPX	_margin(int scale, State state) const;
 		virtual SizeSPX		_marginSize(int scale) const;
 		
@@ -142,7 +142,7 @@ namespace wg
 		template<class BP> Skin(const BP& bp)
 		{
 			m_layer		= bp.layer;
-			m_margin	= bp.margin;
+			m_spacing	= bp.spacing;
 			m_padding	= bp.padding;
 			m_markAlpha = bp.markAlpha;
 		
@@ -150,9 +150,9 @@ namespace wg
 			{
 				m_overflow = bp.overflow;
 
-				auto realOverflow = bp.overflow - bp.margin;
-				if( bp.overflow.top - bp.margin.top > 0 || bp.overflow.right - bp.margin.right > 0 ||
-				   bp.overflow.bottom - bp.margin.bottom > 0 || bp.overflow.left - bp.margin.left > 0 )
+				auto realOverflow = bp.overflow - bp.spacing;
+				if( bp.overflow.top - bp.spacing.top > 0 || bp.overflow.right - bp.spacing.right > 0 ||
+				   bp.overflow.bottom - bp.spacing.bottom > 0 || bp.overflow.left - bp.spacing.left > 0 )
 					m_bGeoOverflow = true;
 			}
 			
@@ -172,7 +172,7 @@ namespace wg
 		void			_adjustOverflow();
 		
 
-		Border			m_margin;
+		Border			m_spacing;
 		Border			m_padding;
 		Border			m_overflow;
 

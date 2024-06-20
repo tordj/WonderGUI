@@ -70,10 +70,10 @@ namespace wg
 			Finalizer_p	finalizer = nullptr;
 			Gradient	gradient = HiColor::White;
 			int			layer = -1;
-			Border		margin;
 			int			markAlpha = 1;
 			Border		overflow;
 			Border		padding;
+			Border		spacing;
 
 			std::vector<StateBP>	states;
 		};

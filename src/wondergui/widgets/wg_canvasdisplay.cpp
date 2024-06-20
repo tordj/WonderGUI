@@ -52,23 +52,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setSkin() ___________________________________________________________
-
-	void CanvasDisplay::setSkin(Skin* pSkin)
-	{
-
-		Widget::setSkin(pSkin);
-
-		// Undo setting of m_bOpaque in case skin might not cover whole widget.
-
-		//TODO: m_bSkinAroundCanvas can be set and widget still be opaque depending
-		// on how size is set. Would be more optimal to do this when resizing widget and canvas.
-
-		if (m_bSkinAroundCanvas)
-			m_bOpaque = false;
-	}
-
-
 	//____ setCanvas() ________________________________________________________
 
 	void CanvasDisplay::setCanvas(CanvasCapsule* pCanvas)

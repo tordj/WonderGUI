@@ -95,7 +95,6 @@ namespace wg
 			Border		frame;
 			Gradient	gradient;
 			int			layer = -1;
-			Border		margin;
 			int			markAlpha = 1;
 			Border		overflow;
 			Border		padding;
@@ -103,6 +102,7 @@ namespace wg
 			RigidPartXBlueprint	rigidPartX;
 			RigidPartYBlueprint rigidPartY;
 
+			Border		spacing;
 			std::vector<StateBP>	states;
 			
 			Surface_p	surface;					// Mandatory!

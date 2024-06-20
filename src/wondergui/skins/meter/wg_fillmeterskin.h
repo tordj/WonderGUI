@@ -53,7 +53,6 @@ namespace wg
 			Gradient	gradient;
 
 			int			layer = -1;
-			Border		margin;
 			int			markAlpha = 1;
 
 			HiColor		maxColor = HiColor::Undefined;		// Overrides barColor when both min/max are set
@@ -61,6 +60,7 @@ namespace wg
 
 			Border		overflow;
 			Border		padding;
+			Border		spacing;
 			bool		startFromCenter = false;
 			pts			startLength = 0;
 		};

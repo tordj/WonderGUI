@@ -1848,7 +1848,7 @@ bool sliderTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pSliderX = Slider::create();
 	{
 //		auto pBgSkin = FillMeterSkin::create( Direction::Right, Color::Green, Color::Green, Color::Black, Border(0,10,0,10), Border(), true );
-		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black, .color = Color::Green, .margin = Border(0,10,0,10) } );
+		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black, .color = Color::Green, .spacing = Border(0,10,0,10) } );
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->setSkin( pBgSkin );
@@ -1863,7 +1863,7 @@ bool sliderTest(ComponentPtr<DynamicSlot> pSlot)
 											    _.color = Color::Green,
 												_.backColor = Color::Black,
 												_.direction = Direction::Up,
-												_.margin = Border(10,0,10,0) ));
+												_.spacing = Border(10,0,10,0) ));
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin( pBgSkin );
@@ -1891,7 +1891,7 @@ bool rangeSliderTest(ComponentPtr<DynamicSlot> pSlot)
 		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black,
 										.color = Color::Green,
 										.direction = Direction::Right,
-										.margin = Border(0,10,0,10) });
+										.spacing = Border(0,10,0,10) });
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->setSkin( pBgSkin );
@@ -1905,7 +1905,7 @@ bool rangeSliderTest(ComponentPtr<DynamicSlot> pSlot)
 		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black,
 												.color = Color::Green,
 												.direction = Direction::Up,
-												.margin = Border(10,0,10,0) });
+												.spacing = Border(10,0,10,0) });
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin( pBgSkin );
@@ -2361,10 +2361,10 @@ bool scrollSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pSliderSkin = BlockSlideSkin::create({
 											.blockLength = 84,
+											.blockSpacing = 0,
 											.slideDirection = Direction::Left,
 											.slideDuration = 100,
 											.slideState = StateBits::Selected,
-											.spacing = 0,
 											.states = { State::Default, {}, State::Hovered, {}, State::Disabled, {} },
 											.surface = pSliderSurf });
 
@@ -3230,10 +3230,10 @@ bool plotChartTest(ComponentPtr<DynamicSlot> pEntry)
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pPaneSkin = BoxSkin::create( { .color = Color8::White,
-										.margin = 5,
 										.outlineColor = Color8::Black,
 										.outlineThickness = 1,
-										.padding = 3
+										.padding = 3,
+										.spacing = 5
 	});
 	
 	auto pPane1 = Filler::create( { .skin = pPaneSkin });
@@ -3347,11 +3347,11 @@ bool skinMarginTest(ComponentPtr<DynamicSlot> pEntry)
 	pPanel->setAxis(Axis::X);
 
 	auto pContent1 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } } );
-	pContent1->setSkin(ColorSkin::create( { .color = Color::Red, .margin = 20 } ));
+	pContent1->setSkin(ColorSkin::create( { .color = Color::Red, .spacing = 20 } ));
 	pPanel->slots[0] = pContent1;
 
 	auto pContent2 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } });
-	pContent2->setSkin(ColorSkin::create( { .color = Color::Green, .margin = 50 }));
+	pContent2->setSkin(ColorSkin::create( { .color = Color::Green, .spacing = 50 }));
 	pPanel->slots[1] = pContent2;
 
 
@@ -3535,11 +3535,11 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	pPanel->setAxis(Axis::X);
 
 	auto pContent1 = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .text = "TEST1" } } );
-	pContent1->setSkin(ColorSkin::create( { .color = Color::Red, .margin = 20 } ));
+	pContent1->setSkin(ColorSkin::create( { .color = Color::Red, .spacing = 20 } ));
 	pPanel->slots[0] = pContent1;
 
 	auto pContent2 = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .text = "TEST2" } });
-	pContent2->setSkin(ColorSkin::create( { .color = Color::Green, .margin = 50 }));
+	pContent2->setSkin(ColorSkin::create( { .color = Color::Green, .spacing = 50 }));
 	pPanel->slots[1] = pContent2;
 
 	
@@ -3779,10 +3779,10 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 bool packPanelStressTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pPaneSkin = BoxSkin::create( { .color = Color8::White,
-										.margin = 5,
 										.outlineColor = Color8::Black,
 										.outlineThickness = 1,
-										.padding = 3
+										.padding = 3,
+										.spacing = 5
 	});
 	
 	auto pButtonSkin = BoxSkin::create( { .color = Color8::Grey,
@@ -3850,10 +3850,10 @@ bool packPanelStressTest(ComponentPtr<DynamicSlot> pEntry)
 bool packPanelStressTest2(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pPaneSkin = BoxSkin::create({ .color = Color8::White,
-										.margin = 5,
 										.outlineColor = Color8::Black,
 										.outlineThickness = 1,
-										.padding = 3
+										.padding = 3,
+										.spacing = 5
 		});
 
 	auto pButtonSkin = BoxSkin::create({ .color = Color8::Grey,

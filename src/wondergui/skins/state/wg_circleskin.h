@@ -79,7 +79,6 @@ namespace wg
 
 			Finalizer_p		finalizer = nullptr;
 			int				layer = -1;
-			Border			margin;
 			int				markAlpha = 1;
 
 			HiColor			outlineColor = HiColor::Black;
@@ -87,6 +86,7 @@ namespace wg
 			Border			overflow;
 			Border			padding;
 			float			size = 1;
+			Border			spacing;
 
 			std::vector<StateBP>	states;
 

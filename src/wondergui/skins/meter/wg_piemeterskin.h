@@ -65,7 +65,6 @@ namespace wg
 			float		hubSize = 0.75f;
 
 			int			layer = -1;
-			Border		margin;
 			int			markAlpha = 1;
 
 			float		length = 360;
@@ -81,7 +80,8 @@ namespace wg
 			float		rotation = 0.f;
 
 			Slice		slices[c_maxSlices];
-			
+			Border		spacing;
+
 			bool		startFromCenter = false;
 
 		};

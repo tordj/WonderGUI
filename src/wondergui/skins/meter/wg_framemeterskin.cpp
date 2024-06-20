@@ -80,14 +80,14 @@ namespace wg
 
 	SizeSPX FrameMeterSkin::_defaultSize(int scale) const
 	{
-		return SizeSPX::max(align(ptsToSpx(m_size,scale)), align(ptsToSpx(m_padding,scale))) + align(ptsToSpx(m_margin, scale)).size();
+		return SizeSPX::max(align(ptsToSpx(m_size,scale)), align(ptsToSpx(m_padding,scale))) + align(ptsToSpx(m_spacing, scale)).size();
 	}
 
 	//____ _minSize() ______________________________________________________________
 
 	SizeSPX FrameMeterSkin::_minSize(int scale) const
 	{
-		return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_padding,scale)))) + align(ptsToSpx(m_margin, scale)).size();
+		return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_padding,scale)))) + align(ptsToSpx(m_spacing, scale)).size();
 	}
 
 
@@ -100,7 +100,7 @@ namespace wg
 		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 		{
-			RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+			RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 			
 			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
@@ -120,7 +120,7 @@ namespace wg
 		//TODO: Support flip!
 		//TODO: Support tint!
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale));
 
 		if (!canvas.contains(ofs))
 			return false;
@@ -157,7 +157,7 @@ namespace wg
 		if (pOldFrame == pNewFrame)
 			return RectSPX();
 		else
-			return canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+			return canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 	}
 
 	//____ _coverage() _______________________________________________________
@@ -165,7 +165,7 @@ namespace wg
 	RectSPX FrameMeterSkin::_coverage(const RectSPX& geo, int scale, State state) const
 	{
 		if (m_bOpaque)
-			return geo - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+			return geo - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 		else
 			return RectSPX();
 	}

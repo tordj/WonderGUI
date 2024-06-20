@@ -71,12 +71,12 @@ namespace wg
 			HiColor			color = HiColor::White;
 			Finalizer_p		finalizer = nullptr;
 			int				layer = -1;
-			Border			margin;
 			int				markAlpha = 1;
 			HiColor			outlineColor = HiColor::Black;
 			Border			outlineThickness = 1;
 			Border			overflow;
 			Border			padding;
+			Border			spacing;
 
 			std::vector<StateBP>	states;
 		};

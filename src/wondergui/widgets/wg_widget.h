@@ -375,7 +375,6 @@ namespace wg
 
 		bool            m_bDropTarget = false;			// Set if this widget accepts to be the target of drag-n-drop operations.
 
-		bool			m_bOpaque = false;				// Set if widget is totally opaque, no need to render anything behind.
 		bool			m_bTabLock = false;				// If set, the widget prevents focus shifting away from it with tab.
 		bool			m_bSelectable = true;			// Set if widget is allowed to be selected.
 		uint8_t			m_receivingUpdateCounter = 0;	//

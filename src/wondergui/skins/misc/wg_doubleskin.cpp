@@ -86,9 +86,9 @@ namespace wg
 	SizeSPX DoubleSkin::_minSize(int scale) const
 	{
 		if (m_bSkinInSkin)
-			return m_pBackSkin->_sizeForContent(m_pFrontSkin->_minSize(scale),scale) + align(ptsToSpx(m_margin, scale));
+			return m_pBackSkin->_sizeForContent(m_pFrontSkin->_minSize(scale),scale) + align(ptsToSpx(m_spacing, scale));
 		else
-			return SizeSPX::max(m_pFrontSkin->_minSize(scale), m_pBackSkin->_minSize(scale)) + align(ptsToSpx(m_margin, scale));
+			return SizeSPX::max(m_pFrontSkin->_minSize(scale), m_pBackSkin->_minSize(scale)) + align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _defaultSize() _________________________________________________
@@ -98,7 +98,7 @@ namespace wg
 		if (m_bSkinInSkin)
 			return SizeSPX::max(m_pBackSkin->_sizeForContent(m_pFrontSkin->_defaultSize(scale),scale), m_pBackSkin->_defaultSize(scale));
 		else
-			return SizeSPX::max(m_pFrontSkin->_defaultSize(scale), m_pBackSkin->_defaultSize(scale)) + align(ptsToSpx(m_margin, scale));
+			return SizeSPX::max(m_pFrontSkin->_defaultSize(scale), m_pBackSkin->_defaultSize(scale)) + align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _sizeForContent() ________________________________________________
@@ -106,10 +106,10 @@ namespace wg
 	SizeSPX DoubleSkin::_sizeForContent(const SizeSPX& contentSize, int scale) const
 	{
 		if (m_bSkinInSkin)
-			return m_pBackSkin->_sizeForContent(m_pFrontSkin->_sizeForContent(contentSize, scale), scale) + align(ptsToSpx(m_margin, scale));
+			return m_pBackSkin->_sizeForContent(m_pFrontSkin->_sizeForContent(contentSize, scale), scale) + align(ptsToSpx(m_spacing, scale));
 		else
 		{
-			return SizeSPX::max(m_pFrontSkin->_sizeForContent(contentSize, scale), m_pBackSkin->_minSize(scale)) + align(ptsToSpx(m_margin, scale));
+			return SizeSPX::max(m_pFrontSkin->_sizeForContent(contentSize, scale), m_pBackSkin->_minSize(scale)) + align(ptsToSpx(m_spacing, scale));
 		}
 	}
 
@@ -148,11 +148,11 @@ namespace wg
 	CoordSPX DoubleSkin::_contentOfs(int scale, State state) const
 	{
 		if( m_bContentPaddingSet )
-			return align(ptsToSpx(Coord(m_padding.left, m_padding.top),scale)) + align(ptsToSpx(Coord(m_margin.left, m_margin.top), scale));
+			return align(ptsToSpx(Coord(m_padding.left, m_padding.top),scale)) + align(ptsToSpx(Coord(m_spacing.left, m_spacing.top), scale));
 		else if( m_bSkinInSkin )
-			return m_pFrontSkin->_contentOfs(scale, state) + m_pBackSkin->_contentOfs(scale, state) + align(ptsToSpx(Coord(m_margin.left, m_margin.top), scale));
+			return m_pFrontSkin->_contentOfs(scale, state) + m_pBackSkin->_contentOfs(scale, state) + align(ptsToSpx(Coord(m_spacing.left, m_spacing.top), scale));
 		else
-			return m_pFrontSkin->_contentOfs(scale, state) + align(ptsToSpx(Coord(m_margin.left, m_margin.top), scale));
+			return m_pFrontSkin->_contentOfs(scale, state) + align(ptsToSpx(Coord(m_spacing.left, m_spacing.top), scale));
 	}
 
 	//____ _contentRect() _____________________________________________________
@@ -160,11 +160,11 @@ namespace wg
 	RectSPX DoubleSkin::_contentRect(const RectSPX& canvas, int scale, State state) const
 	{
 		if (m_bContentPaddingSet)
-			return canvas - align(ptsToSpx(m_padding,scale)) - align(ptsToSpx(m_margin, scale));
+			return canvas - align(ptsToSpx(m_padding,scale)) - align(ptsToSpx(m_spacing, scale));
 
 		RectSPX content = m_bSkinInSkin ? m_pBackSkin->_contentRect(canvas, scale, state) : canvas;
 
-		content -= align(ptsToSpx(m_margin, scale));
+		content -= align(ptsToSpx(m_spacing, scale));
 		
 		return m_pFrontSkin->_contentRect(content, scale, state);
 	}
@@ -174,9 +174,9 @@ namespace wg
 	BorderSPX DoubleSkin::_contentBorder(int scale, State state) const
 	{
 		if (m_bContentPaddingSet)
-			return align(ptsToSpx(m_padding,scale)) + align(ptsToSpx(m_margin, scale));
+			return align(ptsToSpx(m_padding,scale)) + align(ptsToSpx(m_spacing, scale));
 
-		BorderSPX border = align(ptsToSpx(m_margin, scale));
+		BorderSPX border = align(ptsToSpx(m_spacing, scale));
 		if( m_bSkinInSkin )
 			border += m_pBackSkin->_contentBorder(scale, state);
 		
@@ -188,9 +188,9 @@ namespace wg
 	SizeSPX DoubleSkin::_contentBorderSize(int scale) const
 	{
 		if (m_bContentPaddingSet)
-			return align(ptsToSpx(m_padding,scale)).size() + align(ptsToSpx(m_margin, scale)).size();
+			return align(ptsToSpx(m_padding,scale)).size() + align(ptsToSpx(m_spacing, scale)).size();
 
-		SizeSPX sz = align(ptsToSpx(m_margin, scale)).size();
+		SizeSPX sz = align(ptsToSpx(m_spacing, scale)).size();
 		if( m_bSkinInSkin )
 			sz += m_pBackSkin->_contentBorderSize(scale);
 		
@@ -201,7 +201,7 @@ namespace wg
 
 	bool DoubleSkin::_markTest(const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
-		RectSPX canvas = _canvas  - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas  - align(ptsToSpx(m_spacing, scale));
 		
 		if (m_pBackSkin->_markTest(ofs, canvas, scale, state, value, value2, alphaOverride ))
 			return true;
@@ -214,7 +214,7 @@ namespace wg
 
 	void DoubleSkin::_render(GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RectSPX canvas = _canvas  - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas  - align(ptsToSpx(m_spacing, scale));
 
 		int oldLayer = -1;
 		if (m_layer != -1)
@@ -252,7 +252,7 @@ namespace wg
 
 	RectSPX DoubleSkin::_coverage(const RectSPX& _geo, int scale, State state) const
 	{
-		RectSPX geo = _geo - align(ptsToSpx(m_margin, scale));
+		RectSPX geo = _geo - align(ptsToSpx(m_spacing, scale));
 
 		RectSPX backCoverage = m_pBackSkin->_coverage(geo, scale, state);
 		
@@ -274,7 +274,7 @@ namespace wg
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		RectSPX canvas = _canvas  - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas  - align(ptsToSpx(m_spacing, scale));
 
 		RectSPX dirt1 = m_pBackSkin->_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);

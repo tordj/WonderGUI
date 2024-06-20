@@ -55,13 +55,13 @@ namespace wg
 			Border				gfxPadding;
 			Gradient			gradient;
 			int					layer = -1;
-			Border				margin;
 			int					markAlpha = 1;
 			Border				overflow;
 			Border				padding;
 			CoordF				pivot = { 0.5f, 0.5f };
 			CoordF				placement = { 0.5f, 0.5f };
 			ValueTransition_p	returnTransition;
+			Border				spacing;
 			Surface_p			surface;								// Mandatory
 			ValueTransition_p	transition;
 			float				zoom = 1.f;

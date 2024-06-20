@@ -70,11 +70,6 @@ namespace wg
 		}
 		
 		Capsule::setSkin(pSkin);
-		
-		// Undo setting of m_bOpaque in case skin might not cover whole widget.
-		
-		if( m_bScaleCanvas && m_bSkinAroundCanvas )
-			m_bOpaque = false;
 	}
 
 

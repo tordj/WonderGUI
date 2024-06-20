@@ -92,7 +92,7 @@ namespace wg
 
 		// Scale zoom to fit content of default size into canvas size.
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		if (!m_defaultSize.isEmpty())
 		{
@@ -150,14 +150,14 @@ namespace wg
 
 	SizeSPX SpinAnimSkin::_defaultSize(int scale) const
 	{
-		return SizeSPX(align(ptsToSpx(m_margin, scale))) + align(ptsToSpx(m_defaultSize, scale));
+		return SizeSPX(align(ptsToSpx(m_spacing, scale))) + align(ptsToSpx(m_defaultSize, scale));
 	}
 
 	//____ _markTest() _________________________________________________________
 
 	bool SpinAnimSkin::_markTest(const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride ) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale));
 
 		if (!canvas.contains(ofs))
 			return false;
@@ -189,7 +189,7 @@ namespace wg
 		if (newAnimPos == oldAnimPos)
 			return RectSPX();
 
-		return _canvas - align(ptsToSpx(m_margin, scale))  + align(ptsToSpx(m_overflow, scale));
+		return _canvas - align(ptsToSpx(m_spacing, scale))  + align(ptsToSpx(m_overflow, scale));
 	}
 
 	//____ _animationLength() __________________________________________________

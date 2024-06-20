@@ -109,7 +109,7 @@ namespace wg
 
 	void GradientSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow, scale));
 
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, HiColor::White, canvas, m_gradient[state]);
 		
@@ -121,7 +121,7 @@ namespace wg
 	RectSPX GradientSkin::_coverage(const RectSPX& geo, int scale, State state) const
 	{
 		if( m_bOpaque )
-			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+			return geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
 		else
 			return RectSPX();
 	}
@@ -130,7 +130,7 @@ namespace wg
 
 	bool GradientSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing,scale));
 
 		if (!canvas.contains(ofs) )
 			return false;
@@ -164,7 +164,7 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		if (m_gradient[i1] != m_gradient[i2])
 			return canvas;

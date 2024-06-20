@@ -58,12 +58,11 @@ namespace wg
 			Border					gfxPadding;
 			Gradient				gradient;
 			int						layer = -1;
-			Border					margin;
 			int						markAlpha = 1;
 			Border					overflow;
 			Border					padding;
-
 			Size					size;			// Mandatory
+			Border					spacing;
 			Surface_p				surface;		// Mandatory
 
 		};

@@ -46,13 +46,13 @@ namespace wg
 		{
 			Finalizer_p	finalizer = nullptr;
 			int			layer = -1;
-			Border		margin;
 			int			markAlpha = 1;
 			Border		overflow;
 			Border		padding;
 
 			bool		skinInSkin = true;
 			Skin_p		skins[2];
+			Border		spacing;
 		};
 
 		//.____ Creation __________________________________________

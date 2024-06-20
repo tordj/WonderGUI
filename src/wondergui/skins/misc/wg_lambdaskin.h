@@ -51,13 +51,13 @@ namespace wg
 			bool			ignoreState = false;
 			bool			ignoreValue = false;
 			int				layer = -1;
-			Border			margin;
 			int				markAlpha = 1;
 			MarkTestFunc	markTestFunc;
 			bool			opaque = false;
 			Border			overflow;
 			Border			padding;
 			RenderFunc		renderFunc;
+			Border			spacing;
 		};
 
 		//.____ Creation __________________________________________

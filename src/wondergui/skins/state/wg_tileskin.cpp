@@ -122,7 +122,7 @@ namespace wg
 		if( !pSurf )
 			return;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
 
@@ -141,7 +141,7 @@ namespace wg
 		if (pSurface)
 			surface = align(ptsToSpx(pSurface->pointSize(),scale));
 
-		return SizeSPX::max(content, surface) + align(ptsToSpx(m_margin, scale));
+		return SizeSPX::max(content, surface) + align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _markTest() _____________________________________________________________
@@ -154,7 +154,7 @@ namespace wg
 
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale));
 		
 		if( !canvas.contains(_ofs) )
 			return false;
@@ -176,7 +176,7 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 
 		if(m_stateSurfaces[i1] != m_stateSurfaces[i2])
 			return canvas;
@@ -190,7 +190,7 @@ namespace wg
 	RectSPX TileSkin::_coverage(const RectSPX& geo, int scale, State state) const
 	{
 		if( m_bStateOpaque[state] )
-			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+			return geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
 		else
 			return RectSPX();
 	}

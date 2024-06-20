@@ -108,7 +108,7 @@ namespace wg
 
 	BorderSPX StateSkin::_contentBorder(int scale, State state) const
 	{
-		BorderSPX b = align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_padding, scale));
+		BorderSPX b = align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_padding, scale));
 		CoordSPX ofs = align(ptsToSpx(m_contentShift[state], scale));
 
 		b.left += ofs.x;
@@ -122,14 +122,14 @@ namespace wg
 
 	RectSPX StateSkin::_contentRect( const RectSPX& canvas, int scale, State state ) const
 	{
-		return canvas - align(ptsToSpx(m_margin, scale)) - align(ptsToSpx(m_padding,scale)) + align(ptsToSpx(m_contentShift[state],scale));
+		return canvas - align(ptsToSpx(m_spacing, scale)) - align(ptsToSpx(m_padding,scale)) + align(ptsToSpx(m_contentShift[state],scale));
 	}
 
 	//____ _contentofs() __________________________________________________________
 
 	CoordSPX StateSkin::_contentOfs( int scale, State state ) const
 	{
-		return align(ptsToSpx(Coord(m_margin.left, m_margin.top), scale)) +
+		return align(ptsToSpx(Coord(m_spacing.left, m_spacing.top), scale)) +
 			   align(ptsToSpx(Coord(m_padding.left, m_padding.top), scale)) + 
 			   align(ptsToSpx(m_contentShift[state], scale));
 	}
@@ -143,7 +143,7 @@ namespace wg
 		if (m_contentShift[newState] == m_contentShift[oldState])
 			return RectSPX();
 		else
-			return canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+			return canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 	}
 
 	//____ _updateContentShift() _________________________________________________

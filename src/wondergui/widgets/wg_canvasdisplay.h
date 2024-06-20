@@ -94,8 +94,6 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
-		void		setSkin(Skin* pSkin) override;
-
 		void		setCanvas(CanvasCapsule* pCanvas);
 		CanvasCapsule_p	canvas() const { return m_pCanvas.rawPtr(); }
 

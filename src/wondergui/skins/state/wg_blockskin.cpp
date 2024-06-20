@@ -529,7 +529,7 @@ namespace wg
 		if( !m_pSurface )
 			return;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		int idx = state;
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
@@ -548,7 +548,7 @@ namespace wg
 	{
 		SizeSPX content = align(ptsToSpx(m_padding,scale));
 		SizeSPX frame = align(ptsToSpx(m_ninePatch.frame,scale));
-		return SizeSPX::max( content, frame ) + align(ptsToSpx(m_margin, scale));
+		return SizeSPX::max( content, frame ) + align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _defaultSize() ________________________________________________________
@@ -558,7 +558,7 @@ namespace wg
         //This takes the scale of the surface into account
         // Default size is when each point of the surface maps to a point of the skinarea.
         
-		return align(ptsToSpx(m_ninePatch.block.size(),scale)) + align(ptsToSpx(m_margin, scale));
+		return align(ptsToSpx(m_ninePatch.block.size(),scale)) + align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _sizeForContent() _______________________________________________________
@@ -568,7 +568,7 @@ namespace wg
 		SizeSPX sz = StateSkin::_sizeForContent(contentSize,scale);
 		SizeSPX min = align(ptsToSpx(m_ninePatch.frame,scale));
 
-		return SizeSPX::max(sz, min) + align(ptsToSpx(m_margin, scale));
+		return SizeSPX::max(sz, min) + align(ptsToSpx(m_spacing, scale));
 	}
 
 	//____ _markTest() _____________________________________________________________
@@ -577,7 +577,7 @@ namespace wg
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale));
 
 		if( !canvas.contains(_ofs) )
 			return false;
@@ -604,7 +604,7 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		if (m_stateBlocks[i1] != m_stateBlocks[i2])
 			return canvas;
@@ -618,7 +618,7 @@ namespace wg
 	RectSPX BlockSkin::_coverage(const RectSPX& geo, int scale, State state) const
 	{
 		if( m_bStateOpaque[state] )
-			return geo - align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_overflow,scale));
+			return geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
 		else
 			return RectSPX();
 	}
