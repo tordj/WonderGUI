@@ -320,20 +320,22 @@ namespace wg
 
 	//____ _render() _____________________________________________________
 	// Default implementation for panel rendering patches.
-	class WidgetRenderContext
-	{
-	public:
-		WidgetRenderContext() : pWidget(0) {}
-		WidgetRenderContext( Widget * pWidget, const RectSPX& geo, const RectSPX& renderArea ) : pWidget(pWidget), geo(geo), renderArea(renderArea) {}
-
-		Widget *	pWidget;
-		RectSPX		geo;
-		RectSPX		renderArea;
-		ClipPopData clipPop;
-	};
 
 	void Container::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
+		class WidgetRenderContext
+		{
+		public:
+			WidgetRenderContext() : pWidget(0) {}
+			WidgetRenderContext( Widget * pWidget, const RectSPX& geo, const RectSPX& renderArea ) : pWidget(pWidget), geo(geo), renderArea(renderArea) {}
+
+			Widget *	pWidget;
+			RectSPX		geo;
+			RectSPX		renderArea;
+			ClipPopData clipPop;
+		};
+
+
 		// Render container itself
 
 		m_skin.render(pDevice, _canvas, m_scale, m_state );

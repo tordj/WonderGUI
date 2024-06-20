@@ -70,8 +70,8 @@ namespace wg
 			ClipPopData() : bInitialized(false) {}
 			ClipPopData(int _nRects, const RectSPX * _pRects, int _reservedMem ) : nRects(_nRects), pRects(_pRects), reservedMem(_reservedMem), bInitialized(true) {}
 
-			int nRects;
 			const RectSPX * pRects;
+			int nRects;
 			int reservedMem;
 			bool bInitialized;
 		};

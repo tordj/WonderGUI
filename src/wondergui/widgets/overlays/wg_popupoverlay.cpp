@@ -404,19 +404,21 @@ namespace wg
 
 	//____ _render() ___________________________________________________
 
-	class WidgetRenderContext
-	{
-	public:
-		WidgetRenderContext() : pSlot(0) {}
-		WidgetRenderContext(PopupOverlay::Slot * pSlot, const RectSPX& geo) : pSlot(pSlot), geo(geo) {}
-
-		PopupOverlay::Slot *	pSlot;
-		RectSPX		geo;
-		ClipPopData clipPop;
-	};
 
 	void PopupOverlay::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
+		class WidgetRenderContext
+		{
+		public:
+			WidgetRenderContext() : pSlot(0) {}
+			WidgetRenderContext(PopupOverlay::Slot * pSlot, const RectSPX& geo) : pSlot(pSlot), geo(geo) {}
+
+			PopupOverlay::Slot *	pSlot;
+			RectSPX		geo;
+			ClipPopData clipPop;
+		};
+
+
 		// Render container itself
 
 		m_skin.render(pDevice, _canvas, m_scale, m_state);
