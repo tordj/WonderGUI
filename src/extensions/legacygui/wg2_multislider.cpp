@@ -950,8 +950,8 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			const WgEvent::MouseButtonPress * pEv = static_cast<const WgEvent::MouseButtonPress*>(pEvent);
 			WgCoord	pointerPos = pEvent->PointerPixelPos();
-			
-			
+
+
 			// Find pressed slider and whether handle was pressed
 
 			WgCoord markOfs;
@@ -1092,7 +1092,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
-			
+
 			const WgEvent::MouseButtonRelease * p = static_cast<const WgEvent::MouseButtonRelease*>(pEvent);
 
 			if( m_ignoredPresses[p->Button()] == true )
@@ -1102,7 +1102,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 				break;
 			}
 
-			
+
 			if (!m_state.isDisabled() && p->Button() == 1)
 			{
 				m_state.setPressed(false);
@@ -1137,7 +1137,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 				WgWidget::_onEvent(pEvent, pHandler);
 				break;
 			}
-			
+
             if( pEv->Button() != 1 || m_state.isDisabled() || (m_overrideModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier) ) )
                 break;
 
@@ -1338,7 +1338,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			break;
 		}
-			
+
 		case WG_EVENT_MOUSEBUTTON_CLICK:
 		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 		case WG_EVENT_MOUSEBUTTON_REPEAT:
@@ -1755,10 +1755,9 @@ WgRect  WgMultiSlider::_sliderHandleGeo(const Slider& slider, const WgRect& slid
 	WgSize sz = pSkin ? _skinPreferredSize( pSkin, m_scale) : WgSize(0,0);
 	WgCoordF handleHotspot = slider.handleHotspot.x == -1.f ? m_defaultHandleHotspot : slider.handleHotspot;
 
-
-	WgCoord pos = { (int)(slider.handlePos.x * sliderGeo.w), (int)(slider.handlePos.y * sliderGeo.h) };
+	WgCoord pos = WgCoord( std::round(slider.handlePos.x * sliderGeo.w), std::round(slider.handlePos.y * sliderGeo.h) );
 	pos += sliderGeo.pos();
-	pos -= { (int)(handleHotspot.x * sz.w), (int)(handleHotspot.y * sz.h) };
+	pos -= WgCoord( std::round(handleHotspot.x * sz.w), std::round(handleHotspot.y * sz.h) );
 
 	return { pos,sz };
 }
