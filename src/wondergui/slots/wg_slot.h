@@ -104,7 +104,17 @@ namespace wg
 			}
 		}
 
-
+		inline void _clearWidget()
+		{
+			if (m_pWidget)
+			{
+				m_pWidget->_setSlot(nullptr);
+				m_pWidget->_decRefCount();
+				m_pWidget = nullptr;
+			}
+		}
+		
+		
 	protected:
 		const static bool safe_to_relocate = true;
 

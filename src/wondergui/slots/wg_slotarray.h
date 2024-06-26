@@ -51,7 +51,7 @@ namespace wg
 		inline int		size() const { return SIZE; }
 		inline bool		isEmpty() const { return false; }		// Technically never empty since that would mean has no slots.
 
-		inline SlotType& at(int index) const
+		inline SlotType& at(int index)
 		{
 			if (index < 0 || index >= SIZE)
 			{
@@ -64,6 +64,20 @@ namespace wg
 			return m_slots[index];
 		}
 
+		inline const SlotType& at(int index) const
+		{
+			if (index < 0 || index >= SIZE)
+			{
+				auto pObject = dynamic_cast<Object*>(m_pHolder);
+				const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+
+				Base::throwError(ErrorLevel::Error, ErrorCode::OutOfRange, "Slot index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
+			}
+
+			return m_slots[index];
+		}
+
+		
 		int		index(const Widget * pWidget) const
 		{
 			auto pSlot = static_cast<SlotType*>(pWidget->_slot());

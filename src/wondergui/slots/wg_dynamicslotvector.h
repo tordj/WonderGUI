@@ -71,7 +71,7 @@ namespace wg
 		inline int		size() const { return m_size; }
 		inline bool		isEmpty() const { return (m_size == 0); }
 
-		inline SlotType& at(int index) const
+		inline SlotType& at(int index)
 		{
 			if (index < 0 || index >= m_size)
 			{
@@ -84,6 +84,19 @@ namespace wg
 			return m_pArray[index];
 		}
 
+		inline const SlotType& at(int index) const
+		{
+			if (index < 0 || index >= m_size)
+			{
+				auto pObject = dynamic_cast<Object*>(m_pHolder);
+				const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+
+				Base::throwError(ErrorLevel::Error, ErrorCode::OutOfRange, "Slot index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
+			}
+
+			return m_pArray[index];
+		}
+		
 		inline int		index(const Widget * pWidget) const
 		{
 			auto pSlot = static_cast<SlotType*>(pWidget->_slot());
