@@ -25,6 +25,7 @@
 #pragma once
 
 #include <wg_base.h>
+#include <wg_slot.h>
 
 namespace wg
 {
@@ -40,8 +41,11 @@ namespace wg
 
 		class Holder
 		{
+			friend class SlotTable;
+
 			virtual void	_refreshTable() = 0;
 			virtual void	_refreshSlots(int ofs, Axis axis, int nSlots) = 0;
+			virtual Object*	_object() = 0;
 		};
 
 		class RowAccess
@@ -58,19 +62,33 @@ namespace wg
 			DynamicSlot * m_pSlot;
 		};
 		
-		
-		using		iterator = DynamicSlot *;
-		using		const_iterator = const DynamicSlot *;
+		class ConstRowAccess
+		{
+			friend class SlotTable;
+		public:
+			inline const DynamicSlot& operator[](int index) const { return m_pSlot[index]; }
 
-		SlotTable(SlotHolder * pHolder, Holder * pTableHolder ) : m_pHolder(pHolder), m_pTableHolder(pTableHolder) {}
+		private:
+			ConstRowAccess(const DynamicSlot* pSlot) : m_pSlot(pSlot) {}
+
+			const DynamicSlot* m_pSlot;
+		};
+
+
+
+		using		iterator = std::vector<DynamicSlot>::iterator; // DynamicSlot*;
+		using		const_iterator = std::vector<DynamicSlot>::const_iterator; // const DynamicSlot*;
+
+		SlotTable(SlotHolder * pHolder, Holder * pTableHolder ) : m_pHolder(pHolder), m_pTableHolder(pTableHolder), m_dummySlot(pHolder) {}
 		~SlotTable() {  }
 
-		
+
 		iterator			begin() { return m_slots.begin(); }
 		const_iterator		begin() const { return m_slots.begin(); }
 
 		iterator			end() { return m_slots.end(); }
 		const_iterator		end() const { return m_slots.end(); }
+
 		
 		void				clear();
 
@@ -80,13 +98,13 @@ namespace wg
 		DynamicSlot&		at(int row, int column);
 		const DynamicSlot&	at(int row, int column) const;
 				
-		void				replaceRow(int index, const std::initializer_list<Widget_p>& widgets);
-		void				replaceColumn(int index, const std::initializer_list<Widget_p>& widgets);
+		int					replaceRow(int index, const std::initializer_list<Widget_p>& widgets);
+		int					replaceColumn(int index, const std::initializer_list<Widget_p>& widgets);
 
 		void				clearRows(int index, int nb = 1 );
 		void				clearColumns(int index, int nb = 1 );
 
-		void				replaceWidgets(iterator it, Axis axis, const std::initializer_list<Widget_p>& widgets);
+		int					replaceWidgets(iterator it, Axis axis, const std::initializer_list<Widget_p>& widgets);
 		void				clearWidgets(iterator it, Axis axis, int nb );
 
 		//.____ Internal ______________________________________________________
@@ -101,8 +119,8 @@ namespace wg
 
 //		inline SlotTable<DynamicSlot>& operator<<(const Widget_p& pWidget) { pushBack(pWidget); return *this; }
 
-		inline RowAccess 		operator[](int index) { return RowAccess(&m_slots[index*m_columnCapacity]); }
-		inline const RowAccess	operator[](int index) const { return RowAccess(&m_slots[index*m_columnCapacity]); }
+		inline RowAccess 		operator[](int index) { return RowAccess(&m_slots[index*m_nColumns]); }
+		inline const ConstRowAccess	operator[](int index) const { return ConstRowAccess(&m_slots[index*m_nColumns]); }
 
 	protected:
 		
@@ -110,18 +128,17 @@ namespace wg
 		inline const SlotHolder *	_holder() const { return m_pHolder; }
 
 		void		_moveRows( int fromIndex, int toIndex, int nb );
-		void		_clearRows( int startIndex int nb );
+		void		_clearRows( int startIndex, int nb );
 
 		void		_moveColumns( int fromIndex, int toIndex, int nb );
-		void		_clearColumns( int startIndex int nb );
+		void		_clearColumns( int startIndex, int nb );
 
 		
 	private:
 
 		int		m_nRows = 0;
 		int		m_nColumns = 0;
-		int		m_rowCapacity = 0;
-		int		m_columnCapacity = 0;
+		int		m_capacity = 0;
 		
 		DynamicSlot		m_dummySlot;
 		
