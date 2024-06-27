@@ -55,6 +55,7 @@ namespace wg
 			m_barColorFull	= bp.color;
 		}
 
+		m_gfxPadding		= bp.gfxPadding;
 		m_backColor			= bp.backColor;
 		m_blendMode			= bp.blendMode;
 		m_direction			= bp.direction;
@@ -94,7 +95,7 @@ namespace wg
 
 	void FillMeterSkin::_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) + align(ptsToSpx(m_overflow, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_spacing, scale)) - align(ptsToSpx(m_gfxPadding, scale)) + align(ptsToSpx(m_overflow, scale));
 		
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, HiColor::White, canvas, m_gradient );
 

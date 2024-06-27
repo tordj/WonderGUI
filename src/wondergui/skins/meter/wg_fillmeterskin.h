@@ -50,6 +50,7 @@ namespace wg
 			Size		defaultSize;						// Mandatory
 			Direction	direction = Direction::Right;
 			Finalizer_p	finalizer = nullptr;
+			Border		gfxPadding;
 			Gradient	gradient;
 
 			int			layer = -1;
@@ -107,7 +108,8 @@ namespace wg
 		HiColor		m_backColor;
 		Size		m_defaultSize;
         bool        m_bCenteredBarOrigin = false;
-
+		Border		m_gfxPadding;
+		
 		Gradient	m_gradient;
 		bool		m_bGradient = false;
 		bool		m_bOpaque;
