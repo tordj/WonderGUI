@@ -120,6 +120,12 @@ namespace wg
 
 		StaticSlot(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 
+		StaticSlot(const StaticSlot& o) noexcept			// Copy constructor needed for containers. Should not copy the widget pointer.
+		{
+			m_pHolder = o.m_pHolder;
+		}
+
+		
 		StaticSlot(StaticSlot&& o) noexcept
 		{
 			m_pWidget = o.m_pWidget;
@@ -143,6 +149,12 @@ namespace wg
 			}
 		}
 
+		StaticSlot& operator=(const StaticSlot& o) noexcept	// Assignment operators needed for STL containers. Should not copy the widget pointer.
+		{
+			m_pHolder = o.m_pHolder;
+			return *this;
+		}
+		
 		StaticSlot& operator=(StaticSlot&& o) noexcept
 		{
 			if (m_pWidget)
@@ -191,6 +203,10 @@ namespace wg
 
 		DynamicSlot(SlotHolder* pHolder) : StaticSlot(pHolder) {}
 
+		DynamicSlot(const DynamicSlot& o) noexcept : StaticSlot(o.m_pHolder)			// Copy constructor needed for STL containers. Should not copy the widget pointer.
+		{
+		}
+		
 		DynamicSlot(DynamicSlot&& o) noexcept : StaticSlot(o.m_pHolder)
 		{
 			m_pWidget = o.m_pWidget;
@@ -201,6 +217,12 @@ namespace wg
 			}
 		}
 
+		DynamicSlot& operator=(const DynamicSlot& o) noexcept	// Assignment operators needed for STL containers. Should not copy the widget pointer.
+		{
+			m_pHolder = o.m_pHolder;
+			return *this;
+		}
+		
 		DynamicSlot& operator=(DynamicSlot&& o) noexcept
 		{
 			if (m_pWidget)

@@ -157,7 +157,7 @@ void SlotTable::clearColumns(int index, int nb )
 
 int SlotTable::replaceWidgets(iterator it, Axis axis, const std::initializer_list<Widget_p>& widgets)
 {
-	int ofs = it - m_slots.begin();
+	int ofs = int(it - m_slots.begin());
 		
 	auto itWidgets = widgets.begin();
 	
@@ -203,7 +203,7 @@ int SlotTable::replaceWidgets(iterator it, Axis axis, const std::initializer_lis
 
 void SlotTable::clearWidgets(iterator it, Axis axis, int nb )
 {
-	int ofs = it - m_slots.begin();
+	int ofs = int(it - m_slots.begin());
 
 	if (ofs + nb > m_slots.size())
 	{
@@ -245,8 +245,7 @@ void SlotTable::_insertRows( int ofs, int nb )
 	if (m_nColumns == 0)
 		return;
 
-	DynamicSlot emptySlot(m_pHolder);
-	m_slots.insert(m_slots.begin() + ofs * m_nColumns, nb * m_nColumns, emptySlot);
+	m_slots.insert(m_slots.begin() + ofs * m_nColumns, nb * m_nColumns, DynamicSlot(m_pHolder) );
 }
 
 //____ _deleteRows() ______________________________________________________________
@@ -274,7 +273,7 @@ void SlotTable::_insertColumns(int ofs, int nb)
 		return;
 	}
 
-	m_slots.resize((m_nColumns+nb) * m_nRows);
+	m_slots.resize((m_nColumns+nb) * m_nRows, DynamicSlot(m_pHolder) );
 
 	auto src = m_slots.begin() + m_nRows * m_nColumns;
 	auto dest = m_slots.end();
@@ -334,34 +333,41 @@ void SlotTable::_deleteColumns(int ofs, int nb)
 	}
 
 	m_nColumns -= nb;
-	m_slots.resize(m_nColumns * m_nRows);
+
+	m_slots.resize(m_nColumns * m_nRows, DynamicSlot(m_pHolder) );
 }
 
 //____ _resize() ______________________________________________________________
 
 void SlotTable::_resize(int nbRows, int nbColumns)
 {
-	if (nbRows > 0 && nbColumns > 0)
+	if( m_slots.empty() )
 	{
-		if (nbRows * nbColumns > m_nRows * m_nColumns)
-		{
-			m_slots.resize(m_nColumns * m_nRows);
-
-
-
-		}
-		else
-		{
-
-
-
-			m_slots.resize(m_nColumns * m_nRows);
-		}
-
+		m_slots.resize(nbColumns * nbRows, DynamicSlot(m_pHolder) );
+		m_nRows = nbRows;
+		m_nColumns = nbColumns;
 	}
-
-	m_nRows = nbRows;
-	m_nColumns = nbColumns;
+	else if( nbRows == 0 || nbColumns == 0 )
+	{
+		m_slots.clear();
+		m_nRows = nbRows;
+		m_nColumns = nbColumns;
+	}
+	else
+	{
+		// It would be faster, but more complicated, to resize both rows and columns simultaneously.
+		
+		if( nbRows < m_nRows )
+			_deleteRows(nbRows, m_nRows - nbRows);
+		
+		if( nbColumns < m_nColumns )
+			_deleteColumns(nbColumns, m_nColumns - nbColumns);
+		else if( nbColumns > m_nColumns )
+			_insertColumns(m_nColumns, nbColumns - m_nColumns);
+		
+		if( nbRows > m_nRows )
+			_insertRows(m_nRows, nbRows - m_nRows);
+	}
 }
 
 //____ _reserve() _____________________________________________________________
