@@ -79,7 +79,6 @@
 #include <wg_gfxdevice.h>
 #include <wg_glow.h>
 #include <wg_gradient.h>
-#include <wg_gradientskin.h>
 #include <wg_gridwalker.h>
 #include <wg_hostbridge.h>
 #include <wg_icon.h>
