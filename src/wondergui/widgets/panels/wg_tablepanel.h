@@ -49,18 +49,14 @@ namespace wg
 			float	weight = 1.f;
 		};
 	
-		inline void		hide() { m_pTable->_hideRows(this, 1); }
-		inline void		unhide() { m_pTable->_unhideRows(this, 1); }
+		inline void		hide();
+		inline void		unhide();
 
-		inline void		setVisible(bool bVisible)
-						{
-							if (bVisible)
-								m_pTable->_unhideRows(this, 1);
-							else
-								m_pTable->_hideRows(this, 1);
-						}
-		
+		inline void		setVisible(bool bVisible);
 		inline bool		isVisible() const { return m_bVisible; }
+		
+		void			setWeight(float weight);
+		inline float	weight() const { return m_weight; }
 		
 	protected:
 		bool	m_bVisible = true;
@@ -81,6 +77,15 @@ namespace wg
 			float	weight = 1.f;
 		};
 		
+		inline void		hide();
+		inline void		unhide();
+
+		inline void		setVisible(bool bVisible);
+		inline bool		isVisible() const { return m_bVisible; }
+		
+		void			setWeight(float weight);
+		inline float	weight() const { return m_weight; }
+		
 	protected:
 		bool	m_bVisible = true;
 		float	m_weight = 1.f;
@@ -97,6 +102,9 @@ namespace wg
 						protected DynamicVector<TablePanelColumn>::Holder
 	{
 
+		friend class TablePanelRow;
+		friend class TablePanelColumn;
+		
 	public:
 
 		//.____ Blueprint _____________________________________________________
@@ -138,6 +146,27 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Geometry ____________________________________________
+
+		
+		//.____ Behavior ________________________________________________________
+
+		void			setRowLayout(PackLayout* pLayout);
+		PackLayout_p	rowLayout() const { return m_pRowLayout; }
+
+		void			setColumnLayout(PackLayout* pLayout);
+		PackLayout_p	columnLayout() const { return m_pColumnLayout; }
+
+		void			setRowSpacing( pts before, pts between, pts after );
+		void			setColumnSpacing( pts before, pts between, pts after );
+
+		void			setRowSkins(  );
+
+		//.____ Internal ______________________________________________________
+
+		spx				_matchingHeight(spx width, int scale) const override;
+		spx				_matchingWidth(spx height, int scale) const override;
+
+		SizeSPX			_defaultSize(int scale) const override;
 
 		
 	protected:
@@ -195,7 +224,65 @@ namespace wg
 		
 		virtual void	_refreshSlots(int ofs, Axis axis, int nSlots) override;
 		virtual Object*	_object() override;
+		
+		//
+		
+		void			_hideRows(TablePanelRow * pStart, int nb);
+		void			_unhideRows(TablePanelRow * pStart, int nb);
+
+		void			_hideColumns(TablePanelColumn * pStart, int nb);
+		void			_unhideColumns(TablePanelColumn * pStart, int nb);
+
 	};
+
+
+//____ TablePanelRow::hide() __________________________________________________
+
+void TablePanelRow::hide()
+{
+	m_pTable->_hideRows(this, 1);
+}
+
+//____ TablePanelRow::unhide() __________________________________________________
+
+void TablePanelRow::unhide()
+{
+	m_pTable->_unhideRows(this, 1);
+}
+
+//____ TablePanelRow::setVisible() __________________________________________________
+
+void TablePanelRow::setVisible(bool bVisible)
+{
+	if (bVisible)
+		m_pTable->_unhideRows(this, 1);
+	else
+		m_pTable->_hideRows(this, 1);
+}
+
+//____ TablePanelColumn::hide() __________________________________________________
+
+void TablePanelColumn::hide()
+{
+	m_pTable->_hideColumns(this, 1);
+}
+
+//____ TablePanelColumn::unhide() __________________________________________________
+
+void TablePanelColumn::unhide()
+{
+	m_pTable->_unhideColumns(this, 1);
+}
+
+//____ TablePanelColumn::setVisible() __________________________________________________
+
+void TablePanelColumn::setVisible(bool bVisible)
+{
+	if (bVisible)
+		m_pTable->_unhideColumns(this, 1);
+	else
+		m_pTable->_hideColumns(this, 1);
+}
 
 } // namespace wg
 #endif //WG_TABLEPANEL_DOT_H
