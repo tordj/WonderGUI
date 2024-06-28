@@ -40,6 +40,8 @@
 
 #include <wg_freetypefont.h>
 
+#include <wg_tablepanel.h>
+
 //#define USE_OPEN_GL
 
 

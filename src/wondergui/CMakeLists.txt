@@ -251,6 +251,8 @@ set( SOURCES
 	widgets/panels/wg_splitpanel.h
 	widgets/panels/wg_stackpanel.cpp
 	widgets/panels/wg_stackpanel.h
+	widgets/panels/wg_tablepanel.cpp
+	widgets/panels/wg_tablepanel.h
 	widgets/panels/wg_twoslotpanel.cpp
 	widgets/panels/wg_twoslotpanel.h
 

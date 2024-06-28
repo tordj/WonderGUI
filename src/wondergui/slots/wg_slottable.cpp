@@ -25,16 +25,6 @@
 using namespace wg;
 
 
-//____ clear() ________________________________________________________________
-
-void SlotTable::clear()
-{
-	for( auto& slot : m_slots )
-		slot._clearWidget();
-	
-	m_pTableHolder->_refreshTable();
-}
-
 //____ at() ___________________________________________________________________
 
 DynamicSlot& SlotTable::at(int row, int column)

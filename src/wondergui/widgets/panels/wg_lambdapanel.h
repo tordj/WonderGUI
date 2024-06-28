@@ -92,6 +92,7 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			Size			defaultSize;
 			bool			disabled = false;
 			bool			dropTarget = false;
 			EdgePolicy		edgePolicy = EdgePolicy::Confine;
@@ -99,6 +100,8 @@ namespace wg
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::Undefined;
 			MaskOp			maskOp = MaskOp::Recurse;
+			Size			maxSize;
+			Size			minSize;
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
@@ -107,11 +110,6 @@ namespace wg
 			bool			stickyFocus = false;
 			bool			tabLock = false;
 			String			tooltip;
-
-			Size			maxSize;
-			Size			minSize;
-			Size			defaultSize;
-
 		};
 
 		

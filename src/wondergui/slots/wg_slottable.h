@@ -43,7 +43,6 @@ namespace wg
 		{
 			friend class SlotTable;
 
-			virtual void	_refreshTable() = 0;
 			virtual void	_refreshSlots(int ofs, Axis axis, int nSlots) = 0;
 			virtual Object*	_object() = 0;
 		};
@@ -88,9 +87,6 @@ namespace wg
 
 		iterator			end() { return m_slots.end(); }
 		const_iterator		end() const { return m_slots.end(); }
-
-		
-		void				clear();
 
 		int					rows() const { return m_nRows; }
 		int					columns() const { return m_nColumns; }
