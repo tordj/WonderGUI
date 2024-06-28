@@ -236,80 +236,133 @@ void SlotTable::clearWidgets(iterator it, Axis axis, int nb )
 	_slotsUpdated(ofs, axis, nb);
 }
 
-//____ _resize() ______________________________________________________________
+//____ _insertRows() ______________________________________________________________
 
-void SlotTable::_resize( int nRows, int nColumns, int rowIncision, int columnIncision )
+void SlotTable::_insertRows( int ofs, int nb )
 {
+	m_nRows += nb;
 
-	if( nRows > m_nRows || nColumns > m_nColumns )
-	{
-		
-	}
-	else
-	{
-		// Handle change in rows.
-		
-		if( nRows < m_nRows )
-		{
-			assert( rowIncision <= nRows );
-			
-			int rowsRemoved = m_nRows - nRows;
-			int rowsToMove = m_nRows - (rowIncision + rowsRemoved);
-			int rowsToClear = rowsRemoved - rowsToMove;				// Move clears the slot, so we only need to clear the ones that have not been moved from.
-			
-			if( rowsToMove > 0 )
-				_moveRows( rowIncision + rowsRemoved, rowIncision, rowsToMove );
+	if (m_nColumns == 0)
+		return;
 
-			if( rowsToClear > 0 )
-				_clearRows( m_nRows - rowsToClear, rowsToClear );
-		}
-		else if( nRows > m_nRows )
-		{
-			assert( rowIncision <= m_nRows );
-
-			int rowsAdded = nRows - m_nRows;
-			int rowsToMove = m_nRows - rowIncision;
-			
-			if( rowsToMove > 0 )
-				_moveRows( rowIncision, rowIncision + rowsAdded, rowsToMove );
-		}
-		
-		m_nRows = nRows;
-		
-		
-		// Handle change in columns
-		
-		if( nColumns < m_nColumns )
-		{
-			assert( columnIncision <= nColumns );
-			
-			int columnsRemoved = m_nColumns - nColumns;
-			int columnsToMove = m_nColumns - (columnIncision + columnsRemoved);
-			int columnsToClear = columnsRemoved - columnsToMove;				// Move clears the slot, so we only need to clear the ones that have not been moved from.
-			
-			if( columnsToMove > 0 )
-				_moveColumns( columnIncision + columnsRemoved, columnIncision, columnsToMove );
-
-			if( columnsToClear > 0 )
-				_clearColumns( m_nColumns - columnsToClear, columnsToClear );
-		}
-		else if( nColumns > m_nColumns )
-		{
-			assert( columnIncision <= m_nColumns );
-
-			int columnsAdded = nColumns - m_nColumns;
-			int columnsToMove = m_nColumns - columnIncision;
-			
-			if( columnsToMove > 0 )
-				_moveColumns( columnIncision, columnIncision + columnsAdded, columnsToMove );
-		}
-		
-		m_nColumns = nColumns;
-	}
-
-	m_slots.resize(nRows * nColumns);
+	DynamicSlot emptySlot(m_pHolder);
+	m_slots.insert(m_slots.begin() + ofs * m_nColumns, nb * m_nColumns, emptySlot);
 }
 
+//____ _deleteRows() ______________________________________________________________
+
+void SlotTable::_deleteRows(int ofs, int nb)
+{
+	m_nRows -= nb;
+
+	if (m_nColumns == 0)
+		return;
+
+	auto first = m_slots.begin() + ofs * m_nColumns;
+	auto last = first + nb * m_nColumns;
+	m_slots.erase(first, last);
+}
+
+
+//____ _insertColumns() ______________________________________________________________
+
+void SlotTable::_insertColumns(int ofs, int nb)
+{
+	if (m_nRows == 0)
+	{
+		m_nColumns += nb;
+		return;
+	}
+
+	m_slots.resize((m_nColumns+nb) * m_nRows);
+
+	auto src = m_slots.begin() + m_nRows * m_nColumns;
+	auto dest = m_slots.end();
+
+	int nLeft	= ofs;
+	int nAdded	= nb;
+	int nRight	= m_nColumns - nLeft;
+
+	while (src > m_slots.begin())
+	{
+		for (int i = 0; i < nRight; i++)
+			* --dest = std::move(* --src);
+
+		dest -= nAdded;
+
+		for (int i = 0; i < nLeft; i++)
+			*--dest = std::move(*--src);
+	}
+
+	m_nColumns += nb;
+}
+
+//____ _deleteColumns() ______________________________________________________________
+
+void SlotTable::_deleteColumns(int ofs, int nb)
+{
+	if (m_nRows == 0)
+	{
+		m_nColumns -= nb;
+		return;
+	}
+
+	auto src = m_slots.begin();
+	auto dest = m_slots.begin();
+
+	int nLeft = ofs;
+	int nErased = nb;
+	int nRight = m_nColumns - nLeft - nErased;
+
+	// First row is special case since we can't move from/to same slot.
+
+	src += nLeft + nErased;
+	dest += nLeft;
+
+	for (int i = 0; i < nRight; i++)
+		*dest++ = std::move(*src++);
+
+	while (src < m_slots.end())
+	{
+		for (int i = 0; i < nLeft; i++)
+			*dest++ = std::move(*src++);
+
+		src += nErased;
+
+		for (int i = 0; i < nRight; i++)
+			*dest++ = std::move(*src++);
+	}
+
+	m_nColumns -= nb;
+	m_slots.resize(m_nColumns * m_nRows);
+}
+
+//____ _resize() ______________________________________________________________
+
+void SlotTable::_resize(int nbRows, int nbColumns)
+{
+	if (nbRows > 0 && nbColumns > 0)
+	{
+		if (nbRows * nbColumns > m_nRows * m_nColumns)
+		{
+			m_slots.resize(m_nColumns * m_nRows);
+
+
+
+		}
+		else
+		{
+
+
+
+			m_slots.resize(m_nColumns * m_nRows);
+		}
+
+	}
+
+	m_nRows = nbRows;
+	m_nColumns = nbColumns;
+}
 
 //____ _reserve() _____________________________________________________________
 
@@ -318,34 +371,18 @@ void SlotTable::_reserve( int rows, int columns )
 	m_slots.reserve(rows * columns);	
 }
 
+//____ _shrinkToFit() _____________________________________________________________
+
+void SlotTable::_shrinkToFit()
+{
+	m_slots.shrink_to_fit();
+}
 
 //____ _slotsUpdated() ________________________________________________________
 
 void SlotTable::_slotsUpdated(int start, Axis axis, int nb)
 {
 	m_pTableHolder->_refreshSlots(start,axis,nb);
-}
-
-//____ _moveRows() ____________________________________________________________
-
-void SlotTable::_moveRows( int fromIndex, int toIndex, int nb )
-{
-	DynamicSlot * pSrc = m_slots.data() + fromIndex * m_nColumns;
-	DynamicSlot * pDst = m_slots.data() + toIndex * m_nColumns;
-
-	if( pDst < pSrc || nb < 2 )
-	{
-		for( int i = 0 ; i < nb * m_nColumns ; i++ )
-			* pDst++ = std::move(* pSrc++);			
-	}
-	else
-	{
-		pSrc += nb * m_nColumns;
-		pDst += nb * m_nColumns;
-
-		for (int i = 0; i < nb * m_nColumns; i++)
-			* --pDst = std::move(* --pSrc);
-	}
 }
 
 //____ _clearRows() ____________________________________________________________
@@ -356,40 +393,6 @@ void SlotTable::_clearRows( int startIndex, int nb )
 
 	for( int i = 0 ; i < nb * m_nColumns ; i++ )
 		p[i]._clearWidget();
-}
-
-//____ _moveColumns() ____________________________________________________________
-
-void SlotTable::_moveColumns( int fromIndex, int toIndex, int nb )
-{
-	DynamicSlot * pSrc = m_slots.data() + fromIndex;
-	DynamicSlot * pDst = m_slots.data() + toIndex;
-
-	if( pDst < pSrc || nb < 2 )
-	{
-		for( int y = 0 ; y < m_nRows ; y++ )
-		{
-			for( int x = 0 ; x < nb ; x++ )
-				pDst[x] = std::move(pSrc[x]);
-			
-			pSrc += m_nColumns;
-			pDst += m_nColumns;
-		}
-	}
-	else
-	{
-		pSrc += nb;
-		pDst += nb;
-
-		for( int y = 0 ; y < m_nRows ; y++ )
-		{
-			for( int x = nb-1 ; x >= 0 ; x++ )
-				pDst[x] = std::move(pSrc[x]);
-
-			pSrc += m_nColumns;
-			pDst += m_nColumns;
-		}
-	}
 }
 
 //____ _clearColumns() ____________________________________________________________

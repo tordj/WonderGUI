@@ -140,6 +140,8 @@ set( SOURCES
 	slots/wg_dynamicslotvector.h
 	slots/wg_dynamicslotvector.impl.h
 	slots/wg_slotarray.h
+	slots/wg_slottable.cpp
+	slots/wg_slottable.h
 	slots/wg_staticslotvector.h
 	slots/wg_staticslotvector.impl.h
 

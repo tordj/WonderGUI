@@ -109,8 +109,15 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		void				_resize( int nbRows, int nbColumns, int rowIncision, int columnIncision );
-		void				_reserve( int rows, int columns );
+		void				_resize(int nbRows, int nbColumns);
+		void				_reserve(int rows, int columns);
+		void				_shrinkToFit();
+
+		void				_insertRows(int ofs, int nb);
+		void				_deleteRows(int ofs, int nb);
+
+		void				_insertColumns(int ofs, int nb);
+		void				_deleteColumns(int ofs, int nb);
 
 		void				_slotsUpdated(int start, Axis axis, int nb);
 
@@ -127,13 +134,9 @@ namespace wg
 		inline SlotHolder *			_holder() { return m_pHolder; }
 		inline const SlotHolder *	_holder() const { return m_pHolder; }
 
-		void		_moveRows( int fromIndex, int toIndex, int nb );
 		void		_clearRows( int startIndex, int nb );
-
-		void		_moveColumns( int fromIndex, int toIndex, int nb );
 		void		_clearColumns( int startIndex, int nb );
-
-		
+	
 	private:
 
 		int		m_nRows = 0;
