@@ -55,7 +55,7 @@ namespace wg
 		inline void		setVisible(bool bVisible);
 		inline bool		isVisible() const { return m_bVisible; }
 		
-		void			setWeight(float weight);
+		inline void		setWeight(float weight);
 		inline float	weight() const { return m_weight; }
 		
 	protected:
@@ -63,6 +63,13 @@ namespace wg
 		float	m_weight = 1.f;
 		
 		TablePanel *	m_pTable;
+		spx				m_height;
+		spx				m_defaultHeight;
+		spx				m_minHeight;
+		spx				m_maxHeight;
+		spx				m_heightForColumnWidth;		// Height needed for current column width.
+		
+		bool			m_bModified;
 	};
 
 	//____ TablePanelColumn ______________________________________________________
@@ -83,14 +90,20 @@ namespace wg
 		inline void		setVisible(bool bVisible);
 		inline bool		isVisible() const { return m_bVisible; }
 		
-		void			setWeight(float weight);
+		inline void		setWeight(float weight);
 		inline float	weight() const { return m_weight; }
 		
 	protected:
 		bool	m_bVisible = true;
 		float	m_weight = 1.f;
 
-		TablePanel *	m_pHolder;
+		TablePanel *	m_pTable;
+		spx				m_width;
+		spx				m_defaultWidth;
+		spx				m_minWidth;
+		spx				m_maxWidth;
+		
+		bool			m_bModified;
 	};
 
 
@@ -107,6 +120,10 @@ namespace wg
 		
 	public:
 
+		using		row_iterator = DynamicVector<TablePanelRow>::iterator;
+		using		column_iterator = DynamicVector<TablePanelColumn>::iterator;
+
+		
 		//.____ Blueprint _____________________________________________________
 
 		struct Blueprint
@@ -148,6 +165,30 @@ namespace wg
 		//.____ Geometry ____________________________________________
 
 		
+		//.____ Appearance _____________________________________________________
+		
+		void			hideRows(int index, int amount);
+		void			hideRows(row_iterator beg, row_iterator end);
+
+		void			unhideRows(int index, int amount);
+		void			unhideRows(row_iterator beg, row_iterator end);
+
+		void			hideColumns(int index, int amount);
+		void			hideColumns(column_iterator beg, column_iterator end);
+
+		bool			setRowWeight(int index, int amount, float weight);
+		bool			setRowWeight(row_iterator  beg, row_iterator end, float weight);
+		bool			setRowWeight(int index, int amount, std::initializer_list<float> weights);
+		bool			setRowWeight(row_iterator beg, row_iterator end, std::initializer_list<float> weights);
+		
+		void			unhideColumns(int index, int amount);
+		void			unhideColumns(column_iterator beg, column_iterator end);
+
+		bool			seColumnWeight(int index, int amount, float weight);
+		bool			setColumnWeight(column_iterator  beg, column_iterator end, float weight);
+		bool			setColumnWeight(int index, int amount, std::initializer_list<float> weights);
+		bool			setColumnWeight(column_iterator beg, column_iterator end, std::initializer_list<float> weights);
+		
 		//.____ Behavior ________________________________________________________
 
 		void			setRowLayout(PackLayout* pLayout);
@@ -156,10 +197,13 @@ namespace wg
 		void			setColumnLayout(PackLayout* pLayout);
 		PackLayout_p	columnLayout() const { return m_pColumnLayout; }
 
+		void			setRowSpacing( pts between );
 		void			setRowSpacing( pts before, pts between, pts after );
+
+		void			setColumnSpacing( pts between );
 		void			setColumnSpacing( pts before, pts between, pts after );
 
-		void			setRowSkins(  );
+		void			setRowSkins( Skin * pSkin1, Skin * pSkin2 = nullptr );
 
 		//.____ Internal ______________________________________________________
 
@@ -167,6 +211,8 @@ namespace wg
 		spx				_matchingWidth(spx height, int scale) const override;
 
 		SizeSPX			_defaultSize(int scale) const override;
+		SizeSPX			_minSize(int scale) const override;
+		SizeSPX			_maxSize(int scale) const override;
 
 		
 	protected:
@@ -203,14 +249,10 @@ namespace wg
 		
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		SizeSPX			_defaultSize(int scale) const override;
-		SizeSPX			_minSize(int scale) const override;
-		SizeSPX			_maxSize(int scale) const override;
-
-
+		void			_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void			_resize( const SizeSPX& size, int scale ) override;
 		
-		// For vector holder
+		// For DynamicVector holder
 		
 		void			_didAddEntries(TablePanelRow * pEntry, int nb) override;
 		void			_didMoveEntries(TablePanelRow * pFrom, TablePanelRow * pTo, int nb) override;
@@ -219,11 +261,11 @@ namespace wg
 		void			_didAddEntries(TablePanelColumn * pEntry, int nb) override;
 		void			_didMoveEntries(TablePanelColumn * pFrom, TablePanelColumn * pTo, int nb) override;
 		void			_willEraseEntries(TablePanelColumn * pEntry, int nb) override;
-
-		//
 		
-		virtual void	_refreshSlots(int ofs, Axis axis, int nSlots) override;
-		virtual Object*	_object() override;
+		// For TableSlot holder
+		
+		void			_refreshSlots(int ofs, Axis axis, int nSlots) override;
+		Object*			_object() override;
 		
 		//
 		
@@ -233,6 +275,35 @@ namespace wg
 		void			_hideColumns(TablePanelColumn * pStart, int nb);
 		void			_unhideColumns(TablePanelColumn * pStart, int nb);
 
+		void			_reweightRows(TablePanelRow * pEntry, int nb, float weight);
+		void			_reweightRows(TablePanelRow * pEntry, int nb, const float * pWeights);
+
+		void			_reweightColumns(TablePanelColumn * pEntry, int nb, float weight);
+		void			_reweightColumns(TablePanelColumn * pEntry, int nb, const float * pWeights);
+
+		//
+		
+		bool			_refreshColumns();
+		bool			_refreshRows();
+		
+		bool			_refreshRowHeightForColumnWidth();
+		
+		void			_updateModifiedChildSizes();
+		
+		bool			_refreshRowData( int row );
+		bool			_refreshColumnData( int column );
+		
+		
+		RectSPX			m_defaultSize;
+		
+		PackLayout_p	m_pLayoutX;
+		PackLayout_p	m_pLayoutY;
+		
+		pts				m_spacingX[3] = {0,0,0};
+		pts				m_spacingY[3] = {0,0,0};
+		
+		Skin_p			m_pRowSkins[2];
+		
 	};
 
 
@@ -260,6 +331,15 @@ void TablePanelRow::setVisible(bool bVisible)
 		m_pTable->_hideRows(this, 1);
 }
 
+//____ TablePanelRow::setWeight() __________________________________________________
+
+void TablePanelRow::setWeight(float weight)
+{
+	if (weight != m_weight)
+		m_pTable->_reweightRow(this, 1, weight);
+}
+
+
 //____ TablePanelColumn::hide() __________________________________________________
 
 void TablePanelColumn::hide()
@@ -282,6 +362,14 @@ void TablePanelColumn::setVisible(bool bVisible)
 		m_pTable->_unhideColumns(this, 1);
 	else
 		m_pTable->_hideColumns(this, 1);
+}
+
+//____ TablePanelColumn::setWeight() __________________________________________________
+
+void PackPanelColumn::setWeight(float weight)
+{
+	if (weight != m_weight)
+		m_pTable->_reweightColumn(this, 1, weight);
 }
 
 } // namespace wg

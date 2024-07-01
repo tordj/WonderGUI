@@ -20,12 +20,12 @@
 
 =========================================================================*/
 
-#include <wg_lambdapanel.h>
+#include <wg_tablepanel.h>
+#include <wg_skinslot.h>
 #include <wg_patches.h>
 #include <wg_util.h>
 
-#include <wg_dynamicslotvector.impl.h>
-#include <wg_panel.impl.h>
+
 #include <assert.h>
 
 
@@ -33,469 +33,653 @@ namespace wg
 {
 	using namespace Util;
 
-	template class DynamicSlotVector<LambdaPanelSlot>;
-	template class Panel<LambdaPanelSlot>;
+	const TypeInfo TablePanel::TYPEINFO = { "TablePanel", &ContainerPanel::TYPEINFO };
 
+	//____ typeInfo() ____________________________________________________________
 
-	const TypeInfo LambdaPanel::TYPEINFO = { "LambdaPanel", &Panel::TYPEINFO };
-	const TypeInfo LambdaPanelSlot::TYPEINFO = { "LambdaPanelSlot", &DynamicSlot::TYPEINFO };
-
-//____ LambdaPanelSlot::setFunction() ____________________________________________________
-
-	void LambdaPanelSlot::setFunction(const std::function<Rect(Widget * pWidget, Size parentSize)>& func)
-	{
-		m_func = func;
-		static_cast<LambdaPanel*>(_holder())->_updateSlotGeo(this, 1);
-	}
-
-	//____ LambdaPanelSlot::_setBlueprint() ____________________________________________________
-
-	bool LambdaPanelSlot::_setBlueprint( const Blueprint& bp )
-	{
-		m_func = bp.func;
-		return true;
-	}
-
-	//____ constructor ____________________________________________________________
-
-	LambdaPanel::LambdaPanel() : m_minSize(0,0), m_defaultSize(512,512), m_maxSize(16000000, 16000000)
-	{
-		m_bSiblingsOverlap = true;
-	}
-
-	//____ Destructor _____________________________________________________________
-
-	LambdaPanel::~LambdaPanel()
-	{
-	}
-
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& LambdaPanel::typeInfo(void) const
+	const TypeInfo& TablePanel::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
-	//____ setEdgePolicy() ____________________________________________________
+/*
 
-	void LambdaPanel::setEdgePolicy(EdgePolicy policy)
+void TablePanel::hideRows(int index, int amount)
+{
+	
+}
+
+void TablePanel::hideRows(row_iterator beg, row_iterator end)
+{
+	
+}
+
+void TablePanel::unhideRows(int index, int amount)
+{
+	
+}
+
+void TablePanel::unhideRows(row_iterator beg, row_iterator end)
+{
+	
+}
+
+void TablePanel::hideColumns(int index, int amount)
+{
+	
+}
+
+void TablePanel::hideColumns(column_iterator beg, column_iterator end)
+{
+	
+}
+
+bool TablePanel::setRowWeight(int index, int amount, float weight)
+{
+	
+}
+
+bool TablePanel::setRowWeight(row_iterator  beg, row_iterator end, float weight)
+{
+	
+}
+
+bool TablePanel::setRowWeight(int index, int amount, std::initializer_list<float> weights)
+{
+	
+}
+
+bool TablePanel::setRowWeight(row_iterator beg, row_iterator end, std::initializer_list<float> weights)
+{
+	
+}
+
+void TablePanel::unhideColumns(int index, int amount)
+{
+	
+}
+
+void TablePanel::unhideColumns(column_iterator beg, column_iterator end)
+{
+	
+}
+
+bool TablePanel::seColumnWeight(int index, int amount, float weight)
+{
+	
+}
+
+bool TablePanel::setColumnWeight(column_iterator  beg, column_iterator end, float weight)
+{
+	
+}
+
+bool TablePanel::setColumnWeight(int index, int amount, std::initializer_list<float> weights)
+{
+	
+}
+
+bool TablePanel::setColumnWeight(column_iterator beg, column_iterator end, std::initializer_list<float> weights)
+{
+	
+}
+
+void TablePanel::setRowLayout(PackLayout* pLayout)
+{
+	
+}
+
+void TablePanel::setColumnLayout(PackLayout* pLayout)
+{
+	
+}
+
+void TablePanel::setRowSpacing( pts between )
+{
+	
+}
+
+void TablePanel::setRowSpacing( pts before, pts between, pts after )
+{
+	
+}
+
+void TablePanel::setColumnSpacing( pts between )
+{
+	
+}
+
+void TablePanel::setColumnSpacing( pts before, pts between, pts after )
+{
+	
+}
+
+void TablePanel::setRowSkins( Skin * pSkin1, Skin * pSkin2 = nullptr )
+{
+	
+}
+
+spx TablePanel::_matchingHeight(spx width, int scale) const
+{
+	
+}
+
+spx TablePanel::_matchingWidth(spx height, int scale) const
+{
+	
+}
+
+SizeSPX TablePanel::_defaultSize(int scale) const
+{
+	
+}
+
+SizeSPX TablePanel::_minSize(int scale) const
+{
+	
+}
+
+SizeSPX TablePanel::_maxSize(int scale) const
+{
+	
+}
+
+RectSPX TablePanel::_slotGeo( const StaticSlot * pSlot ) const
+{
+	
+}
+
+void TablePanel::_childOverflowChanged( StaticSlot * pSlot, const BorderSPX& oldOverflow, const BorderSPX& newOverflow )
+{
+	
+}
+
+bool TablePanel::_isChildVisible( const StaticSlot * pSlot ) const
+{
+	
+}
+
+void TablePanel::_childRequestRender(StaticSlot * pSlot, const RectSPX& rect)
+{
+	
+}
+
+void TablePanel::_childRequestResize(StaticSlot * pSlot)
+{
+	
+}
+
+Widget * TablePanel::_prevChild(const StaticSlot * pSlot) const
+{
+	
+}
+
+Widget * TablePanel::_nextChild(const StaticSlot * pSlot) const
+{
+	
+}
+
+void TablePanel::_releaseChild(StaticSlot * pSlot)
+{
+	
+}
+void TablePanel::_replaceChild(StaticSlot * pSlot, Widget * pNewChild)
+{
+	
+}
+
+Widget * TablePanel::_firstChild() const
+{
+	
+}
+
+Widget * TablePanel::_lastChild() const
+{
+	
+}
+
+void TablePanel::_firstSlotWithGeo( SlotWithGeo& package ) const
+{
+	
+}
+
+void TablePanel::_nextSlotWithGeo( SlotWithGeo& package ) const
+{
+	
+}
+
+const TypeInfo& TablePanel::_slotTypeInfo(const StaticSlot * pSlot) const
+{
+	
+}
+
+*/
+ 
+//____ _render() ______________________________________________________________
+
+void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
+{
+	m_skin.render( pDevice, _canvas, m_scale, m_state );
+
+	RectSPX canvas = m_skin.contentRect( _canvas, m_scale, m_state );
+
+	BorderSPX rowBorder = m_pSkin[0] != nullptr ? m_pSkin[0]->_contentBorder(m_scale, m_state) : BorderSPX();
+	
+	spx rowOfs = 0;
+
+	Skin * rowSkin1 = m_pRowSkin[0];
+	Skin * rowSkin2 = m_pRowSkin[1] != nullptr ? m_pRowSkin[1] : m_pRowSkin[0];
+
+	
+	int rowSkinOfs = canvas.y + m_spacingY[0];
+	int rowSkinInc = m_pSkin[1] != nullptr ? 1 : 0;
+	
+	auto slotIt = slots.begin();
+	
+	for( auto& row : rows )
 	{
-		if (policy != m_edgePolicy)
+		RectSPX rowGeo = { canvas.x, rowOfs, canvas.w, row.m_height + rowBorder.height() };
+
+		if( row.m_bVisible )
 		{
-			m_edgePolicy = policy;
-			_updateAllSlotsGeo();
-		}
-	}
-
-	//____ setMinSize() _________________________________________________________________
-
-	bool LambdaPanel::setMinSize(Size min)
-	{
-		//TODO: Assert >= 0.
-
-		if( m_minSize != min )
-		{
-			if( min.w > m_maxSize.w || min.h > m_maxSize.h )
-				return false;
-
-			m_minSize = min;
-			if( m_defaultSize.w < min.w )
-				m_defaultSize.w = min.w;
-			if( m_defaultSize.h < min.h )
-				m_defaultSize.h = min.h;
-
-			_requestResize();
-		}
-		return true;
-	}
-
-	//____ setMaxSize() ________________________________________________________
-
-	bool LambdaPanel::setMaxSize(Size max)
-	{
-		//TODO: Assert >= 0.
-
-
- 		if( m_maxSize != max )
-		{
-			if( max.w < m_minSize.w || max.h < m_minSize.h )
-				return false;
-
-			m_maxSize = max;
-			if( m_defaultSize.w > max.w )
-				m_defaultSize.w = max.w;
-			if( m_defaultSize.h > max.h )
-				m_defaultSize.h = max.h;
-
-			_requestResize();
-		}
-		return true;
-	}
-
-	//____ setSizeLimits() _____________________________________________________
-
-	bool LambdaPanel::setSizeLimits( Size min, Size max )
-	{
-		//TODO: Assert >= 0.
-
-		if( min.w > max.w || min.h > max.h )
-			return false;
-
-		m_minSize = min;
-		m_maxSize = max;
-		limit( m_defaultSize.w, m_minSize.w, m_maxSize.w );
-		limit( m_defaultSize.h, m_minSize.h, m_maxSize.h );
-
-		_requestResize();
-		return true;
-	}
-
-	//____ setDefaultSize() __________________________________________________
-
-	bool LambdaPanel::setDefaultSize(Size defaultSize)
-	{
-		//TODO: Assert >= 0.
-
-		if(defaultSize.w > m_maxSize.w || defaultSize.h > m_maxSize.h || defaultSize.w < m_minSize.w || defaultSize.h < m_minSize.h )
-			return false;
-
-		m_defaultSize = defaultSize;
-		_requestResize();
-		return true;
-	}
-
-	//____ _defaultSize() _____________________________________________________
-
-	SizeSPX LambdaPanel::_defaultSize(int scale) const
-	{
-		return SizeSPX(m_defaultSize*scale);
-	}
-
-	//____ _minSize() _____________________________________________________
-
-	SizeSPX LambdaPanel::_minSize(int scale) const
-	{
-		return SizeSPX(m_minSize * scale);
-	}
-
-	//____ _maxSize() _____________________________________________________
-
-	SizeSPX LambdaPanel::_maxSize(int scale) const
-	{
-		return SizeSPX(m_maxSize * scale);
-	}
-
-	//____ _slotTypeInfo() ________________________________________________________
-
-	const TypeInfo&	LambdaPanel::_slotTypeInfo(const StaticSlot * pSlot) const
-	{
-		return LambdaPanelSlot::TYPEINFO;
-	}
-
-	//____ _didAddSlots() ________________________________________________________
-
-	void LambdaPanel::_didAddSlots( StaticSlot * pSlot, int nb )
-	{
-		_unhideSlots(static_cast<LambdaPanelSlot*>(pSlot), nb);
-	}
-
-	//____ _willEraseSlots() _________________________________________________
-
-	void LambdaPanel::_willEraseSlots( StaticSlot * pSlot, int nb )
-	{
-		_hideSlots(static_cast<LambdaPanelSlot*>(pSlot), nb);
-	}
-
-	//____ _hideSlots() __________________________________________________________
-
-	void LambdaPanel::_hideSlots( StaticSlot * _pSlot, int nb )
-	{
-		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-
-		for( int i = 0 ; i < nb ; i++ )
-		{
-			if( pSlot[i].m_bVisible == true )
+			// Render row skin
+			
+			if( rowSkin1 != nullptr )
 			{
-				_onRequestRender(pSlot[i].m_geo, pSlot);
-				pSlot[i].m_bVisible = false;					// Needs to be done AFTER _onRequestRender()!
+				rowSkin1->_render(pDevice, rowGeo, m_scale, m_state);
+				std::swap(rowSkin1, rowSkin2);
 			}
-		}
-		
-		_refreshOverflow();
-	}
+			
+			// Render widgets in row
+			
+			CoordSPX widgetPos;
+			widgetPos.x = rowGeo.x + rowBorder.left + m_spacingX[0];
+			widgetPos.y = rowGeo.y + rowBorder.top;
 
-	//____ _unhideSlots() ________________________________________________________
-
-	void LambdaPanel::_unhideSlots( StaticSlot * _pSlot, int nb )
-	{
-		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-
-		for( int i = 0 ; i < nb ; i++ )
-		{
-			if( pSlot[i].m_bVisible == false )
+			
+			for( auto& column : columns )
 			{
-				pSlot[i].m_bVisible = true;
-				_updateGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i].m_geo, pSlot);
-			}
-		}
-		
-		_refreshOverflow();
-	}
-
-
-	//____ _updateSlotGeo() ________________________________________________________
-
-	void LambdaPanel::_updateSlotGeo(StaticSlot * _pSlot, int nb)
-	{
-		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-
-		for (int i = 0; i < nb; i++)
-		{
-			_updateGeo(&pSlot[i]);
-			if (pSlot[i].m_bVisible == false)
-				_onRequestRender(pSlot[i].m_geo, pSlot);		//TODO: This looks weird...
-		}
-	}
-
-
-
-	//____ _didMoveSlots() ________________________________________________________
-
-	void LambdaPanel::_didMoveSlots(StaticSlot * _pFrom, StaticSlot * _pTo, int nb)
-	{
-		if (nb > 1)
-		{
-			_requestRender();	//TODO: Optimize! Correctly calculate what is dirty even if more than one is moved.
-			return;
-		}
-
-		auto pFrom = static_cast<LambdaPanelSlot*>(_pFrom);
-		auto pTo = static_cast<LambdaPanelSlot*>(_pTo);
-
-		if (pTo->m_bVisible)		// This is correct, we have already switched places...
-		{
-			if (pTo < pFrom)			// We were moved forward
-			{
-				// Request render on all areas covered by siblings we have skipped in front of.
-
-				auto p = pTo+1;
-				while (p <= pFrom)
+				if( column.m_bVisible && !slotIt->isEmpty() )
 				{
-					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
-
-					if (p->m_bVisible && !cover.isEmpty())
-						_onRequestRender(cover, pTo);
-					p++;
+					RectSPX widgetCanvas = { widgetPos.x, widgetPos.y, column.m_width, row.m_height };
+					
+					slotIt->_widget()->_render(pDevice, widgetCanvas, widgetCanvas);
 				}
+				
+				slotIt++;
+				widgetPos.x += column.m_width + m_spacingX[1];
 			}
-			else							// Move us backward
-			{
-				// Request render on our siblings for the area we previously have covered.
-
-				auto p = pFrom;
-				while (p < pTo)
-				{
-					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
-
-					if (p->m_bVisible && !cover.isEmpty())
-						_onRequestRender(cover, p);
-					p++;
-				}
-			}
-		}
-	}
-
-	//____ _childRequestRender() _________________________________________________
-
-	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
-	{
-		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-		_onRequestRender( rect + pSlot->m_geo.pos(), pSlot );
-	}
-
-	//____ _childRequestResize() ______________________________________________
-
-	void LambdaPanel::_childRequestResize( StaticSlot * pSlot )
-	{
-		_updateGeo(static_cast<LambdaPanelSlot*>(pSlot), true);
-	}
-
-	//____ _releaseChild() ____________________________________________________
-
-	void LambdaPanel::_releaseChild(StaticSlot * pSlot)
-	{
-		slots.erase(static_cast<LambdaPanelSlot*>(pSlot));
-	}
-
-	//____ _replaceChild() ______________________________________________________
-
-	void LambdaPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
-	{
-		if( pNewChild == nullptr )
-		{
-			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Slot in LambdaPanel must contain pointer to widget and not nullptr.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-			return;
-		}
-		
-		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-
-		slots._releaseGuardPointer(pNewChild, &pSlot);
-		pSlot->_setWidget(pNewChild);
-
-   		if (pSlot->m_bVisible)
-		{
-			_updateGeo(pSlot);
-			_onRequestRender(pSlot->m_geo, pSlot);
-		}
-	}
-
-	//____ _resize() ____________________________________________________________
-
-	void LambdaPanel::_resize( const SizeSPX& size, int scale )
-	{
-		Panel::_resize( size, scale );
-
-		for (auto& slot : slots)
-			_updateGeo(&slot, false, false);
-		
-		_refreshOverflow();
-	}
-
-	//____ _updateAllSlotsGeo() _______________________________________________
-
-	void LambdaPanel::_updateAllSlotsGeo()
-	{
-		for (auto& slot : slots)
-			_updateGeo(&slot, false, false);
-		
-		_refreshOverflow();
-	}
-
-	//____ _updateGeo() _______________________________________________________
-
-	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize, bool bUpdateOverflow )
-	{
-		//TODO: Don't requestRender if slot is hidden.
-
-		auto pWidget = pSlot->_widget();
-
-		RectSPX geo;
-
-		// Get new geo
-
-		if (pSlot->m_func)
-		{
-			Rect ptsGeo = pSlot->m_func(pWidget, spxToPts(m_size,m_scale));
-
-			geo = align(ptsToSpx(ptsGeo,m_scale));
 		}
 		else
-			geo = { 0,0, align(pWidget->_defaultSize(m_scale)) };
-
-		// Limit geo according to edgePolicy
-
-		if( m_edgePolicy == EdgePolicy::Confine )
 		{
-			if( geo.w > m_size.w )
-				geo.w = m_size.w;
-			if( geo.h > m_size.h )
-				geo.h = m_size.h;
-
-			limit(geo.x, 0, m_size.w - geo.w);
-			limit(geo.y, 0, m_size.h - geo.h);
+			slotIt += columns.size();
 		}
 		
-		//
+		// Finish up
 		
-		if (geo != pSlot->m_geo || pWidget->_scale() != m_scale)
+		rowOfs += rowGeo.h + m_spacingY[1];
+	}
+}
+
+//____ _resize() ______________________________________________________________
+
+void TablePanel::_resize( const SizeSPX& size, int scale )
+{
+	SizeSPX oldSize = m_size;
+	bool bScaleChanged = scale != m_scale;
+	
+	Container::_resize(size, scale);
+	
+	if( bScaleChanged )
+	{
+		
+	}
+	else
+	{
+		bool bColumnsChanged = false;
+		bool matchingRowHeightChanged = false;
+		bool bRowsChanged = false;
+
+		if( oldSize.w != size.w )
+			bColumnsChanged = _refreshColumns();
+		
+		if( bColumnsChanged )
+			matchingRowHeightChanged = _refreshRowHeightForColumnWidth();
+		
+		if( oldSize.h != size.h || macthingRowHeightChanged )
+			bRowsChanged = _refreshRows();
+		
+		if( bRowsChanged || bColumnsChanged )
+			_updateModifiedChildSizes();
+	}
+}
+
+//____ _refreshColumnLayout() ______________________________________________________
+
+/* 	Refreshes m_width for all columns.
+
+	Precondition: All other members of columns (m_matchingWidth, m_weight, m_bVisible etc) needs to be up to date.
+ */
+
+bool TablePanel::_refreshColumns()
+{
+	bool bLayoutChanged = false;
+
+	if( m_pLayoutX )
+	{
+		auto pLayout = m_pLayoutX;
+		
+		// Count visible columns
+		
+		int nVisibleColumns = 0;
+		for( auto& column : columns )
 		{
-			// Set geo and size.
-
-			pSlot->m_geo = geo;
-			pSlot->_setSize(geo, m_scale);
-
-			if (pSlot->m_bVisible)
+			if( column.m_bVisible )
+				nVisibleColumns++;
+		}
+		
+		// Get column widths from our PackLayout
+		
+		spx totalPadding = m_skin.contentBorderSize(m_scale).w + m_spacingX[0] + m_spacingX[1] * std::max(0, nVisibleColumns-1) + m_spacingX[2];
+		if( m_pSkin[0] != nullptr )
+			totalPadding += m_pSkin[0]->contentBorderSize(m_scale).w;
+		
+		spx availableWidth = m_size.w - totalPadding;
+		
+		int arrayBytes = (sizeof(PackLayout::Item)+sizeof(spx)) * nVisibleColumns;
+		PackLayout::Item* pItem = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+		spx* pOutput = (spx*) &pItem[nVisibleColumns];
+		
+		for( auto& column : columns )
+		{
+			if( column.m_bVisible )
 			{
-				// Calculate render areas
+				pItem->def = column.m_defaultWidth;
+				pItem->min = column.m_minWidth;
+				pItem->max = column.m_maxWidth;
+				pItem->weight = column.m_weight*65536;
+				pItem++;
+			}
+		}
+		
+		pLayout->getItemSizes(pOutput, availableWidth, m_scale, nVisibleColumns, pItemArea);
+		
+		// Update column widths and flag changes
 				
-				RectSPX oldRenderArea = pSlot->m_geo + pWidget->_overflow();
-				RectSPX newRenderArea = geo + pWidget->_overflow();
-
-				// Clip our render areas
-
-				if( m_edgePolicy == EdgePolicy::Clip )
+		for( auto& column : columns )
+		{
+			if( column.m_bVisible )
+			{
+				spx newWidth = * pOutput++;
+				
+				if( column.m_width != newWidth )
 				{
-					RectSPX myGeo = m_size;
-					oldRenderArea = RectSPX::overlap(oldRenderArea, myGeo);
-					newRenderArea = RectSPX::overlap(newRenderArea, myGeo);
+					column.m_width = newWidth;
+					column.m_bModified = true;
+					bLayoutChanged = true;
+				}
+			}
+		}
+		
+		// Release temporary memory area
+
+		Base::memStackFree(arrayBytes);
+	}
+	else
+	{
+		for( auto& column : columns )
+		{
+			if( column.m_bVisible )
+			{
+				if( column.m_width != column.m_defaultWidth )
+				{
+					column.m_width = column.defaultWidth;
+					column.m_bModified = true;
+					bLayoutChanged = true;
+				}
+			}
+		}
+	}
+		
+	return bLayoutChanged;
+}
+
+//____ _refreshRows() _________________________________________________________
+
+bool TablePanel::_refreshRows()
+{
+	bool bLayoutChanged = false;
+	
+	if( m_pLayoutY )
+	{
+		auto pLayout = m_pLayoutY;
+		
+		// Count visible rows
+		
+		int nVisibleRows = 0;
+		for( auto& row : rows )
+		{
+			if( rows.m_bVisible )
+				nVisibleRows++;
+		}
+		
+		// Get out row height from our PackLayout
+		
+		spx totalPadding = m_skin.contentBorderSize(m_scale).h + m_spacingY[0] + m_spacingY[1] * std::max(0, nVisibleRows-1) + m_spacingY[2];
+		if( m_pSkin[0] != nullptr )
+			totalPadding += m_pSkin[0]->contentBorderSize(m_scale).h;
+		
+		spx availableHeight = m_size.h - totalPadding;
+		
+		int arrayBytes = (sizeof(PackLayout::Item)+sizeof(spx)) * nVisibleRows;
+		PackLayout::Item* pItem = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+		spx* pOutput = (spx*) &pItem[nVisibleRows];
+		
+		for( auto& row : rows )
+		{
+			if( row.m_bVisible )
+			{
+				pItem->def = row.m_heightForColumnWidth;
+				pItem->min = row.m_minHeight;
+				pItem->max = row.m_maxHeight;
+				pItem->weight = row.m_weight*65536;
+				pItem++;
+			}
+		}
+		
+		pLayout->getItemSizes(pOutput, availableHeight, m_scale, nVisibleRows, pItemArea);
+		
+		// Update row widths and flag changes
+		
+		for( auto& row : rows )
+		{
+			if( row.m_bVisible )
+			{
+				spx newHeight = * pOutput++;
+				
+				if( row.m_height != newHeight )
+				{
+					row.m_height = newHeight;
+					row.m_bModified = true;
+					bLayoutChanged = true;
+				}
+			}
+		}
+		
+		// Release temporary memory area
+		
+		Base::memStackFree(arrayBytes);
+	}
+	else
+	{
+		for( auto& row : rows )
+		{
+			if( row.m_bVisible )
+			{
+				if( row.m_height != row.m_heightForColumnWidth )
+				{
+					row.m_height = column.m_heightForColumnWidth;
+					row.m_bModified = true;
+					bLayoutChanged = true;
+				}
+			}
+		}
+	}
+	
+	return bLayoutChanged;
+}
+
+//____ _refreshRowHeightForColumnWidth() ______________________________________
+
+bool TablePanel::_refreshRowHeightForColumnWidth()
+{
+	bool bLayoutChanged = false;
+
+	auto slotIt = slots.begin();
+	
+	for( auto& row : rows )
+	{
+		if( row.m_bVisible )
+		{
+			spx height = 0;
+			
+			for( auto& column : columns )
+			{
+				if( column.m_bVisible && !slotIt->isEmpty() )
+				{
+					spx h = slotIt->_widget()->_matchingHeight(column.m_width, m_scale);
+					if( h > height )
+						height = h;
 				}
 				
-				// Add dirty patches for our render areas
-				
-				PatchesSPX patches;
-				patches.add(oldRenderArea);
-				patches.add(newRenderArea);
-
-
-				// Remove portions of patches that are covered by upper siblings opaque areas
-
-				auto pCover = pSlot + 1;
-				while (pCover < slots.end())
-				{
-					RectSPX coverArea = pCover->m_geo + pCover->_widget()->_overflow();
-
-					if (pCover->m_bVisible && (coverArea.isOverlapping(oldRenderArea) || coverArea.isOverlapping(newRenderArea)) )
-						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
-
-					pCover++;
-				}
-
-				// Make request render calls
-
-				for (const RectSPX * pRect = patches.begin(); pRect < patches.end(); pRect++)
-					_requestRender(*pRect);
-
-				// Update overflow
-
-				if( bUpdateOverflow )
-					_refreshOverflow();
+				slotIt++;
 			}
 
+			if( height != row.m_heightForColumnWidth )
+			{
+				row.m_heightForColumnWidth = height;
+				bLayoutChanged = true;
+			}
 		}
-		else if(bForceResize)
-			pSlot->_setSize(geo, m_scale);
+		else
+			slotIt += columns.size();
 	}
+	
+	return bLayoutChanged;
+}
 
-	//____ _onRequestRender() ____________________________________________________
+//____ _updateModifiedChildSizes() ____________________________________________
 
-	void LambdaPanel::_onRequestRender( const RectSPX& rect, const LambdaPanelSlot * pSlot )
+void TablePanel::_updateModifiedChildSizes()
+{
+	auto slotIt = slots.begin();
+	
+	for( auto& row : rows )
 	{
-		if (!pSlot->m_bVisible)
-			return;
-
-		// Clip our geometry and put it in a dirtyrect-list
-
-		PatchesSPX patches;
-		patches.add(m_edgePolicy == EdgePolicy::Clip ? RectSPX::overlap(rect, RectSPX(0, 0, m_size)) : rect );
-
-		// Remove portions of patches that are covered by opaque upper siblings
-
-		for (auto pCover = slots.begin(); pCover < pSlot ; pCover++)
+		for( auto& column : columns )
 		{
-			RectSPX coverArea = pCover->m_geo + pCover->_widget()->_overflow();
-
-			if (pCover->m_bVisible && coverArea.isOverlapping(rect))
-				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0));
+			if( !slotIt->isEmpty() && (row.m_bModified || column.m_bModified) )
+				slotIt->_widget()->_resize({column.m_width,row.m_height}, m_scale);
+			
+			slotIt++;
 		}
+	}
+}
 
-		// Make request render calls
+//____ _refreshRowData() ______________________________________________________
 
-		for (const RectSPX * pRect = patches.begin(); pRect < patches.end(); pRect++)
-			_requestRender(*pRect);
+bool TablePanel::_refreshRowData( int row )
+{
+	auto rowIt = rows.begin() + row;
+	auto slotIt = slots.begin() + row * columns.size();
+
+	spx	defaultHeight = 0;
+	spx minHeight = 0;
+	spx maxHeight = spx_max;
+	spx heightForWidth = 0;
+	
+	for( auto& column : columns )
+	{
+		Widget * p = slotIt->_widget();
+		if( p )
+		{
+			spx myDefaultHeight = p->_defaultSize(m_scale).h;
+			spx myMinHeight = p->_minSize(m_scale).h;
+			spx myMaxHeight = p->_maxSize(m_scale).h;
+			spx myHeightForWidth = p->_matchingHeight(column.m_width, m_scale);
+			
+			if( myDefaultHeight > defaultHeight )
+				defaultHeight = myDefaultHeight;
+			
+			if( myMinHeight > minHeight )
+				minHeight = myMinHeight;
+			
+			if( myMaxHeight < maxHeight )
+				maxHeight = myMaxHeight;
+			
+			if( myHeightForWidth > heightForWidth )
+				heightForWidth = myHeightForWidth;
+		}
+		
+		slotIt++;
 	}
 
+	if( defaultHeight != rowIt->m_defaultHeight || minHeight != rowIt->m_minHeight || maxHeight)
+	
+	
+}
 
+//____ _refreshColumnData() ___________________________________________________
+
+bool TablePanel::_refreshColumnData( int column )
+{
+	
+}
+
+
+
+//____ _refreshSlots() ________________________________________________________
+
+void TablePanel::_refreshSlots(int ofs, Axis axis, int nSlots)
+{
+
+	
+	
+}
+
+//____ _object() ______________________________________________________________
+
+Object*	TablePanel::_object()
+{
+	return this;
+}
+
+
+
+/*
+
+void			_didAddEntries(TablePanelRow * pEntry, int nb) override;
+void			_didMoveEntries(TablePanelRow * pFrom, TablePanelRow * pTo, int nb) override;
+void			_willEraseEntries(TablePanelRow * pEntry, int nb) override;
+
+void			_didAddEntries(TablePanelColumn * pEntry, int nb) override;
+void			_didMoveEntries(TablePanelColumn * pFrom, TablePanelColumn * pTo, int nb) override;
+void			_willEraseEntries(TablePanelColumn * pEntry, int nb) override;
+
+
+
+void			_hideRows(TablePanelRow * pStart, int nb);
+void			_unhideRows(TablePanelRow * pStart, int nb);
+
+void			_hideColumns(TablePanelColumn * pStart, int nb);
+void			_unhideColumns(TablePanelColumn * pStart, int nb);
+
+void			_reweightRows(TablePanelRow * pEntry, int nb, float weight);
+void			_reweightRows(TablePanelRow * pEntry, int nb, const float * pWeights);
+
+void			_reweightColumns(TablePanelColumn * pEntry, int nb, float weight);
+void			_reweightColumns(TablePanelColumn * pEntry, int nb, const float * pWeights);
+
+*/
 
 } // namespace wg
