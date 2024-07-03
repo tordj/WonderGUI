@@ -41,8 +41,8 @@ namespace wg
 
 	class TablePanelRow
 	{
+		friend class TablePanel;
 	public:
-		
 		struct Blueprint
 		{
 			bool	visible = true;
@@ -59,23 +59,29 @@ namespace wg
 		inline float	weight() const { return m_weight; }
 		
 	protected:
-		bool	m_bVisible = true;
-		float	m_weight = 1.f;
 		
-		TablePanel *	m_pTable;
-		spx				m_height;
-		spx				m_defaultHeight;
-		spx				m_minHeight;
-		spx				m_maxHeight;
-		spx				m_heightForColumnWidth;		// Height needed for current column width.
-		
+		struct Cache
+		{
+			spx		defaultHeight;
+			spx		minHeight;
+			spx		maxHeight;
+			spx		heightForColumnWidth;		// Height needed for current column widths.
+		};
+
+		TablePanel*		m_pTable;
+		bool			m_bVisible = true;
 		bool			m_bModified;
+		float			m_weight = 1.f;
+		spx				m_height;
+		Cache			m_cache;
+
 	};
 
 	//____ TablePanelColumn ______________________________________________________
 
 	class TablePanelColumn
 	{
+		friend class TablePanel;
 	public:
 
 		struct Blueprint
@@ -94,16 +100,22 @@ namespace wg
 		inline float	weight() const { return m_weight; }
 		
 	protected:
-		bool	m_bVisible = true;
-		float	m_weight = 1.f;
+
+		struct Cache
+		{
+			spx		defaultWidth;
+			spx		minWidth;
+			spx		maxWidth;
+		};
+
+		bool			m_bVisible = true;
+		bool			m_bModified;
+		float			m_weight = 1.f;
 
 		TablePanel *	m_pTable;
 		spx				m_width;
-		spx				m_defaultWidth;
-		spx				m_minWidth;
-		spx				m_maxWidth;
 		
-		bool			m_bModified;
+		Cache			m_cache;
 	};
 
 
@@ -192,10 +204,10 @@ namespace wg
 		//.____ Behavior ________________________________________________________
 
 		void			setRowLayout(PackLayout* pLayout);
-		PackLayout_p	rowLayout() const { return m_pRowLayout; }
+		PackLayout_p	rowLayout() const { return m_pLayoutY; }
 
 		void			setColumnLayout(PackLayout* pLayout);
-		PackLayout_p	columnLayout() const { return m_pColumnLayout; }
+		PackLayout_p	columnLayout() const { return m_pLayoutX; }
 
 		void			setRowSpacing( pts between );
 		void			setRowSpacing( pts before, pts between, pts after );
@@ -288,13 +300,18 @@ namespace wg
 		
 		bool			_refreshRowHeightForColumnWidth();
 		
+		void			_updateAllChildSizes();
 		void			_updateModifiedChildSizes();
 		
-		bool			_refreshRowData( int row );
-		bool			_refreshColumnData( int column );
+		bool			_refreshRowCache( int row, TablePanelRow::Cache& cache, int scale ) const;
+		bool			_refreshColumnCache( int column, TablePanelColumn::Cache& cache, int scale ) const;
 		
+		SizeSPX			_sumOfPadding(int scale) const;
+
+		void			_updateMinDefaultSize();
 		
-		RectSPX			m_defaultSize;
+		SizeSPX			m_minSize;
+		SizeSPX			m_defaultSize;
 		
 		PackLayout_p	m_pLayoutX;
 		PackLayout_p	m_pLayoutY;
@@ -303,6 +320,10 @@ namespace wg
 		pts				m_spacingY[3] = {0,0,0};
 		
 		Skin_p			m_pRowSkins[2];
+
+		int				m_nVisibleColumns = 0;
+		int				m_nVisibleRows = 0;
+
 		
 	};
 
@@ -336,7 +357,7 @@ void TablePanelRow::setVisible(bool bVisible)
 void TablePanelRow::setWeight(float weight)
 {
 	if (weight != m_weight)
-		m_pTable->_reweightRow(this, 1, weight);
+		m_pTable->_reweightRows(this, 1, weight);
 }
 
 
@@ -366,10 +387,10 @@ void TablePanelColumn::setVisible(bool bVisible)
 
 //____ TablePanelColumn::setWeight() __________________________________________________
 
-void PackPanelColumn::setWeight(float weight)
+void TablePanelColumn::setWeight(float weight)
 {
 	if (weight != m_weight)
-		m_pTable->_reweightColumn(this, 1, weight);
+		m_pTable->_reweightColumns(this, 1, weight);
 }
 
 } // namespace wg

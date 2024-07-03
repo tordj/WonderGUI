@@ -81,6 +81,8 @@ namespace wg
 		SlotTable(SlotHolder * pHolder, Holder * pTableHolder ) : m_pHolder(pHolder), m_pTableHolder(pTableHolder), m_dummySlot(pHolder) {}
 		~SlotTable() {  }
 
+		DynamicSlot*		data() { return m_slots.data(); }
+		const DynamicSlot*	data() const { return m_slots.data(); }
 
 		iterator			begin() { return m_slots.begin(); }
 		const_iterator		begin() const { return m_slots.begin(); }
@@ -90,7 +92,8 @@ namespace wg
 
 		int					rows() const { return m_nRows; }
 		int					columns() const { return m_nColumns; }
-		
+		int					slots() const { return m_slots.size(); }
+
 		DynamicSlot&		at(int row, int column);
 		const DynamicSlot&	at(int row, int column) const;
 				
@@ -116,7 +119,6 @@ namespace wg
 		void				_deleteColumns(int ofs, int nb);
 
 		void				_slotsUpdated(int start, Axis axis, int nb);
-
 		
 		//.____ Operators __________________________________________
 
