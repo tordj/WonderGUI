@@ -70,7 +70,7 @@ namespace wg
 
 		TablePanel*		m_pTable;
 		bool			m_bVisible = true;
-		bool			m_bModified;
+		bool			m_bModified = false;
 		float			m_weight = 1.f;
 		spx				m_height;
 		Cache			m_cache;
@@ -109,7 +109,7 @@ namespace wg
 		};
 
 		bool			m_bVisible = true;
-		bool			m_bModified;
+		bool			m_bModified = false;
 		float			m_weight = 1.f;
 
 		TablePanel *	m_pTable;
@@ -188,18 +188,18 @@ namespace wg
 		void			hideColumns(int index, int amount);
 		void			hideColumns(column_iterator beg, column_iterator end);
 
-		bool			setRowWeight(int index, int amount, float weight);
-		bool			setRowWeight(row_iterator  beg, row_iterator end, float weight);
-		bool			setRowWeight(int index, int amount, std::initializer_list<float> weights);
-		bool			setRowWeight(row_iterator beg, row_iterator end, std::initializer_list<float> weights);
+		void			setRowWeight(int index, int amount, float weight);
+		void			setRowWeight(row_iterator  beg, row_iterator end, float weight);
+		void			setRowWeight(int index, int amount, std::initializer_list<float> weights);
+		void			setRowWeight(row_iterator beg, row_iterator end, std::initializer_list<float> weights);
 		
 		void			unhideColumns(int index, int amount);
 		void			unhideColumns(column_iterator beg, column_iterator end);
 
-		bool			seColumnWeight(int index, int amount, float weight);
-		bool			setColumnWeight(column_iterator  beg, column_iterator end, float weight);
-		bool			setColumnWeight(int index, int amount, std::initializer_list<float> weights);
-		bool			setColumnWeight(column_iterator beg, column_iterator end, std::initializer_list<float> weights);
+		void			setColumnWeight(int index, int amount, float weight);
+		void			setColumnWeight(column_iterator  beg, column_iterator end, float weight);
+		void			setColumnWeight(int index, int amount, std::initializer_list<float> weights);
+		void			setColumnWeight(column_iterator beg, column_iterator end, std::initializer_list<float> weights);
 		
 		//.____ Behavior ________________________________________________________
 

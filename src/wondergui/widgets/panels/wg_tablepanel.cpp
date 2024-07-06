@@ -32,102 +32,132 @@
 
 namespace wg
 {
-	using namespace Util;
+using namespace Util;
 
-	const TypeInfo TablePanel::TYPEINFO = { "TablePanel", &Container::TYPEINFO };
+const TypeInfo TablePanel::TYPEINFO = { "TablePanel", &Container::TYPEINFO };
 
-	//____ typeInfo() ____________________________________________________________
+//____ constructor ____________________________________________________________
 
-	const TypeInfo& TablePanel::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
+TablePanel::TablePanel() : rows(this), columns(this), slots(this, this)
+{
 
-/*
+}
+
+//____ destructor _____________________________________________________________
+
+TablePanel::~TablePanel()
+{
+
+}
+
+//____ typeInfo() ____________________________________________________________
+
+const TypeInfo& TablePanel::typeInfo(void) const
+{
+	return TYPEINFO;
+}
+
+//____ hideRows() _________________________________________________________
 
 void TablePanel::hideRows(int index, int amount)
 {
-	
+	_hideRows(&rows[index], amount);
 }
 
 void TablePanel::hideRows(row_iterator beg, row_iterator end)
 {
-	
+	_hideRows(&*beg, end - beg);
 }
+
+//____ unhideRows() ___________________________________________________________
 
 void TablePanel::unhideRows(int index, int amount)
 {
-	
+	_unhideRows(&rows[index], amount);
 }
 
 void TablePanel::unhideRows(row_iterator beg, row_iterator end)
 {
-	
+	_unhideRows(&*beg, end - beg);
 }
+
+//____ hideColumns() __________________________________________________________
 
 void TablePanel::hideColumns(int index, int amount)
 {
-	
+	_hideColumns(&columns[index], amount);
 }
 
 void TablePanel::hideColumns(column_iterator beg, column_iterator end)
 {
-	
+	_hideColumns(&*beg, end - beg);
 }
 
-bool TablePanel::setRowWeight(int index, int amount, float weight)
-{
-	
-}
-
-bool TablePanel::setRowWeight(row_iterator  beg, row_iterator end, float weight)
-{
-	
-}
-
-bool TablePanel::setRowWeight(int index, int amount, std::initializer_list<float> weights)
-{
-	
-}
-
-bool TablePanel::setRowWeight(row_iterator beg, row_iterator end, std::initializer_list<float> weights)
-{
-	
-}
+//____ unhideColumns() ________________________________________________________
 
 void TablePanel::unhideColumns(int index, int amount)
 {
-	
+	_unhideColumns(&columns[index], amount);
 }
 
 void TablePanel::unhideColumns(column_iterator beg, column_iterator end)
 {
-	
+	_unhideColumns(&*beg, end - beg);
 }
 
-bool TablePanel::seColumnWeight(int index, int amount, float weight)
+//____ setRowWeight() _________________________________________________________
+
+void TablePanel::setRowWeight(int index, int amount, float weight)
 {
-	
+	_reweightRows(&rows[index], amount, weight);
 }
 
-bool TablePanel::setColumnWeight(column_iterator  beg, column_iterator end, float weight)
+void TablePanel::setRowWeight(row_iterator  beg, row_iterator end, float weight)
 {
-	
+	_reweightRows( &*beg, end - beg, weight);
 }
 
-bool TablePanel::setColumnWeight(int index, int amount, std::initializer_list<float> weights)
+void TablePanel::setRowWeight(int index, int amount, std::initializer_list<float> weights)
 {
-	
+	_reweightRows(&rows[index], amount, weights.begin() );
 }
 
-bool TablePanel::setColumnWeight(column_iterator beg, column_iterator end, std::initializer_list<float> weights)
+void TablePanel::setRowWeight(row_iterator beg, row_iterator end, std::initializer_list<float> weights)
 {
-	
+	_reweightRows(&*beg, end - beg, weights.begin());
 }
+
+//____ setColumnWeight() ______________________________________________________
+
+void TablePanel::setColumnWeight(int index, int amount, float weight)
+{
+	_reweightColumns(&columns[index], amount, weight);
+}
+
+void TablePanel::setColumnWeight(column_iterator  beg, column_iterator end, float weight)
+{
+	_reweightColumns(&*beg, end - beg, weight);
+}
+
+void TablePanel::setColumnWeight(int index, int amount, std::initializer_list<float> weights)
+{
+	_reweightColumns(&columns[index], amount, weights.begin());
+}
+
+void TablePanel::setColumnWeight(column_iterator beg, column_iterator end, std::initializer_list<float> weights)
+{
+	_reweightColumns(&*beg, end - beg, weights.begin());
+}
+
+//____ setRowLayout() _________________________________________________________
 
 void TablePanel::setRowLayout(PackLayout* pLayout)
 {
-	
+	if (pLayout != m_pLayoutX)
+	{
+		m_pLayoutX = pLayout;
+
+	}
 }
 
 void TablePanel::setColumnLayout(PackLayout* pLayout)
@@ -159,7 +189,7 @@ void TablePanel::setRowSkins( Skin * pSkin1, Skin * pSkin2 = nullptr )
 {
 	
 }
-*/
+
  
 //____ _matchingHeight() ______________________________________________________
 
@@ -541,53 +571,142 @@ void TablePanel::_childRequestResize(StaticSlot * pSlot)
 		pSlot->_widget()->_resize(oldSize, m_scale);
 }
 
-/*
+//____ _prevChild() ___________________________________________________________
 
-Widget * TablePanel::_prevChild(const StaticSlot * pSlot) const
+Widget * TablePanel::_prevChild(const StaticSlot * _pSlot) const
 {
+	auto pSlot = static_cast<const DynamicSlot*>(_pSlot);
 	
+	auto pFirstSlot = slots.data();
+
+	pSlot--;
+	while (pSlot >= pFirstSlot)
+	{
+		if (!pSlot->isEmpty())
+			return pSlot->_widget();
+		pSlot--;
+	}
+
+	return nullptr;
 }
 
-Widget * TablePanel::_nextChild(const StaticSlot * pSlot) const
+//____ _nextChild() ___________________________________________________________
+
+Widget * TablePanel::_nextChild(const StaticSlot * _pSlot) const
 {
-	
+	auto pSlot = static_cast<const DynamicSlot*>(_pSlot);
+
+	auto pEnd = slots.data() + slots.slots();;
+
+	pSlot++;
+	while (pSlot < pEnd)
+	{
+		if (!pSlot->isEmpty())
+			return pSlot->_widget();
+		pSlot++;
+	}
+
+	return nullptr;
 }
+
+//____ _releaseChild() ________________________________________________________
 
 void TablePanel::_releaseChild(StaticSlot * pSlot)
 {
-	
+	pSlot->_clearWidget();
+
+	int ofs = static_cast<DynamicSlot*>(pSlot) - slots.data();
+	_refreshSlots(ofs, Axis::X, 1);
 }
+
+
+//____ _replaceChild() ________________________________________________________
+
 void TablePanel::_replaceChild(StaticSlot * pSlot, Widget * pNewChild)
 {
-	
+	pSlot->_setWidget(pNewChild);
+
+	int ofs = static_cast<DynamicSlot*>(pSlot) - slots.data();
+	_refreshSlots(ofs, Axis::X, 1);
 }
+
+//____ _firstChild() __________________________________________________________
 
 Widget * TablePanel::_firstChild() const
 {
-	
+	auto it = slots.begin();
+	while (it != slots.end())
+	{
+		if (!it->isEmpty())
+			return it->_widget();
+		it++;
+	}
+
+	return nullptr;
 }
+
+//____ _lastChild() ___________________________________________________________
 
 Widget * TablePanel::_lastChild() const
 {
-	
+	auto it = slots.end() -1;
+	while (it >= slots.begin())
+	{
+		if (!it->isEmpty())
+			return it->_widget();
+		it--;
+	}
+
+	return nullptr;
 }
+
+//____ _firstSlotWithGeo() ____________________________________________________
 
 void TablePanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 {
-	
+	auto it = slots.begin();
+	while (it != slots.end())
+	{
+		if (!it->isEmpty())
+		{
+			package.pSlot = &*it;
+			package.geo = _slotGeo(&*it);		// This is slow, but this method should not be used so much anyway.
+			return;
+		}
+		it++;
+	}
+
+	package.pSlot = nullptr;
+	package.geo.clear();
 }
+
+//____ _nextSlotWithGeo() _____________________________________________________
 
 void TablePanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 {
-	
+	auto it = slots.begin() + ( static_cast<const DynamicSlot*>(package.pSlot) - slots.data());
+	while (it != slots.end())
+	{
+		if (!it->isEmpty())
+		{
+			package.pSlot = &*it;
+			package.geo = _slotGeo(&*it);		// This is slow, but this method should not be used so much anyway.
+			return;
+		}
+		it++;
+	}
+
+	package.pSlot = nullptr;
+	package.geo.clear();
 }
+
+
+//____ _slotTypeInfo() ________________________________________________________
 
 const TypeInfo& TablePanel::_slotTypeInfo(const StaticSlot * pSlot) const
 {
-	
+	return DynamicSlot::TYPEINFO;
 }
-
-*/
  
 //____ _render() ______________________________________________________________
 
@@ -713,27 +832,18 @@ bool TablePanel::_refreshColumns()
 	if( m_pLayoutX )
 	{
 		auto pLayout = m_pLayoutX;
-		
-		// Count visible columns
-		
-		int nVisibleColumns = 0;
-		for( auto& column : columns )
-		{
-			if( column.m_bVisible )
-				nVisibleColumns++;
-		}
-		
+				
 		// Get column widths from our PackLayout
 		
-		spx totalPadding = m_skin.contentBorderSize(m_scale).w + m_spacingX[0] + m_spacingX[1] * std::max(0, nVisibleColumns-1) + m_spacingX[2];
+		spx totalPadding = m_skin.contentBorderSize(m_scale).w + m_spacingX[0] + m_spacingX[1] * std::max(0, m_nVisibleColumns-1) + m_spacingX[2];
 		if( m_pRowSkins[0] != nullptr )
 			totalPadding += m_pRowSkins[0]->_contentBorderSize(m_scale).w;
 		
 		spx availableWidth = m_size.w - totalPadding;
 		
-		int arrayBytes = (sizeof(PackLayout::Item)+sizeof(spx)) * nVisibleColumns;
+		int arrayBytes = (sizeof(PackLayout::Item)+sizeof(spx)) * m_nVisibleColumns;
 		PackLayout::Item* pItem = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
-		spx* pOutput = (spx*) &pItem[nVisibleColumns];
+		spx* pOutput = (spx*) &pItem[m_nVisibleColumns];
 		
 		for( auto& column : columns )
 		{
@@ -747,7 +857,7 @@ bool TablePanel::_refreshColumns()
 			}
 		}
 		
-		pLayout->getItemSizes(pOutput, availableWidth, m_scale, nVisibleColumns, pItem);
+		pLayout->getItemSizes(pOutput, availableWidth, m_scale, m_nVisibleColumns, pItem);
 		
 		// Update column widths and flag changes
 				
@@ -1204,36 +1314,157 @@ Object*	TablePanel::_object()
 	return this;
 }
 
-/*
+//____ _didAddEntries() _______________________________________________________
 
 void TablePanel::_didAddEntries(TablePanelRow* pEntry, int nb)
 {
-	
+	int ofs = pEntry - &*rows.begin();
+
+	slots._insertRows(ofs, nb);
+
+	int nbVisible = 0;
+	for (int i = 0; i < nb; i++)
+	{
+		if (pEntry->m_bVisible)
+			nbVisible++;
+	}
+
+	if (nbVisible > 0)
+	{
+		m_nVisibleRows += nbVisible;
+		_updateMinDefaultSize();
+
+		_requestRender();
+		_requestResize();
+	}
+}
+
+void TablePanel::_didAddEntries(TablePanelColumn* pEntry, int nb)
+{
+	int ofs = pEntry - &*columns.begin();
+
+	slots._insertColumns(ofs, nb);
+
+	int nbVisible = 0;
+	for (int i = 0; i < nb; i++)
+	{
+		if (pEntry->m_bVisible)
+			nbVisible++;
+	}
+
+	if (nbVisible > 0)
+	{
+		m_nVisibleColumns += nbVisible;
+		_updateMinDefaultSize();
+
+		_requestRender();
+		_requestResize();
+	}
+}
+
+//____ _didMoveEntries() ______________________________________________________
+
+void TablePanel::_didMoveEntries(TablePanelRow* pFrom, TablePanelRow* pTo, int nb)
+{
+
+}
+
+void TablePanel::_didMoveEntries(TablePanelColumn* pFrom, TablePanelColumn* pTo, int nb)
+{
+
+}
+
+//____ _willEraseEntries() ____________________________________________________
+
+void TablePanel::_willEraseEntries(TablePanelRow* pEntry, int nb)
+{
+	int ofs = pEntry - &*rows.begin();
+
+	slots._deleteRows(ofs, nb);
+
+	int nbVisible = 0;
+	for (int i = 0; i < nb; i++)
+	{
+		if (pEntry->m_bVisible)
+			nbVisible++;
+	}
+
+	if (nbVisible > 0)
+	{
+		m_nVisibleRows -= nbVisible;
+
+		_updateMinDefaultSize();
+		_requestRender();
+		_requestResize();
+	}
+}
+
+void TablePanel::_willEraseEntries(TablePanelColumn* pEntry, int nb)
+{
+
+	int ofs = pEntry - &*columns.begin();
+
+	slots._deleteColumns(ofs, nb);
+
+	int nbVisible = 0;
+	for (int i = 0; i < nb; i++)
+	{
+		if (pEntry->m_bVisible)
+			nbVisible++;
+	}
+
+	if (nbVisible > 0)
+	{
+		m_nVisibleColumns -= nbVisible;
+
+		_updateMinDefaultSize();
+		_requestRender();
+		_requestResize();
+	}
 }
 
 
-void			_didMoveEntries(TablePanelRow * pFrom, TablePanelRow * pTo, int nb) override;
-void			_willEraseEntries(TablePanelRow * pEntry, int nb) override;
 
-void			_didAddEntries(TablePanelColumn * pEntry, int nb) override;
-void			_didMoveEntries(TablePanelColumn * pFrom, TablePanelColumn * pTo, int nb) override;
-void			_willEraseEntries(TablePanelColumn * pEntry, int nb) override;
+void TablePanel::_hideRows(TablePanelRow* pStart, int nb)
+{
+
+}
+
+void TablePanel::_unhideRows(TablePanelRow* pStart, int nb)
+{
+
+}
+
+void TablePanel::_hideColumns(TablePanelColumn* pStart, int nb)
+{
+
+}
+
+void TablePanel::_unhideColumns(TablePanelColumn* pStart, int nb)
+{
+
+}
+
+void TablePanel::_reweightRows(TablePanelRow* pEntry, int nb, float weight)
+{
+
+}
+
+void TablePanel::_reweightRows(TablePanelRow* pEntry, int nb, const float* pWeights)
+{
+
+}
+
+void TablePanel::_reweightColumns(TablePanelColumn* pEntry, int nb, float weight)
+{
+
+}
+
+void TablePanel::_reweightColumns(TablePanelColumn* pEntry, int nb, const float* pWeights)
+{
+
+}
 
 
-
-void			_hideRows(TablePanelRow * pStart, int nb);
-void			_unhideRows(TablePanelRow * pStart, int nb);
-
-void			_hideColumns(TablePanelColumn * pStart, int nb);
-void			_unhideColumns(TablePanelColumn * pStart, int nb);
-
-void			_reweightRows(TablePanelRow * pEntry, int nb, float weight);
-void			_reweightRows(TablePanelRow * pEntry, int nb, const float * pWeights);
-
-void			_reweightColumns(TablePanelColumn * pEntry, int nb, float weight);
-void			_reweightColumns(TablePanelColumn * pEntry, int nb, const float * pWeights);
-
-
-*/
 
 } // namespace wg
