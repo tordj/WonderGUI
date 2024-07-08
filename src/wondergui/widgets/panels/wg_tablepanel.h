@@ -49,6 +49,9 @@ namespace wg
 			float	weight = 1.f;
 		};
 	
+		TablePanelRow() {};
+		TablePanelRow( const Blueprint& bp ) : m_bVisible(bp.visible), m_weight(bp.weight) {}
+		
 		inline void		hide();
 		inline void		unhide();
 
@@ -89,6 +92,9 @@ namespace wg
 			bool	visible = true;
 			float	weight = 1.f;
 		};
+
+		TablePanelColumn() {};
+		TablePanelColumn( const Blueprint& bp ) : m_bVisible(bp.visible), m_weight(bp.weight) {}
 		
 		inline void		hide();
 		inline void		unhide();
@@ -209,10 +215,10 @@ namespace wg
 		void			setColumnLayout(PackLayout* pLayout);
 		PackLayout_p	columnLayout() const { return m_pLayoutX; }
 
-		void			setRowSpacing( pts between );
+		void			setRowSpacing( pts between ) { setRowSpacing(0,between,0); }
 		void			setRowSpacing( pts before, pts between, pts after );
 
-		void			setColumnSpacing( pts between );
+		void			setColumnSpacing( pts between ) { setColumnSpacing(0,between,0); }
 		void			setColumnSpacing( pts before, pts between, pts after );
 
 		void			setRowSkins( Skin * pSkin1, Skin * pSkin2 = nullptr );

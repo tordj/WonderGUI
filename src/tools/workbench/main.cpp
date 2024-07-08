@@ -159,6 +159,7 @@ bool scrollPanelTest(ComponentPtr<DynamicSlot> pEntry);
 bool packPanelStressTest(ComponentPtr<DynamicSlot> pEntry);
 bool packPanelStressTest2(ComponentPtr<DynamicSlot> pEntry);
 bool blockingCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
+bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -744,7 +745,7 @@ int main(int argc, char** argv)
 		//	animPlayerTest(pSlot);
 		//	selectBoxTest(pSlot);
 		//	tileSkinTest(pSlot);
-			gradientSkinTest(pSlot);
+		//	gradientSkinTest(pSlot);
 		//	bakeSkinTest(pSlot);
 		//	animSkinTest(pSlot);
 		//	renderLayerTest(pSlot);
@@ -775,6 +776,7 @@ int main(int argc, char** argv)
 		//	packPanelStressTest(pSlot);
 		//	packPanelStressTest2(pSlot);
 		//	blockingCapsuleTest(pSlot);
+		tablePanelTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -3970,3 +3972,81 @@ bool blockingCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
+//____ tablePanelTest() _______________________________________________________
+
+bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	
+	
+	auto pTable = TablePanel::create();
+	
+	pTable->setSkin( ColorSkin::create(Color::White) );
+	
+	pTable->columns.pushBack( {{ .weight = 1.f }, { .weight = 1.f }} );
+
+	pTable->rows.pushBack( { .weight = 1.f }  );
+	pTable->rows.pushBack( { .weight = 1.f } );
+
+	
+	auto pFiller1 = Filler::create( {
+		.defaultSize = {100,50},
+		.skin = ColorSkin::create( Color::Red ),
+	} );
+	
+/*
+	pTable->slots[0][0] = pFiller1;
+
+	pTable->slots[0][1] = Filler::create( {
+		.defaultSize = {100,50},
+		.skin = ColorSkin::create( Color::Green ),
+	} );
+
+ 
+	pTable->slots[1][0] = Filler::create( {
+		.defaultSize = {50,100},
+		.skin = ColorSkin::create( Color::Blue ),
+	} );
+
+	pTable->slots[1][1] = Filler::create( {
+		.defaultSize = {50,100},
+		.skin = ColorSkin::create( Color::Yellow ),
+	} );
+*/
+	
+	auto pTextEditor1 = TextEditor::create( WGBP(TextEditor,
+		_.skin = ColorSkin::create( Color8::LightSalmon, 5 ) ));
+	pTextEditor1->editor.setText("TESTING 1");
+
+
+	auto pTextEditor2 = TextEditor::create( WGBP(TextEditor,
+		_.skin = ColorSkin::create( Color8::LightGreen, 5 ) ));
+	pTextEditor1->editor.setText("TESTING 2");
+
+	auto pTextEditor3 = TextEditor::create( WGBP(TextEditor,
+		_.skin = ColorSkin::create( Color8::LightBlue, 5 ) ));
+	pTextEditor1->editor.setText("TESTING 3");
+
+	auto pTextEditor4 = TextEditor::create( WGBP(TextEditor,
+		_.skin = ColorSkin::create( Color8::LightPink, 5 ) ));
+	pTextEditor1->editor.setText("TESTING 4");
+
+	
+	pTable->slots[0][0] = pTextEditor1;
+	pTable->slots[0][1] = pTextEditor2;
+	pTable->slots[1][0] = pTextEditor3;
+	pTable->slots[1][1] = pTextEditor4;
+
+	
+	pTable->setRowSpacing(4, 2, 4);
+	pTable->setColumnSpacing(1, 2, 1);
+
+	pBaseLayer->slots.pushFront(pTable, { .pos = {10,10} });
+	
+	
+	*pEntry = pBaseLayer;
+	
+	return true;
+}

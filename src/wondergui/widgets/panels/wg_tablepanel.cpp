@@ -66,7 +66,7 @@ void TablePanel::hideRows(int index, int amount)
 
 void TablePanel::hideRows(row_iterator beg, row_iterator end)
 {
-	_hideRows(&*beg, end - beg);
+	_hideRows(&*beg, int(end - beg));
 }
 
 //____ unhideRows() ___________________________________________________________
@@ -78,7 +78,7 @@ void TablePanel::unhideRows(int index, int amount)
 
 void TablePanel::unhideRows(row_iterator beg, row_iterator end)
 {
-	_unhideRows(&*beg, end - beg);
+	_unhideRows(&*beg, int(end - beg));
 }
 
 //____ hideColumns() __________________________________________________________
@@ -90,7 +90,7 @@ void TablePanel::hideColumns(int index, int amount)
 
 void TablePanel::hideColumns(column_iterator beg, column_iterator end)
 {
-	_hideColumns(&*beg, end - beg);
+	_hideColumns(&*beg, int(end - beg));
 }
 
 //____ unhideColumns() ________________________________________________________
@@ -102,7 +102,7 @@ void TablePanel::unhideColumns(int index, int amount)
 
 void TablePanel::unhideColumns(column_iterator beg, column_iterator end)
 {
-	_unhideColumns(&*beg, end - beg);
+	_unhideColumns(&*beg, int(end - beg));
 }
 
 //____ setRowWeight() _________________________________________________________
@@ -114,7 +114,7 @@ void TablePanel::setRowWeight(int index, int amount, float weight)
 
 void TablePanel::setRowWeight(row_iterator  beg, row_iterator end, float weight)
 {
-	_reweightRows( &*beg, end - beg, weight);
+	_reweightRows( &*beg, int(end - beg), weight);
 }
 
 void TablePanel::setRowWeight(int index, int amount, std::initializer_list<float> weights)
@@ -124,7 +124,7 @@ void TablePanel::setRowWeight(int index, int amount, std::initializer_list<float
 
 void TablePanel::setRowWeight(row_iterator beg, row_iterator end, std::initializer_list<float> weights)
 {
-	_reweightRows(&*beg, end - beg, weights.begin());
+	_reweightRows(&*beg, int(end - beg), weights.begin());
 }
 
 //____ setColumnWeight() ______________________________________________________
@@ -136,7 +136,7 @@ void TablePanel::setColumnWeight(int index, int amount, float weight)
 
 void TablePanel::setColumnWeight(column_iterator  beg, column_iterator end, float weight)
 {
-	_reweightColumns(&*beg, end - beg, weight);
+	_reweightColumns(&*beg, int(end - beg), weight);
 }
 
 void TablePanel::setColumnWeight(int index, int amount, std::initializer_list<float> weights)
@@ -146,48 +146,163 @@ void TablePanel::setColumnWeight(int index, int amount, std::initializer_list<fl
 
 void TablePanel::setColumnWeight(column_iterator beg, column_iterator end, std::initializer_list<float> weights)
 {
-	_reweightColumns(&*beg, end - beg, weights.begin());
+	_reweightColumns(&*beg, int(end - beg), weights.begin());
 }
 
 //____ setRowLayout() _________________________________________________________
 
 void TablePanel::setRowLayout(PackLayout* pLayout)
 {
-	if (pLayout != m_pLayoutX)
+	if (pLayout != m_pLayoutY)
 	{
-		m_pLayoutX = pLayout;
-
+		m_pLayoutY = pLayout;
+				
+		bool bRowsChanged = _refreshRows();
+		
+		if( bRowsChanged )
+		{
+			_updateModifiedChildSizes();
+			_requestRender();
+		}
 	}
 }
 
+//____ setColumnLayout() _________________________________________________________
+
 void TablePanel::setColumnLayout(PackLayout* pLayout)
 {
-	
+	if (pLayout != m_pLayoutX)
+	{
+		m_pLayoutX = pLayout;
+		
+		bool bColumnsChanged = false;
+		bool matchingRowHeightChanged = false;
+
+		bColumnsChanged = _refreshColumns();
+		
+		if( bColumnsChanged )
+		{
+			matchingRowHeightChanged = _refreshRowHeightForColumnWidth();
+		
+			if( matchingRowHeightChanged )
+				_refreshRows();
+		
+			_updateModifiedChildSizes();
+			_requestRender();
+		}
+	}
 }
 
-void TablePanel::setRowSpacing( pts between )
-{
-	
-}
+//____ setRowSpacing() ________________________________________________________
 
 void TablePanel::setRowSpacing( pts before, pts between, pts after )
 {
+	if( before == m_spacingY[0] && between == m_spacingY[1] && after == m_spacingY[2] )
+		return;
 	
+	SizeSPX oldPadding = _sumOfPadding(m_scale);
+	
+	m_spacingY[0] = before;
+	m_spacingY[1] = between;
+	m_spacingY[2] = after;
+	
+	SizeSPX newPadding = _sumOfPadding(m_scale);
+
+	m_defaultSize += newPadding - oldPadding;
+	m_minSize += newPadding - oldPadding;
+
+	_requestResize();
+	_requestRender();
 }
 
-void TablePanel::setColumnSpacing( pts between )
-{
-	
-}
+//____ setColumnSpacing() ________________________________________________________
 
 void TablePanel::setColumnSpacing( pts before, pts between, pts after )
 {
+	if( before == m_spacingX[0] && between == m_spacingX[1] && after == m_spacingX[2] )
+		return;
 	
+	SizeSPX oldPadding = _sumOfPadding(m_scale);
+	
+	m_spacingX[0] = before;
+	m_spacingX[1] = between;
+	m_spacingX[2] = after;
+	
+	SizeSPX newPadding = _sumOfPadding(m_scale);
+
+	m_defaultSize += newPadding - oldPadding;
+	m_minSize += newPadding - oldPadding;
+
+	SizeSPX oldSize = m_size;
+	_requestResize();
+	if( m_size != oldSize )
+	{
+		bool bColumnsChanged = _refreshColumns();
+		
+		if( bColumnsChanged )
+		{
+			bool matchingRowHeightChanged = _refreshRowHeightForColumnWidth();
+			
+			if( matchingRowHeightChanged )
+				_refreshRows();
+			
+			_updateModifiedChildSizes();
+		}
+		_requestRender();
+	}
 }
 
-void TablePanel::setRowSkins( Skin * pSkin1, Skin * pSkin2 = nullptr )
+//____ setRowSkins() __________________________________________________________
+
+void TablePanel::setRowSkins( Skin * pSkin1, Skin * pSkin2 )
 {
+	if( pSkin1 == nullptr && pSkin2 != nullptr )
+	{
+		//TODO: Error handling
+		
+		return;
+	}
+
+	if( pSkin2 == nullptr )
+		pSkin2 = pSkin1;
 	
+	if( pSkin1 == m_pRowSkins[0] && pSkin2 == m_pRowSkins[1] )
+		return;
+
+	if(pSkin2 != pSkin1)
+	{
+		if( pSkin1->margin() + pSkin1->padding() != pSkin2->margin() + pSkin2->padding() )
+		{
+			//TODO: Error handling
+			
+			return;
+		}
+	}
+		
+	bool bGeoChanged = false;
+	
+	if( pSkin1 == nullptr && (m_pRowSkins[0]->_hasPadding() || m_pRowSkins[0]->_hasMargin()) )
+		bGeoChanged = true;
+	else if( m_pRowSkins[0] == nullptr && (pSkin1->_hasPadding() || pSkin1->_hasMargin()) )
+		bGeoChanged = true;
+	else
+		bGeoChanged = pSkin1->_contentBorder(m_scale, m_state) != m_pRowSkins[0]->_contentBorder(m_scale, m_state);
+	
+	m_pRowSkins[0] = pSkin1;
+	m_pRowSkins[1] = pSkin2;
+	
+	if( bGeoChanged )
+	{
+		// This can be optimized in many ways if needed in the future.
+		
+		_updateMinDefaultSize();
+		_refreshColumns();
+		_refreshRows();
+		_requestResize();
+		_requestRender();
+	}
+	else
+		_requestRender();
 }
 
  
@@ -498,7 +613,7 @@ SizeSPX TablePanel::_maxSize(int scale) const
 
 RectSPX TablePanel::_slotGeo(const StaticSlot* pSlot) const
 {
-	int slotIdx = static_cast<const DynamicSlot*>(pSlot) - slots.data();
+	int slotIdx = int(static_cast<const DynamicSlot*>(pSlot) - slots.data());
 	int row = slotIdx / columns.size();
 	int col = slotIdx % columns.size();
 
@@ -510,19 +625,19 @@ RectSPX TablePanel::_slotGeo(const StaticSlot* pSlot) const
 
 	BorderSPX rowBorder = m_pRowSkins[0] ? m_pRowSkins[0]->_contentBorder(m_scale, State::Default) : BorderSPX();
 
-	geo.x += m_spacingX[0] + rowBorder.left;
-	geo.y += m_spacingY[0] + rowBorder.top;
+	geo.x += ptsToSpx(m_spacingX[0], m_scale) + rowBorder.left;
+	geo.y += ptsToSpx(m_spacingY[0], m_scale) + rowBorder.top;
 
 	for (int i = 0; i < col; i++)
 	{
 		if (columns[i].m_bVisible)
-			geo.x += columns[i].m_width + m_spacingX[1];
+			geo.x += columns[i].m_width + ptsToSpx(m_spacingX[1], m_scale);
 	}
 		
 	for (int i = 0; i < row; i++)
 	{
 		if (rows[i].m_bVisible)
-			geo.y += rows[i].m_height + m_spacingY[1] + rowBorder.height();
+			geo.y += rows[i].m_height + ptsToSpx(m_spacingY[1], m_scale) + rowBorder.height();
 	}
 
 	return geo;
@@ -539,7 +654,7 @@ void TablePanel::_childOverflowChanged( StaticSlot * pSlot, const BorderSPX& old
 
 bool TablePanel::_isChildVisible( const StaticSlot * pSlot ) const
 {
-	int slotIdx = static_cast<const DynamicSlot*>(pSlot) - slots.data();
+	int slotIdx = int(static_cast<const DynamicSlot*>(pSlot) - slots.data());
 	int row = slotIdx / columns.size();
 	int col = slotIdx % columns.size();
 
@@ -559,7 +674,7 @@ void TablePanel::_childRequestRender(StaticSlot * pSlot, const RectSPX& rect)
 
 void TablePanel::_childRequestResize(StaticSlot * pSlot)
 {
-	int ofs = static_cast<DynamicSlot*>(pSlot) - slots.data();
+	int ofs = int(static_cast<DynamicSlot*>(pSlot) - slots.data());
 
 	SizeSPX oldSize = pSlot->_widget()->_size();
 
@@ -615,7 +730,7 @@ void TablePanel::_releaseChild(StaticSlot * pSlot)
 {
 	pSlot->_clearWidget();
 
-	int ofs = static_cast<DynamicSlot*>(pSlot) - slots.data();
+	int ofs = int(static_cast<DynamicSlot*>(pSlot) - slots.data());
 	_refreshSlots(ofs, Axis::X, 1);
 }
 
@@ -626,7 +741,7 @@ void TablePanel::_replaceChild(StaticSlot * pSlot, Widget * pNewChild)
 {
 	pSlot->_setWidget(pNewChild);
 
-	int ofs = static_cast<DynamicSlot*>(pSlot) - slots.data();
+	int ofs = int(static_cast<DynamicSlot*>(pSlot) - slots.data());
 	_refreshSlots(ofs, Axis::X, 1);
 }
 
@@ -685,6 +800,8 @@ void TablePanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 void TablePanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 {
 	auto it = slots.begin() + ( static_cast<const DynamicSlot*>(package.pSlot) - slots.data());
+	it++;
+
 	while (it != slots.end())
 	{
 		if (!it->isEmpty())
@@ -693,7 +810,6 @@ void TablePanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 			package.geo = _slotGeo(&*it);		// This is slow, but this method should not be used so much anyway.
 			return;
 		}
-		it++;
 	}
 
 	package.pSlot = nullptr;
@@ -723,15 +839,11 @@ void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectS
 	Skin * rowSkin1 = m_pRowSkins[0];
 	Skin * rowSkin2 = m_pRowSkins[1] != nullptr ? m_pRowSkins[1] : m_pRowSkins[0];
 
-	
-	int rowSkinOfs = canvas.y + m_spacingY[0];
-	int rowSkinInc = m_pRowSkins[1] != nullptr ? 1 : 0;
-	
 	auto slotIt = slots.begin();
 	
 	for( auto& row : rows )
 	{
-		RectSPX rowGeo = { canvas.x, rowOfs, canvas.w, row.m_height + rowBorder.height() };
+		RectSPX rowGeo = { canvas.x, canvas.y + ptsToSpx(m_spacingY[0], m_scale) + rowOfs, canvas.w, row.m_height + rowBorder.height() };
 
 		if( row.m_bVisible )
 		{
@@ -746,7 +858,7 @@ void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectS
 			// Render widgets in row
 			
 			CoordSPX widgetPos;
-			widgetPos.x = rowGeo.x + rowBorder.left + m_spacingX[0];
+			widgetPos.x = rowGeo.x + rowBorder.left + ptsToSpx(m_spacingX[0], m_scale);
 			widgetPos.y = rowGeo.y + rowBorder.top;
 
 			
@@ -760,7 +872,7 @@ void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectS
 				}
 				
 				slotIt++;
-				widgetPos.x += column.m_width + m_spacingX[1];
+				widgetPos.x += column.m_width + ptsToSpx(m_spacingX[1], m_scale);
 			}
 		}
 		else
@@ -770,7 +882,7 @@ void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectS
 		
 		// Finish up
 		
-		rowOfs += rowGeo.h + m_spacingY[1];
+		rowOfs += rowGeo.h + ptsToSpx(m_spacingY[1], m_scale);
 	}
 }
 
@@ -835,7 +947,8 @@ bool TablePanel::_refreshColumns()
 				
 		// Get column widths from our PackLayout
 		
-		spx totalPadding = m_skin.contentBorderSize(m_scale).w + m_spacingX[0] + m_spacingX[1] * std::max(0, m_nVisibleColumns-1) + m_spacingX[2];
+		spx totalPadding = m_skin.contentBorderSize(m_scale).w + ptsToSpx(m_spacingX[0], m_scale) + ptsToSpx(m_spacingX[1], m_scale) * std::max(0, m_nVisibleColumns-1) + ptsToSpx(m_spacingX[2], m_scale);
+
 		if( m_pRowSkins[0] != nullptr )
 			totalPadding += m_pRowSkins[0]->_contentBorderSize(m_scale).w;
 		
@@ -909,7 +1022,7 @@ bool TablePanel::_refreshRows()
 	{
 		// Get out row height from our PackLayout
 		
-		spx totalPadding = m_skin.contentBorderSize(m_scale).h + m_spacingY[0] + m_spacingY[1] * std::max(0, m_nVisibleRows-1) + m_spacingY[2];
+		spx totalPadding = m_skin.contentBorderSize(m_scale).h + ptsToSpx(m_spacingY[0], m_scale) + ptsToSpx(m_spacingY[1], m_scale) * std::max(0, m_nVisibleRows-1) + ptsToSpx(m_spacingY[2], m_scale);
 		if( m_pRowSkins[0] != nullptr )
 			totalPadding += m_pRowSkins[0]->_contentBorderSize(m_scale).h * m_nVisibleRows;
 		
@@ -1168,8 +1281,12 @@ SizeSPX TablePanel::_sumOfPadding(int scale) const
 		sizeAddition.w += rowBorder.w;
 		sizeAddition.h += rowBorder.h * m_nVisibleRows;
 	}
-	sizeAddition.w += m_spacingX[0] + m_spacingX[1] * m_nVisibleColumns + m_spacingX[2];
-	sizeAddition.h += m_spacingY[0] + m_spacingY[1] * m_nVisibleRows + m_spacingY[2];
+	
+	int nBetweenSpacingsX = std::max(0,m_nVisibleColumns-1);
+	int nBetweenSpacingsY = std::max(0,m_nVisibleRows-1);
+
+	sizeAddition.w += ptsToSpx(m_spacingX[0], m_scale) + ptsToSpx(m_spacingX[1], m_scale) * nBetweenSpacingsX + ptsToSpx(m_spacingX[2], m_scale);
+	sizeAddition.h += ptsToSpx(m_spacingY[0], m_scale) + ptsToSpx(m_spacingY[1], m_scale) * nBetweenSpacingsY + ptsToSpx(m_spacingY[2], m_scale);
 
 	return sizeAddition;
 }
@@ -1255,14 +1372,14 @@ void TablePanel::_refreshSlots(int ofs, Axis axis, int nSlots)
 	bool bRowCacheChanged = false;
 	bool bColumnCacheChanged = false;
 
-	for (int row = firstRow; row < lastRow; row++)
+	for (int row = firstRow; row <= lastRow; row++)
 	{
 		spx oldDefault = rows[row].m_cache.defaultHeight;
 		bRowCacheChanged = _refreshRowCache(row, rows[row].m_cache, m_scale) || bRowCacheChanged;
 		defaultSize.h += rows[row].m_cache.defaultHeight - oldDefault;
 	}
 
-	for (int column = firstColumn; column < lastColumn; column++)
+	for (int column = firstColumn; column <= lastColumn; column++)
 	{
 		spx oldDefault = columns[column].m_cache.defaultWidth;
 		bColumnCacheChanged = _refreshColumnCache(column, columns[column].m_cache, m_scale) || bColumnCacheChanged;
@@ -1284,7 +1401,10 @@ void TablePanel::_refreshSlots(int ofs, Axis axis, int nSlots)
 		bRefreshGeo = _refreshColumns() || bRefreshGeo;
 
 	if (bRefreshGeo)
+	{
 		_requestResize();
+		_requestRender();
+	}
 
 	// Make sure widgets in our modified slots have the right size and scale.
 
@@ -1318,7 +1438,7 @@ Object*	TablePanel::_object()
 
 void TablePanel::_didAddEntries(TablePanelRow* pEntry, int nb)
 {
-	int ofs = pEntry - &*rows.begin();
+	int ofs = int(pEntry - &*rows.begin());
 
 	slots._insertRows(ofs, nb);
 
@@ -1326,12 +1446,16 @@ void TablePanel::_didAddEntries(TablePanelRow* pEntry, int nb)
 	for (int i = 0; i < nb; i++)
 	{
 		if (pEntry->m_bVisible)
+		{
+			_refreshRowCache(ofs + i, rows[ofs+i].m_cache, m_scale);
 			nbVisible++;
+		}
 	}
 
 	if (nbVisible > 0)
 	{
 		m_nVisibleRows += nbVisible;
+		
 		_updateMinDefaultSize();
 
 		_requestRender();
@@ -1341,7 +1465,7 @@ void TablePanel::_didAddEntries(TablePanelRow* pEntry, int nb)
 
 void TablePanel::_didAddEntries(TablePanelColumn* pEntry, int nb)
 {
-	int ofs = pEntry - &*columns.begin();
+	int ofs = int(pEntry - &*columns.begin());
 
 	slots._insertColumns(ofs, nb);
 
@@ -1349,7 +1473,10 @@ void TablePanel::_didAddEntries(TablePanelColumn* pEntry, int nb)
 	for (int i = 0; i < nb; i++)
 	{
 		if (pEntry->m_bVisible)
+		{
+			_refreshColumnCache(ofs + i, columns[ofs+i].m_cache, m_scale);
 			nbVisible++;
+		}
 	}
 
 	if (nbVisible > 0)
@@ -1366,19 +1493,19 @@ void TablePanel::_didAddEntries(TablePanelColumn* pEntry, int nb)
 
 void TablePanel::_didMoveEntries(TablePanelRow* pFrom, TablePanelRow* pTo, int nb)
 {
-
+	//TODO: Implement!!!
 }
 
 void TablePanel::_didMoveEntries(TablePanelColumn* pFrom, TablePanelColumn* pTo, int nb)
 {
-
+	//TODO: Implement!!!
 }
 
 //____ _willEraseEntries() ____________________________________________________
 
 void TablePanel::_willEraseEntries(TablePanelRow* pEntry, int nb)
 {
-	int ofs = pEntry - &*rows.begin();
+	int ofs = int(pEntry - &*rows.begin());
 
 	slots._deleteRows(ofs, nb);
 
@@ -1402,7 +1529,7 @@ void TablePanel::_willEraseEntries(TablePanelRow* pEntry, int nb)
 void TablePanel::_willEraseEntries(TablePanelColumn* pEntry, int nb)
 {
 
-	int ofs = pEntry - &*columns.begin();
+	int ofs = int(pEntry - &*columns.begin());
 
 	slots._deleteColumns(ofs, nb);
 
