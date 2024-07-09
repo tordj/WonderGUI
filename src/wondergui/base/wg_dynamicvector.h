@@ -56,18 +56,26 @@ namespace wg
 		inline void		reserve(int amount) { StaticVector<EntryType>::m_entries.reserve( amount ); }
 		inline void		shrinkToFit() { StaticVector<EntryType>::m_entries.shrink_to_fit(); }
 
+		void			resize( int nb);
+
+		iterator		pushBack( int nb = 1 );
+		iterator		pushBack( int nb, const struct EntryType::Blueprint& entry );
 		iterator		pushBack( const struct EntryType::Blueprint& entry );
 		iterator		pushBack( const std::initializer_list<struct EntryType::Blueprint>& entries );
 
 		template<typename Iterator>
 		iterator		pushBack(Iterator beg, Iterator end);
 		
+		iterator		insert( int index, int nb = 1 );
+		iterator		insert( int index, int nb, const struct EntryType::Blueprint& entry );
 		iterator		insert( int index, const struct EntryType::Blueprint& entry );
 		iterator		insert( int index, const std::initializer_list<struct EntryType::Blueprint>& entries );
 
 		template<typename Iterator>
 		iterator		insert( int index, Iterator beg, Iterator end);
 
+		iterator		insert( const_iterator pos, int nb = 1 );
+		iterator		insert( const_iterator pos, int nb, const struct EntryType::Blueprint& entry );
 		iterator		insert( const_iterator pos, const struct EntryType::Blueprint& entry );
 		iterator		insert( const_iterator pos, const std::initializer_list<struct EntryType::Blueprint>& entries );
 
@@ -89,7 +97,7 @@ namespace wg
 
 		
 		inline DynamicVector<EntryType>& operator<<(const struct EntryType::Blueprint& entry) { pushBack(entry); return * this; }
-
+		
 	protected:
 
 		Holder* m_pHolder;
@@ -100,8 +108,43 @@ namespace wg
 		virtual void	_willEraseEntries(EntryType* pEntry, int nb) { m_pHolder->_willEraseEntries(pEntry, nb); }
 	};
 
+	//____ resize() __________________________________________________________________
+
+	template < class EntryType>
+	void DynamicVector<EntryType>::resize(int nb)
+	{
+		int oldSize = (int)StaticVector<EntryType>::m_entries.size();
+
+		if( nb < oldSize )
+			_willEraseEntries(&StaticVector<EntryType>::m_entries[oldSize], nb);
+
+		StaticVector<EntryType>::m_entries.resize(nb);
+
+		if( nb > oldSize )
+			_didAddEntries(&StaticVector<EntryType>::m_entries[oldSize], nb);
+	}
 
 	//____ pushBack() _________________________________________________________________
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack(int nb)
+	{
+		int oldSize = (int)StaticVector<EntryType>::m_entries.size();
+
+		StaticVector<EntryType>::m_entries.resize(oldSize + nb);
+		_didAddEntries(&StaticVector<EntryType>::m_entries[oldSize], nb);
+		return StaticVector<EntryType>::m_entries.begin() + oldSize;
+	}
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack(int nb, const struct EntryType::Blueprint& entry)
+	{
+		int oldSize = (int)StaticVector<EntryType>::m_entries.size();
+
+		StaticVector<EntryType>::m_entries.resize(oldSize + nb, entry);
+		_didAddEntries(&StaticVector<EntryType>::m_entries[oldSize], nb);
+		return StaticVector<EntryType>::m_entries.begin() + oldSize;
+	}
 
 	template < class EntryType>
 	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack(const struct EntryType::Blueprint& entry)
@@ -148,6 +191,27 @@ namespace wg
 
 
 	//____ insert() ______________________________________________________________
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert(int index, int nb)
+	{
+		//TODO: Add error checking
+
+		auto it = StaticVector<EntryType>::m_entries.insert(StaticVector<EntryType>::m_entries.begin() + index, nb, EntryType() );
+		_didAddEntries(&StaticVector<EntryType>::m_entries[index], nb);
+		return it;
+	}
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert(int index, int nb, const struct EntryType::Blueprint& entry)
+	{
+		//TODO: Add error checking
+
+		auto it = StaticVector<EntryType>::m_entries.insert(StaticVector<EntryType>::m_entries.begin() + index, nb, EntryType(entry) );
+		_didAddEntries(&StaticVector<EntryType>::m_entries[index], nb);
+		return it;
+	}
+
 
 	template < class EntryType>
 	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert(int index, const struct EntryType::Blueprint& entry)
@@ -197,6 +261,26 @@ namespace wg
 
 		_didAddEntries(&insertPos[0], nEntries);
 		return insertPos;
+	}
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert(const_iterator pos, int nb)
+	{
+		//TODO: Add error checking
+
+		auto it = StaticVector<EntryType>::m_entries.insert(pos, nb, EntryType() );
+		_didAddEntries(&it[0], nb);
+		return it;
+	}
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert(const_iterator pos, int nb, const struct EntryType::Blueprint& entry)
+	{
+		//TODO: Add error checking
+
+		auto it = StaticVector<EntryType>::m_entries.insert(pos, nb, EntryType(entry) );
+		_didAddEntries(&it[0], nb);
+		return it;
 	}
 
 	template < class EntryType>

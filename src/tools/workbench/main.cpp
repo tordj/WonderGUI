@@ -3981,40 +3981,20 @@ bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry)
 
 	
 	
-	auto pTable = TablePanel::create();
-	
-	pTable->setSkin( ColorSkin::create(Color::White) );
-	
-	pTable->columns.pushBack( {{ .weight = 1.f }, { .weight = 1.f }} );
+	auto pTable = TablePanel::create( {
+		
+		.skin = ColorSkin::create(Color::White),
 
-	pTable->rows.pushBack( { .weight = 1.f }  );
-	pTable->rows.pushBack( { .weight = 1.f } );
-
-	
-	auto pFiller1 = Filler::create( {
-		.defaultSize = {100,50},
-		.skin = ColorSkin::create( Color::Red ),
-	} );
-	
-/*
-	pTable->slots[0][0] = pFiller1;
-
-	pTable->slots[0][1] = Filler::create( {
-		.defaultSize = {100,50},
-		.skin = ColorSkin::create( Color::Green ),
-	} );
-
- 
-	pTable->slots[1][0] = Filler::create( {
-		.defaultSize = {50,100},
-		.skin = ColorSkin::create( Color::Blue ),
-	} );
-
-	pTable->slots[1][1] = Filler::create( {
-		.defaultSize = {50,100},
-		.skin = ColorSkin::create( Color::Yellow ),
-	} );
-*/
+		.rowSpacingBefore = 4,
+		.rowSpacingAfter = 4,
+		.rowSpacing = 2,
+		
+		.columnSpacingBefore = 1,
+		.columnSpacingAfter = 1,
+		.columnSpacing = 2
+		
+	});
+		
 	
 	auto pTextEditor1 = TextEditor::create( WGBP(TextEditor,
 		_.skin = ColorSkin::create( Color8::LightSalmon, 5 ) ));
@@ -4039,11 +4019,22 @@ bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry)
 	pTable->slots[1][0] = pTextEditor3;
 	pTable->slots[1][1] = pTextEditor4;
 
-	
-	pTable->setRowSpacing(4, 2, 4);
-	pTable->setColumnSpacing(1, 2, 1);
+	pTable->rows.insert( pTable->rows.begin() + 1,4, { .visible = true } );
+
+	pTable->slots[1][1] = Filler::create( {
+		.defaultSize = {50,100},
+		.skin = ColorSkin::create( Color::Yellow ),
+	} );
 
 	pBaseLayer->slots.pushFront(pTable, { .pos = {10,10} });
+	
+	pTable->resize(7, 3);
+	
+	pTable->slots[6][2] = Filler::create( {
+		.defaultSize = {50,100},
+		.skin = ColorSkin::create( Color::Pink ),
+	} );
+
 	
 	
 	*pEntry = pBaseLayer;

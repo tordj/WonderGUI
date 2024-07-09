@@ -76,6 +76,11 @@ namespace wg
 		inline EntryType& operator[](int index) { return m_entries[index]; }
 		inline const EntryType& operator[](int index) const { return m_entries[index]; }
 
+		//.____ Internal ______________________________________________
+
+		inline void _resize(int nb) { m_entries.resize(nb, EntryType()); }
+
+		
 	protected:
 //		~StaticVector() {}
 		

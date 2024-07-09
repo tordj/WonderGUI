@@ -272,7 +272,7 @@ void SlotTable::_insertColumns(int ofs, int nb)
 	int nAdded	= nb;
 	int nRight	= m_nColumns - nLeft;
 
-	while (src > m_slots.begin())
+	while (src > m_slots.begin() + m_nColumns )
 	{
 		for (int i = 0; i < nRight; i++)
 			* --dest = std::move(* --src);
@@ -282,6 +282,11 @@ void SlotTable::_insertColumns(int ofs, int nb)
 		for (int i = 0; i < nLeft; i++)
 			*--dest = std::move(*--src);
 	}
+	
+	// Last row is special case since we can't move from/to same slot.
+	
+	for (int i = 0; i < nRight; i++)
+		* --dest = std::move(* --src);
 
 	m_nColumns += nb;
 }
@@ -322,7 +327,7 @@ void SlotTable::_deleteColumns(int ofs, int nb)
 			*dest++ = std::move(*src++);
 	}
 
-	m_nColumns -= nb;
+	m_nColumns -= nb; 
 
 	m_slots.resize(m_nColumns * m_nRows, DynamicSlot(m_pHolder) );
 }

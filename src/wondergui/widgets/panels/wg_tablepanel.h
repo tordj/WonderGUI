@@ -65,17 +65,17 @@ namespace wg
 		
 		struct Cache
 		{
-			spx		defaultHeight;
-			spx		minHeight;
-			spx		maxHeight;
-			spx		heightForColumnWidth;		// Height needed for current column widths.
+			spx		defaultHeight = 0;
+			spx		minHeight = 0;
+			spx		maxHeight = spx_max;
+			spx		heightForColumnWidth = 0;		// Height needed for current column widths.
 		};
 
 		TablePanel*		m_pTable;
 		bool			m_bVisible = true;
 		bool			m_bModified = false;
 		float			m_weight = 1.f;
-		spx				m_height;
+		spx				m_height = 0;
 		Cache			m_cache;
 
 	};
@@ -109,9 +109,9 @@ namespace wg
 
 		struct Cache
 		{
-			spx		defaultWidth;
-			spx		minWidth;
-			spx		maxWidth;
+			spx		defaultWidth = 0;
+			spx		minWidth = 0;
+			spx		maxWidth = spx_max;
 		};
 
 		bool			m_bVisible = true;
@@ -119,7 +119,7 @@ namespace wg
 		float			m_weight = 1.f;
 
 		TablePanel *	m_pTable;
-		spx				m_width;
+		spx				m_width = 0;
 		
 		Cache			m_cache;
 	};
@@ -162,6 +162,22 @@ namespace wg
 			bool			tabLock = false;
 			String			tooltip;
 
+			int				rows = 2;
+			int				columns = 2;
+
+			pts				rowSpacing			= 0;
+			pts				rowSpacingAfter		= 0;
+			pts				rowSpacingBefore	= 0;
+
+			pts				columnSpacing		= 0;
+			pts				columnSpacingAfter	= 0;
+			pts				columnSpacingBefore	= 0;
+
+			PackLayout_p	rowLayout;
+			PackLayout_p	columnLayout;
+			
+			Skin_p			rowSkin;
+			Skin_p			rowSkin2;
 		};
 		
 		//.____ Creation __________________________________________
@@ -207,6 +223,8 @@ namespace wg
 		void			setColumnWeight(int index, int amount, std::initializer_list<float> weights);
 		void			setColumnWeight(column_iterator beg, column_iterator end, std::initializer_list<float> weights);
 		
+		void			resize( int rows, int columns );
+		
 		//.____ Behavior ________________________________________________________
 
 		void			setRowLayout(PackLayout* pLayout);
@@ -237,6 +255,29 @@ namespace wg
 		TablePanel();
 		template<class BP> TablePanel(const BP& bp) : Container(bp), rows(this), columns(this), slots(this,this)
 		{
+			slots._resize(bp.rows, bp.columns);
+			rows._resize(bp.rows);
+			columns._resize(bp.columns);
+
+			m_nVisibleRows = bp.rows;
+			m_nVisibleColumns = bp.columns;
+
+			m_spacingX[0] = bp.columnSpacingBefore;
+			m_spacingX[1] = bp.columnSpacing;
+			m_spacingX[2] = bp.columnSpacingAfter;
+
+			m_spacingY[0] = bp.rowSpacingBefore;
+			m_spacingY[1] = bp.rowSpacing;
+			m_spacingY[2] = bp.rowSpacingAfter;
+
+
+			m_pLayoutX = bp.columnLayout;
+			m_pLayoutY = bp.rowLayout;
+			
+			m_pRowSkins[0] = bp.rowSkin;
+			m_pRowSkins[1] = bp.rowSkin2;
+			
+			_updateMinDefaultSize();
 		}
 
 		virtual ~TablePanel();
