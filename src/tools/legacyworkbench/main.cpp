@@ -1248,8 +1248,8 @@ bool rangeSliderTest(WgRootPanel* pRoot)
 			.backColor = wg::Color::Black,
 			.color = wg::Color::Green,
 			.direction = wg::Direction::Right,
-			.margin = wg::Border(0, 10, 0, 10),
-			.padding = wg::Border()
+			.padding = wg::Border(),
+			.spacing = wg::Border(0, 10, 0, 10)
 			});
 
 		pSliderX->SetAxis(wg::Axis::X);
@@ -1265,8 +1265,8 @@ bool rangeSliderTest(WgRootPanel* pRoot)
 			.backColor = wg::Color::Black,
 			.color = wg::Color::Green,
 			.direction = wg::Direction::Up,
-			.margin = wg::Border(10, 0, 10, 0),
-			.padding = wg::Border()
+			.padding = wg::Border(),
+			.spacing = wg::Border(10, 0, 10, 0)
 			});
 		
 		pSliderY->SetAxis(wg::Axis::Y);

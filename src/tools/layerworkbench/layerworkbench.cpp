@@ -92,8 +92,8 @@ bool MyApp::setupGUI(Visitor* pVisitor)
 		.blendMode = BlendMode::Max,
 		.color = HiColor{0,0,0,256},
 		.layer = 1,
-		.margin = { 20,0,0,20 },
-		.overflow = {0,20,20,0}
+		.overflow = {0,20,20,0},
+		.spacing = { 20,0,0,20 }
 	});
 	
 	auto pGreenBox = BoxSkin::create( {
@@ -216,18 +216,18 @@ bool MyApp::setupGUI(Visitor* pVisitor)
 	
 	auto pEntryMain1 = BoxSkin::create( {
 		.color = Color::LightYellow,
-		.margin = 2,
 		.outlineColor = Color::Black,
 		.outlineThickness = 1,
-		.padding = 4
+		.padding = 4,
+		.spacing = 2,
 	});
 
 	auto pEntryMain2 = BoxSkin::create( {
 		.color = Color::LightBlue,
-		.margin = 2,
 		.outlineColor = Color::Black,
 		.outlineThickness = 1,
-		.padding = 4
+		.padding = 4,
+		.spacing = 2
 	});
 
 	

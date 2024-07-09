@@ -1176,7 +1176,7 @@ void TablePanel::_updateAllChildSizes()
 
 bool TablePanel::_refreshRowCache( int row, TablePanelRow::Cache& cache, int scale ) const
 {
-	auto slotIt = slots.begin() + row * columns.size();
+	auto slotIt = slots.data() + row * columns.size();
 
 	spx	defaultHeight = 0;
 	spx minHeight = 0;
@@ -1227,33 +1227,35 @@ bool TablePanel::_refreshRowCache( int row, TablePanelRow::Cache& cache, int sca
 
 bool TablePanel::_refreshColumnCache( int column, TablePanelColumn::Cache& cache, int scale ) const
 {
-	auto colIt = columns.begin() + column;
-	auto slotIt = slots.begin() + column;
-
 	spx	defaultWidth = 0;
 	spx minWidth = 0;
 	spx maxWidth = spx_max;
 
-	for (auto& row : rows)
+	if (slots.rows() > 0)
 	{
-		Widget* p = slotIt->_widget();
-		if (p)
+		auto slotIt = slots.data() + column;
+
+		for (auto& row : rows)
 		{
-			spx myDefaultWidth = p->_defaultSize(scale).w;
-			spx myMinWidth = p->_minSize(scale).w;
-			spx myMaxWidth = p->_maxSize(scale).w;
+			Widget* p = slotIt->_widget();
+			if (p)
+			{
+				spx myDefaultWidth = p->_defaultSize(scale).w;
+				spx myMinWidth = p->_minSize(scale).w;
+				spx myMaxWidth = p->_maxSize(scale).w;
 
-			if (myDefaultWidth > defaultWidth)
-				defaultWidth = myDefaultWidth;
+				if (myDefaultWidth > defaultWidth)
+					defaultWidth = myDefaultWidth;
 
-			if (myMinWidth > minWidth)
-				minWidth = myMinWidth;
+				if (myMinWidth > minWidth)
+					minWidth = myMinWidth;
 
-			if (myMaxWidth < maxWidth)
-				maxWidth = myMaxWidth;
+				if (myMaxWidth < maxWidth)
+					maxWidth = myMaxWidth;
+			}
+
+			slotIt += rows.size();
 		}
-
-		slotIt += rows.size();
 	}
 
 	if (defaultWidth != cache.defaultWidth || minWidth != cache.minWidth ||
