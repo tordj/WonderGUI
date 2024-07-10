@@ -239,7 +239,7 @@ namespace wg
 					if (pRes)
 						return pRes;
 				}
-				else if( mode == SearchMode::Geometry || child.pSlot->_widget()->_markTest( ofs - child.geo.pos() ) )
+				else if( mode == SearchMode::Geometry || pWidget->_markTest( ofs - child.geo.pos() ) )
 					return pWidget;
 			}
 			_nextSlotWithGeo( child );

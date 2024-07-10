@@ -600,7 +600,7 @@ SizeSPX TablePanel::_defaultSize(int scale) const
 SizeSPX TablePanel::_minSize(int scale) const
 {
 	if (scale == m_scale)
-		return m_defaultSize;
+		return m_minSize;
 	else
 	{
 		// Reserve array for visible slots min sizes
@@ -672,6 +672,94 @@ SizeSPX TablePanel::_minSize(int scale) const
 SizeSPX TablePanel::_maxSize(int scale) const
 {
 	return { spx_max, spx_max };
+}
+
+//____ _findWidget() ____________________________________________________________
+
+Widget * TablePanel::_findWidget( const CoordSPX& ofs, SearchMode mode )
+{
+	RectSPX geo = m_skin.contentRect({0,0,m_size}, m_scale, State::Default);
+
+	geo -= ptsToSpx(Border( m_spacingY[0], m_spacingX[2], m_spacingY[2], m_spacingX[0] ), m_scale);
+
+	if( geo.contains(ofs) )
+	{
+		BorderSPX rowBorder = m_pRowSkins[0] ? m_pRowSkins[0]->_contentBorder(m_scale, State::Default) : BorderSPX();
+
+		CoordSPX pos= geo.pos();
+		pos.x += rowBorder.left;
+		pos.y += rowBorder.top;
+		
+		int row = 0;
+		int column = 0;
+		
+		// Find right row
+		
+		while( row < rows.size() )
+		{
+			if( rows[row].m_bVisible )
+			{
+				if( pos.y > ofs.y )
+				{
+					// Fell between the cracks.
+					
+					row = rows.size();
+					break;											// Found right row
+				}
+				
+				if( pos.y + rows[row].m_height > ofs.y )
+					break;
+
+				pos.y += rows[row].m_height + ptsToSpx(m_spacingY[1], m_scale) + rowBorder.height();
+			}
+			row++;
+		}
+
+		// Find right column
+		
+		while( column < columns.size() )
+		{
+			if( columns[column].m_bVisible )
+			{
+				if( pos.x > ofs.x )
+				{
+					// Fell between the cracks.
+					
+					column = columns.size();
+					break;
+				}
+				
+				if( pos.x + columns[column].m_width > ofs.x )
+					break;											// Found right column
+
+				pos.x += columns[column].m_width + ptsToSpx(m_spacingX[1], m_scale);
+			}
+			column++;
+		}
+
+		// If we have a row and column and the slot contains a widget we test against that
+		
+		if( row < rows.size() && column < columns.size() && !slots[row][column].isEmpty() )
+		{
+			Widget * pWidget = slots[row][column]._widget();
+			
+			if (pWidget->isContainer())
+			{
+				Widget * pRes = static_cast<Container*>(pWidget)->_findWidget(ofs - pos, mode);
+				if (pRes)
+					return pRes;
+			}
+			else if( mode == SearchMode::Geometry || pWidget->_markTest( ofs - pos ) )
+				return pWidget;
+		}
+	}
+	
+	// Check against ourselves
+
+	if( mode == SearchMode::Geometry || _markTest(ofs) )
+		return this;
+
+	return nullptr;
 }
 
 //____ _slotGeo() _____________________________________________________________
@@ -1022,22 +1110,23 @@ bool TablePanel::_refreshColumns()
 		spx availableWidth = m_size.w - totalPadding;
 		
 		int arrayBytes = (sizeof(PackLayout::Item)+sizeof(spx)) * m_nVisibleColumns;
-		PackLayout::Item* pItem = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
-		spx* pOutput = (spx*) &pItem[m_nVisibleColumns];
+		PackLayout::Item* pItems = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+		spx* pOutput = (spx*) &pItems[m_nVisibleColumns];
 		
+		auto p = pItems;
 		for( auto& column : columns )
 		{
 			if( column.m_bVisible )
 			{
-				pItem->def = column.m_cache.defaultWidth;
-				pItem->min = column.m_cache.minWidth;
-				pItem->max = column.m_cache.maxWidth;
-				pItem->weight = column.m_weight*65536;
-				pItem++;
+				p->def = column.m_cache.defaultWidth;
+				p->min = column.m_cache.minWidth;
+				p->max = column.m_cache.maxWidth;
+				p->weight = column.m_weight*65536;
+				p++;
 			}
 		}
 		
-		pLayout->getItemSizes(pOutput, availableWidth, m_scale, m_nVisibleColumns, pItem);
+		pLayout->getItemSizes(pOutput, availableWidth, m_scale, m_nVisibleColumns, pItems);
 		
 		// Update column widths and flag changes
 				
@@ -1096,22 +1185,23 @@ bool TablePanel::_refreshRows()
 		spx availableHeight = m_size.h - totalPadding;
 		
 		int arrayBytes = (sizeof(PackLayout::Item)+sizeof(spx)) * m_nVisibleRows;
-		PackLayout::Item* pItem = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
-		spx* pOutput = (spx*) &pItem[m_nVisibleRows];
+		PackLayout::Item* pItems = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+		spx* pOutput = (spx*) &pItems[m_nVisibleRows];
 		
+		auto p = pItems;
 		for( auto& row : rows )
 		{
 			if( row.m_bVisible )
 			{
-				pItem->def = row.m_cache.heightForColumnWidth;
-				pItem->min = row.m_cache.minHeight;
-				pItem->max = row.m_cache.maxHeight;
-				pItem->weight = row.m_weight*65536;
-				pItem++;
+				p->def = row.m_cache.heightForColumnWidth;
+				p->min = row.m_cache.minHeight;
+				p->max = row.m_cache.maxHeight;
+				p->weight = row.m_weight*65536;
+				p++;
 			}
 		}
 		
-		m_pLayoutY->getItemSizes(pOutput, availableHeight, m_scale, m_nVisibleRows, pItem);
+		m_pLayoutY->getItemSizes(pOutput, availableHeight, m_scale, m_nVisibleRows, pItems);
 		
 		// Update row widths and flag changes
 		
@@ -1537,22 +1627,14 @@ void TablePanel::_didAddEntries(TablePanelRow* pEntry, int nb)
 	int nbVisible = 0;
 	for (int i = 0; i < nb; i++)
 	{
-		if (pEntry->m_bVisible)
+		if (pEntry[i].m_bVisible)
 		{
 			_refreshRowCache(ofs + i, rows[ofs+i].m_cache, m_scale);
 			nbVisible++;
 		}
 	}
 
-	if (nbVisible > 0)
-	{
-		m_nVisibleRows += nbVisible;
-		
-		_updateMinDefaultSize();
-
-		_requestRender();
-		_requestResize();
-	}
+	_rowVisibilityChanged(nbVisible);
 }
 
 void TablePanel::_didAddEntries(TablePanelColumn* pEntry, int nb)
@@ -1564,21 +1646,14 @@ void TablePanel::_didAddEntries(TablePanelColumn* pEntry, int nb)
 	int nbVisible = 0;
 	for (int i = 0; i < nb; i++)
 	{
-		if (pEntry->m_bVisible)
+		if (pEntry[i].m_bVisible)
 		{
 			_refreshColumnCache(ofs + i, columns[ofs+i].m_cache, m_scale);
 			nbVisible++;
 		}
 	}
 
-	if (nbVisible > 0)
-	{
-		m_nVisibleColumns += nbVisible;
-		_updateMinDefaultSize();
-
-		_requestRender();
-		_requestResize();
-	}
+	_columnVisibilityChanged(nbVisible);
 }
 
 //____ _didMoveEntries() ______________________________________________________
@@ -1604,18 +1679,14 @@ void TablePanel::_willEraseEntries(TablePanelRow* pEntry, int nb)
 	int nbVisible = 0;
 	for (int i = 0; i < nb; i++)
 	{
-		if (pEntry->m_bVisible)
+		if (pEntry[i].m_bVisible)
+		{
+			pEntry[i].m_bVisible = false;		// Make invisible for calculations inside _rowVisibilityChanged() before row actually is erased.
 			nbVisible++;
+		}
 	}
 
-	if (nbVisible > 0)
-	{
-		m_nVisibleRows -= nbVisible;
-
-		_updateMinDefaultSize();
-		_requestRender();
-		_requestResize();
-	}
+	_rowVisibilityChanged(-nbVisible);
 }
 
 void TablePanel::_willEraseEntries(TablePanelColumn* pEntry, int nb)
@@ -1628,62 +1699,197 @@ void TablePanel::_willEraseEntries(TablePanelColumn* pEntry, int nb)
 	int nbVisible = 0;
 	for (int i = 0; i < nb; i++)
 	{
-		if (pEntry->m_bVisible)
+		if (pEntry[i].m_bVisible)
+		{
+			pEntry[i].m_bVisible = false;		// Make invisible for calculations inside _columnVisibilityChanged() before column actually is erased.
 			nbVisible++;
+		}
 	}
 
-	if (nbVisible > 0)
-	{
-		m_nVisibleColumns -= nbVisible;
-
-		_updateMinDefaultSize();
-		_requestRender();
-		_requestResize();
-	}
+	_columnVisibilityChanged(-nbVisible);
 }
 
+//____ _rowVisibilityChanged() ________________________________________________
 
+void TablePanel::_rowVisibilityChanged( int change )
+{
+	if(change == 0)
+		return;
+	
+	m_nVisibleRows += change;
+	
+	_updateMinDefaultSize();
+
+	_requestRender();
+	_requestResize();
+}
+
+//____ _columnVisibilityChanged() ________________________________________________
+
+void TablePanel::_columnVisibilityChanged( int change )
+{
+	if(change == 0)
+		return;
+	
+	m_nVisibleColumns += change;
+	
+	_updateMinDefaultSize();
+
+	_requestRender();
+	_requestResize();
+}
+
+//____ _hideRows() ____________________________________________________________
 
 void TablePanel::_hideRows(TablePanelRow* pStart, int nb)
 {
+	int ofs = int(pStart - &*rows.begin());
 
+	int nbHidden = 0;
+	for (int i = 0; i < nb; i++)
+	{
+		if (pStart[0].m_bVisible == true)
+		{
+			pStart[0].m_bVisible = false;
+			nbHidden++;
+		}
+	}
+
+	_rowVisibilityChanged( -nbHidden );
 }
+
+//____ _unhideRows() __________________________________________________________
 
 void TablePanel::_unhideRows(TablePanelRow* pStart, int nb)
 {
+	int ofs = int(pStart - &*rows.begin());
 
+	int nbVisible = 0;
+	for (int i = 0; i < nb; i++)
+	{
+		if (pStart[0].m_bVisible == false)
+		{
+			pStart[0].m_bVisible = true;
+			_refreshRowCache(ofs + i, rows[ofs+i].m_cache, m_scale);
+			nbVisible++;
+		}
+	}
+
+	_rowVisibilityChanged(nbVisible);
 }
+
+//____ _hideColumns() _________________________________________________________
 
 void TablePanel::_hideColumns(TablePanelColumn* pStart, int nb)
 {
+	int ofs = int(pStart - &*columns.begin());
 
+	int nbHidden = 0;
+	for (int i = 0; i < nb; i++)
+	{
+		if (pStart[0].m_bVisible == true)
+		{
+			pStart[0].m_bVisible = false;
+			nbHidden++;
+		}
+	}
+
+	_columnVisibilityChanged( -nbHidden );
 }
+
+//____ _unhideColumns() _______________________________________________________
 
 void TablePanel::_unhideColumns(TablePanelColumn* pStart, int nb)
 {
+	int ofs = int(pStart - &*columns.begin());
 
+	int nbVisible = 0;
+	for (int i = 0; i < nb; i++)
+	{
+		if (pStart[0].m_bVisible == false)
+		{
+			pStart[0].m_bVisible = true;
+			_refreshRowCache(ofs + i, rows[ofs+i].m_cache, m_scale);
+			nbVisible++;
+		}
+	}
+
+	_columnVisibilityChanged(nbVisible);
 }
 
-void TablePanel::_reweightRows(TablePanelRow* pEntry, int nb, float weight)
+//____ _reweightRows() ________________________________________________________
+
+void TablePanel::_reweightRows(TablePanelRow* pStart, int nb, float weight)
 {
+	int ofs = int(pStart - &*rows.begin());
 
+	for (int i = 0; i < nb; i++)
+		pStart[i].m_weight = weight;
+
+	bool bChanged = _refreshRows();
+	if( bChanged )
+	{
+		_updateModifiedChildSizes();
+		_requestRender();
+	}
 }
 
-void TablePanel::_reweightRows(TablePanelRow* pEntry, int nb, const float* pWeights)
+void TablePanel::_reweightRows(TablePanelRow* pStart, int nb, const float* pWeights)
 {
+	int ofs = int(pStart - &*rows.begin());
 
+	for (int i = 0; i < nb; i++)
+		pStart[i].m_weight = * pWeights++;
+
+	bool bChanged = _refreshRows();
+	if( bChanged )
+	{
+		_updateModifiedChildSizes();
+		_requestRender();
+	}
 }
 
-void TablePanel::_reweightColumns(TablePanelColumn* pEntry, int nb, float weight)
+//____ _reweightColumns() _____________________________________________________
+
+void TablePanel::_reweightColumns(TablePanelColumn* pStart, int nb, float weight)
 {
+	int ofs = int(pStart - &*columns.begin());
 
+	for (int i = 0; i < nb; i++)
+		pStart[i].m_weight = weight;
+
+	bool bChanged = _refreshColumns();
+	if( bChanged )
+	{
+		bool bRowsChanged = _refreshRowHeightForColumnWidth();
+		if( bRowsChanged )
+			_refreshRows();
+		
+		_updateModifiedChildSizes();
+		_requestRender();
+	}
 }
 
-void TablePanel::_reweightColumns(TablePanelColumn* pEntry, int nb, const float* pWeights)
+//____ _reweightColumns() _____________________________________________________
+
+void TablePanel::_reweightColumns(TablePanelColumn* pStart, int nb, const float* pWeights)
 {
+	int ofs = int(pStart - &*columns.begin());
 
+	for (int i = 0; i < nb; i++)
+		pStart[i].m_weight = * pWeights++;
+
+	bool bChanged = _refreshColumns();
+	if( bChanged )
+	{
+		bool bRowsChanged = _refreshRowHeightForColumnWidth();
+		if( bRowsChanged )
+			_refreshRows();
+		
+		_updateModifiedChildSizes();
+		_requestRender();
+	}
 }
-
 
 
 } // namespace wg

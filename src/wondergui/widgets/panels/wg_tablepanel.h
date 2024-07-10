@@ -250,6 +250,8 @@ namespace wg
 		SizeSPX			_minSize(int scale) const override;
 		SizeSPX			_maxSize(int scale) const override;
 
+		Widget*			_findWidget(const CoordSPX& ofs, SearchMode mode) override;
+
 		
 	protected:
 		TablePanel();
@@ -357,6 +359,9 @@ namespace wg
 
 		void			_updateMinDefaultSize();
 		
+		void			_rowVisibilityChanged( int change );
+		void			_columnVisibilityChanged( int change );
+
 		SizeSPX			m_minSize;
 		SizeSPX			m_defaultSize;
 		

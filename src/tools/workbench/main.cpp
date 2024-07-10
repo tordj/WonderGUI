@@ -3979,6 +3979,14 @@ bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
 
+	auto pRowSkin1 = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Blue, .outlineThickness = 4, .padding = 4 });
+	auto pRowSkin2 = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Red, .outlineThickness = 4, .padding = 4 });
+
+	auto pColumnLayout = PackLayout::create({
+		
+		.expandFactor = PackLayout::Factor::Weight,
+		.shrinkFactor = PackLayout::Factor::Weight,
+	});
 	
 	
 	auto pTable = TablePanel::create( {
@@ -3991,15 +3999,18 @@ bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry)
 		
 		.columnSpacingBefore = 1,
 		.columnSpacingAfter = 1,
-		.columnSpacing = 2
+		.columnSpacing = 2,
 		
+		.rowSkin = pRowSkin1,
+		.rowSkin2 = pRowSkin2,
+		
+		.columnLayout = pColumnLayout
 	});
-		
+	
 	
 	auto pTextEditor1 = TextEditor::create( WGBP(TextEditor,
 		_.skin = ColorSkin::create( Color8::LightSalmon, 5 ) ));
 	pTextEditor1->editor.setText("TESTING 1");
-
 
 	auto pTextEditor2 = TextEditor::create( WGBP(TextEditor,
 		_.skin = ColorSkin::create( Color8::LightGreen, 5 ) ));
@@ -4026,7 +4037,7 @@ bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry)
 		.skin = ColorSkin::create( Color::Yellow ),
 	} );
 
-	pBaseLayer->slots.pushFront(pTable, { .pos = {10,10} });
+	pBaseLayer->slots.pushFront(pTable, { .pos = {10,10}, .size = { 400, 400} });
 	
 	pTable->resize(7, 3);
 	
@@ -4035,7 +4046,11 @@ bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry)
 		.skin = ColorSkin::create( Color::Pink ),
 	} );
 
+//	pTable->rows.erase(2, 4);
 	
+//	pTable->columns.erase(0,2);
+	
+//	pTable->resize(6,1);
 	
 	*pEntry = pBaseLayer;
 	
