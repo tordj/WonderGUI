@@ -149,6 +149,96 @@ void TablePanel::setColumnWeight(column_iterator beg, column_iterator end, std::
 	_reweightColumns(&*beg, int(end - beg), weights.begin());
 }
 
+
+//____ setMinRowHeight() ______________________________________________________
+
+void TablePanel::setMinRowHeight(int index, int amount, pts height)
+{
+	_setMinHeights(&rows[index], amount, height);
+}
+
+void TablePanel::setMinRowHeight(row_iterator  beg, row_iterator end, pts height)
+{
+	_setMinHeights(&*beg, int(end-beg), height);
+}
+
+void TablePanel::setMinRowHeight(int index, int amount, std::initializer_list<float> heights)
+{
+	_setMinHeights(&rows[index], amount, heights.begin() );
+}
+
+void TablePanel::setMinRowHeight(row_iterator beg, row_iterator end, std::initializer_list<float> heights)
+{
+	_setMinHeights(&*beg, int(end - beg), heights.begin() );
+}
+
+//____ setMaxRowHeight() ______________________________________________________
+
+void TablePanel::setMaxRowHeight(int index, int amount, pts height)
+{
+	_setMaxHeights(&rows[index], amount, height);
+}
+
+void TablePanel::setMaxRowHeight(row_iterator  beg, row_iterator end, pts height)
+{
+	_setMaxHeights(&*beg, int(end - beg), height);
+}
+
+void TablePanel::setMaxRowHeight(int index, int amount, std::initializer_list<float> heights)
+{
+	_setMaxHeights(&rows[index], amount, heights.begin());
+}
+
+void TablePanel::setMaxRowHeight(row_iterator beg, row_iterator end, std::initializer_list<float> heights)
+{
+	_setMaxHeights(&*beg, int(end - beg), heights.begin());
+}
+
+//____ setMinColumnWidth() ____________________________________________________
+
+void TablePanel::setMinColumnWidth(int index, int amount, pts width)
+{
+	_setMinWidths(&columns[index], amount, width);
+}
+
+void TablePanel::setMinColumnWidth(column_iterator  beg, column_iterator end, pts width)
+{
+	_setMinWidths(&*beg, int(end - beg), width);
+}
+
+void TablePanel::setMinColumnWidth(int index, int amount, std::initializer_list<float> widths)
+{
+	_setMinWidths(&columns[index], amount, widths.begin());
+}
+
+void TablePanel::setMinColumnWidth(column_iterator beg, column_iterator end, std::initializer_list<float> widths)
+{
+	_setMinWidths(&*beg, int(end - beg), widths.begin());
+}
+
+
+//____ setMaxColumnWidth() ____________________________________________________
+
+void TablePanel::setMaxColumnWidth(int index, int amount, pts width)
+{
+	_setMaxWidths(&columns[index], amount, width);
+}
+
+void TablePanel::setMaxColumnWidth(column_iterator  beg, column_iterator end, pts width)
+{
+	_setMaxWidths(&*beg, int(end - beg), width);
+}
+
+void TablePanel::setMaxColumnWidth(int index, int amount, std::initializer_list<float> widths)
+{
+	_setMaxWidths(&columns[index], amount, widths.begin());
+}
+
+void TablePanel::setMaxColumnWidth(column_iterator beg, column_iterator end, std::initializer_list<float> widths)
+{
+	_setMaxWidths(&*beg, int(end - beg), widths.begin());
+}
+
 //____ resize() _______________________________________________________________
 
 void TablePanel::resize( int nRows, int nColumns )
@@ -178,6 +268,14 @@ void TablePanel::resize( int nRows, int nColumns )
 		if( column.m_bVisible )
 			nVisibleColumns++;
 	}
+
+	// Set m_pTable for new columns and rows
+
+	for (int i = nOldColumns; i < nColumns; i++)
+		columns[i].m_pTable = this;
+
+	for (int i = nOldRows; i < nRows; i++)
+		rows[i].m_pTable = this;
 
 	// Refresh column caches for existing columns if number of visible rows have changed
 	
@@ -1054,7 +1152,9 @@ void TablePanel::_resize( const SizeSPX& size, int scale )
 	{
 
 		for (int i = 0; i < columns.size(); i++)
+		{
 			_refreshColumnCache(i, columns[i].m_cache, scale);
+		}
 
 		_refreshColumns();
 
@@ -1345,8 +1445,6 @@ bool TablePanel::_refreshRowCache( int row, TablePanelRow::Cache& cache, int sca
 	auto slotIt = slots.data() + row * columns.size();
 
 	spx	defaultHeight = 0;
-	spx minHeight = 0;
-	spx maxHeight = spx_max;
 	spx heightForWidth = 0;
 	
 	for( auto& column : columns )
@@ -1355,33 +1453,34 @@ bool TablePanel::_refreshRowCache( int row, TablePanelRow::Cache& cache, int sca
 		if( p )
 		{
 			spx myDefaultHeight = p->_defaultSize(scale).h;
-			spx myMinHeight = p->_minSize(scale).h;
-			spx myMaxHeight = p->_maxSize(scale).h;
 			spx myHeightForWidth = p->_matchingHeight(column.m_width, scale);
 			
 			if( myDefaultHeight > defaultHeight )
 				defaultHeight = myDefaultHeight;
-			
-			if( myMinHeight > minHeight )
-				minHeight = myMinHeight;
-			
-			if( myMaxHeight < maxHeight )
-				maxHeight = myMaxHeight;
-			
+						
 			if( myHeightForWidth > heightForWidth )
 				heightForWidth = myHeightForWidth;
-		}
-		
+		}	
 		slotIt++;
 	}
 
-	if (defaultHeight != cache.defaultHeight || minHeight != cache.minHeight || 
-		maxHeight != cache.maxHeight || heightForWidth != cache.heightForColumnWidth)
+
+	pts maxPts = rows[row].m_maxHeight;
+	spx maxSpx = spx_max;
+	if (maxPts > 0 && maxPts * scale < spx_max)
+		maxSpx = ptsToSpx(maxPts, scale);
+
+	pts minPts = rows[row].m_minHeight;
+	spx minSpx = ptsToSpx(minPts, scale);
+
+
+	if ( defaultHeight != cache.defaultHeight || heightForWidth != cache.heightForColumnWidth ||
+		 maxSpx != cache.maxHeight || minSpx != cache.minHeight)
 	{
 		cache.defaultHeight = defaultHeight;
-		cache.minHeight = minHeight;
-		cache.maxHeight = maxHeight;
 		cache.heightForColumnWidth = heightForWidth;
+		cache.maxHeight = maxSpx;
+		cache.minHeight = minSpx;
 
 		return true;
 	}
@@ -1394,8 +1493,6 @@ bool TablePanel::_refreshRowCache( int row, TablePanelRow::Cache& cache, int sca
 bool TablePanel::_refreshColumnCache( int column, TablePanelColumn::Cache& cache, int scale ) const
 {
 	spx	defaultWidth = 0;
-	spx minWidth = 0;
-	spx maxWidth = spx_max;
 
 	if (slots.rows() > 0)
 	{
@@ -1407,30 +1504,28 @@ bool TablePanel::_refreshColumnCache( int column, TablePanelColumn::Cache& cache
 			if (p)
 			{
 				spx myDefaultWidth = p->_defaultSize(scale).w;
-				spx myMinWidth = p->_minSize(scale).w;
-				spx myMaxWidth = p->_maxSize(scale).w;
 
 				if (myDefaultWidth > defaultWidth)
 					defaultWidth = myDefaultWidth;
-
-				if (myMinWidth > minWidth)
-					minWidth = myMinWidth;
-
-				if (myMaxWidth < maxWidth)
-					maxWidth = myMaxWidth;
 			}
-
 			slotIt += columns.size();
 		}
 	}
 
-	if (defaultWidth != cache.defaultWidth || minWidth != cache.minWidth ||
-		maxWidth != cache.maxWidth )
+	pts maxPts = columns[column].m_maxWidth;
+	spx maxSpx = spx_max;
+	if (maxPts > 0 && maxPts * scale < spx_max)
+		maxSpx = ptsToSpx(maxPts, scale);
+
+	pts minPts = columns[column].m_minWidth;
+	spx minSpx = ptsToSpx(minPts, scale);
+
+
+	if (defaultWidth != cache.defaultWidth || maxSpx != cache.maxWidth || minSpx != cache.minWidth )
 	{
 		cache.defaultWidth = defaultWidth;
-		cache.minWidth = minWidth;
-		cache.maxWidth = maxWidth;
-
+		cache.maxWidth = maxSpx;
+		cache.minWidth = minSpx;
 		return true;
 	}
 	else
@@ -1627,6 +1722,7 @@ void TablePanel::_didAddEntries(TablePanelRow* pEntry, int nb)
 	int nbVisible = 0;
 	for (int i = 0; i < nb; i++)
 	{
+		pEntry[i].m_pTable = this;
 		if (pEntry[i].m_bVisible)
 		{
 			_refreshRowCache(ofs + i, rows[ofs+i].m_cache, m_scale);
@@ -1646,6 +1742,7 @@ void TablePanel::_didAddEntries(TablePanelColumn* pEntry, int nb)
 	int nbVisible = 0;
 	for (int i = 0; i < nb; i++)
 	{
+		pEntry[i].m_pTable = this;
 		if (pEntry[i].m_bVisible)
 		{
 			_refreshColumnCache(ofs + i, columns[ofs+i].m_cache, m_scale);
@@ -1739,6 +1836,34 @@ void TablePanel::_columnVisibilityChanged( int change )
 	_requestResize();
 }
 
+//____ _rowParamsChanged() ____________________________________________________
+
+void TablePanel::_rowParamsChanged()
+{
+	bool bChanged = _refreshRows();
+	if (bChanged)
+	{
+		_updateModifiedChildSizes();
+		_requestRender();
+	}
+}
+
+//____ _columnParamsChanged() ____________________________________________________
+
+void TablePanel::_columnParamsChanged()
+{
+	bool bChanged = _refreshColumns();
+	if (bChanged)
+	{
+		bool bRowsChanged = _refreshRowHeightForColumnWidth();
+		if (bRowsChanged)
+			_refreshRows();
+
+		_updateModifiedChildSizes();
+		_requestRender();
+	}
+}
+
 //____ _hideRows() ____________________________________________________________
 
 void TablePanel::_hideRows(TablePanelRow* pStart, int nb)
@@ -1826,12 +1951,7 @@ void TablePanel::_reweightRows(TablePanelRow* pStart, int nb, float weight)
 	for (int i = 0; i < nb; i++)
 		pStart[i].m_weight = weight;
 
-	bool bChanged = _refreshRows();
-	if( bChanged )
-	{
-		_updateModifiedChildSizes();
-		_requestRender();
-	}
+	_rowParamsChanged();
 }
 
 void TablePanel::_reweightRows(TablePanelRow* pStart, int nb, const float* pWeights)
@@ -1841,12 +1961,7 @@ void TablePanel::_reweightRows(TablePanelRow* pStart, int nb, const float* pWeig
 	for (int i = 0; i < nb; i++)
 		pStart[i].m_weight = * pWeights++;
 
-	bool bChanged = _refreshRows();
-	if( bChanged )
-	{
-		_updateModifiedChildSizes();
-		_requestRender();
-	}
+	_rowParamsChanged();
 }
 
 //____ _reweightColumns() _____________________________________________________
@@ -1858,16 +1973,7 @@ void TablePanel::_reweightColumns(TablePanelColumn* pStart, int nb, float weight
 	for (int i = 0; i < nb; i++)
 		pStart[i].m_weight = weight;
 
-	bool bChanged = _refreshColumns();
-	if( bChanged )
-	{
-		bool bRowsChanged = _refreshRowHeightForColumnWidth();
-		if( bRowsChanged )
-			_refreshRows();
-		
-		_updateModifiedChildSizes();
-		_requestRender();
-	}
+	_columnParamsChanged();
 }
 
 //____ _reweightColumns() _____________________________________________________
@@ -1879,17 +1985,139 @@ void TablePanel::_reweightColumns(TablePanelColumn* pStart, int nb, const float*
 	for (int i = 0; i < nb; i++)
 		pStart[i].m_weight = * pWeights++;
 
-	bool bChanged = _refreshColumns();
-	if( bChanged )
-	{
-		bool bRowsChanged = _refreshRowHeightForColumnWidth();
-		if( bRowsChanged )
-			_refreshRows();
-		
-		_updateModifiedChildSizes();
-		_requestRender();
-	}
+	_columnParamsChanged();
 }
 
+//____ _setMinHeights() _______________________________________________________
+
+void TablePanel::_setMinHeights(TablePanelRow* pStart, int nb, pts height)
+{
+	int ofs = int(pStart - &*rows.begin());
+
+	for (int i = 0; i < nb; i++)
+	{
+		pStart[i].m_minHeight = height;
+		pStart[i].m_cache.minHeight = ptsToSpx(height, m_scale);
+	}
+
+	_rowParamsChanged();
+}
+
+void TablePanel::_setMinHeights(TablePanelRow* pStart, int nb, const pts* pHeights)
+{
+	int ofs = int(pStart - &*rows.begin());
+
+	for (int i = 0; i < nb; i++)
+	{
+		pts height = *pHeights++;
+		pStart[i].m_minHeight = height;
+		pStart[i].m_cache.minHeight = ptsToSpx(height, m_scale);
+	}
+
+	_rowParamsChanged();
+}
+
+//____ _setMaxHeights() _______________________________________________________
+
+void TablePanel::_setMaxHeights(TablePanelRow* pStart, int nb, pts height)
+{
+	int ofs = int(pStart - &*rows.begin());
+
+	spx maxSpx = spx_max;
+	if (height > 0 || height * m_scale < spx_max)
+		maxSpx = ptsToSpx(height, m_scale);
+
+	for (int i = 0; i < nb; i++)
+	{
+		pStart[i].m_maxHeight = height;
+		pStart[i].m_cache.maxHeight = maxSpx;
+	}
+
+	_rowParamsChanged();
+}
+
+void TablePanel::_setMaxHeights(TablePanelRow* pStart, int nb, const pts* pHeights)
+{
+	int ofs = int(pStart - &*rows.begin());
+
+	for (int i = 0; i < nb; i++)
+	{
+		pts h = *pHeights++;
+		pStart[i].m_maxHeight = h;
+
+		if (h <= 0 || h * m_scale > spx_max)
+			pStart[i].m_cache.maxHeight = spx_max;
+		else
+			pStart[i].m_cache.maxHeight = ptsToSpx(h, m_scale);
+	}
+
+	_rowParamsChanged();
+}
+
+//____ _setMinWidths() ________________________________________________________
+
+void TablePanel::_setMinWidths(TablePanelColumn* pStart, int nb, pts width)
+{
+	int ofs = int(pStart - &*columns.begin());
+
+	for (int i = 0; i < nb; i++)
+	{
+		pStart[i].m_minWidth = width;
+		pStart[i].m_cache.minWidth = ptsToSpx(width, m_scale);
+	}
+
+	_columnParamsChanged();
+}
+
+void TablePanel::_setMinWidths(TablePanelColumn* pStart, int nb, const pts* pWidths)
+{
+	int ofs = int(pStart - &*columns.begin());
+
+	for (int i = 0; i < nb; i++)
+	{
+		pts width = *pWidths++;
+		pStart[i].m_minWidth = width;
+		pStart[i].m_cache.minWidth = ptsToSpx(width, m_scale);
+	}
+
+	_columnParamsChanged();
+}
+
+//____ _setMaxWidths() ________________________________________________________
+
+void TablePanel::_setMaxWidths(TablePanelColumn* pStart, int nb, pts width)
+{
+	int ofs = int(pStart - &*columns.begin());
+
+	spx maxSpx = spx_max;
+	if (width > 0 || width * m_scale < spx_max)
+		maxSpx = ptsToSpx(width, m_scale);
+
+	for (int i = 0; i < nb; i++)
+	{
+		pStart[i].m_maxWidth = width;
+		pStart[i].m_cache.maxWidth = maxSpx;
+	}
+
+	_columnParamsChanged();
+}
+
+void TablePanel::_setMaxWidths(TablePanelColumn* pStart, int nb, const pts* pWidths)
+{
+	int ofs = int(pStart - &*columns.begin());
+
+	for (int i = 0; i < nb; i++)
+	{
+		pts w = *pWidths++;
+		pStart[i].m_maxWidth = w;
+
+		if (w <= 0 || w * m_scale > spx_max)
+			pStart[i].m_cache.maxWidth = spx_max;
+		else
+			pStart[i].m_cache.maxWidth = ptsToSpx(w, m_scale);
+	}
+
+	_columnParamsChanged();
+}
 
 } // namespace wg

@@ -45,12 +45,17 @@ namespace wg
 	public:
 		struct Blueprint
 		{
+			pts		maxHeight = 0;
+			pts		minHeight = 0;
 			bool	visible = true;
 			float	weight = 1.f;
 		};
 	
+	
 		TablePanelRow() {};
-		TablePanelRow( const Blueprint& bp ) : m_bVisible(bp.visible), m_weight(bp.weight) {}
+		TablePanelRow( const Blueprint& bp ) : 
+			m_bVisible(bp.visible), m_weight(bp.weight), 
+			m_maxHeight(bp.maxHeight), m_minHeight(bp.minHeight) {}
 		
 		inline void		hide();
 		inline void		unhide();
@@ -61,17 +66,26 @@ namespace wg
 		inline void		setWeight(float weight);
 		inline float	weight() const { return m_weight; }
 		
+		inline void		setMinHeight(pts minHeight);
+		inline pts		minHeight() const { return m_minHeight; }
+
+		inline void		setMaxHeight(pts maxHeight);
+		inline pts		maxHeight() const { return m_maxHeight; }
+
 	protected:
 		
 		struct Cache
 		{
 			spx		defaultHeight = 0;
-			spx		minHeight = 0;
-			spx		maxHeight = spx_max;
 			spx		heightForColumnWidth = 0;		// Height needed for current column widths.
+			spx		maxHeight = spx_max;
+			spx		minHeight = 0;
 		};
 
-		TablePanel*		m_pTable;
+		pts				m_minHeight = 0;
+		pts				m_maxHeight = 0;
+
+		TablePanel*		m_pTable = nullptr;
 		bool			m_bVisible = true;
 		bool			m_bModified = false;
 		float			m_weight = 1.f;
@@ -89,6 +103,9 @@ namespace wg
 
 		struct Blueprint
 		{
+			pts		maxWidth = 0;
+			pts		minWidth = 0;
+
 			bool	visible = true;
 			float	weight = 1.f;
 		};
@@ -104,7 +121,13 @@ namespace wg
 		
 		inline void		setWeight(float weight);
 		inline float	weight() const { return m_weight; }
-		
+	
+		inline void		setMinWidth(pts width);
+		inline pts		minWidth() const { return m_minWidth; }
+
+		inline void		setMaxWidth(pts width);
+		inline pts		maxWidth() const { return m_maxWidth; }
+
 	protected:
 
 		struct Cache
@@ -112,13 +135,17 @@ namespace wg
 			spx		defaultWidth = 0;
 			spx		minWidth = 0;
 			spx		maxWidth = spx_max;
+
 		};
+
+		pts				m_minWidth = 0;
+		pts				m_maxWidth = 0;
 
 		bool			m_bVisible = true;
 		bool			m_bModified = false;
 		float			m_weight = 1.f;
 
-		TablePanel *	m_pTable;
+		TablePanel *	m_pTable = nullptr;
 		spx				m_width = 0;
 		
 		Cache			m_cache;
@@ -147,6 +174,14 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+
+			PackLayout_p	columnLayout;
+			int				columns = 2;
+
+			pts				columnSpacing		= 0;
+			pts				columnSpacingAfter	= 0;
+			pts				columnSpacingBefore	= 0;
+
 			bool			disabled = false;
 			bool			dropTarget = false;
 			Finalizer_p		finalizer = nullptr;
@@ -156,28 +191,22 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
-			bool			selectable = true;
-			Skin_p			skin;
-			bool			stickyFocus = false;
-			bool			tabLock = false;
-			String			tooltip;
 
+			PackLayout_p	rowLayout;
 			int				rows = 2;
-			int				columns = 2;
+
+			Skin_p			rowSkin;
+			Skin_p			rowSkin2;
 
 			pts				rowSpacing			= 0;
 			pts				rowSpacingAfter		= 0;
 			pts				rowSpacingBefore	= 0;
 
-			pts				columnSpacing		= 0;
-			pts				columnSpacingAfter	= 0;
-			pts				columnSpacingBefore	= 0;
-
-			PackLayout_p	rowLayout;
-			PackLayout_p	columnLayout;
-			
-			Skin_p			rowSkin;
-			Skin_p			rowSkin2;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			stickyFocus = false;
+			bool			tabLock = false;
+			String			tooltip;			
 		};
 		
 		//.____ Creation __________________________________________
@@ -210,19 +239,39 @@ namespace wg
 		void			hideColumns(int index, int amount);
 		void			hideColumns(column_iterator beg, column_iterator end);
 
+		void			unhideColumns(int index, int amount);
+		void			unhideColumns(column_iterator beg, column_iterator end);
+
 		void			setRowWeight(int index, int amount, float weight);
 		void			setRowWeight(row_iterator  beg, row_iterator end, float weight);
 		void			setRowWeight(int index, int amount, std::initializer_list<float> weights);
 		void			setRowWeight(row_iterator beg, row_iterator end, std::initializer_list<float> weights);
 		
-		void			unhideColumns(int index, int amount);
-		void			unhideColumns(column_iterator beg, column_iterator end);
-
 		void			setColumnWeight(int index, int amount, float weight);
 		void			setColumnWeight(column_iterator  beg, column_iterator end, float weight);
 		void			setColumnWeight(int index, int amount, std::initializer_list<float> weights);
 		void			setColumnWeight(column_iterator beg, column_iterator end, std::initializer_list<float> weights);
 		
+		void			setMinRowHeight(int index, int amount, pts height);
+		void			setMinRowHeight(row_iterator  beg, row_iterator end, pts height);
+		void			setMinRowHeight(int index, int amount, std::initializer_list<float> heights);
+		void			setMinRowHeight(row_iterator beg, row_iterator end, std::initializer_list<float> heights);
+
+		void			setMaxRowHeight(int index, int amount, pts height);
+		void			setMaxRowHeight(row_iterator  beg, row_iterator end, pts height);
+		void			setMaxRowHeight(int index, int amount, std::initializer_list<float> heights);
+		void			setMaxRowHeight(row_iterator beg, row_iterator end, std::initializer_list<float> heights);
+
+		void			setMinColumnWidth(int index, int amount, pts width);
+		void			setMinColumnWidth(column_iterator  beg, column_iterator end, pts width);
+		void			setMinColumnWidth(int index, int amount, std::initializer_list<float> widths);
+		void			setMinColumnWidth(column_iterator beg, column_iterator end, std::initializer_list<float> widths);
+
+		void			setMaxColumnWidth(int index, int amount, pts width);
+		void			setMaxColumnWidth(column_iterator  beg, column_iterator end, pts width);
+		void			setMaxColumnWidth(int index, int amount, std::initializer_list<float> widths);
+		void			setMaxColumnWidth(column_iterator beg, column_iterator end, std::initializer_list<float> widths);
+
 		void			resize( int rows, int columns );
 		
 		//.____ Behavior ________________________________________________________
@@ -260,6 +309,16 @@ namespace wg
 			slots._resize(bp.rows, bp.columns);
 			rows._resize(bp.rows);
 			columns._resize(bp.columns);
+
+			// Set m_pTable for new columns and rows
+
+			for (auto& row : rows)
+				row.m_pTable = this;
+
+			for (auto& column : columns)
+				column.m_pTable = this;
+
+			//
 
 			m_nVisibleRows = bp.rows;
 			m_nVisibleColumns = bp.columns;
@@ -342,6 +401,19 @@ namespace wg
 		void			_reweightColumns(TablePanelColumn * pEntry, int nb, float weight);
 		void			_reweightColumns(TablePanelColumn * pEntry, int nb, const float * pWeights);
 
+		void			_setMinHeights(TablePanelRow* pEntry, int nb, pts height);
+		void			_setMinHeights(TablePanelRow* pEntry, int nb, const pts* pHeights);
+
+		void			_setMaxHeights(TablePanelRow* pEntry, int nb, pts height);
+		void			_setMaxHeights(TablePanelRow* pEntry, int nb, const pts* pHeights);
+
+		void			_setMinWidths(TablePanelColumn* pEntry, int nb, pts width);
+		void			_setMinWidths(TablePanelColumn* pEntry, int nb, const pts* pWidths);
+
+		void			_setMaxWidths(TablePanelColumn* pEntry, int nb, pts height);
+		void			_setMaxWidths(TablePanelColumn* pEntry, int nb, const pts* pWidths);
+
+
 		//
 		
 		bool			_refreshColumns();
@@ -361,6 +433,10 @@ namespace wg
 		
 		void			_rowVisibilityChanged( int change );
 		void			_columnVisibilityChanged( int change );
+
+		void			_rowParamsChanged();
+		void			_columnParamsChanged();
+
 
 		SizeSPX			m_minSize;
 		SizeSPX			m_defaultSize;
@@ -412,6 +488,21 @@ void TablePanelRow::setWeight(float weight)
 		m_pTable->_reweightRows(this, 1, weight);
 }
 
+//____ TablePanelRow::setMinHeight() __________________________________________
+
+void TablePanelRow::setMinHeight(pts height)
+{
+	if (height != m_minHeight)
+		m_pTable->_setMinHeights(this, 1, height);
+}
+
+//____ TablePanelRow::setMaxHeight() __________________________________________
+
+void TablePanelRow::setMaxHeight(pts height)
+{
+	if (height != m_maxHeight)
+		m_pTable->_setMaxHeights(this, 1, height);
+}
 
 //____ TablePanelColumn::hide() __________________________________________________
 
@@ -443,6 +534,22 @@ void TablePanelColumn::setWeight(float weight)
 {
 	if (weight != m_weight)
 		m_pTable->_reweightColumns(this, 1, weight);
+}
+
+//____ TablePanelColumn::setMinWidth() __________________________________________
+
+void TablePanelColumn::setMinWidth(pts width)
+{
+	if (width != m_minWidth)
+		m_pTable->_setMinWidths(this, 1, width);
+}
+
+//____ TablePanelColumn::setMaxWidth() ___________________________________________
+
+void TablePanelColumn::setMaxWidth(pts width)
+{
+	if (width != m_maxWidth)
+		m_pTable->_setMaxWidths(this, 1, width);
 }
 
 } // namespace wg
