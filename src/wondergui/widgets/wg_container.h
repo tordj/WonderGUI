@@ -143,7 +143,7 @@ namespace wg
 			void 					_removeChildOverflow( const RectSPX& childGeo, const BorderSPX& childOverflow );
 			void					_moveChildOverflow(StaticSlot * pSlot, const RectSPX& oldGeo, const RectSPX& newGeo);
 
-		
+			RectSPX					_renderBounds() const override;
 			BorderSPX				_overflow() const override;
 		
 			struct SlotWithGeo

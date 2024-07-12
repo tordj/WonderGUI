@@ -277,6 +277,17 @@ namespace wg
 			return 0;
 	}
 
+	//____ _renderBounds() ____________________________________________________
+
+	RectSPX Container::_renderBounds() const
+	{
+		if (m_bOverflow)
+			return RectSPX(m_size) + m_overflow;
+		else
+			return m_skin.renderBounds(m_size, m_scale);
+	}
+
+
 	//____ _overflow() ________________________________________________________
 
 	BorderSPX Container::_overflow() const
