@@ -124,12 +124,10 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ____________________________________________
+		//.____ Layout _______________________________________________________
 
 		void			setAxis(Axis orientaiton);
 		Axis			axis() const { return m_bHorizontal ? Axis::X : Axis::Y; }
-
-		//.____ Behavior _______________________________________________________
 
 		void			setLayout(PackLayout* pLayout);
 		PackLayout_p	layout() const { return m_pLayout; }

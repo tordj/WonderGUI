@@ -113,9 +113,11 @@ namespace wg
 		void				_shrinkToFit();
 
 		void				_insertRows(int ofs, int nb);
+//		void				_moveRows(int from, int to, int nb);
 		void				_deleteRows(int ofs, int nb);
 
 		void				_insertColumns(int ofs, int nb);
+//		void				_moveColumns(int from, int to, int nb);
 		void				_deleteColumns(int ofs, int nb);
 
 		void				_slotsUpdated(int start, Axis axis, int nb);

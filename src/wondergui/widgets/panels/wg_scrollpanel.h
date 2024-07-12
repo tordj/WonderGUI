@@ -99,11 +99,7 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Misc ____________________________________________________
-
-		void			setPlacement(Placement placement);
-
-		bool			setSizeConstraints(SizeConstraint width, SizeConstraint height);
+		//.____ Behavior _______________________________________________________
 
 		void			setAutohideScrollbars(bool scrollbarX, bool scrollbarY);
 		void			setOverlayScrollbars(bool scrollbarX, bool scrollbarY);
@@ -120,19 +116,27 @@ namespace wg
 		void			setStealWheelFromScrollbars(bool bSteal);
 		void			setAutoscroll(bool autoscrollX, bool autoscrollY);
 
-		void			setRelativeViewOffset( float x, float y, CoordTransition * pTransition = nullptr );
+		void			setPlacement(Placement placement);
 
-		bool			setViewOffset( Coord offset, CoordTransition * pTransition = nullptr );
+		bool			setSizeConstraints(SizeConstraint width, SizeConstraint height);
+
+		//.____ Control _____________________________________________________
+
+		void			setRelativeViewOffset(float x, float y, CoordTransition* pTransition = nullptr);
+
+		bool			setViewOffset(Coord offset, CoordTransition* pTransition = nullptr);
 		Coord			viewOffset() const;
-		
-		Size			viewSize() const;
-		Size			contentSize() const;
-		
-		void			setTransition( CoordTransition * pTransition );
-		CoordTransition_p	transition( CoordTransition * pTransition ) const { return m_pDefaultTransition; }
+
+		void			setTransition(CoordTransition* pTransition);
+		CoordTransition_p	transition(CoordTransition* pTransition) const { return m_pDefaultTransition; }
 
 		bool			isTransitioning() const { return m_pTransitionInUse; }
-		
+
+		//.____ Misc ____________________________________________________
+
+		Size			viewSize() const;
+		Size			contentSize() const;
+				
 		//void			setDragCombo(MouseButton button, ModKeys modkeys); // NOT POSSIBLE YET, NEEDS TO BE ABLE TO INTERCEPT MESSAGES.
 
 		//.____ Internal ______________________________________________________

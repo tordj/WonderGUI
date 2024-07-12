@@ -138,7 +138,7 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Misc _____________________________________________________
+		//.____ Layout _____________________________________________________
 		
 		bool			setSlotMargin(int index, int amount, Border padding);
 		bool			setSlotMargin(iterator beg, iterator end, Border padding);

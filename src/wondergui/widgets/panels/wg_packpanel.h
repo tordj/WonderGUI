@@ -135,13 +135,11 @@ namespace wg
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Geometry ____________________________________________
-
-		void			setAxis( Axis orientaiton );
-		Axis			axis() const { return m_axis; }
 		
-		//.____ Behavior ________________________________________________________
+		//.____ Layout ________________________________________________________
+
+		void			setAxis(Axis orientaiton);
+		Axis			axis() const { return m_axis; }
 
 		void			setLayout(PackLayout* pLayout);
 		PackLayout_p	layout() const { return m_pLayout; }
@@ -151,8 +149,6 @@ namespace wg
 
 		void			setSlotAlignment( Alignment alignment );
 		Alignment		slotAlignment() const { return m_slotAlignment; }
-
-		//.____ Misc ________________________________________________________________
 		
 		bool			setSlotWeight(int index, int amount, float weight);
 		bool			setSlotWeight(iterator  beg, iterator end, float weight);

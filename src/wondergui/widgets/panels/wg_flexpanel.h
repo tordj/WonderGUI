@@ -245,12 +245,13 @@ namespace wg
 
 		//.____ Geometry ________________________________________________________
 
-		void			setEdgePolicy( EdgePolicy policy );
-		EdgePolicy		edgePolicy() const { return m_edgePolicy; }
-
 		void			setDefaultSize( Size size );
 		bool			isDefaultSizeSet() const { return !m_defaultSize.isEmpty(); }
 
+		//.____ Layout __________________________________________________________
+
+		void			setEdgePolicy(EdgePolicy policy);
+		EdgePolicy		edgePolicy() const { return m_edgePolicy; }
 
 		//.____ Internal ______________________________________________________
 
