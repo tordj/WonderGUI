@@ -898,7 +898,7 @@ RectSPX TablePanel::_slotGeo(const StaticSlot* pSlot) const
 
 void TablePanel::_childOverflowChanged( StaticSlot * pSlot, const BorderSPX& oldOverflow, const BorderSPX& newOverflow )
 {
-	//TODO: Implement!!!
+	_refreshOverflow();
 }
 
 //____ _isChildVisible() ______________________________________________________
@@ -1184,6 +1184,53 @@ void TablePanel::_resize( const SizeSPX& size, int scale )
 			_updateModifiedChildSizes();
 	}
 }
+
+//____ _calcOverflow() ________________________________________________________
+
+BorderSPX TablePanel::_calcOverflow()
+{
+	BorderSPX 	overflow = m_skin.overflow(m_scale);
+
+	if (m_pRowSkins[0])
+		overflow.growToContain(m_pRowSkins[0]->_overflow(m_scale));
+
+	if (m_pRowSkins[1])
+		overflow.growToContain(m_pRowSkins[1]->_overflow(m_scale));
+
+	if (m_bChildrenWithOverflow)
+	{
+		BorderSPX maxChildOverflow;
+
+		bool	bChildrenWithOverflow = false;
+
+		// We include hidden children here as well just for simplicity and speed
+		// believing it is a good tradeoff.
+
+		for (auto& slot : slots)
+		{
+			Widget* pWidget = slot._widget();
+			if (pWidget && pWidget->_hasOverflow())
+			{
+				bChildrenWithOverflow = true;
+				maxChildOverflow.growToContain(pWidget->_overflow());
+			}
+		}
+
+		if (bChildrenWithOverflow)
+		{
+			BorderSPX geoOverflow = maxChildOverflow - m_skin.contentBorder(m_scale, State::Default);
+			if (m_pRowSkins[0])
+				geoOverflow -= m_pRowSkins[0]->_contentBorder(m_scale, State::Default);
+
+			overflow.growToContain(BorderSPX::max(geoOverflow, {0,0,0,0}));
+		}
+		else
+			m_bChildrenWithOverflow = false;
+	}
+	
+	return overflow;
+}
+
 
 //____ _refreshColumnLayout() ______________________________________________________
 
@@ -1685,6 +1732,7 @@ void TablePanel::_refreshSlots(int ofs, Axis axis, int nSlots)
 
 	// Make sure widgets in our modified slots have the right size and scale.
 
+	bool bChildrenWithOverflow = false;
 	for (int i = ofs; i < ofs + nSlots; i++)
 	{
 		auto slotIt = slots.begin() + i;
@@ -1700,8 +1748,19 @@ void TablePanel::_refreshSlots(int ofs, Axis axis, int nSlots)
 
 			if (pWidget->_size() != slotSize || pWidget->_scale() != m_scale)
 				pWidget->_resize(slotSize, m_scale);
+
+			if (pWidget->_hasOverflow())
+				bChildrenWithOverflow = true;
 		}
 	}
+
+	// Refresh overflow
+
+	if (bChildrenWithOverflow)
+		m_bChildrenWithOverflow = true;
+
+	if (m_bChildrenWithOverflow )
+		_refreshOverflow();
 }
 
 //____ _object() ______________________________________________________________
@@ -1758,11 +1817,15 @@ void TablePanel::_didAddEntries(TablePanelColumn* pEntry, int nb)
 void TablePanel::_didMoveEntries(TablePanelRow* pFrom, TablePanelRow* pTo, int nb)
 {
 	//TODO: Implement!!!
+
+	assert(false);
 }
 
 void TablePanel::_didMoveEntries(TablePanelColumn* pFrom, TablePanelColumn* pTo, int nb)
 {
 	//TODO: Implement!!!
+
+	assert(false);
 }
 
 //____ _willEraseEntries() ____________________________________________________

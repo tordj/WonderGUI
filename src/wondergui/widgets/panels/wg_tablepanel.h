@@ -225,22 +225,23 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ____________________________________________
-
-		
 		//.____ Appearance _____________________________________________________
 		
-		void			hideRows(int index, int amount);
-		void			hideRows(row_iterator beg, row_iterator end);
+		void			setRowSkins(Skin* pSkin1, Skin* pSkin2 = nullptr);
 
-		void			unhideRows(int index, int amount);
-		void			unhideRows(row_iterator beg, row_iterator end);
+		//.____ Layout ______________________________________________________________
 
-		void			hideColumns(int index, int amount);
-		void			hideColumns(column_iterator beg, column_iterator end);
+		void			setRowLayout(PackLayout* pLayout);
+		PackLayout_p	rowLayout() const { return m_pLayoutY; }
 
-		void			unhideColumns(int index, int amount);
-		void			unhideColumns(column_iterator beg, column_iterator end);
+		void			setColumnLayout(PackLayout* pLayout);
+		PackLayout_p	columnLayout() const { return m_pLayoutX; }
+
+		void			setRowSpacing(pts between) { setRowSpacing(0, between, 0); }
+		void			setRowSpacing(pts before, pts between, pts after);
+
+		void			setColumnSpacing(pts between) { setColumnSpacing(0, between, 0); }
+		void			setColumnSpacing(pts before, pts between, pts after);
 
 		void			setRowWeight(int index, int amount, float weight);
 		void			setRowWeight(row_iterator  beg, row_iterator end, float weight);
@@ -272,23 +273,21 @@ namespace wg
 		void			setMaxColumnWidth(int index, int amount, std::initializer_list<float> widths);
 		void			setMaxColumnWidth(column_iterator beg, column_iterator end, std::initializer_list<float> widths);
 
+		//.____ Content _________________________________________________________
+
 		void			resize( int rows, int columns );
-		
-		//.____ Behavior ________________________________________________________
 
-		void			setRowLayout(PackLayout* pLayout);
-		PackLayout_p	rowLayout() const { return m_pLayoutY; }
+		void			hideRows(int index, int amount);
+		void			hideRows(row_iterator beg, row_iterator end);
 
-		void			setColumnLayout(PackLayout* pLayout);
-		PackLayout_p	columnLayout() const { return m_pLayoutX; }
+		void			unhideRows(int index, int amount);
+		void			unhideRows(row_iterator beg, row_iterator end);
 
-		void			setRowSpacing( pts between ) { setRowSpacing(0,between,0); }
-		void			setRowSpacing( pts before, pts between, pts after );
+		void			hideColumns(int index, int amount);
+		void			hideColumns(column_iterator beg, column_iterator end);
 
-		void			setColumnSpacing( pts between ) { setColumnSpacing(0,between,0); }
-		void			setColumnSpacing( pts before, pts between, pts after );
-
-		void			setRowSkins( Skin * pSkin1, Skin * pSkin2 = nullptr );
+		void			unhideColumns(int index, int amount);
+		void			unhideColumns(column_iterator beg, column_iterator end);
 
 		//.____ Internal ______________________________________________________
 
@@ -339,12 +338,12 @@ namespace wg
 			m_pRowSkins[1] = bp.rowSkin2;
 			
 			_updateMinDefaultSize();
+			_refreshOverflow();						// Our row skins might have overflow.
 		}
 
 		virtual ~TablePanel();
 
 		// Overloaded from Container
-
 
 		RectSPX			_slotGeo( const StaticSlot * pSlot ) const override;				///< Get the local position of a child.
 		void			_childOverflowChanged( StaticSlot * pSlot, const BorderSPX& oldOverflow, const BorderSPX& newOverflow ) override;
@@ -371,7 +370,9 @@ namespace wg
 
 		void			_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void			_resize( const SizeSPX& size, int scale ) override;
-		
+
+		BorderSPX		_calcOverflow() override;
+
 		// For DynamicVector holder
 		
 		void			_didAddEntries(TablePanelRow * pEntry, int nb) override;
@@ -452,7 +453,9 @@ namespace wg
 		int				m_nVisibleColumns = 0;
 		int				m_nVisibleRows = 0;
 
-		
+		bool			m_bChildrenWithOverflow = false;
+
+
 	};
 
 
