@@ -19,6 +19,15 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+/*
+	KNOWN LIMITATIONS
+
+	* Row skins are static, they don't react to states and can't be animated.
+	
+*/
+
+
+
 
 #ifndef WG_TABLEPANEL_DOT_H
 #define WG_TABLEPANEL_DOT_H
@@ -373,6 +382,8 @@ namespace wg
 
 		BorderSPX		_calcOverflow() override;
 
+		bool			_alphaTest(const CoordSPX& ofs) override;
+
 		// For DynamicVector holder
 		
 		void			_didAddEntries(TablePanelRow * pEntry, int nb) override;
@@ -437,6 +448,8 @@ namespace wg
 
 		void			_rowParamsChanged();
 		void			_columnParamsChanged();
+
+		int				_markedRow(const CoordSPX& ofs);
 
 
 		SizeSPX			m_minSize;

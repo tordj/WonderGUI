@@ -25,6 +25,7 @@
 #include <wg_patches.h>
 #include <wg_packlayout.h>
 #include <wg_util.h>
+#include <wg_msg.h>
 
 
 #include <assert.h>
@@ -778,7 +779,7 @@ Widget * TablePanel::_findWidget( const CoordSPX& ofs, SearchMode mode )
 {
 	RectSPX geo = m_skin.contentRect({0,0,m_size}, m_scale, State::Default);
 
-	geo -= ptsToSpx(Border( m_spacingY[0], m_spacingX[2], m_spacingY[2], m_spacingX[0] ), m_scale);
+	geo -= align(ptsToSpx(Border( m_spacingY[0], m_spacingX[2], m_spacingY[2], m_spacingX[0] ), m_scale));
 
 	if( geo.contains(ofs) )
 	{
@@ -808,7 +809,7 @@ Widget * TablePanel::_findWidget( const CoordSPX& ofs, SearchMode mode )
 				if( pos.y + rows[row].m_height > ofs.y )
 					break;
 
-				pos.y += rows[row].m_height + ptsToSpx(m_spacingY[1], m_scale) + rowBorder.height();
+				pos.y += rows[row].m_height + align(ptsToSpx(m_spacingY[1], m_scale) + rowBorder.height());
 			}
 			row++;
 		}
@@ -830,7 +831,7 @@ Widget * TablePanel::_findWidget( const CoordSPX& ofs, SearchMode mode )
 				if( pos.x + columns[column].m_width > ofs.x )
 					break;											// Found right column
 
-				pos.x += columns[column].m_width + ptsToSpx(m_spacingX[1], m_scale);
+				pos.x += columns[column].m_width + align(ptsToSpx(m_spacingX[1], m_scale));
 			}
 			column++;
 		}
@@ -876,19 +877,19 @@ RectSPX TablePanel::_slotGeo(const StaticSlot* pSlot) const
 
 	BorderSPX rowBorder = m_pRowSkins[0] ? m_pRowSkins[0]->_contentBorder(m_scale, State::Default) : BorderSPX();
 
-	geo.x += ptsToSpx(m_spacingX[0], m_scale) + rowBorder.left;
-	geo.y += ptsToSpx(m_spacingY[0], m_scale) + rowBorder.top;
+	geo.x += align(ptsToSpx(m_spacingX[0], m_scale)) + rowBorder.left;
+	geo.y += align(ptsToSpx(m_spacingY[0], m_scale)) + rowBorder.top;
 
 	for (int i = 0; i < col; i++)
 	{
 		if (columns[i].m_bVisible)
-			geo.x += columns[i].m_width + ptsToSpx(m_spacingX[1], m_scale);
+			geo.x += columns[i].m_width + align(ptsToSpx(m_spacingX[1], m_scale));
 	}
 		
 	for (int i = 0; i < row; i++)
 	{
 		if (rows[i].m_bVisible)
-			geo.y += rows[i].m_height + ptsToSpx(m_spacingY[1], m_scale) + rowBorder.height();
+			geo.y += rows[i].m_height + align(ptsToSpx(m_spacingY[1], m_scale)) + rowBorder.height();
 	}
 
 	return geo;
@@ -1075,7 +1076,7 @@ const TypeInfo& TablePanel::_slotTypeInfo(const StaticSlot * pSlot) const
 {
 	return DynamicSlot::TYPEINFO;
 }
- 
+
 //____ _render() ______________________________________________________________
 
 void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
@@ -1095,7 +1096,7 @@ void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectS
 	
 	for( auto& row : rows )
 	{
-		RectSPX rowGeo = { canvas.x, canvas.y + ptsToSpx(m_spacingY[0], m_scale) + rowOfs, canvas.w, row.m_height + rowBorder.height() };
+		RectSPX rowGeo = { canvas.x, canvas.y + align(ptsToSpx(m_spacingY[0], m_scale)) + rowOfs, canvas.w, row.m_height + rowBorder.height() };
 
 		if( row.m_bVisible )
 		{
@@ -1110,7 +1111,7 @@ void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectS
 			// Render widgets in row
 			
 			CoordSPX widgetPos;
-			widgetPos.x = rowGeo.x + rowBorder.left + ptsToSpx(m_spacingX[0], m_scale);
+			widgetPos.x = rowGeo.x + rowBorder.left + align(ptsToSpx(m_spacingX[0], m_scale));
 			widgetPos.y = rowGeo.y + rowBorder.top;
 
 			
@@ -1123,7 +1124,7 @@ void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectS
 						RectSPX widgetCanvas = { widgetPos.x, widgetPos.y, column.m_width, row.m_height };
 						slotIt->_widget()->_render(pDevice, widgetCanvas, widgetCanvas);
 					}
-					widgetPos.x += column.m_width + ptsToSpx(m_spacingX[1], m_scale);
+					widgetPos.x += column.m_width + align(ptsToSpx(m_spacingX[1], m_scale));
 				}
 				slotIt++;
 			}
@@ -1135,7 +1136,7 @@ void TablePanel::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectS
 		
 		// Finish up
 		
-		rowOfs += rowGeo.h + ptsToSpx(m_spacingY[1], m_scale);
+		rowOfs += rowGeo.h + align(ptsToSpx(m_spacingY[1], m_scale));
 	}
 }
 
@@ -1232,6 +1233,73 @@ BorderSPX TablePanel::_calcOverflow()
 }
 
 
+//____ _markedRow() ___________________________________________________________
+
+// This methods only checks for marking of row skins, not marking of row without skin.
+
+int TablePanel::_markedRow(const CoordSPX& ofs)
+{
+	if (!m_pRowSkins[0])
+		return -1;
+
+	RectSPX contentRect = m_skin.contentRect(m_size, m_scale, State::Default);
+
+	spx spacingBefore = align(ptsToSpx(m_spacingY[0], m_scale));
+	spx spacingAfter = align(ptsToSpx(m_spacingY[2], m_scale));
+
+	contentRect.y += spacingBefore;
+	contentRect.h -= spacingBefore + spacingAfter;
+
+	int rowNb = 0;
+	int visibleRowNb = 0;
+	spx	rowStart = contentRect.y;
+
+	spx rowPadding = m_pRowSkins[0] ? m_pRowSkins[0]->_contentBorderSize(m_scale).h : 0;
+	spx rowSpacing = align(ptsToSpx(m_spacingY[1], m_scale));
+
+	if (contentRect.contains(ofs))
+	{
+		for (auto& row : rows)
+		{
+			if (row.m_bVisible)
+			{
+				spx rowEnd = row.m_height + rowPadding;
+
+				if (ofs.y < rowEnd)
+				{
+					Skin* pSkin = m_pRowSkins[visibleRowNb % 2];
+
+					if (pSkin->_markTest(ofs, { contentRect.x, rowStart, contentRect.w, contentRect.h }, m_scale, State::Default))
+						return rowNb;
+					else
+						return -1;
+				}
+
+				if (ofs.y < rowEnd + rowSpacing)
+					return -1;						// Between the cracks.
+
+				rowStart += rowEnd + rowSpacing;
+				visibleRowNb++;
+			}
+			rowNb++;
+		}
+	}
+
+	return -1;
+}
+
+//____ _alphaTest() ____________________________________________________________
+
+bool TablePanel::_alphaTest(const CoordSPX& ofs)
+{
+	if (m_skin.markTest(ofs, RectSPX(m_size), m_scale, m_state))
+		return true;
+
+	// Find row for our offset
+
+	return (_markedRow(ofs) != -1);
+}
+
 //____ _refreshColumnLayout() ______________________________________________________
 
 /* 	Refreshes m_width for all columns.
@@ -1249,7 +1317,7 @@ bool TablePanel::_refreshColumns()
 				
 		// Get column widths from our PackLayout
 		
-		spx totalPadding = m_skin.contentBorderSize(m_scale).w + ptsToSpx(m_spacingX[0], m_scale) + ptsToSpx(m_spacingX[1], m_scale) * std::max(0, m_nVisibleColumns-1) + ptsToSpx(m_spacingX[2], m_scale);
+		spx totalPadding = m_skin.contentBorderSize(m_scale).w + align(ptsToSpx(m_spacingX[0], m_scale)) + align(ptsToSpx(m_spacingX[1], m_scale)) * std::max(0, m_nVisibleColumns-1) + align(ptsToSpx(m_spacingX[2], m_scale));
 
 		if( m_pRowSkins[0] != nullptr )
 			totalPadding += m_pRowSkins[0]->_contentBorderSize(m_scale).w;
@@ -1325,7 +1393,7 @@ bool TablePanel::_refreshRows()
 	{
 		// Get out row height from our PackLayout
 		
-		spx totalPadding = m_skin.contentBorderSize(m_scale).h + ptsToSpx(m_spacingY[0], m_scale) + ptsToSpx(m_spacingY[1], m_scale) * std::max(0, m_nVisibleRows-1) + ptsToSpx(m_spacingY[2], m_scale);
+		spx totalPadding = m_skin.contentBorderSize(m_scale).h + align(ptsToSpx(m_spacingY[0], m_scale)) + align(ptsToSpx(m_spacingY[1], m_scale)) * std::max(0, m_nVisibleRows-1) + align(ptsToSpx(m_spacingY[2], m_scale));
 		if( m_pRowSkins[0] != nullptr )
 			totalPadding += m_pRowSkins[0]->_contentBorderSize(m_scale).h * m_nVisibleRows;
 		
@@ -1511,15 +1579,15 @@ bool TablePanel::_refreshRowCache( int row, TablePanelRow::Cache& cache, int sca
 		slotIt++;
 	}
 
-
 	pts maxPts = rows[row].m_maxHeight;
 	spx maxSpx = spx_max;
 	if (maxPts > 0 && maxPts * scale < spx_max)
-		maxSpx = ptsToSpx(maxPts, scale);
+		maxSpx = align(ptsToSpx(maxPts, scale));
 
 	pts minPts = rows[row].m_minHeight;
-	spx minSpx = ptsToSpx(minPts, scale);
+	spx minSpx = align(ptsToSpx(minPts, scale));
 
+	limit(defaultHeight, minSpx, maxSpx);
 
 	if ( defaultHeight != cache.defaultHeight || heightForWidth != cache.heightForColumnWidth ||
 		 maxSpx != cache.maxHeight || minSpx != cache.minHeight)
@@ -1559,14 +1627,16 @@ bool TablePanel::_refreshColumnCache( int column, TablePanelColumn::Cache& cache
 		}
 	}
 
+
 	pts maxPts = columns[column].m_maxWidth;
 	spx maxSpx = spx_max;
 	if (maxPts > 0 && maxPts * scale < spx_max)
-		maxSpx = ptsToSpx(maxPts, scale);
+		maxSpx = align(ptsToSpx(maxPts, scale));
 
 	pts minPts = columns[column].m_minWidth;
-	spx minSpx = ptsToSpx(minPts, scale);
+	spx minSpx = align(ptsToSpx(minPts, scale));
 
+	limit(defaultWidth, minSpx, maxSpx);
 
 	if (defaultWidth != cache.defaultWidth || maxSpx != cache.maxWidth || minSpx != cache.minWidth )
 	{
@@ -1593,10 +1663,10 @@ SizeSPX TablePanel::_sumOfPadding(int scale) const
 	}
 
 	if( m_nVisibleColumns > 0 )
-		sizeAddition.w += ptsToSpx(m_spacingX[0], m_scale) + ptsToSpx(m_spacingX[1], m_scale) * (m_nVisibleColumns-1) + ptsToSpx(m_spacingX[2], m_scale);
+		sizeAddition.w += align(ptsToSpx(m_spacingX[0], m_scale)) + align(ptsToSpx(m_spacingX[1], m_scale)) * (m_nVisibleColumns-1) + align(ptsToSpx(m_spacingX[2], m_scale));
 
 	if( m_nVisibleRows > 0 )
-		sizeAddition.h += ptsToSpx(m_spacingY[0], m_scale) + ptsToSpx(m_spacingY[1], m_scale) * (m_nVisibleRows-1) + ptsToSpx(m_spacingY[2], m_scale);
+		sizeAddition.h += align(ptsToSpx(m_spacingY[0], m_scale)) + align(ptsToSpx(m_spacingY[1], m_scale)) * (m_nVisibleRows-1) + align(ptsToSpx(m_spacingY[2], m_scale));
 
 	return sizeAddition;
 }
@@ -1715,11 +1785,14 @@ void TablePanel::_refreshSlots(int ofs, Axis axis, int nSlots)
 		bRefreshGeo = true;
 	}
 
-	if (bRowCacheChanged)
-		bCellsModified = _refreshRows() || bCellsModified;
-
 	if (bColumnCacheChanged)
 		bCellsModified = _refreshColumns() || bCellsModified;
+
+	if( bCellsModified )
+		bRowCacheChanged = _refreshRowHeightForColumnWidth() || bRowCacheChanged;
+
+	if (bRowCacheChanged)
+		bCellsModified = _refreshRows() || bCellsModified;
 
 	if( bCellsModified )
 		_updateModifiedChildSizes();
@@ -1909,6 +1982,8 @@ void TablePanel::_rowParamsChanged()
 		_updateModifiedChildSizes();
 		_requestRender();
 	}
+	_updateMinDefaultSize();
+	_requestResize();
 }
 
 //____ _columnParamsChanged() ____________________________________________________
@@ -1924,7 +1999,10 @@ void TablePanel::_columnParamsChanged()
 
 		_updateModifiedChildSizes();
 		_requestRender();
+
 	}
+	_updateMinDefaultSize();
+	_requestResize();
 }
 
 //____ _hideRows() ____________________________________________________________
@@ -2057,10 +2135,21 @@ void TablePanel::_setMinHeights(TablePanelRow* pStart, int nb, pts height)
 {
 	int ofs = int(pStart - &*rows.begin());
 
+	spx spxHeight = align(ptsToSpx(height, m_scale));
+
 	for (int i = 0; i < nb; i++)
 	{
 		pStart[i].m_minHeight = height;
-		pStart[i].m_cache.minHeight = ptsToSpx(height, m_scale);
+
+		if ((spxHeight < pStart[i].m_cache.minHeight) && (pStart[i].m_cache.minHeight == pStart[i].m_cache.defaultHeight))
+			_refreshRowCache(ofs + i, pStart[i].m_cache, m_scale);
+		else
+		{
+			pStart[i].m_cache.minHeight = spxHeight;
+
+			if (pStart[i].m_cache.defaultHeight < spxHeight)
+				pStart[i].m_cache.defaultHeight = spxHeight;
+		}
 	}
 
 	_rowParamsChanged();
@@ -2073,8 +2162,19 @@ void TablePanel::_setMinHeights(TablePanelRow* pStart, int nb, const pts* pHeigh
 	for (int i = 0; i < nb; i++)
 	{
 		pts height = *pHeights++;
+		spx spxHeight = align(ptsToSpx(height, m_scale));
+
 		pStart[i].m_minHeight = height;
-		pStart[i].m_cache.minHeight = ptsToSpx(height, m_scale);
+
+		if ((spxHeight < pStart[i].m_cache.minHeight) && (pStart[i].m_cache.minHeight == pStart[i].m_cache.defaultHeight))
+			_refreshRowCache(ofs + i, pStart[i].m_cache, m_scale);
+		else
+		{
+			pStart[i].m_cache.minHeight = spxHeight;
+
+			if (pStart[i].m_cache.defaultHeight < spxHeight)
+				pStart[i].m_cache.defaultHeight = spxHeight;
+		}
 	}
 
 	_rowParamsChanged();
@@ -2086,17 +2186,26 @@ void TablePanel::_setMaxHeights(TablePanelRow* pStart, int nb, pts height)
 {
 	int ofs = int(pStart - &*rows.begin());
 
-	spx maxSpx = spx_max;
-	if (height > 0 || height * m_scale < spx_max)
-		maxSpx = ptsToSpx(height, m_scale);
+	spx spxHeight = spx_max;
+	if (height > 0 && height * m_scale < spx_max)
+		spxHeight = align(ptsToSpx(height, m_scale));
 
 	for (int i = 0; i < nb; i++)
 	{
 		pStart[i].m_maxHeight = height;
-		pStart[i].m_cache.maxHeight = maxSpx;
+
+		if ((spxHeight > pStart[i].m_cache.maxHeight) && (pStart[i].m_cache.maxHeight == pStart[i].m_cache.defaultHeight))
+			_refreshRowCache(ofs + i, pStart[i].m_cache, m_scale);
+		else
+		{
+			pStart[i].m_cache.maxHeight = spxHeight;
+
+			if (pStart[i].m_cache.defaultHeight > spxHeight)
+				pStart[i].m_cache.defaultHeight = spxHeight;
+		}
 	}
 
-	_rowParamsChanged();
+	_columnParamsChanged();
 }
 
 void TablePanel::_setMaxHeights(TablePanelRow* pStart, int nb, const pts* pHeights)
@@ -2105,15 +2214,25 @@ void TablePanel::_setMaxHeights(TablePanelRow* pStart, int nb, const pts* pHeigh
 
 	for (int i = 0; i < nb; i++)
 	{
-		pts h = *pHeights++;
-		pStart[i].m_maxHeight = h;
+		pts height = *pHeights++;
+		pStart[i].m_maxHeight = height;
 
-		if (h <= 0 || h * m_scale > spx_max)
-			pStart[i].m_cache.maxHeight = spx_max;
+		spx spxHeight = spx_max;
+		if (height > 0 && height * m_scale < spx_max)
+			spxHeight = align(ptsToSpx(height, m_scale));
+
+		if ((spxHeight > pStart[i].m_cache.maxHeight) && (pStart[i].m_cache.maxHeight == pStart[i].m_cache.defaultHeight))
+			_refreshRowCache(ofs + i, pStart[i].m_cache, m_scale);
 		else
-			pStart[i].m_cache.maxHeight = ptsToSpx(h, m_scale);
+		{
+			pStart[i].m_cache.maxHeight = spxHeight;
+
+			if (pStart[i].m_cache.defaultHeight > spxHeight)
+				pStart[i].m_cache.defaultHeight = spxHeight;
+		}
 	}
 
+	_columnParamsChanged();
 	_rowParamsChanged();
 }
 
@@ -2123,10 +2242,21 @@ void TablePanel::_setMinWidths(TablePanelColumn* pStart, int nb, pts width)
 {
 	int ofs = int(pStart - &*columns.begin());
 
+	spx spxWidth = align(ptsToSpx(width, m_scale));
+
 	for (int i = 0; i < nb; i++)
 	{
 		pStart[i].m_minWidth = width;
-		pStart[i].m_cache.minWidth = ptsToSpx(width, m_scale);
+
+		if ((spxWidth < pStart[i].m_cache.minWidth) && (pStart[i].m_cache.minWidth == pStart[i].m_cache.defaultWidth))
+			_refreshColumnCache(ofs + i, pStart[i].m_cache, m_scale);
+		else
+		{
+			pStart[i].m_cache.minWidth = spxWidth;
+
+			if (pStart[i].m_cache.defaultWidth < spxWidth)
+				pStart[i].m_cache.defaultWidth = spxWidth;
+		}
 	}
 
 	_columnParamsChanged();
@@ -2140,7 +2270,18 @@ void TablePanel::_setMinWidths(TablePanelColumn* pStart, int nb, const pts* pWid
 	{
 		pts width = *pWidths++;
 		pStart[i].m_minWidth = width;
-		pStart[i].m_cache.minWidth = ptsToSpx(width, m_scale);
+
+		spx spxWidth = align(ptsToSpx(width, m_scale));
+
+		if ((spxWidth < pStart[i].m_cache.minWidth) && (pStart[i].m_cache.minWidth == pStart[i].m_cache.defaultWidth))
+			_refreshColumnCache(ofs + i, pStart[i].m_cache, m_scale);
+		else
+		{
+			pStart[i].m_cache.minWidth = spxWidth;
+
+			if (pStart[i].m_cache.defaultWidth < spxWidth)
+				pStart[i].m_cache.defaultWidth = spxWidth;
+		}
 	}
 
 	_columnParamsChanged();
@@ -2152,14 +2293,23 @@ void TablePanel::_setMaxWidths(TablePanelColumn* pStart, int nb, pts width)
 {
 	int ofs = int(pStart - &*columns.begin());
 
-	spx maxSpx = spx_max;
-	if (width > 0 || width * m_scale < spx_max)
-		maxSpx = ptsToSpx(width, m_scale);
+	spx spxWidth = spx_max;
+	if (width > 0 && width * m_scale < spx_max)
+		spxWidth = align(ptsToSpx(width, m_scale));
 
 	for (int i = 0; i < nb; i++)
 	{
 		pStart[i].m_maxWidth = width;
-		pStart[i].m_cache.maxWidth = maxSpx;
+
+		if ((spxWidth > pStart[i].m_cache.maxWidth) && (pStart[i].m_cache.maxWidth == pStart[i].m_cache.defaultWidth))
+			_refreshColumnCache(ofs + i, pStart[i].m_cache, m_scale);
+		else
+		{
+			pStart[i].m_cache.maxWidth = spxWidth;
+
+			if (pStart[i].m_cache.defaultWidth > spxWidth)
+				pStart[i].m_cache.defaultWidth = spxWidth;
+		}
 	}
 
 	_columnParamsChanged();
@@ -2171,13 +2321,22 @@ void TablePanel::_setMaxWidths(TablePanelColumn* pStart, int nb, const pts* pWid
 
 	for (int i = 0; i < nb; i++)
 	{
-		pts w = *pWidths++;
-		pStart[i].m_maxWidth = w;
+		pts width = *pWidths++;
+		pStart[i].m_maxWidth = width;
 
-		if (w <= 0 || w * m_scale > spx_max)
-			pStart[i].m_cache.maxWidth = spx_max;
+		spx spxWidth = spx_max;
+		if (width > 0 && width * m_scale < spx_max)
+			spxWidth = align(ptsToSpx(width, m_scale));
+
+		if ((spxWidth > pStart[i].m_cache.maxWidth) && (pStart[i].m_cache.maxWidth == pStart[i].m_cache.defaultWidth))
+			_refreshColumnCache(ofs + i, pStart[i].m_cache, m_scale);
 		else
-			pStart[i].m_cache.maxWidth = ptsToSpx(w, m_scale);
+		{
+			pStart[i].m_cache.maxWidth = spxWidth;
+
+			if (pStart[i].m_cache.defaultWidth > spxWidth)
+				pStart[i].m_cache.defaultWidth = spxWidth;
+		}
 	}
 
 	_columnParamsChanged();
