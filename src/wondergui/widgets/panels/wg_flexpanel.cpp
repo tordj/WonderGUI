@@ -533,7 +533,25 @@ namespace wg
 		{
 			// Calculate size
 
-			SizeSPX sz = pSlot->m_placementGeo.isEmpty() ? pSlot->_widget()->_defaultSize(m_scale) : align(ptsToSpx(pSlot->m_placementGeo.size(),m_scale));
+			SizeSPX sz;
+			if (pSlot->m_placementGeo.w > 0 && pSlot->m_placementGeo.h > 0)
+				sz = align(ptsToSpx(pSlot->m_placementGeo.size(), m_scale));
+			else if (pSlot->m_placementGeo.w == 0 && pSlot->m_placementGeo.h == 0)
+				sz = pSlot->_widget()->_defaultSize(m_scale);
+			else
+			{
+				if (pSlot->m_placementGeo.h == 0)
+				{
+					sz.w = align(ptsToSpx(pSlot->m_placementGeo.w, m_scale));
+					sz.h = pSlot->_widget()->_matchingHeight(sz.w, m_scale);
+				}
+				else
+				{
+					sz.h = align(ptsToSpx(pSlot->m_placementGeo.h, m_scale));
+					sz.w = pSlot->_widget()->_matchingWidth(sz.h, m_scale);
+				}
+			}
+
 			sz.limit( pSlot->_widget()->_minSize(m_scale), pSlot->_widget()->_maxSize(m_scale) );		// Respect widgets limits.
 
 			// Calculate position
@@ -546,10 +564,18 @@ namespace wg
 
 			if( m_edgePolicy == EdgePolicy::Confine )
 			{
-				if( sz.w > m_size.w )
+				if (sz.w > m_size.w)
+				{
 					sz.w = m_size.w;
-				if( sz.h > m_size.h )
+					if( pSlot->m_placementGeo.h == 0 )
+						sz.h = pSlot->_widget()->_matchingHeight(sz.w, m_scale);
+				}
+				if (sz.h > m_size.h)
+				{
 					sz.h = m_size.h;
+					if (pSlot->m_placementGeo.w == 0)
+						sz.w = std::min(pSlot->_widget()->_matchingWidth(sz.h, m_scale),m_size.w);
+				}
 
 				limit(pos.x, 0, m_size.w - sz.w);
 				limit(pos.y, 0, m_size.h - sz.h);
