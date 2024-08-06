@@ -236,10 +236,49 @@ int main ( int argc, char** argv )
 		 pSelectedHoverAndFocusSkin->_render(pGfxDevice, RectSPX(5, 80, 20, 20) * 64, 64, State::SelectedHoveredFocused);
 		 pHoverWithFocusSkin->_render(pGfxDevice, RectSPX(5, 105, 20, 20) * 64, 64, State::SelectedHoveredFocused);
 		 */
-		
+	
 		//
-		
-		
+
+		auto pSurf = pGfxDevice->surfaceFactory()->createSurface({ .format = PixelFormat::BGRA_8_sRGB, .size = {256,256} });
+		pSurf->fill(Color::HotPink);
+
+		auto pixBuffer = pSurf->allocPixelBuffer();
+
+		for (int y = 0; y < 256; y++)
+		{
+			for (int x = 0; x < 256; x++)
+			{
+				uint8_t* pPixel = &pixBuffer.pixels[y * pixBuffer.pitch + x * 4];
+
+				float ax = (128 - abs(x - 128)) / 128.f;
+				float ay = (128 - abs(y - 128)) / 128.f;
+
+				ax = ax * std::min(ax+0.1f,1.f);
+				ay = ay * std::min(ay + 0.1f, 1.f);
+
+
+				float a = ax * ay;
+
+
+
+//				if (a < 0.5f)
+//					a = 0.f;
+
+				pPixel[3] = a * 255;
+			}
+		}
+		pSurf->pullPixels(pixBuffer);
+		pSurf->freePixelBuffer(pixBuffer);
+
+		pGfxDevice->setBlitSource(pSurf);
+		pGfxDevice->blit({ 0,0 });
+
+		//		pGfxDevice->fill( RectSPX(0,1,20,20)*64, Color::White );
+
+		pGfxDevice->endCanvasUpdate();
+
+
+/*
 		ball.x += dirX;
 		ball.y += dirY;
 		
@@ -272,6 +311,7 @@ int main ( int argc, char** argv )
 		pGfxDevice->blit( {0,0} );
 		
 		std::swap(pCanvas1, pCanvas2);
+*/
 
 		//
 /*
