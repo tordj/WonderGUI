@@ -3,6 +3,7 @@
 add_subdirectory(fontgenerator)
 add_subdirectory(gfxdevicetester)
 add_subdirectory(gfxworkbench)
+add_subdirectory(gfxworkbench-gen2)
 add_subdirectory(image2surf)
 add_subdirectory(packlayouttester)
 add_subdirectory(pluginworkbench)
@@ -30,6 +31,7 @@ set_target_properties(
 	testplugin
 	fontgenerator
 	gfxworkbench
+	gfxworkbench-gen2
 	image2surf
 	packlayouttester
 	pluginworkbench
