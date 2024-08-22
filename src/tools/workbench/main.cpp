@@ -763,7 +763,7 @@ int main(int argc, char** argv)
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
 		//	areaChartTest(pSlot);
-		//	areaChartTest2(pSlot);
+			areaChartTest2(pSlot);
 		//	plotChartTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
@@ -778,7 +778,7 @@ int main(int argc, char** argv)
 		//	packPanelStressTest2(pSlot);
 		//	blockingCapsuleTest(pSlot);
 		//	tablePanelTest(pSlot);
-			tablePanelTest2(pSlot);
+		//	tablePanelTest2(pSlot);
 
 
 		//------------------------------------------------------
@@ -2178,7 +2178,7 @@ bool tileSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
-
+/*
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
 
@@ -2199,7 +2199,7 @@ bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 	*pSlot = pBaseLayer;
 
 	return true;
-
+*/
 }
 
 
@@ -3059,8 +3059,9 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 	pGraph->entries.pushBack({
 		.bottomOutlineThickness = 0,
 		.color = Color::Transparent,
+		.flip = GfxFlip::Rot270,
 		.outlineColor = Color::Red,
-		.topOutlineThickness = 5
+		.topOutlineThickness = 5,
 		});
 
 

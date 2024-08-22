@@ -40,6 +40,7 @@ namespace wg
 		{
 			pts					bottomOutlineThickness = 1;
 			HiColor				color = Color8::LightGrey;
+			GfxFlip				flip = GfxFlip::None;
 			Gradient			gradient;								// Overrides color when set.
 			HiColor				outlineColor = Color8::DarkGrey;
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
@@ -66,6 +67,9 @@ namespace wg
 		void	setVisible(bool bVisible);
 		bool	isVisible() const { return m_bVisible; }
 
+		void	setFlip( GfxFlip flip );
+		GfxFlip flip() const { return m_flip; }
+		
 		bool	isTransitioningColors() const { return m_pColorTransition; }
 		bool	isTransitioningSamples() const { return m_pSampleTransition; }
 
@@ -79,7 +83,6 @@ namespace wg
 
 		void				_endSampleTransition();
 		void				_endColorTransition();
-
 
 		AreaChart*			m_pDisplay = nullptr;
 
@@ -95,6 +98,9 @@ namespace wg
 		pts					m_topOutlineThickness = 1;
 		pts					m_bottomOutlineThickness = 1;
 
+		GfxFlip				m_flip = GfxFlip::None;
+		bool				m_bAxisSwapped = false;				// Set if flip results in X and Y being swapped.
+		
 		// Transitions
 
 		ColorTransition_p	m_pColorTransition;
@@ -161,6 +167,7 @@ namespace wg
 
 			float			displayCeiling = 0.f;
 			float			displayFloor = 1.f;
+			
 			Skin_p			displaySkin;
 
 			bool			dropTarget = false;
@@ -229,7 +236,7 @@ namespace wg
 		void		_didMoveEntries(AreaChartEntry* pFrom, AreaChartEntry* pTo, int nb) override;
 		void		_willEraseEntries(AreaChartEntry* pEntry, int nb) override;
 
-		void		_updateWaveformEdge(Waveform* pWaveform, bool bTopEdge, int nSamples, float* pSamples);
+		void		_updateWaveformEdge(Waveform* pWaveform, bool bTopEdge, int nSamples, float* pSamples, bool bAxisSwapped);
 
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 
@@ -237,7 +244,7 @@ namespace wg
 
 		void		_updateAreaChartEntrys();
 
-		RectSPX		_entryRangeToRect( float begin, float end) const;
+		RectSPX		_entryRangeToRect( float begin, float end, bool bAxisSwapped) const;
 
 		void		_requestRenderAreaChartEntry(AreaChartEntry* pAreaChartEntry, float leftmost, float rightmost);
 
@@ -249,6 +256,7 @@ namespace wg
 
 		bool			m_bPreRenderRequested = false;
 		bool			m_bTransitioning = false;
+		
 	};
 
 

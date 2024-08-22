@@ -149,10 +149,20 @@ namespace wg
 
 		RectSPX dirt;
 
-		dirt.x = m_chartCanvas.x + m_chartCanvas.w * leftmost;
-		dirt.y = m_chartCanvas.y;
-		dirt.w = m_chartCanvas.w * (rightmost - leftmost);
-		dirt.h = m_chartCanvas.h;
+		if( pAreaChartEntry->m_bAxisSwapped )
+		{
+			dirt.x = m_chartCanvas.x;
+			dirt.y = m_chartCanvas.y + m_chartCanvas.h * leftmost;;
+			dirt.w = m_chartCanvas.w;
+			dirt.h = m_chartCanvas.h * (rightmost - leftmost);
+		}
+		else
+		{
+			dirt.x = m_chartCanvas.x + m_chartCanvas.w * leftmost;
+			dirt.y = m_chartCanvas.y;
+			dirt.w = m_chartCanvas.w * (rightmost - leftmost);
+			dirt.h = m_chartCanvas.h;
+		}
 
 		pts outlineThickness = std::max(pAreaChartEntry->m_topOutlineThickness, pAreaChartEntry->m_bottomOutlineThickness);
 
@@ -206,7 +216,7 @@ namespace wg
 			if (graph.m_bVisible)
 			{
 				auto pEdgemap = graph.m_pWaveform->refresh();
-				pDevice->drawEdgemap(canvas + graph.m_waveformPos, pEdgemap);
+				pDevice->flipDrawEdgemap(canvas + graph.m_waveformPos, pEdgemap, graph.m_flip );
 			}
 		}
 
@@ -317,12 +327,13 @@ namespace wg
 			if (graph.m_bVisible)
 			{
 				bool bNeedsRendering = false;
+				spx displayHeight = graph.m_bAxisSwapped ? m_chartCanvas.w : m_chartCanvas.h;
 
 				if (!graph.m_pWaveform)
 				{
 					// Generate waveform
 
-					RectSPX rect = _entryRangeToRect(graph.m_begin, graph.m_end);
+					RectSPX rect = _entryRangeToRect(graph.m_begin, graph.m_end, graph.m_bAxisSwapped);
 
 					graph.m_waveformPos = rect.pos();
 					
@@ -339,8 +350,8 @@ namespace wg
 
 					// Interpolate and set samples
 
-					_updateWaveformEdge(graph.m_pWaveform, true, (int) graph.m_topSamples.size(), graph.m_topSamples.data() );
-					_updateWaveformEdge(graph.m_pWaveform, false, (int) graph.m_bottomSamples.size(), graph.m_bottomSamples.data());
+					_updateWaveformEdge(graph.m_pWaveform, true, (int) graph.m_topSamples.size(), graph.m_topSamples.data(), graph.m_bAxisSwapped );
+					_updateWaveformEdge(graph.m_pWaveform, false, (int) graph.m_bottomSamples.size(), graph.m_bottomSamples.data(), graph.m_bAxisSwapped );
 
 					bNeedsRendering = true;
 				}
@@ -370,8 +381,8 @@ namespace wg
 
 					if (graph.m_bSamplesChanged)
 					{
-						_updateWaveformEdge(graph.m_pWaveform, true, (int) graph.m_topSamples.size(), graph.m_topSamples.data());
-						_updateWaveformEdge(graph.m_pWaveform, false, (int) graph.m_bottomSamples.size(), graph.m_bottomSamples.data());
+						_updateWaveformEdge(graph.m_pWaveform, true, (int) graph.m_topSamples.size(), graph.m_topSamples.data(), graph.m_bAxisSwapped );
+						_updateWaveformEdge(graph.m_pWaveform, false, (int) graph.m_bottomSamples.size(), graph.m_bottomSamples.data(), graph.m_bAxisSwapped );
 						graph.m_bSamplesChanged = false;
 
 						bNeedsRendering = true;
@@ -386,17 +397,19 @@ namespace wg
 
 	//____ _updateWaveformEdge() _________________________________________________
 
-	void AreaChart::_updateWaveformEdge(Waveform* pWaveform, bool bTopEdge, int nSamples, float* pSamples)
+	void AreaChart::_updateWaveformEdge(Waveform* pWaveform, bool bTopEdge, int nSamples, float* pSamples, bool bAxisSwapped )
 	{
 		// TODO: Better interpolation, especially when shrinking.
 
 		int wfSamples = pWaveform->nbSamples();
 
+		int height = bAxisSwapped ? m_chartCanvas.w : m_chartCanvas.h;
+		
 		if (nSamples <= 1)
 		{
 			float sample = nSamples == 0 ? 0.f : pSamples[0];
 			
-			spx spxSample = (sample - m_displayCeiling) / (m_displayFloor - m_displayCeiling) * m_chartCanvas.h;
+			spx spxSample = (sample - m_displayCeiling) / (m_displayFloor - m_displayCeiling) * height;
 
 			if (bTopEdge)
 				pWaveform->setFlatTopLine(0, wfSamples, spxSample);
@@ -407,12 +420,9 @@ namespace wg
 		{
 			spx * pConverted = (spx*) Base::memStackAlloc(wfSamples * sizeof(spx));
 
-
-			SizeI	canvas = m_chartCanvas.size() / 64;
-
 			float stepFactor = (nSamples - 1) / (float) wfSamples;
 
-			float valueFactor = m_chartCanvas.h / (m_displayFloor - m_displayCeiling);
+			float valueFactor = height / (m_displayFloor - m_displayCeiling);
 
 			for (int i = 0; i < wfSamples; i++)
 			{
@@ -438,9 +448,14 @@ namespace wg
 
 	//____ _entryRangeToRect() __________________________________
 
-	RectSPX AreaChart::_entryRangeToRect(float begin, float end) const
+	RectSPX AreaChart::_entryRangeToRect(float begin, float end, bool axisSwapped) const
 	{
-		RectSPX rect( m_chartCanvas.w * begin, 0, m_chartCanvas.w * (end - begin), m_chartCanvas.h );
+		RectSPX rect;
+		
+		if( axisSwapped )
+			rect = RectSPX( m_chartCanvas.h * begin, 0, m_chartCanvas.h * (end - begin), m_chartCanvas.w );
+		else
+			rect = RectSPX( m_chartCanvas.w * begin, 0, m_chartCanvas.w * (end - begin), m_chartCanvas.h );
 		
 		return Util::align(rect);
 	}
@@ -466,10 +481,12 @@ namespace wg
 		m_end = bp.rangeEnd;
 		m_topOutlineThickness = bp.topOutlineThickness;
 		m_bVisible = bp.visible;
+		m_flip = bp.flip;
 
+		m_bAxisSwapped = ( bp.flip == GfxFlip::Rot90 || bp.flip == GfxFlip::Rot90FlipX || bp.flip == GfxFlip::Rot90FlipY ||
+						   bp.flip == GfxFlip::Rot270 || bp.flip == GfxFlip::Rot270FlipX || bp.flip == GfxFlip::Rot270FlipY );
 		m_topSamples.push_back(0.f);
 		m_bottomSamples.push_back(0.f);
-
 	}
 
 	//____ setColors() ________________________________________________________
@@ -633,6 +650,17 @@ namespace wg
 			m_bVisible = bVisible;
 			m_pDisplay->_entryVisibilityChanged(this);
 		}
+	}
+
+	//____ setFlip() _____________________________________________________________
+
+	void AreaChartEntry::setFlip( GfxFlip flip )
+	{
+		m_flip = flip;
+		m_bAxisSwapped = ( flip == GfxFlip::Rot90 || flip == GfxFlip::Rot90FlipX || flip == GfxFlip::Rot90FlipY ||
+						  flip == GfxFlip::Rot270 || flip == GfxFlip::Rot270FlipX || flip == GfxFlip::Rot270FlipY );
+
+		m_pDisplay->_fullRefreshOfChart();
 	}
 
 	//____ topSamples() _______________________________________________________
