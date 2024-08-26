@@ -765,7 +765,7 @@ namespace wg
 
 	RectSPX CanvasCapsule::_canvasWindow( RectSPX window ) const
 	{
-		float scaleFactor = std::min( { 1.f, window.w / (float) m_canvasSize.w, window.h / (float) m_canvasSize.h } );
+		float scaleFactor = std::min( { window.w / (float) m_canvasSize.w, window.h / (float) m_canvasSize.h } );
 		
 		SizeSPX canvasInWindowSize = align(SizeSPX( m_canvasSize * scaleFactor ));
 		
