@@ -22,6 +22,7 @@
 
 #include <wg_glow.h>
 #include <wg_gfxdevice.h>
+#include <cstring>
 
 namespace wg
 {
@@ -131,16 +132,16 @@ namespace wg
 
 	void Glow::setMatrices(const float red[9], const float green[9], const float blue[9])
 	{
-		memcpy(m_redMtx, red, sizeof(float[9]));
-		memcpy(m_greenMtx, green, sizeof(float[9]));
-		memcpy(m_blueMtx, blue, sizeof(float[9]));
+		std::memcpy(m_redMtx, red, sizeof(float[9]));
+		std::memcpy(m_greenMtx, green, sizeof(float[9]));
+		std::memcpy(m_blueMtx, blue, sizeof(float[9]));
 	}
 
 	//____ setRedMatrix() _____________________________________________________
 
 	void Glow::setRedMatrix(const float matrix[9])
 	{
-		memcpy(m_redMtx, matrix, sizeof(float[9]));
+		std::memcpy(m_redMtx, matrix, sizeof(float[9]));
 	}
 
 	//____ redMatrix() ________________________________________________________
@@ -154,7 +155,7 @@ namespace wg
 
 	void Glow::setGreenMatrix(const float matrix[9])
 	{
-		memcpy(m_greenMtx, matrix, sizeof(float[9]));
+		std::memcpy(m_greenMtx, matrix, sizeof(float[9]));
 	}
 
 	//____ greenMatrix() ______________________________________________________
@@ -168,7 +169,7 @@ namespace wg
 
 	void Glow::setBlueMatrix(const float matrix[9])
 	{
-		memcpy(m_blueMtx, matrix, sizeof(float[9]));
+		std::memcpy(m_blueMtx, matrix, sizeof(float[9]));
 	}
 
 	//____ blueMatrix() _______________________________________________________
