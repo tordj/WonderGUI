@@ -167,6 +167,7 @@ namespace wg
 			float			displayCeiling = 1.f;
 			float			displayFloor = 0.f;
 			Skin_p			displaySkin;
+			int				displayTime = 4000000;    // microsec of samples displayed.
 
 			bool			dropTarget = false;
 			bool			disabled = false;
@@ -179,15 +180,20 @@ namespace wg
 
 			int				id = 0;
 			Skin_p			labelSkin;
+			int				latency = 10000;
+
+			Placement		leftLabelPlacement = Placement::West;
+			pts				leftLabelSpacing = 4;
+
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
+
+			Placement		rightLabelPlacement = Placement::East;
+			pts				rightLabelSpacing = 4;
+
 			bool			selectable = true;
-
-			Placement		sideLabelPlacement = Placement::West;
-			pts				sideLabelSpacing = 4;
-
 			Skin_p			skin;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
@@ -197,8 +203,9 @@ namespace wg
 
 			String			tooltip;
 
-			int				displayTime = 4000000;    // microsec of samples displayed.
-			int				latency = 10000;
+			Placement		topLabelPlacement = Placement::North;
+			pts				topLabelSpacing = 1;
+
 		};
 
 		//.____ Creation __________________________________________

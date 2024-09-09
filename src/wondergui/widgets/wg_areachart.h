@@ -181,15 +181,19 @@ namespace wg
 
 			int				id = 0;
 			Skin_p			labelSkin;
+
+			Placement		leftLabelPlacement = Placement::West;
+			pts				leftLabelSpacing = 4;
+
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
+
+			Placement		rightLabelPlacement = Placement::East;
+			pts				rightLabelSpacing = 4;
+
 			bool			selectable = true;
-
-			Placement		sideLabelPlacement = Placement::West;
-			pts				sideLabelSpacing = 4;
-
 			Skin_p			skin;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
@@ -198,6 +202,10 @@ namespace wg
 			TextStyle_p		textStyle;
 
 			String			tooltip;
+
+			Placement		topLabelPlacement = Placement::North;
+			pts				topLabelSpacing = 1;
+
 		};
 
 

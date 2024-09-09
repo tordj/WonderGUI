@@ -48,6 +48,7 @@ class Chart;
 			
 			String			label;
 			Coord			labelAdjustment;
+			bool			labelAtEnd = false;
 			Placement		labelPlacement;
 			Skin_p			labelSkin;
 
@@ -69,6 +70,7 @@ class Chart;
 			m_bVisible(bp.visible),
 			m_label(bp.label),
 			m_labelAdjustment(bp.labelAdjustment),
+			m_bLabelAtEnd(bp.labelAtEnd),
 			m_pTextLayout(bp.textLayout),
 			m_labelPlacement(bp.labelPlacement),
 			m_pTextStyle(bp.textStyle)
@@ -129,6 +131,7 @@ class Chart;
 		pts				m_thickness;
 
 		bool			m_bVisible;
+		bool			m_bLabelAtEnd;
 
 		String			m_label;
 		Coord			m_labelAdjustment;
@@ -185,10 +188,14 @@ class Chart;
 			m_pTextStyle	= bp.textStyle;
 			m_labelSkin.set(bp.labelSkin);
 
-			m_sideLabelPlacement = bp.sideLabelPlacement;
+			m_leftLabelPlacement = bp.leftLabelPlacement;
+			m_rightLabelPlacement = bp.rightLabelPlacement;
+			m_topLabelPlacement = bp.topLabelPlacement;
 			m_bottomLabelPlacement = bp.bottomLabelPlacement;
 
-			m_sideLabelSpacing = bp.sideLabelSpacing;
+			m_leftLabelSpacing = bp.leftLabelSpacing;
+			m_rightLabelSpacing = bp.rightLabelSpacing;
+			m_topLabelSpacing = bp.topLabelSpacing;
 			m_bottomLabelSpacing = bp.bottomLabelSpacing;
 
 			glow._initFromBlueprint(bp.glow);
@@ -213,8 +220,8 @@ class Chart;
 
 		RectSPX			m_chartCanvas;
 
-		float			m_displayCeiling;
-		float			m_displayFloor;
+		float			m_displayCeiling = 0.f;
+		float			m_displayFloor = 1.f;
 
 
 	private:
@@ -222,7 +229,7 @@ class Chart;
 		bool		_recalcChartCanvas();
 		void		_repositionAllLabels();
 		CoordSPX	_sideLabelOffset(GridLine* pLine);
-		CoordSPX	_bottomLabelOffset(GridLine* pLine);
+		CoordSPX	_topBottomLabelOffset(GridLine* pLine);
 
 		SkinSlot		m_displaySkin;
 
@@ -232,10 +239,14 @@ class Chart;
 		TextLayout_p	m_pTextLayout;
 
 		SkinSlot		m_labelSkin;
-		Placement		m_sideLabelPlacement = Placement::West;
+		Placement		m_leftLabelPlacement = Placement::West;
+		Placement		m_rightLabelPlacement = Placement::East;
+		Placement		m_topLabelPlacement = Placement::North;
 		Placement		m_bottomLabelPlacement = Placement::South;
-		pts				m_sideLabelSpacing = 1;
+		pts				m_topLabelSpacing = 1;
 		pts				m_bottomLabelSpacing = 1;
+		pts				m_leftLabelSpacing = 4;
+		pts				m_rightLabelSpacing = 4;
 
 		Surface_p		m_pChartCanvas;
 

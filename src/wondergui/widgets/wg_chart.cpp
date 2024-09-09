@@ -37,17 +37,6 @@ namespace wg
 	Chart::Chart() : xLines(this), yLines(this), glow(this),
 		m_displaySkin(this), m_labelSkin(this)
 	{
-		m_displayCeiling = 0.f;
-		m_displayFloor = 1.f;
-
-		m_gridColor		= Color::DarkGray;
-		m_gridThickness = 1;
-
-		m_sideLabelPlacement = Placement::West;
-		m_bottomLabelPlacement = Placement::South;
-
-		m_sideLabelSpacing = 4;
-		m_bottomLabelSpacing = 1;
 	}
 
 	//____ destructor _____________________________________________________________
@@ -323,10 +312,21 @@ namespace wg
 			if (!line.m_label.isEmpty())
 			{
 				CoordSPX ofs = _sideLabelOffset(&line);
-				ofs.x *= -1;
 
-				if (ofs.x > margin.left)
-					margin.left = ofs.x;
+				if (line.m_bLabelAtEnd)
+				{
+					ofs.x += line.m_labelGeo.size().w;
+
+					if (ofs.x > margin.right)
+						margin.right = ofs.x;
+				}
+				else
+				{
+					ofs.x *= -1;
+
+					if (ofs.x > margin.left)
+						margin.left = ofs.x;
+				}
 			}
 		}
 
@@ -337,11 +337,22 @@ namespace wg
 		{
 			if (!line.m_label.isEmpty())
 			{
-				CoordSPX ofs = _bottomLabelOffset(&line);
-				ofs.y += line.m_labelGeo.size().h;
+				CoordSPX ofs = _topBottomLabelOffset(&line);
 
-				if (ofs.y > margin.bottom)
-					margin.bottom = ofs.y;
+				if (line.m_bLabelAtEnd)
+				{
+					ofs.y *= -1;
+
+					if (ofs.y > margin.top)
+						margin.top = ofs.y;
+				}
+				else
+				{
+					ofs.y += line.m_labelGeo.size().h;
+
+					if (ofs.y > margin.bottom)
+						margin.bottom = ofs.y;
+				}
 			}
 		}
 
@@ -432,8 +443,8 @@ namespace wg
 
 			if (pLeftmost)		// If we have leftmost we also have rightmost.
 			{
-				spx leftLabelOfs = _bottomLabelOffset(pLeftmost).x;
-				spx rightLabelOfs = _bottomLabelOffset(pRightmost).x + pRightmost->m_labelGeo.w;
+				spx leftLabelOfs = _topBottomLabelOffset(pLeftmost).x;
+				spx rightLabelOfs = _topBottomLabelOffset(pRightmost).x + pRightmost->m_labelGeo.w;
 
 				bool bModified;
 				do {
@@ -485,7 +496,7 @@ namespace wg
 		{
 			if (line.m_bVisible && line.m_value >= rangeMin && line.m_value <= rangeMax)
 			{
-				CoordSPX pos = m_chartCanvas.pos();
+				CoordSPX pos = line.m_bLabelAtEnd ? m_chartCanvas.topRight() : m_chartCanvas.topLeft();
 				pos.y += (line.m_value - m_displayCeiling) * valueFactor;
 
 				pos += _sideLabelOffset(&line);
@@ -497,10 +508,10 @@ namespace wg
 		{
 			if (line.m_bVisible)
 			{
-				CoordSPX pos = m_chartCanvas.bottomLeft();
+				CoordSPX pos = line.m_bLabelAtEnd ? m_chartCanvas.topLeft() : m_chartCanvas.bottomLeft();
 				pos.x += line.m_value * m_chartCanvas.w;
 
-				pos += _bottomLabelOffset(&line); 
+				pos += _topBottomLabelOffset(&line); 
 				line.m_labelGeo.setPos(Util::align(pos));
 			}
 		}
@@ -511,22 +522,24 @@ namespace wg
 
 	CoordSPX Chart::_sideLabelOffset(GridLine* pLine)
 	{
-		spx spacing = Util::ptsToSpx(m_sideLabelSpacing, m_scale);
+		spx spacing = Util::ptsToSpx(pLine->m_bLabelAtEnd ? m_rightLabelSpacing : m_leftLabelSpacing, m_scale);
 
-		Placement placement = pLine->m_labelPlacement != Placement::Undefined ? pLine->m_labelPlacement : m_sideLabelPlacement;
+		Placement defaultPlacement = pLine->m_bLabelAtEnd ? m_rightLabelPlacement : m_leftLabelPlacement;
+		Placement placement = pLine->m_labelPlacement != Placement::Undefined ? pLine->m_labelPlacement : defaultPlacement;
 		CoordSPX pos = Util::placeRectAroundCoord(placement, { 0,0 }, pLine->m_labelGeo.size() + SizeSPX(2 * spacing, 0));
 		pos += Util::ptsToSpx(pLine->m_labelAdjustment, m_scale);
 		pos.x += spacing;
 		return pos;
 	}
 
-	//____ _bottomLabelOffset() ___________________________________________________
+	//____ _topBottomLabelOffset() ___________________________________________________
 
-	CoordSPX Chart::_bottomLabelOffset(GridLine* pLine)
+	CoordSPX Chart::_topBottomLabelOffset(GridLine* pLine)
 	{
-		spx spacing = Util::ptsToSpx(m_bottomLabelSpacing, m_scale);
+		spx spacing = Util::ptsToSpx(pLine->m_bLabelAtEnd ? m_topLabelSpacing : m_bottomLabelSpacing, m_scale);
 
-		Placement placement = pLine->m_labelPlacement != Placement::Undefined ? pLine->m_labelPlacement : m_bottomLabelPlacement;
+		Placement defaultPlacement = pLine->m_bLabelAtEnd ? m_topLabelPlacement : m_bottomLabelPlacement;
+		Placement placement = pLine->m_labelPlacement != Placement::Undefined ? pLine->m_labelPlacement : defaultPlacement;
 		CoordSPX pos = Util::placeRectAroundCoord(placement, { 0,0 }, pLine->m_labelGeo.size() + SizeSPX(0, 2 * spacing));
 		pos += Util::ptsToSpx(pLine->m_labelAdjustment, m_scale);
 		pos.y += spacing;

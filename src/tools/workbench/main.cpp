@@ -746,7 +746,7 @@ int main(int argc, char** argv)
 		//	animPlayerTest(pSlot);
 		//	selectBoxTest(pSlot);
 		//	tileSkinTest(pSlot);
-			gradientSkinTest(pSlot);
+		//	gradientSkinTest(pSlot);
 		//	bakeSkinTest(pSlot);
 		//	animSkinTest(pSlot);
 		//	renderLayerTest(pSlot);
@@ -2198,8 +2198,8 @@ bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	*pSlot = pBaseLayer;
 
-	return true;
 */
+	return true;
 }
 
 
@@ -3082,7 +3082,7 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 
 	// Setup grid
 
-	pGraph->xLines.pushBack({ .label = "-0.5", .pos = -0.5f, .thickness = 0.5f });
+	pGraph->xLines.pushBack({ .label = "-0.5", .labelAtEnd = true, .pos = -0.5f, .thickness = 0.5f });
 	pGraph->xLines.pushBack({ .label = "-0.25", .pos = -0.25f, .thickness = 0.5f });
 	pGraph->xLines.pushBack({ .label = "0.0", .pos = 0.0f, .thickness = 1.f });
 	pGraph->xLines.pushBack({ .label = "0.25", .pos = 0.25f, .thickness = 0.5f });
@@ -3090,7 +3090,7 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 	pGraph->yLines.pushBack({ .label = "0.0", .pos = 0.0f, .thickness = 0.5f });
 	pGraph->yLines.pushBack({ .label = "0.25", .pos = 0.25f, .thickness = 0.5f });
 	pGraph->yLines.pushBack({ .label = "0.5", .pos = 0.5f, .thickness = 0.5f });
-	pGraph->yLines.pushBack({ .label = "1.0", .pos = 1.f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "1.0", .labelAtEnd = true, .pos = 1.f, .thickness = 0.5f });
 
 	/* 
 		pGraph->xLines.pushBack(WGBP(GridLine,
