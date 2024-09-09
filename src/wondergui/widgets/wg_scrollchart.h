@@ -62,6 +62,7 @@ namespace wg
 			int				id = 0;
 			Skin_p			labelSkin;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			int				maxDisplayTime = 0;    // microsec of samples saved for changes in displayTime. 0 = st to same as displayTime.
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
@@ -93,6 +94,9 @@ namespace wg
 		void	start();
 		void	stop();
 
+		void	setDisplayTime(int microsec);
+		int		displayTime() const { return m_displayTime;  }
+
 
 	protected:
 		ScrollChart();
@@ -101,6 +105,8 @@ namespace wg
 		ScrollChart(const BP& bp): Chart(bp)
 		{
 			m_displayTime = bp.displayTime;
+			m_maxDisplayTime = bp.maxDisplayTime > 0 ? bp.maxDisplayTime : bp.displayTime;
+
 			m_latency = bp.latency;
 		}
 
@@ -124,8 +130,9 @@ namespace wg
 
 	protected:
 		int			m_displayTime = 4000000;
+		int			m_maxDisplayTime = 4000000;
 		int64_t		m_latestTimestamp = 0;
-		int			m_latency = 1000;
+		int			m_latency = 10000;
 		
 	private:
 

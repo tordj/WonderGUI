@@ -186,6 +186,7 @@ namespace wg
 			pts				leftLabelSpacing = 4;
 
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			int				maxDisplayTime = 0;
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;

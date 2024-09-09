@@ -321,7 +321,7 @@ namespace wg
 
 	void AreaScrollChart::_removeOutdatedSamples()
 	{
-		int64_t	timestampStillDisplayed = m_latestTimestamp - m_displayTime - m_latency;
+		int64_t	timestampStillDisplayed = m_latestTimestamp - m_maxDisplayTime - m_latency;
 		
 		int microsecPerPixel = m_chartCanvas.w > 0 ? m_displayTime / (m_chartCanvas.w / 64) : 0;
 

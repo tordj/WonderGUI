@@ -763,7 +763,7 @@ int main(int argc, char** argv)
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
 		//	areaChartTest(pSlot);
-			areaChartTest2(pSlot);
+		//	areaChartTest2(pSlot);
 		//	plotChartTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
@@ -772,7 +772,7 @@ int main(int argc, char** argv)
 		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-		//  scrollChartTest(pSlot);
+		  scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
 		//	packPanelStressTest(pSlot);
 		//	packPanelStressTest2(pSlot);
@@ -3687,7 +3687,12 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
 
-	auto pScrollChart = AreaScrollChart::create({ .skin = BoxSkin::create({ .color = Color::Yellow, .outlineColor = Color::Black, .padding = 1 }) });
+	auto pScrollChart = AreaScrollChart::create({
+		.latency = 50000,
+		.maxDisplayTime = 8000000,
+		.skin = BoxSkin::create({ .color = Color::Yellow, .outlineColor = Color::Black, .padding = 1 })
+
+	});
 	
 	static float samples[1000];
 	
@@ -3773,6 +3778,22 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 	pBaseLayer->slots.pushBack(pButtonStart, { .origo = Placement::SouthWest, .pos = {5 + 300,-5} });
 
 	Base::msgRouter()->addRoute(pButtonStart, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->start(); });
+
+	auto pButtonSpeedDown = Button::create({ .label = {.text = "-" }, .skin = pButtonSkin });
+
+	pBaseLayer->slots.pushBack(pButtonSpeedDown, { .origo = Placement::SouthWest, .pos = {5 + 400,-5} });
+
+	Base::msgRouter()->addRoute(pButtonSpeedDown, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->setDisplayTime(pScrollChart->displayTime() + 500000); });
+
+
+	auto pButtonSpeedUp = Button::create({ .label = {.text = "+" }, .skin = pButtonSkin });
+
+	pBaseLayer->slots.pushBack(pButtonSpeedUp, { .origo = Placement::SouthWest, .pos = {5 + 450,-5} });
+
+	Base::msgRouter()->addRoute(pButtonSpeedUp, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->setDisplayTime(pScrollChart->displayTime()-500000); });
+
+
+
 
 	
 	return true;

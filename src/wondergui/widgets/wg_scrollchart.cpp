@@ -74,6 +74,19 @@ namespace wg
         }
     }
 
+	//____ setDisplayTime() ____________________________________________________
+
+	void ScrollChart::setDisplayTime(int microsec)
+	{
+		limit(microsec, 100000, m_maxDisplayTime);
+
+		if (m_displayTime != microsec)
+		{
+			m_displayTime = microsec;
+			m_bFullRedrawRequested = true;
+		}
+	}
+
     //____ _fullRefreshOfChart() _______________________________________
 
     void ScrollChart::_fullRefreshOfChart()
