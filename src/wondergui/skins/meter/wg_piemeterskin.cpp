@@ -26,6 +26,8 @@
 #include <wg_util.h>
 #include <wg_skin.impl.h>
 
+#include <algorithm>
+
 namespace wg
 {
 
@@ -183,7 +185,7 @@ namespace wg
 				sliceSizes[nSlices++] = (m_maxRange-m_minRange)/2;
 			}
 
-			totalLength = m_minRange + abs(value - 0.5f) * (m_maxRange - m_minRange);
+			totalLength = m_minRange + std::abs(value - 0.5f) * (m_maxRange - m_minRange);
 
 			if( value < 0.5f || !m_emptyColor.isFullyTransparent() )
 				startPos = m_rangeStart - m_maxRange/2;
@@ -249,7 +251,7 @@ namespace wg
 			if (value > 0.f && value < 1.f)
 			{
 				sliceColors[nSlices] = m_emptyColor;
-				sliceSizes[nSlices++] = (0.5f - abs(value-0.5f) ) * (m_maxRange - m_minRange);
+				sliceSizes[nSlices++] = (0.5f - std::abs(value-0.5f) ) * (m_maxRange - m_minRange);
 			}
 
 			if( m_bStartFromCenter && value < 0.5f )
