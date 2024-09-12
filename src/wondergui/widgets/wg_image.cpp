@@ -83,6 +83,17 @@ namespace wg
 		}
 	}
 
+	//____ setImageTint() ______________________________________________________
+
+	void Image::setImageTint(HiColor tint)
+	{
+		if (tint != m_imageTint)
+		{
+			m_imageTint = tint;
+			_requestRender();
+		}
+	}
+
 	//____ _matchingHeight() _____________________________________________________
 
 	spx Image::_matchingHeight(spx width, int scale) const
@@ -154,9 +165,17 @@ namespace wg
 			RectSPX imgRect = ptsToSpx(m_rect, m_pSurface->scale());
 			
 			RectSPX dest = rectFromPolicy(m_sizePolicy, m_placement, content, imgRect.size() );
-			
+
+			bool bTint = (!m_imageTint.isUndefined() && m_imageTint != HiColor::White);
+
+			if( bTint )
+				pDevice->setTintColor(m_imageTint);
+
 			pDevice->setBlitSource(m_pSurface);
 			pDevice->stretchBlit( dest, imgRect );
+
+			if (bTint)
+				pDevice->setTintColor(HiColor::White);
 		}
 	}
 
@@ -171,9 +190,23 @@ namespace wg
 			RectSPX imgRect = ptsToSpx(m_rect, m_pSurface->scale());
 			
 			RectSPX dest = rectFromPolicy(m_sizePolicy, m_placement, content, imgRect.size() );
-			
-			if( Util::markTestStretchRect( ofs, m_pSurface, imgRect, dest, m_imageMarkAlpha ) )
-				return true;
+		
+			int imageAlpha = m_imageTint.isUndefined() ? 4096 : m_imageTint.a;
+
+			if (imageAlpha == 0)
+			{
+				// Avoid division by zero
+
+				if( m_imageMarkAlpha == 0 )
+					return true;
+			}
+			else
+			{
+				int opacityTreshold = m_imageMarkAlpha * 4096 / imageAlpha;
+
+				if (Util::markTestStretchRect(ofs, m_pSurface, imgRect, dest, opacityTreshold))
+					return true;
+			}
 		}
 
 		return Widget::_alphaTest(ofs);

@@ -56,8 +56,9 @@ namespace wg
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			Surface_p		image;
-			Rect			imageRect;
 			int				imageMarkAlpha = 1;
+			Rect			imageRect;
+			HiColor			imageTint;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
@@ -87,6 +88,9 @@ namespace wg
 		void				setImage( Surface * pSurface, const Rect& rect );	///< @brief Set image to display.
 		void				setImage( Surface * pSurface );						///< @brief Set image to display.
 
+		void				setImageTint(HiColor tint);
+		HiColor				imageTint() const { return m_imageTint; }
+
 		inline Surface_p	imageSurface() const;								///< @brief Get surface of image displayed.
 		inline Rect			imageRect() const;									///< @brief Get area of surface rectangle of image displayed.
 
@@ -111,10 +115,11 @@ namespace wg
 		{
 			m_pSurface	= bp.image;
 			m_rect = bp.imageRect;
+			m_imageTint = bp.imageTint;
 			m_imageMarkAlpha = bp.imageMarkAlpha;
 			m_sizePolicy = bp.sizePolicy;
 			m_placement = bp.placement;
-			
+
 			if( m_rect.isEmpty() && m_pSurface )
 				m_rect = m_pSurface->pointSize();
 		}
@@ -128,6 +133,7 @@ namespace wg
 
 		Surface_p		m_pSurface;
 		Rect			m_rect;
+		HiColor			m_imageTint = HiColor::Undefined;
 		int				m_imageMarkAlpha = 1;
 		SizePolicy2D	m_sizePolicy = SizePolicy2D::Stretch;
 		Placement		m_placement = Placement::Center;
