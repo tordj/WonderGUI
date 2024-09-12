@@ -58,7 +58,7 @@ namespace wg
 			Surface_p		image;
 			int				imageMarkAlpha = 1;
 			Rect			imageRect;
-			HiColor			imageTint;
+			HiColor			imageTint = HiColor::White;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
@@ -133,7 +133,7 @@ namespace wg
 
 		Surface_p		m_pSurface;
 		Rect			m_rect;
-		HiColor			m_imageTint = HiColor::Undefined;
+		HiColor			m_imageTint = HiColor::White;
 		int				m_imageMarkAlpha = 1;
 		SizePolicy2D	m_sizePolicy = SizePolicy2D::Stretch;
 		Placement		m_placement = Placement::Center;
