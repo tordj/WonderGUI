@@ -572,7 +572,7 @@ namespace wg
 			return;
 		}
 
-		GfxDevice::setTintColor(color);
+		GfxDeviceGen1::setTintColor(color);
 
 		m_tintInfo.flatTint[0] = color.r / 4096.f;
 		m_tintInfo.flatTint[1] = color.g / 4096.f;
@@ -596,7 +596,7 @@ namespace wg
 			return;
 		}
 
-		GfxDevice::setTintGradient(rect, gradient);
+		GfxDeviceGen1::setTintGradient(rect, gradient);
 
 		m_tintInfo.tintRect = (RectF) roundToPixels(rect);
 
@@ -643,7 +643,7 @@ namespace wg
 		// We don't need to write any new TintInfo here,
 		// flatTint variables contain same info and are in the right place already.
 
-		GfxDevice::clearTintGradient();
+		GfxDeviceGen1::clearTintGradient();
 
 		_endCommand();
 		_beginStateCommand(Command::ClearTintGradient, 0);
@@ -663,7 +663,7 @@ namespace wg
 			return false;
 		}
 
-		GfxDevice::setBlendMode(blendMode);
+		GfxDeviceGen1::setBlendMode(blendMode);
 
 		_endCommand();
 		_beginStateCommand(Command::SetBlendMode, 1);
@@ -726,7 +726,7 @@ namespace wg
 
 	void GlGfxDevice::setBlurbrush(Blurbrush * pBrush)
 	{
-		GfxDevice::setBlurbrush(pBrush);
+		GfxDeviceGen1::setBlurbrush(pBrush);
 		_endCommand();
 		_beginStateCommand(Command::SetBlurMatrices, 28);
 
