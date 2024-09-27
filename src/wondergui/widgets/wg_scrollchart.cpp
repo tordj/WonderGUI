@@ -70,6 +70,8 @@ namespace wg
         if (m_bScrolling)
         {
             m_bScrolling = false;
+            _requestFullRedraw();
+            _requestRender();
             _stopReceiveUpdates();
         }
     }
