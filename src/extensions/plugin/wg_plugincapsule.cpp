@@ -177,7 +177,7 @@ namespace wg
 	void PluginCapsule::_resize(const SizeSPX& size, int scale)
 	{
 		Widget::_resize(size, scale);
-		
+
 		if (m_pPluginRoot)
 			m_calls.resize(m_pPluginRoot, {size.w,size.h}, scale);
 	}
@@ -188,7 +188,7 @@ namespace wg
 	{
 		if (m_pPluginRoot)
 			m_calls.setState(m_pPluginRoot, * (wg_state*) &state);
-		
+
 		Widget::_setState(state);
 	}
 
@@ -198,7 +198,7 @@ namespace wg
 	{
 		if(!m_pPluginRoot)
 			return;
-		
+
 		if( !pMsg->hasSource() )
 		{
 			if( pMsg->type() == MsgType::KeyPress )
@@ -207,7 +207,7 @@ namespace wg
 				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 1, pMess->timestamp() );
 				return;
 			}
-	
+
 			if( pMsg->type() == MsgType::KeyRelease )
 			{
 				auto pMess = static_cast<KeyReleaseMsg*>(pMsg);
@@ -222,7 +222,7 @@ namespace wg
 
 	void PluginCapsule::_receive(Msg* pMsg)
 	{
-		
+
 		if(!m_pPluginRoot)
 		{
 			Widget::_receive(pMsg);
@@ -237,7 +237,7 @@ namespace wg
 				auto pMess = static_cast<InputMsg*>(pMsg);
 				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
 				m_calls.setPointerPos(m_pPluginRoot, { localPos.x, localPos.y }, pMess->timestamp() );
-				
+
 				break;
 			}
 
@@ -246,7 +246,7 @@ namespace wg
 				auto pMess = static_cast<InputMsg*>(pMsg);
 				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
 				m_calls.setPointerPos(m_pPluginRoot, { localPos.x, localPos.y }, pMess->timestamp() );
-				
+
 				break;
 			}
 
@@ -256,7 +256,7 @@ namespace wg
 				auto pMess = static_cast<InputMsg*>(pMsg);
 				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
 				m_calls.setPointerPos(m_pPluginRoot, { localPos.x, localPos.y }, pMess->timestamp() );
-				
+
 				break;
 			}
 
@@ -271,14 +271,14 @@ namespace wg
 				break;
 			}
 
-				
+
 			case MsgType::MousePress:
 			{
 				auto pMess = static_cast<MousePressMsg*>(pMsg);
 				m_calls.setButtonState(m_pPluginRoot, (int) pMess->button(), 1, pMess->timestamp() );
 				break;
 			}
-				
+
 			case MsgType::MouseRelease:
 			{
 				auto pMess = static_cast<MouseReleaseMsg*>(pMsg);
@@ -292,40 +292,40 @@ namespace wg
 				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 1, pMess->timestamp() );
 				break;
 			}
-	
+
 			case MsgType::KeyRelease:
 			{
 				auto pMess = static_cast<KeyReleaseMsg*>(pMsg);
 				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 0, pMess->timestamp() );
 				break;
 			}
-				
+
 			case MsgType::TextInput:
 			{
 				auto pMess = static_cast<TextInputMsg*>(pMsg);
 				String str = pMess->text();
-				
+
 				int maxSize = str.length()*4;
 				char * pDest = (char*) Base::memStackAlloc(maxSize);
-				
+
 				TextTool::getTextUTF8(str.chars(), pDest, maxSize);
-				
+
 				m_calls.putText(m_pPluginRoot,pDest);
 				Base::memStackFree(maxSize);
 				break;
 			}
-				
+
 			case MsgType::WheelRoll:
 			{
 				auto pMess = static_cast<WheelRollMsg*>(pMsg);
 				m_calls.wheelRoll(m_pPluginRoot, pMess->wheel(), pMess->distance(), pMess->invertScroll(), pMess->timestamp() );
 				break;
 			}
-				
+
 			default:
 				break;
 		}
-		
+
 		Widget::_receive( pMsg );
 	}
 
@@ -370,7 +370,7 @@ namespace wg
 
 	void PluginCapsule::_pluginRequestRender(const RectSPX& rect)
 	{
-		_requestRender();
+		_requestRender(rect);
 	}
 
 	//____ _pluginRequestResize() _______________________________________________
@@ -408,7 +408,7 @@ namespace wg
 		m_pPluginRoot = pPluginRoot;
 		m_calls = *pCalls;
 		_startReceiveUpdates();
-		
+
 		if(pPluginRoot)
 			m_calls.resize(pPluginRoot, {m_size.w,m_size.h}, m_scale);
 	}
