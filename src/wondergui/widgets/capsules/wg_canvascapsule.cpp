@@ -359,7 +359,6 @@ namespace wg
 			{
 				m_tintColorTransitionProgress = 0;
 				m_pTintColorTransition = nullptr;
-				m_tintColor = m_endTintColor;
 
 				if (m_tintColor != m_endTintColor)
 				{
