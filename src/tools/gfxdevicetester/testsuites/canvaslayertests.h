@@ -35,11 +35,12 @@ public:
 
 		CanvasLayers::Blueprint bp = WGBP(CanvasLayers,
 			_.baseLayer = 2,
-			_.layers = { CanvasLayers::LayerBP(PixelFormat::Alpha_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Subtract); pDevice->blit({0,0}); }),
-						 CanvasLayers::LayerBP(PixelFormat::BGRA_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Blend); pDevice->blit({0,0}); }),
-						 CanvasLayers::LayerBP(PixelFormat::Alpha_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Add);  pDevice->blit({0,0}); }),
-						 CanvasLayers::LayerBP(PixelFormat::BGRA_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Blend);  pDevice->blit({0,0}); })
-			});
+			_.layers = { 	{ PixelFormat::Alpha_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Subtract); pDevice->blit({0,0}); }},
+							{PixelFormat::BGRA_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Blend); pDevice->blit({0,0}); }},
+							{PixelFormat::Alpha_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Add);  pDevice->blit({0,0}); }},
+							{PixelFormat::BGRA_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Blend);  pDevice->blit({0,0}); }}
+			}
+		);
 
 /*		if (pDevice->isInstanceOf(PluginGfxDevice::TYPEINFO))
 		{
