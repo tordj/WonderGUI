@@ -894,7 +894,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 	// Preparations for both grid and wave drawing
 
 	WgRect waveCanvas = canvas - m_pixelPadding;
-	float sampleScale = waveCanvas.w / (m_lastSample - m_firstSample);
+    float sampleScale = (m_lastSample - m_firstSample == 0) ? 1.0f : waveCanvas.w / (m_lastSample - m_firstSample);
 
 	int   yOfs = m_valueLabelStyle.bLabelAtEnd ? canvas.y : canvas.y + canvas.h;
 	int   yOfs2 = m_sampleLabelStyle.bLabelAtEnd ? canvas.y : canvas.y + canvas.h;
