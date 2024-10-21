@@ -52,18 +52,6 @@ int wg_getRenderSegments(wg_obj edgemap)
 	return getPtr(edgemap)->renderSegments();
 }
 
-wg_color wg_edgemapColor(wg_obj edgemap, int segment)
-{
-	auto color = getPtr(edgemap)->color(segment);
-	return { color.b, color.g, color.r, color.a };
-}
-
-wg_gradient wg_edgemapGradient(wg_obj edgemap, int segment)
-{
-	auto gradient = getPtr(edgemap)->gradient(segment);
-	return *(wg_gradient*)&gradient;
-}
-
 int wg_edgemapSegments(wg_obj edgemap)
 {
 	return getPtr(edgemap)->segments();
