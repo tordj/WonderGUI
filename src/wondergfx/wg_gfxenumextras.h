@@ -81,6 +81,7 @@ namespace wg
 	const static int             GfxChunkId_size     = (int)GfxChunkId::CreateSurface + 1;
 
 	const char * toString(TintMode);
+	const char * toString(EdgemapPalette);
 	const char * toString(BlendMode);
 	const char * toString(Placement);
 	const char * toString(Direction);
