@@ -1465,7 +1465,7 @@ namespace wg
 
 	void GlGfxDevice::drawEdgemap(CoordSPX dest, Edgemap* pEdgemap)
 	{
-/*
+
 		if (pEdgemap->typeInfo() != GlEdgemap::TYPEINFO)
 		{
 			//TODO: Throw an error.
@@ -1474,18 +1474,30 @@ namespace wg
 
 		auto pWave = static_cast<GlEdgemap*>(pEdgemap);
 
+		TintMode mode = TintMode::Flat;
 
-		_transformDrawSegments({ dest, pWave->m_size * 64 }, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
-			pWave->m_size.w + 1, pWave->m_pSamples, pWave->m_nbSegments - 1, pWave->m_tintMode,
+		if (pEdgemap->hasHorizontalTint() && pEdgemap->hasVerticalTint())
+			mode = TintMode::GradientXY;
+		else if (pEdgemap->hasHorizontalTint())
+			mode = TintMode::GradientX;
+		else if (pEdgemap->hasVerticalTint())
+			mode = TintMode::GradientY;
+
+		HiColor		palette[Edgemap::maxSegments * 4];
+
+		pEdgemap->exportLegacyPalette(palette);
+
+		_transformDrawSegments({ dest, pWave->m_size * 64 }, pWave->m_nbRenderSegments, palette,
+			pWave->m_size.w + 1, pWave->m_pSamples, pWave->m_nbSegments - 1, mode,
 			s_blitFlipTransforms[(int)GfxFlip::None]);
-*/
+
 	}
 
 	//____ flipDrawEdgemap() __________________________________________________________
 
 	void GlGfxDevice::flipDrawEdgemap(CoordSPX destPos, Edgemap* pEdgemap, GfxFlip flip)
 	{
-/*
+
 		if (pEdgemap->typeInfo() != GlEdgemap::TYPEINFO)
 		{
 			//TODO: Throw an error.
@@ -1502,10 +1514,23 @@ namespace wg
 		dest.w = pWave->m_size.w * 64 * abs(transform[0][0]) + pWave->m_size.h * 64 * abs(transform[1][0]);
 		dest.h = pWave->m_size.w * 64 * abs(transform[0][1]) + pWave->m_size.h * 64 * abs(transform[1][1]);
 
-		_transformDrawSegments(dest, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
-			pWave->m_size.w + 1, pWave->m_pSamples, pWave->m_nbSegments - 1, pWave->m_tintMode,
+		TintMode mode = TintMode::Flat;
+
+		if (pEdgemap->hasHorizontalTint() && pEdgemap->hasVerticalTint())
+			mode = TintMode::GradientXY;
+		else if (pEdgemap->hasHorizontalTint())
+			mode = TintMode::GradientX;
+		else if (pEdgemap->hasVerticalTint())
+			mode = TintMode::GradientY;
+
+		HiColor		palette[Edgemap::maxSegments * 4];
+
+		pEdgemap->exportLegacyPalette(palette);
+
+		_transformDrawSegments(dest, pWave->m_nbRenderSegments, palette,
+			pWave->m_size.w + 1, pWave->m_pSamples, pWave->m_nbSegments - 1, mode,
 			transform);
-*/
+
 	}
 
 	//____ _transformBlitSimple() ______________________________________________________
@@ -2561,6 +2586,7 @@ namespace wg
 			break;
 
         case BlendMode::Undefined:
+		case BlendMode::BlendFixedColor:		// Defaults to Blend for BlendFixedColor which can not be implemented easily.
 		case BlendMode::Blend:
 			glBlendEquation(GL_FUNC_ADD);
 			glEnable(GL_BLEND);
