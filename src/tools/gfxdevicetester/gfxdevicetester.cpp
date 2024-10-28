@@ -196,6 +196,7 @@ void GfxDeviceTester::setup_testdevices()
 	// Gen2 with GlBackend
 
 	{
+/*
 		auto pBackend = GlBackend::create();
 
 //		auto pBackendLogger = BackendLogger::create(std::cout, pBackend);
@@ -207,7 +208,9 @@ void GfxDeviceTester::setup_testdevices()
 		auto pGen2GlDevice = Device::create("Gen2 OpenGL (GlBackend)", pGen2GfxDevice, CanvasRef::None, pCanvasSurface, this);
 
 //		g_testdevices.push_back(pGen2GlDevice);
-	}
+ */
+
+ }
 
 
 	// Native
