@@ -54,27 +54,11 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-
 		//.____ Appearance ____________________________________________________
 
-		HiColor		color(int segment) const override;
-		Gradient	gradient(int segment) const override;
+		virtual bool	setRenderSegments(int nSegments);
 
-
-		//.____ Content _______________________________________________________
-
-		bool 		importSamples(	SampleOrigo origo, const spx* pSource, int edgeBegin, int edgeEnd,
-									int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0) override;
-
-		bool 		importSamples(	SampleOrigo origo, const float* pSource, int edgeBegin, int edgeEnd,
-									int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0) override;
-
-		bool 		exportSamples(	SampleOrigo origo, spx* pDestination, int edgeBegin, int edgeEnd,
-									int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0) override;
-
-		bool 		exportSamples(	SampleOrigo origo, float* pDestination, int edgeBegin, int edgeEnd,
-									int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0) override;
-
+		
 		//.____ Misc _________________________________________________________
 		 
 		inline wg_obj		cObject() { return m_cEdgemap; }
@@ -83,8 +67,10 @@ namespace wg
 		PluginEdgemap( wg_obj object );
 		~PluginEdgemap();
 
-		wg_obj		m_cEdgemap;
+		void	_samplesUpdated(int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd) override;
+		void	_colorsUpdated(int beginColor, int endColor) override;
 
+		wg_obj		m_cEdgemap;
 	};
 } // namespace wg
 #endif //WG_PLUGINEDGEMAP_DOT_H
