@@ -66,52 +66,36 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ color() ____________________________________________________________
+	//____ setRenderSegments() ___________________________________________________
 
-	HiColor PluginEdgemap::color(int segment) const
+	bool PluginEdgemap::setRenderSegments(int nSegments)
 	{
-		auto color = PluginCalls::edgemap->edgemapColor(m_cEdgemap, segment);
-		return *(HiColor*)&color;
+		if( !Edgemap::setRenderSegments(nSegments) )
+		   return false;
+
+		   PluginCalls::edgemap->setRenderSegments(m_cEdgemap, nSegments);
+		return true;
 	}
 
-	//____ gradient() _________________________________________________________
+	//____ _samplesUpdated() _____________________________________________________
 
-	Gradient PluginEdgemap::gradient(int segment) const
+	void PluginEdgemap::_samplesUpdated(int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd)
 	{
-		auto gradient = PluginCalls::edgemap->edgemapGradient(m_cEdgemap, segment);
-		return *(Gradient*)&gradient;
+		int samplePitch = m_nbSegments -1;
+		
+		spx * pSource = m_pSamples + edgeBegin + sampleBegin * samplePitch;
+		
+		PluginCalls::edgemap->importSpxSamples(m_cEdgemap, WG_WAVEORIGO_TOP, pSource, edgeBegin, edgeEnd,
+			sampleBegin, sampleEnd, 1, samplePitch);
 	}
 
-	//____ importSamples() ____________________________________________________
+	//____ _colorsUpdated() ______________________________________________________
 
-	bool PluginEdgemap::importSamples(SampleOrigo origo, const spx* pSource, int edgeBegin, int edgeEnd,
-		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
+	void PluginEdgemap::_colorsUpdated(int beginColor, int endColor)
 	{
-		return (bool) PluginCalls::edgemap->importSpxSamples(m_cEdgemap, (wg_sampleOrigo)origo, pSource, edgeBegin, edgeEnd,
-			sampleBegin, sampleEnd, edgePitch, samplePitch);
-	}
-
-	bool PluginEdgemap::importSamples(SampleOrigo origo, const float* pSource, int edgeBegin, int edgeEnd,
-		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
-	{
-		return (bool)PluginCalls::edgemap->importFloatSamples(m_cEdgemap, (wg_sampleOrigo)origo, pSource, edgeBegin, edgeEnd,
-			sampleBegin, sampleEnd, edgePitch, samplePitch);
-	}
-
-	//____ exportSamples() ____________________________________________________
-
-	bool PluginEdgemap::exportSamples(SampleOrigo origo, spx* pDestination, int edgeBegin, int edgeEnd,
-		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
-	{
-		return (bool)PluginCalls::edgemap->exportSpxSamples(m_cEdgemap, (wg_sampleOrigo)origo, pDestination, edgeBegin, edgeEnd,
-			sampleBegin, sampleEnd, edgePitch, samplePitch);
-	}
-
-	bool PluginEdgemap::exportSamples(SampleOrigo origo, float* pDestination, int edgeBegin, int edgeEnd,
-		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
-	{
-		return (bool)PluginCalls::edgemap->exportFloatSamples(m_cEdgemap, (wg_sampleOrigo)origo, pDestination, edgeBegin, edgeEnd,
-			sampleBegin, sampleEnd, edgePitch, samplePitch);
+		HiColor * pColors = m_pPalette + beginColor;
+		
+		PluginCalls::edgemap->importPaletteEntries( m_cEdgemap, beginColor, endColor, (const wg_color*) pColors);
 	}
 
 
