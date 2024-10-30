@@ -106,7 +106,7 @@ namespace wg
 
 	//____ setCanvasInfoCallback() ________________________________________________
 
-	void StreamPlayer::setCanvasInfoCallback( std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>& callback )
+	void StreamPlayer::setCanvasInfoCallback( const std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>& callback )
 	{
 		m_canvasInfoCallback = callback;
 	}

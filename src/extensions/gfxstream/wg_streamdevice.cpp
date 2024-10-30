@@ -222,7 +222,7 @@ namespace wg
 
 	void StreamDevice::encodeCanvasList()
 	{
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::CanvasList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(m_definedCanvases.size()*14) };
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::CanvasList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(m_definedCanvases.size()*14)+2 };
 
 		(*m_pEncoder) << (uint16_t) m_definedCanvases.size();
 
@@ -254,7 +254,6 @@ namespace wg
 
 		return m_pEdgemapFactory;
 	}
-
 
     //____ setClipList() _________________________________________________________
 

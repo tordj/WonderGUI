@@ -142,6 +142,30 @@ namespace wg
 				m_charStream << "    version     = " << (version / 256) << "." << (version%256) << std::endl;
 				break;
 
+			case GfxChunkId::CanvasList:
+			{
+				uint16_t nbCanvases;
+
+				*m_pDecoder >> nbCanvases;
+
+				for( int i = 0 ; i < nbCanvases ; i++ )
+				{
+					uint16_t 	ref;
+					SizeSPX		size;
+					uint16_t	scale;
+					PixelFormat	format;
+
+					*m_pDecoder >> ref;
+					*m_pDecoder >> size;
+					*m_pDecoder >> scale;
+					*m_pDecoder >> format;
+
+					m_charStream << "    ref = " << toString((CanvasRef) ref) << ", size = (" << size.w << "," << size.h << "), scale = " << scale << ", format = " << toString(format) << std::endl;
+				}
+
+				break;
+			}
+
 			case GfxChunkId::BeginRender:
 				break;
 

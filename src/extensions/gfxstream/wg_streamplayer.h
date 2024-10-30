@@ -66,7 +66,7 @@ namespace wg
 		std::tuple<int, const RectI*> dirtyRects(CanvasRef canvas);
 		void	clearDirtyRects();
 
-		void	setCanvasInfoCallback( std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>& callback );
+		void	setCanvasInfoCallback( const std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>& callback );
 		
 		void	reset();
 		

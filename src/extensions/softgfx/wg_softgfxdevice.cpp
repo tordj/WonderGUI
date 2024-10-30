@@ -2511,7 +2511,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			// See if we can skip the expensive source clipping....
 
 			bool bClipSource = false;
-			if (m_bClipSource)
+//			if (m_bClipSource)
 			{
 				BinalSize clipMax = (static_cast<BinalSize>(m_pBlitSource->m_size))*BINAL_MUL;
 				
