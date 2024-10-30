@@ -8,6 +8,9 @@
 #include <wg_softkernels_rgb565be_base.h>
 #include <wg_softkernels_rgb565be_extras.h>
 
+#include <wg_softkernels_default.h>
+
+
 #include <wg_lineargfxdevice.h>
 
 #include <string>
@@ -826,7 +829,7 @@ bool MyApp::loadStream(std::string path)
 
 	// Setup streamwrapper and pump
 	
-
+/*
 	auto pStreamGfxDevice = LinearGfxDevice::create(
 		[this](CanvasRef ref, int bytes)
 		{
@@ -837,7 +840,11 @@ bool MyApp::loadStream(std::string path)
 		},
 		[this](CanvasRef ref, int nSegments, const LinearGfxDevice::Segment * pSegments)
 		{
-			Surface_p pScreen = m_screens[int(ref) - int(CanvasRef::Default)];
+			int ofs = 0;
+			while( m_screens[ofs]->identity() != (int) ref )
+				ofs++;
+
+			Surface_p pScreen = m_screens[ofs];
 
 			RecordedSteps rec;
 			
@@ -880,11 +887,12 @@ bool MyApp::loadStream(std::string path)
 				m_recordedSteps.push_back(rec);
 			}
 		} );
-	
-//	auto pStreamGfxDevice = SoftGfxDevice::create();
+*/
+	auto pStreamGfxDevice = SoftGfxDevice::create();
 	
 //	auto pStreamGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::defaultGfxDevice());
-	
+
+	addDefaultSoftKernels(pStreamGfxDevice);
 
 	addBaseSoftKernelsForRGB555BECanvas(pStreamGfxDevice);
 	addExtraSoftKernelsForRGB555BECanvas(pStreamGfxDevice);
@@ -899,12 +907,40 @@ bool MyApp::loadStream(std::string path)
 	m_pStreamPlayer	= StreamPlayer::create( m_pStreamGfxDevice, m_pStreamSurfaceFactory, pStreamGfxDevice->edgemapFactory() );
 	m_pStreamPlayer->setStoreDirtyRects(true);
 	m_pStreamPlayer->setMaxDirtyRects(10000);
-	
+	m_pStreamPlayer->setCanvasInfoCallback([this](const CanvasInfo * pBegin, const CanvasInfo * pEnd) { setupScreens(pBegin,pEnd); } );
+
+
 	m_pStreamPump = StreamPump::create( StreamSource_p(), StreamSink_p(m_pStreamPlayer.rawPtr(),m_pStreamPlayer->input) );
 	
-	//
-	
-	setupScreens();
+	// Pump through first chunks to get ID
+
+	m_screens.clear();
+
+	auto pWrapper = StreamWrapper::create( m_pStreamBlob->begin(), m_pStreamBlob->end() );
+
+	m_pStreamPump->setInput({pWrapper, pWrapper->output});
+
+	bool bKeepProcessing = true;
+	while( bKeepProcessing )
+	{
+		auto chunkId = m_pStreamPump->peekChunk();
+		switch( chunkId )
+		{
+			case GfxChunkId::ProtocolVersion:
+			case GfxChunkId::CanvasList:
+				m_pStreamPump->pumpChunk();
+				break;
+
+			default:
+				bKeepProcessing = false;
+				break;
+		}
+	}
+
+	m_pStreamPlayer->setCanvasInfoCallback(nullptr);
+
+	if( m_screens.empty() )
+		setupScreens();
 	updateGUIAfterReload();
 	m_currentFrame = 100000000;			// To avoid early out in setFrame().
 	setFrame(0);
@@ -914,10 +950,32 @@ bool MyApp::loadStream(std::string path)
 
 //____ setupScreens() _________________________________________________________
 
+void MyApp::setupScreens(const CanvasInfo* pBeg, const CanvasInfo* pEnd)
+{
+	SurfaceFactory_p	pFactory = GfxBase::defaultSurfaceFactory();
+
+	// Ugly typecast! Will only work with SoftGfxDevice!
+
+	LinearGfxDevice_p		pLinearGfxDevice = wg_dynamic_cast<LinearGfxDevice_p>(m_pStreamGfxDevice);
+	SoftGfxDevice_p			pSoftGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(m_pStreamGfxDevice);
+
+	for( auto pCanvas = pBeg ; pCanvas < pEnd ; pCanvas++ )
+	{
+		auto pSurf = pFactory->createSurface({ .format = pCanvas->format, .identity = int(pCanvas->ref), .scale = pCanvas->scale, .size = pCanvas->size/64 });
+		pSurf->fill(HiColor::Black);
+
+		m_screens.push_back(pSurf);
+
+		if( pLinearGfxDevice )
+			pLinearGfxDevice->defineCanvas(pCanvas->ref, pCanvas->size, pCanvas->format, pCanvas->scale );
+		else
+			pSoftGfxDevice->defineCanvas(pCanvas->ref, wg_dynamic_cast<SoftSurface_p>(pSurf));
+	}
+}
+
+
 void MyApp::setupScreens()
 {
-	m_screens.clear();
-
 	SurfaceFactory_p	pFactory = GfxBase::defaultSurfaceFactory();
 
 	// Ugly typecast! Will only work with SoftGfxDevice!
@@ -1227,13 +1285,17 @@ void MyApp::openRecordedStepsWindow()
 void MyApp::_resetStream()
 {
 	m_pStreamPlayer->reset();
+
+	auto pWrapper = StreamWrapper::create( m_pStreamBlob->begin(), m_pStreamBlob->end()  );
+	m_pStreamPump->setInput({pWrapper, pWrapper->output});
+	m_pStreamPump->pumpUntilFrame();
 }
 
 //____ _playFrames() __________________________________________________________
 
 void MyApp::_playFrames( int begin, int end, bool bOptimize )
 {
-	uint8_t * pBegin = begin == 0 ? (uint8_t*) m_pStreamBlob->begin() : (uint8_t*) m_frames[begin];
+	uint8_t * pBegin = m_frames[begin];
 	uint8_t * pEnd = end == m_frames.size() ? (uint8_t*) m_pStreamBlob->end() : (uint8_t*) m_frames[end];
 
 	auto pWrapper = StreamWrapper::create( pBegin, pEnd );
@@ -1255,7 +1317,7 @@ void MyApp::_playFrames( int begin, int end, bool bOptimize )
 
 void MyApp::_logFrames( int begin, int end, bool bOptimize, TextEditor * pDisplay )
 {
-	uint8_t * pBegin = begin == 0 ? (uint8_t*) m_pStreamBlob->begin() : (uint8_t*) m_frames[begin];
+	uint8_t * pBegin = m_frames[begin];
 	uint8_t * pEnd = end == m_frames.size() ? (uint8_t*) m_pStreamBlob->end() : (uint8_t*) m_frames[end];
 
 	auto pWrapper = StreamWrapper::create( pBegin, pEnd );

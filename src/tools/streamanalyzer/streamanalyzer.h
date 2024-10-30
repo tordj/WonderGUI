@@ -31,6 +31,8 @@ public:
 	bool		loadStream(string path);
 
 	void		setupScreens();
+	void		setupScreens(const CanvasInfo* pBeg, const CanvasInfo* pEnd);
+
 	void		updateGUIAfterReload();
 
 	void		setFrame( int frame );
