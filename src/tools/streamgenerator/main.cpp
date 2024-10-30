@@ -90,7 +90,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 640, height = 480;
+	int posX = 100, posY = 100, width = 1024, height = 600;
 	SDL_Window * pWin = SDL_CreateWindow("WonderGUI Stream Generator", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -238,11 +238,11 @@ int main ( int argc, char** argv )
 
     auto pOutput1 = Image::create();
     pOutput1->setSkin( BoxSkin::create(2, Color8::Black, Color8::HotPink) );
-	pBasePanel->slots.pushBack(pOutput1, { .func = [](Widget* pWidget, Size sz) { return Rect(10,10,244,244); } });
+	pBasePanel->slots.pushBack(pOutput1, { .func = [](Widget* pWidget, Size sz) { return Rect(10,10,804,484); } });
 
 	auto pOutput2 = Image::create();
 	pOutput2->setSkin( BoxSkin::create(2, Color8::Black, Color8::HotPink) );
-	pBasePanel->slots.pushBack(pOutput2, { .func = [](Widget* pWidget, Size sz) { return Rect(244 + 20,10,244,244); } });
+	pBasePanel->slots.pushBack(pOutput2, { .func = [](Widget* pWidget, Size sz) { return Rect(244 + 20,10,804,484); } });
 
 
 	//------------------------------------------------------
@@ -250,18 +250,23 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
     
 	auto pStreamOutputCanvas1 = SoftSurface::create( WGBP(Surface,
-														  _.size = {240,240},
+														  _.size = {800,480},
 														  _.format = PixelFormat::BGRA_8,
 														  _.canvas = true) );
+
+/*
 	auto pStreamOutputCanvas2 = SoftSurface::create( WGBP(Surface,
-														  _.size = {240,240},
+														  _.size = {800,480},
 														  _.format = PixelFormat::BGRA_8,
 														  _.canvas = true) );
+ */
 
 	pGfxDevice->defineCanvas(CanvasRef::Canvas_1, pStreamOutputCanvas1);
-	pGfxDevice->defineCanvas(CanvasRef::Canvas_2, pStreamOutputCanvas2);
+//	pGfxDevice->defineCanvas(CanvasRef::Canvas_2, pStreamOutputCanvas2);
 
-    
+
+
+
 //	auto pStreamPlug = GfxStreamPlug::create();
 
 //	auto pGfxPlayer = StreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create());
@@ -309,8 +314,8 @@ int main ( int argc, char** argv )
 	// StreamGfxDevice and StreamSurfaceFactory feeding encoder
 
 	auto pStreamDevice = StreamDevice::create(pEncoder);
-    pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {240,240}, PixelFormat::Undefined );
-	pStreamDevice->defineCanvas(CanvasRef::Canvas_2, {240,240}, PixelFormat::Undefined );
+    pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {800,480}, PixelFormat::Undefined );
+//	pStreamDevice->defineCanvas(CanvasRef::Canvas_2, {240,240}, PixelFormat::Undefined );
 
 	auto pSurfaceFactory = StreamSurfaceFactory::create(pEncoder);
 
@@ -324,6 +329,8 @@ int main ( int argc, char** argv )
     //------------------------------------------------------
     // Setup stream saving
     //------------------------------------------------------
+
+	pStreamDevice->encodeCanvasList();
 
 /*
     char * pBigBuffer = new char[10000000];
@@ -343,8 +350,8 @@ int main ( int argc, char** argv )
 //   playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
 //	  playRectangleDanceDualScreen( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
 //    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
-    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
-//	playBounceRects( pStreamDevice, CanvasRef::Canvas_1 );
+//    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+	playBounceRects( pStreamDevice, CanvasRef::Canvas_1 );
 //	playDualScreenBounceRects( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
 
 //	playImageStreamingTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
@@ -414,8 +421,8 @@ int main ( int argc, char** argv )
         pOutput1->setImage(nullptr);
         pOutput1->setImage(pStreamOutputCanvas1);
 
-		pOutput2->setImage(nullptr);
-		pOutput2->setImage(pStreamOutputCanvas2);
+//		pOutput2->setImage(nullptr);
+//		pOutput2->setImage(pStreamOutputCanvas2);
 
 		
 		SDL_LockSurface(pWinSurf);
@@ -426,7 +433,7 @@ int main ( int argc, char** argv )
 		const RectI	* pRects1, *pRects2;
 		
 		std::tie(nRects1,pRects1) = pStreamPlayer->dirtyRects(wg::CanvasRef::Canvas_1);
-		std::tie(nRects2,pRects2) = pStreamPlayer->dirtyRects(wg::CanvasRef::Canvas_2);
+//		std::tie(nRects2,pRects2) = pStreamPlayer->dirtyRects(wg::CanvasRef::Canvas_2);
 
 		
 		
@@ -714,8 +721,8 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
     
     Surface_p pOldCanvas;
     
-    SizeI backCanvasSize( 256,256 );
-    
+    SizeI backCanvasSize( 800,480 );
+
     while (ticker < length)
     {
 		auto pCanvas = pFactory->createSurface( WGBP(Surface, _.size = backCanvasSize, _.format = PixelFormat::RGB_555_bigendian, _.canvas = true ) );
