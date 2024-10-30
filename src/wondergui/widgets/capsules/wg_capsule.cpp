@@ -165,6 +165,11 @@ namespace wg
 		if ( slot._widget())
 		{
 			SizeSPX sz = size - m_skin.contentBorderSize(scale);
+			// Make sure size isn't negative
+			if (sz.w < 0)
+				sz.w = 0;
+			if (sz.h < 0)
+				sz.h = 0;
 			slot._widget()->_resize(sz, scale);
 		}
 	}

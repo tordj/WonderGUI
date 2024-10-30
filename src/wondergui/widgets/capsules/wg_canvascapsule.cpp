@@ -62,13 +62,13 @@ namespace wg
 		{
 			SizeSPX oldBorderSize = m_skin.contentBorderSize(m_scale);
 			SizeSPX newBorderSize = pSkin ? pSkin->_contentBorderSize(m_scale) : SizeSPX();
-			
+
 			if( oldBorderSize != newBorderSize )
 			{
 				_setCanvasSize( _contentRect() );
 			}
 		}
-		
+
 		Capsule::setSkin(pSkin);
 	}
 
@@ -97,7 +97,7 @@ namespace wg
 				m_pTintColorTransition = nullptr;
 				m_tintColor = color;
 				_requestRender();
-			}	
+			}
 		}
 	}
 
@@ -126,7 +126,7 @@ namespace wg
 				m_gradient = gradient;
 				_requestRender();
 			}
-			
+
 		}
 	}
 
@@ -233,10 +233,10 @@ namespace wg
 		if( m_bScaleCanvas && !slot.isEmpty() )
 		{
 			SizeSPX border = m_skin.contentBorderSize(scale);
-			
+
 			spx givenWidth = width - border.w;
 			SizeSPX defSize = slot._widget()->_defaultSize(scale);
-			
+
 			spx wantedHeight = align(spx(int64_t(defSize.h * givenWidth) / defSize.w));
 			return wantedHeight + border.h;
 		}
@@ -251,10 +251,10 @@ namespace wg
 		if( m_bScaleCanvas && !slot.isEmpty() )
 		{
 			SizeSPX border = m_skin.contentBorderSize(scale);
-			
+
 			spx givenHeight = height - border.h;
 			SizeSPX defSize = slot._widget()->_defaultSize(scale);
-			
+
 			spx wantedWidth = align( spx(int64_t(defSize.w * givenHeight) / defSize.h));
 			return wantedWidth + border.w;
 		}
@@ -306,9 +306,9 @@ namespace wg
 			m_patches.clear();
 			m_patches.add(m_canvasSize);
 		}
-		
+
 		// Render children into canvas surface
-		
+
 		if (!m_patches.isEmpty())
 		{
 
@@ -324,7 +324,7 @@ namespace wg
 				if( canvasDesc.A_mask != 0 )
 					clearColor = HiColor::Transparent;
 			}
-						
+
 			if( clearColor != HiColor::Undefined )
 			{
 				pDevice->setBlendMode(BlendMode::Replace);
@@ -333,7 +333,7 @@ namespace wg
 			}
 
 			//
-			
+
 			RectSPX canvas = { 0,0, m_canvasSize };
 			slot._widget()->_render(pDevice, canvas, canvas);
 
@@ -359,7 +359,6 @@ namespace wg
 			{
 				m_tintColorTransitionProgress = 0;
 				m_pTintColorTransition = nullptr;
-				m_tintColor = m_endTintColor;
 
 				if (m_tintColor != m_endTintColor)
 				{
@@ -424,26 +423,26 @@ namespace wg
 	void CanvasCapsule::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
 		// Render our canvas content
-		
+
 		_renderCanvas(pDevice);
 
 		//
-		
+
 		RectSPX contentRect = _contentRect(_canvas);
 		RectSPX canvasArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
 		RectSPX glowRect = m_bSkinAroundCanvas ? canvasArea : contentRect;
-		
+
 		if( m_bSkinAroundCanvas )
 			m_skin.render(pDevice, canvasArea + m_skin.contentBorder(m_scale, m_state), m_scale, m_state);
 		else
 			m_skin.render(pDevice, _canvas, m_scale, m_state);
 
-				
+
 		// Blit our canvas
 
 		int		rl = pDevice->renderLayer();
 		BlendMode bm = pDevice->blendMode();
-		HiColor c = pDevice->tintColor();	
+		HiColor c = pDevice->tintColor();
 
 		if (m_renderLayer != -1)
 			pDevice->setRenderLayer(m_renderLayer);
@@ -462,7 +461,7 @@ namespace wg
 		pDevice->stretchBlit(canvasArea);
 /*
 		// Debug code
- 
+
 		Skin_p pOutline1 = BoxSkin::create( WGBP(BoxSkin, _.outlineColor = Color::Green, _.outlineThickness = 1.f, _.color = Color::Transparent ));
 
 		pOutline1->_render(pDevice, _canvas, m_scale, m_state );
@@ -499,7 +498,7 @@ namespace wg
 			m_size = size;
 			m_scale = scale;
 		}
-	
+
 		glow._setSize(size,scale);
 	}
 
@@ -508,7 +507,7 @@ namespace wg
 	void CanvasCapsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip )
 	{
 		RectSPX skinRect = geo;
-		
+
 		RectSPX contentRect = _contentRect(geo);
 		RectSPX canvasArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
 
@@ -516,7 +515,7 @@ namespace wg
 			skinRect = canvasArea + m_skin.contentBorder(m_scale, m_state);
 
 		RectSPX coverage = m_skin.coverage(skinRect, m_scale, m_state);
-		
+
 		patches.sub( RectSPX::overlap(coverage,clip) );
 
 		if( coverage.contains(_contentRect(geo)) )
@@ -524,12 +523,12 @@ namespace wg
 
 
 		// We can't mask against canvas content if canvas is applied with some transparency.
-		
+
 		if( m_tintColor.a != 4096 || (m_gradient.isValid() && !m_gradient.isOpaque()) )
 			return;
 
 		//
-		
+
 		if( slot._widget() )
 		{
 			if( Util::pixelFormatToDescription(m_canvasFormat).A_mask == 0 )
@@ -542,7 +541,7 @@ namespace wg
 
 
 	//____ _releaseChild() _______________________________________________________
-	
+
 	void CanvasCapsule::_releaseChild( StaticSlot * pSlot )
 	{
 		Capsule::_releaseChild(pSlot);
@@ -572,7 +571,7 @@ namespace wg
 					Widget * pWidget = slot._widget();
 
 					CoordSPX ofsInCanvas = (ofs - geo.pos()) * (m_canvasSize.w / (float) geo.w);
-					
+
 					if (pWidget->isContainer())
 					{
 						Widget * pRes = static_cast<Container*>(pWidget)->_findWidget(ofsInCanvas, mode);
@@ -583,7 +582,7 @@ namespace wg
 						return pWidget;
 				}
 			}
-		
+
 			// Check against ourselves
 
 			if( mode == SearchMode::Geometry || _markTest(ofs) )
@@ -602,12 +601,13 @@ namespace wg
 		RectSPX dirt;
 
 		RectSPX contentRect = _contentRect();
-		
+
 		if( m_bScaleCanvas )
 		{
-			float scaleFactor = std::min( { 1.f, contentRect.w / (float) m_canvasSize.w, contentRect.h / (float) m_canvasSize.h } );
+			float scaleFactor = std::min({contentRect.w / (float)m_canvasSize.w, contentRect.h / (float)m_canvasSize.h});
+
 			dirt = alignUp(rect*scaleFactor);
-			
+
 			dirt += _canvasWindow(contentRect).pos();
 		}
 		else
@@ -716,13 +716,13 @@ namespace wg
 		else
 			return _toLocal(rect - _slotGeo(pSlot).pos());
 	}
-			
+
 	//____ _globalPtsToChildLocalSpx() ___________________________________________
 
 	RectSPX CanvasCapsule::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
 	{
 		RectSPX rectSPX = m_pHolder ? m_pHolder->_globalPtsToChildLocalSpx(m_pSlot, rect) : Util::align(Util::ptsToSpx(rect, m_scale));
-		
+
 		if (m_bScaleCanvas)
 		{
 			RectSPX window = _canvasWindow(_contentRect(m_size));
@@ -743,7 +743,7 @@ namespace wg
 	Rect CanvasCapsule::_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& _rect) const
 	{
 		RectSPX rect;
-		
+
 		if (m_bScaleCanvas)
 		{
 			RectSPX window = _canvasWindow(_contentRect(m_size));
@@ -754,7 +754,7 @@ namespace wg
 		}
 		else
 			rect = _rect + _slotGeo(pSlot).pos();
-		
+
 		if( m_pHolder )
 			return m_pHolder->_childLocalSpxToGlobalPts( m_pSlot, rect );
 		else
@@ -766,9 +766,9 @@ namespace wg
 	RectSPX CanvasCapsule::_canvasWindow( RectSPX window ) const
 	{
 		float scaleFactor = std::min( { window.w / (float) m_canvasSize.w, window.h / (float) m_canvasSize.h } );
-		
+
 		SizeSPX canvasInWindowSize = align(SizeSPX( m_canvasSize * scaleFactor ));
-		
+
 		return Util::placementToRect(m_placement, window.size(), canvasInWindowSize) + window.pos();
 	}
 

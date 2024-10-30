@@ -364,7 +364,7 @@ namespace wg
 
 		pEntry->m_samples.push_back(spl);
 		
-		spl.timestamp = m_latestTimestamp - m_latency;
+		spl.timestamp = m_latestTimestamp;
 		pEntry->m_samples.push_back(spl);
 	}
 
