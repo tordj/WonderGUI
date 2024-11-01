@@ -55,8 +55,8 @@ private:
 	wg::Widget_p	_buildLabeledList(int nColumns, std::initializer_list < std::pair<std::string, int>> list);
 	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<KernelDB::BlitType> blitTypes, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
 	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<wg::BlendMode> blendModes, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
-	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<wg::TintMode> blendModes, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
-	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<wg::PixelFormat> blendModes, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
+	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<wg::TintMode> tintModes, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
+	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<wg::PixelFormat> pixelFormats, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
 	wg::Widget_p	_buildHeaderWithCloseButton(std::string title, std::function<void(wg::Msg*)> pressCallback);
 
 	void			_refreshSummary();
