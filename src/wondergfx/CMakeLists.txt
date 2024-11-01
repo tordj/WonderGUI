@@ -85,6 +85,8 @@ set( SOURCES
 	c-api/wg_c_gradient.h
 	c-api/wg_c_internal.cpp
 	c-api/wg_c_internal.h
+	c-api/wg_c_patches.cpp
+	c-api/wg_c_patches.h
 	c-api/wg_c_printer.cpp
 	c-api/wg_c_printer.h
 	c-api/wg_c_surface.cpp

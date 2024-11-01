@@ -57,9 +57,6 @@ public:
 	void			clip( const WgRect& clip );
 	WgRect			bounds() const;
 
-	int				repair();															// Fixes any overlap that might have resulted from Push()
-	int				optimize();															// Combines small patches into larger ones where possible
-
 	const WgRect *	begin() const { return m_pFirst; }
 	const WgRect *	end() const { return m_pFirst + m_size; }
 	int				size() const { return m_size; }

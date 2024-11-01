@@ -983,15 +983,15 @@ void MyApp::setupScreens()
 	LinearGfxDevice_p		pLinearGfxDevice = wg_dynamic_cast<LinearGfxDevice_p>(m_pStreamGfxDevice);
 	SoftGfxDevice_p			pSoftGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(m_pStreamGfxDevice);
 	
-	for (int i = 0; i < 11; i++)
+	for (int i = 0; i < 2; i++)
 	{
-		auto pSurf = pFactory->createSurface({ .format = PixelFormat::RGB_555_bigendian, .identity = int(CanvasRef::Default) + i, .size = {240,240}});
+		auto pSurf = pFactory->createSurface({ .format = PixelFormat::RGB_555_bigendian, .identity = int(CanvasRef::Default) + i, .size = {800,480}});
 		pSurf->fill(HiColor::Black);
 
 		m_screens.push_back(pSurf);
 
 		if( pLinearGfxDevice )
-			pLinearGfxDevice->defineCanvas(CanvasRef(int(CanvasRef::Default) + i), {240*64,240*64}, PixelFormat::RGB_555_bigendian, 64 );
+			pLinearGfxDevice->defineCanvas(CanvasRef(int(CanvasRef::Default) + i), {800*64,480*64}, PixelFormat::RGB_555_bigendian, 64 );
 		else
 			pSoftGfxDevice->defineCanvas(CanvasRef(int(CanvasRef::Default) + i), wg_dynamic_cast<SoftSurface_p>(pSurf));
 	}

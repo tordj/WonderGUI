@@ -69,9 +69,6 @@ namespace wg
 		void			clip( const RectT<T>& clip );
 		RectT<T>		bounds() const;
 
-		int				repair();															// Fixes any overlap that might have resulted from push()
-		int				optimize();															// Combines small PatchesT into larger ones where possible
-
 		//.____ Content ________________________________________________________
 
 		const RectT<T>* begin() const { return m_pFirst; }

@@ -35,6 +35,7 @@
 #include <wg_c_gfxdevice.h>
 #include <wg_c_gfxtypes.h>
 #include <wg_c_gradient.h>
+#include <wg_c_patches.h>
 #include <wg_c_printer.h>
 #include <wg_c_surface.h>
 #include <wg_c_surfacefactory.h>

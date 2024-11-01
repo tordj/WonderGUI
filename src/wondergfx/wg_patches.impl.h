@@ -447,26 +447,6 @@ namespace wg
 		return RectT<T>(x1,y1,x2-x1,y2-y1);
 	}
 
-	//____ repair() ________________________________________________________________
-
-	template <class T>
-	int PatchesT<T>::repair()
-	{
-		//TODO: Implement
-
-		return 0;
-	}
-
-	//____ optimize() ______________________________________________________________
-
-	template <class T>
-	int PatchesT<T>::optimize()
-	{
-		//TODO: Implement
-
-		return 0;
-	}
-
 	//____ _expand() _______________________________________________________________
 
 	template <class T>
