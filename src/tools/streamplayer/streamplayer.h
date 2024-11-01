@@ -48,10 +48,11 @@ private:
 	wg_obj 			m_wrapper = nullptr;
 	wg_obj 			m_player = nullptr;
 	wg_obj 			m_pump = nullptr;
+	wg_obj			m_streamGfxDevice = nullptr;
 
 	wg_obj			m_streamFrontCanvas = nullptr;
 	wg_obj			m_streamBackCanvas = nullptr;
 
-	
-
+	wg_patches		m_streamFrontPatches = nullptr;
+	wg_patches		m_streamBackPatches = nullptr;
 };
