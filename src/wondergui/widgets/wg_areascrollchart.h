@@ -48,7 +48,7 @@ namespace wg
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
 			pts					topOutlineThickness = 1;
 			bool				visible = true;
-			
+
 
 		};
 
@@ -58,11 +58,11 @@ namespace wg
 		bool	addNowSample( float topSample, float bottomSample );
 		bool	addSampleWithTimestamp( int64_t timestamp, float topSample, float bottomSample );
 
-		void    addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak = 0.f );
+		void    addSamples(int nbSamples, float sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak = 0.f );
         void    setDefaultSample(float topSample, float bottomSample);
 
 		void	clearSamples();
-		
+
 		bool	setColors(HiColor fill, HiColor outline, ColorTransition* pTransition = nullptr);
 		bool	setGradients(Gradient fill, Gradient outline, ColorTransition* pTransition = nullptr);
 
@@ -86,9 +86,9 @@ namespace wg
 				samples[0] = top;
 				samples[1] = bottom;
 			}
-			
+
 			SampleSet() {};
-			
+
             int64_t    timestamp;
             float       samples[2];			// top sample followed by bottom sample.
         };
@@ -134,14 +134,14 @@ namespace wg
 
 		float				m_defaultTopSample = 0.f;
 		float				m_defaultBottomSample = 0.f;
-		
+
 
 		// Output
 
 		bool				m_bColorsChanged = false;
 
 		Waveform_p			m_pWaveform;
-		
+
 		std::function<void(int64_t, int64_t, int64_t, int64_t)>	m_fetcher;
 	};
 
@@ -234,12 +234,12 @@ namespace wg
 		virtual ~AreaScrollChart();
 
 		void	_update(int microPassed, int64_t microsecTimestamp) override;
- 
+
 		void	_updateWaveformEdge(Waveform* pWaveform, int64_t beginUS, int pixelIncUS, bool bTopEdge, AreaScrollChartEntry::SampleSet* pSamples);
 
 		void	_initEntrySamples(AreaScrollChartEntry* pEntry);
 
-		
+
 		//
 
    		void	_didAddEntries(AreaScrollChartEntry* pEntry, int nb) override;
@@ -252,7 +252,7 @@ namespace wg
 		void	_startedOrEndedTransition();
 		void	_entryVisibilityChanged(AreaScrollChartEntry* pAreaChartEntry);
 
-		
+
 	private:
 
 		bool m_bTransitioning = false;
