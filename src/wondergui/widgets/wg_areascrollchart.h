@@ -48,8 +48,6 @@ namespace wg
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
 			pts					topOutlineThickness = 1;
 			bool				visible = true;
-
-
 		};
 
         AreaScrollChartEntry();
@@ -173,6 +171,8 @@ namespace wg
 			bool			disabled = false;
 			Finalizer_p		finalizer = nullptr;
 
+			bool			padWithLastSample = false;		// Pad with last sample when we run out of samples. Otherwise default sample is used.
+
 			Glow::Blueprint glow;
 
 			HiColor			gridColor = Color::DarkGray;
@@ -223,12 +223,18 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo TYPEINFO;
 
+		//.____ Behavior ____________________________________________________________
+
+		void	setPadWithLastSample(bool bPadWithLast);
+		bool	padWithLastSample() const { return m_bPadWithLastSample; }
+
 	protected:
 		AreaScrollChart();
 
 		template<class BP>
 		AreaScrollChart(const BP& bp): ScrollChart(bp), entries(this)
 		{
+			m_bPadWithLastSample 	= bp.padWithLastSample;
 		}
 
 		virtual ~AreaScrollChart();
@@ -256,6 +262,7 @@ namespace wg
 	private:
 
 		bool m_bTransitioning = false;
+		bool m_bPadWithLastSample = false;
 	};
 
 } // namespace wg

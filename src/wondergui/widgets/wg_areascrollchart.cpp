@@ -50,6 +50,13 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ setPadWithLastSample() _______________________________________________
+
+	void AreaScrollChart::setPadWithLastSample(bool bPadWithLast)
+	{
+		m_bPadWithLastSample = bPadWithLast;
+	}
+
 	//____ _update() ____________________________________________________________
 
 	void AreaScrollChart::_update(int microPassed, int64_t microsecTimestamp)
@@ -220,8 +227,17 @@ namespace wg
 				{
 					AreaScrollChartEntry::SampleSet spl;
 					spl.timestamp = lastEdgeTimestamp;
-                    spl.samples[0] = entry.m_defaultTopSample; // entry.m_defaultTopSample;
-                    spl.samples[1] = entry.m_defaultBottomSample;
+
+					if( m_bPadWithLastSample && !entry.m_samples.empty() )
+					{
+						spl.samples[0] = entry.m_samples.back().samples[0];
+						spl.samples[1] = entry.m_samples.back().samples[1];
+					}
+					else
+					{
+						spl.samples[0] = entry.m_defaultTopSample;
+						spl.samples[1] = entry.m_defaultBottomSample;
+					}
 
                     entry.m_samples.push_back(spl);
                 }
