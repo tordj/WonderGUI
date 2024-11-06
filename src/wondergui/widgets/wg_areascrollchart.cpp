@@ -220,11 +220,10 @@ namespace wg
 				{
 					AreaScrollChartEntry::SampleSet spl;
 					spl.timestamp = lastEdgeTimestamp;
-                    spl.samples[0] = entry.m_samples.back().samples[0]; // entry.m_defaultTopSample;
+                    spl.samples[0] = entry.m_defaultTopSample; // entry.m_defaultTopSample;
                     spl.samples[1] = entry.m_defaultBottomSample;
 
                     entry.m_samples.push_back(spl);
-                    printf("Missed Samples\n");
                 }
             }
 
