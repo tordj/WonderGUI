@@ -257,8 +257,8 @@ namespace wg
 		RectSPX geo = _childGeo(pSlot);
 		pSlot->m_geo = geo;
 		pSlot->_setSize(geo.size(),m_scale);
-		_childRequestRender(pSlot, pSlot->m_geo + pSlot->_widget()->_overflow() );
-		
+		_childRequestRender(pSlot, RectSPX( 0,0, pSlot->m_geo.size()) + pSlot->_widget()->_overflow() );
+
 		return bRequestResize;
 	}
 
@@ -474,7 +474,7 @@ namespace wg
 		{
 			if( pSlot->m_bVisible )
 			{
-				_childRequestRender( pSlot, pSlot->m_geo + pSlot->_widget()->_overflow() );
+				_childRequestRender( pSlot, RectSPX(0,0,pSlot->m_geo.size()) + pSlot->_widget()->_overflow() );
 				pSlot->m_bVisible = false;
 			}
 			pSlot++;
