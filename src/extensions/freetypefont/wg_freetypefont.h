@@ -194,7 +194,6 @@ namespace wg
 		static int 				s_nInstances;		// List of alive FreeTypeFont-objects.
 
 		static FT_Library		s_freeTypeLibrary;
-		static BitmapCache_p	s_defaultCache;
 	};
 
 	//____ _findGlyphInIndex() _______________________________________________________

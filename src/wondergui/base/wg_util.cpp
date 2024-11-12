@@ -444,6 +444,38 @@ RectI sourceOfs;
 
 				return size;
 			}
+
+			case SizePolicy2D::StretchDown:
+			{
+				SizeSPX size;
+				size.w = std::min(orgSize.w,maxSize.w);
+				size.h = std::min(orgSize.h,maxSize.h);
+				return size;
+			}
+
+			case SizePolicy2D::ScaleDown:
+			{
+				SizeSPX	size;
+
+				float	fracX = orgSize.w / (float) maxSize.w;
+				float	fracY = orgSize.h / (float) maxSize.h;
+
+				if( fracX <= 1.f && fracY <= 1.f )
+					return orgSize;
+
+				if( fracX > fracY )
+				{
+					size.w = maxSize.w;
+					size.h = int (orgSize.h / fracX);
+				}
+				else
+				{
+					size.h = maxSize.h;
+					size.w = (int) (orgSize.w / fracY);
+				}
+
+				return size;
+			}
 		}
 
 	}

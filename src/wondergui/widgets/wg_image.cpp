@@ -101,14 +101,23 @@ namespace wg
 		SizeSPX borderSize = m_skin.contentBorderSize(scale);
 
 		spx contentHeight = borderSize.h;
-		
+
 		if( m_pSurface )
 		{
 			if( m_sizePolicy == SizePolicy2D::Scale )
 			{
-				int contentWidth = width - borderSize.w;
+				spx contentWidth = width - borderSize.w;
 				if( contentWidth > 0 )
 					contentHeight += align(int(int64_t(contentWidth * m_rect.h) / m_rect.w));
+			}
+			else if( m_sizePolicy == SizePolicy2D::ScaleDown )
+			{
+				spx contentWidth = width - borderSize.w;
+
+				if( m_pSurface && m_pSurface->pixelWidth()*64 > contentWidth )
+					contentHeight += align(int(int64_t(contentWidth * m_rect.h) / m_rect.w));
+				else
+					contentHeight += align(ptsToSpx(m_rect.h,scale));
 			}
 			else
 				contentHeight += align(ptsToSpx(m_rect.h,scale));
@@ -132,6 +141,15 @@ namespace wg
 				int contentHeight = height - borderSize.h;
 				if( contentHeight > 0 )
 					contentWidth += align(int(int64_t(contentHeight * m_rect.w) / m_rect.h));
+			}
+			else if( m_sizePolicy == SizePolicy2D::ScaleDown )
+			{
+				int contentHeight = height - borderSize.h;
+
+				if( m_pSurface && m_pSurface->pixelHeight()*64 > contentHeight )
+					contentWidth += align(int(int64_t(contentHeight * m_rect.w) / m_rect.h));
+				else
+					contentWidth += align(ptsToSpx(m_rect.w,scale));
 			}
 			else
 				contentWidth += align(ptsToSpx(m_rect.w,scale));

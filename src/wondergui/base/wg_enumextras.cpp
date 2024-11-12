@@ -137,10 +137,12 @@ namespace wg
 
 	const char * toString(SizePolicy2D i)
 	{
-		static const char * names[] = { 
+		static const char * names[] = {
 			"Original",
 			"Stretch",
-			"Scale" };
+			"Scale"
+			"StretchDown",
+			"ScaleDown" };
 
 		return names[(int)i];
 	}

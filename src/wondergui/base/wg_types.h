@@ -187,7 +187,9 @@ namespace wg
 	{
 		Original,						///< Object maintains its original size.
 		Stretch,						///< Object is stretched to fill the space, ignoring aspect ratio.
-		Scale							///< Object is scaled to fill the space as much as possible, respecting original aspect ratio.
+		Scale,							///< Object is scaled to fill the space as much as possible, respecting original aspect ratio.
+		StretchDown,					///< Object is shrunk to fit the space if it is too big, ignoring aspect ratio.
+		ScaleDown						///< Object is shrunk to fit the space if it is too big, respecting original aspect ratio.
 	};
 
 	//____ EdgePolicy _________________________________________________________
