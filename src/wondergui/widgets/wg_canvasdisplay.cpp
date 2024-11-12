@@ -338,6 +338,33 @@ namespace wg
 		return Util::placementToRect(m_placement, window.size(), canvasInWindowSize) + window.pos();
 	}
 
+	//____ _alphaTest() ________________________________________________________
+
+	bool CanvasDisplay::_alphaTest(const CoordSPX& ofs)
+	{
+		RectSPX canvasGeo = _canvasWindow(_contentRect(m_size));
+
+		if (canvasGeo.contains(ofs) && m_pCanvas)
+		{
+			float scale = m_canvasSize.w / float(canvasGeo.w);
+
+			CoordSPX surfOfs = (ofs - canvasGeo.pos()) * scale;
+
+			auto pSurface = m_pCanvas->_canvasSurface();
+			if (pSurface)
+			{
+				if (pSurface->alpha(surfOfs) > 0)		// Any alpha gives a hit. We could add a variable for this if needed.
+					return true;
+			}
+		}
+
+		if (m_bSkinAroundCanvas)
+		{
+			return m_skin.markTest(ofs, canvasGeo + m_skin.contentBorder(m_scale, m_state), m_scale, m_state);
+		}
+		else
+			return m_skin.markTest(ofs, RectSPX(m_size), m_scale, m_state);
+	}
 
 
 

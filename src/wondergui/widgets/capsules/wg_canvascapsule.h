@@ -203,6 +203,7 @@ namespace wg
 		Rect				_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& rect) const override;
 
 		RectSPX				_canvasWindow( RectSPX window ) const;
+		Surface*			_canvasSurface() { return m_pCanvas; }
 
 		void				_addSideDisplay(CanvasDisplay* pSideDisplay);
 		void				_removeSideDisplay(CanvasDisplay* pSideDisplay);

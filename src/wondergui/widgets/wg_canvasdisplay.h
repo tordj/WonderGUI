@@ -107,7 +107,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		void	setDefaultSize( const Size& size );
+		void		setDefaultSize( const Size& size );
 
 	protected:
 		CanvasDisplay();
@@ -135,6 +135,8 @@ namespace wg
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		RectSPX		_canvasWindow(RectSPX window) const;
+		bool		_alphaTest(const CoordSPX& ofs) override;
+
 
 		// Called by CanvasCapsule
 
