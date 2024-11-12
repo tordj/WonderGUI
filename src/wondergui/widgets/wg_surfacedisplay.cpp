@@ -217,11 +217,27 @@ namespace wg
 
 	//____ _alphaTest() _______________________________________________________
 
-	bool SurfaceDisplay::_alphaTest(const CoordSPX& ofs)
+	bool SurfaceDisplay::_alphaTest(const CoordSPX& _ofs)
 	{
-		//TODO: Implement!!!
+		if( m_pSurface )
+		{
+			RectSPX canvas 		= _contentRect(m_size);
+			RectSPX destRect 	= _surfaceDisplayRect(m_scale) + canvas.pos();
 
-		return true;
+			float relativeX = (_ofs.x - destRect.x) / (float) destRect.w;
+			float relativeY = (_ofs.y - destRect.y) / (float) destRect.h;
+
+			SizeSPX surfSize = m_pSurface->pixelSize() * 64;
+			CoordSPX ofsInSurface = { spx(relativeX * surfSize.w), spx(relativeY * surfSize.h) };
+
+			if( RectSPX(0,0,surfSize).contains(ofsInSurface) )
+			{
+				if( m_pSurface->alpha(ofsInSurface) > 0 )
+					return true;
+			}
+		}
+
+		return Widget::_alphaTest(_ofs);
 	}
 
 	//____ _surfaceModified() _________________________________________________
