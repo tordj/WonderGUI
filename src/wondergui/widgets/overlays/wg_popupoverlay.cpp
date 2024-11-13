@@ -455,7 +455,7 @@ namespace wg
 		{
 			WidgetRenderContext * p = &renderList[i];
 
-			p->clipPop = patchesToClipList(pDevice, p->geo, patches);
+			p->clipPop = patchesToClipList(pDevice, pSlot->_widget()->_renderBounds() + geo.pos(), patches);
 			if( p->pSlot->m_state != Slot::State::Opening && p->pSlot->m_state != Slot::State::Closing )
 				p->pSlot->_widget()->_maskPatches(patches, p->geo, p->geo);		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
