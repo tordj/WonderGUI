@@ -172,12 +172,62 @@ namespace wg
 		}
 		else if (m_pCanvas)
 		{
-			SizeSPX size = m_pCanvas->_canvasSize() / 64 * scale;
+			SizeSPX size = alignUp(m_pCanvas->_canvasSize() / 64 * scale);
 			size += m_skin.contentBorderSize(scale);
 			return size;
 		}
 		else
 			return Widget::_defaultSize(scale);
+	}
+
+	//____ _matchingHeight() ___________________________________________________
+
+	spx CanvasDisplay::_matchingHeight(spx width, int scale) const
+	{
+		if (m_defaultSize.w >= 0 && m_defaultSize.h >= 0)
+		{
+			float scaleFactor = width / (float) m_defaultSize.w;
+
+			return alignUp(m_defaultSize.h * scaleFactor);
+		}
+		else if (m_pCanvas)
+		{
+			SizeSPX borderSize = m_skin.contentBorderSize(scale);
+			width -= borderSize.w;
+
+			SizeSPX canvasSize = m_pCanvas->_canvasSize();
+
+			float scaleFactor = width / (float)canvasSize.w;
+
+			return alignUp(canvasSize.h * scaleFactor) + borderSize.h;
+		}
+		else
+			return Widget::_matchingHeight(width, scale);
+	}
+
+	//____ _matchingWidth() ____________________________________________________
+
+	spx CanvasDisplay::_matchingWidth(spx height, int scale) const
+	{
+		if (m_defaultSize.w >= 0 && m_defaultSize.h >= 0)
+		{
+			float scaleFactor = height / (float)m_defaultSize.h;
+
+			return alignUp(m_defaultSize.w * scaleFactor);
+		}
+		else if (m_pCanvas)
+		{
+			SizeSPX borderSize = m_skin.contentBorderSize(scale);
+			height -= borderSize.h;
+
+			SizeSPX canvasSize = m_pCanvas->_canvasSize();
+
+			float scaleFactor = height / (float)canvasSize.h;
+
+			return alignUp(canvasSize.w * scaleFactor) + borderSize.w;
+		}
+		else
+			return Widget::_matchingWidth(height, scale);
 	}
 
 	//____ _update() __________________________________________________________

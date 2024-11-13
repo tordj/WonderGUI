@@ -132,6 +132,9 @@ namespace wg
 		virtual ~CanvasDisplay();
 
 		SizeSPX		_defaultSize(int scale) const override;
+		spx			_matchingHeight(spx width, int scale) const override;
+		spx			_matchingWidth(spx height, int scale) const override;
+
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		RectSPX		_canvasWindow(RectSPX window) const;
