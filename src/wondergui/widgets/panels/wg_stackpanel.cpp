@@ -137,7 +137,7 @@ namespace wg
 
 	//____ _matchingHeight() _______________________________________________________
 
-	spx StackPanel::_matchingHeight( spx width, int scale ) const
+	spx StackPanel::_matchingHeight( spx _width, int scale ) const
 	{
 		spx height = 0;
 
@@ -147,7 +147,54 @@ namespace wg
 		while( pSlot != pEnd )
 		{
 			SizeSPX marginSize = Util::align(Util::ptsToSpx(pSlot->m_margin, scale));
-			spx h = pSlot->m_pWidget->_matchingHeight(width - marginSize.w, scale) + marginSize.h;
+			spx width = _width - marginSize.w;
+
+			spx h = marginSize.h;
+
+			Widget* pWidget = pSlot->m_pWidget;
+
+			switch (pSlot->m_sizePolicy)
+			{
+				case SizePolicy2D::Original:
+					h = pWidget->_defaultSize(scale).h;
+					break;
+
+				case SizePolicy2D::Stretch:
+					h = pWidget->_matchingHeight(width, scale);
+					break;
+
+				case SizePolicy2D::StretchDown:
+				{
+					SizeSPX defaultSize = pWidget->_defaultSize(scale);
+					if (width >= defaultSize.w)
+						h = defaultSize.h;
+					else
+						h = pWidget->_matchingHeight(width, scale);
+					break;
+				}
+				case SizePolicy2D::Scale:
+				{
+					SizeSPX defaultSize = pWidget->_defaultSize(scale);
+
+					float scaleFactor = width / float(defaultSize.w);
+					h = defaultSize.h * scaleFactor;
+				}
+
+				case SizePolicy2D::ScaleDown:
+				{
+					SizeSPX defaultSize = pWidget->_defaultSize(scale);
+
+					if (width >= defaultSize.w)
+						h = defaultSize.h;
+					else
+					{
+						float scaleFactor = width / float(defaultSize.w);
+						h = defaultSize.h * scaleFactor;
+					}
+					break;
+				}
+			}
+
 			if( h > height )
 				height = h;
 			pSlot++;
@@ -158,7 +205,7 @@ namespace wg
 
 	//____ matchingWidth() _______________________________________________________
 
-	spx StackPanel::_matchingWidth( spx height, int scale ) const
+	spx StackPanel::_matchingWidth( spx _height, int scale ) const
 	{
 		spx width = 0;
 
@@ -168,12 +215,58 @@ namespace wg
 		while( pSlot != pEnd )
 		{
 			SizeSPX marginSize = Util::align(Util::ptsToSpx(pSlot->m_margin, scale));
-			spx w = pSlot->m_pWidget->_matchingWidth(height - marginSize.h, scale) + marginSize.w;
-			if( w > width )
+			spx height = _height - marginSize.h;
+
+			spx w = marginSize.w;
+
+			Widget* pWidget = pSlot->m_pWidget;
+
+			switch (pSlot->m_sizePolicy)
+			{
+				case SizePolicy2D::Original:
+					w = pWidget->_defaultSize(scale).w;
+					break;
+
+				case SizePolicy2D::Stretch:
+					w = pWidget->_matchingWidth(height, scale);
+					break;
+
+				case SizePolicy2D::StretchDown:
+				{
+					SizeSPX defaultSize = pWidget->_defaultSize(scale);
+					if (height >= defaultSize.h)
+						w = defaultSize.w;
+					else
+						w = pWidget->_matchingWidth(height, scale);
+					break;
+				}
+				case SizePolicy2D::Scale:
+				{
+					SizeSPX defaultSize = pWidget->_defaultSize(scale);
+
+					float scaleFactor = height / float(defaultSize.h);
+					w = defaultSize.w * scaleFactor;
+				}
+
+				case SizePolicy2D::ScaleDown:
+				{
+					SizeSPX defaultSize = pWidget->_defaultSize(scale);
+
+					if (height >= defaultSize.h)
+						w = defaultSize.w;
+					else
+					{
+						float scaleFactor = height / float(defaultSize.h);
+						w = defaultSize.w * scaleFactor;
+					}
+					break;
+				}
+			}
+
+			if (w > width)
 				width = w;
 			pSlot++;
 		}
-
 		return width;
 	}
 
