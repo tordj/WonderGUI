@@ -156,20 +156,20 @@ namespace wg
 			switch (pSlot->m_sizePolicy)
 			{
 				case SizePolicy2D::Original:
-					h = pWidget->_defaultSize(scale).h;
+					h += pWidget->_defaultSize(scale).h;
 					break;
 
 				case SizePolicy2D::Stretch:
-					h = pWidget->_matchingHeight(width, scale);
+					h += pWidget->_matchingHeight(width, scale);
 					break;
 
 				case SizePolicy2D::StretchDown:
 				{
 					SizeSPX defaultSize = pWidget->_defaultSize(scale);
 					if (width >= defaultSize.w)
-						h = defaultSize.h;
+						h += defaultSize.h;
 					else
-						h = pWidget->_matchingHeight(width, scale);
+						h += pWidget->_matchingHeight(width, scale);
 					break;
 				}
 				case SizePolicy2D::Scale:
@@ -177,7 +177,8 @@ namespace wg
 					SizeSPX defaultSize = pWidget->_defaultSize(scale);
 
 					float scaleFactor = width / float(defaultSize.w);
-					h = defaultSize.h * scaleFactor;
+					h += defaultSize.h * scaleFactor;
+					break;
 				}
 
 				case SizePolicy2D::ScaleDown:
@@ -185,15 +186,17 @@ namespace wg
 					SizeSPX defaultSize = pWidget->_defaultSize(scale);
 
 					if (width >= defaultSize.w)
-						h = defaultSize.h;
+						h += defaultSize.h;
 					else
 					{
 						float scaleFactor = width / float(defaultSize.w);
-						h = defaultSize.h * scaleFactor;
+						h += defaultSize.h * scaleFactor;
 					}
 					break;
 				}
 			}
+
+			h = alignUp(h);
 
 			if( h > height )
 				height = h;
@@ -224,20 +227,20 @@ namespace wg
 			switch (pSlot->m_sizePolicy)
 			{
 				case SizePolicy2D::Original:
-					w = pWidget->_defaultSize(scale).w;
+					w += pWidget->_defaultSize(scale).w;
 					break;
 
 				case SizePolicy2D::Stretch:
-					w = pWidget->_matchingWidth(height, scale);
+					w += pWidget->_matchingWidth(height, scale);
 					break;
 
 				case SizePolicy2D::StretchDown:
 				{
 					SizeSPX defaultSize = pWidget->_defaultSize(scale);
 					if (height >= defaultSize.h)
-						w = defaultSize.w;
+						w += defaultSize.w;
 					else
-						w = pWidget->_matchingWidth(height, scale);
+						w += pWidget->_matchingWidth(height, scale);
 					break;
 				}
 				case SizePolicy2D::Scale:
@@ -245,7 +248,8 @@ namespace wg
 					SizeSPX defaultSize = pWidget->_defaultSize(scale);
 
 					float scaleFactor = height / float(defaultSize.h);
-					w = defaultSize.w * scaleFactor;
+					w += defaultSize.w * scaleFactor;
+					break;
 				}
 
 				case SizePolicy2D::ScaleDown:
@@ -253,15 +257,17 @@ namespace wg
 					SizeSPX defaultSize = pWidget->_defaultSize(scale);
 
 					if (height >= defaultSize.h)
-						w = defaultSize.w;
+						w += defaultSize.w;
 					else
 					{
 						float scaleFactor = height / float(defaultSize.h);
-						w = defaultSize.w * scaleFactor;
+						w += defaultSize.w * scaleFactor;
 					}
 					break;
 				}
 			}
+
+			w = alignUp(w);
 
 			if (w > width)
 				width = w;
