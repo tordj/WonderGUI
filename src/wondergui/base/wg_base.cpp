@@ -67,7 +67,7 @@ namespace wg
 
 		s_pGUIContext = new GUIContext();
 		s_pGUIContext->pGfxContext = GfxBase::context();
-		
+
 		s_pGUIContext->pHostBridge = pHostBridge;
 
 		TextTool::setDefaultBreakRules();
@@ -88,9 +88,9 @@ namespace wg
 		s_pGUIContext->pMsgRouter = MsgRouter::create();
 		s_pGUIContext->pInputHandler = InputHandler::create();
 		s_pGUIContext->pSkinSlotManager = SkinSlotManager::create();
-				
+
 		s_pGUIContext->timestamp = 0;
-		
+
 		s_guiInitCounter = 1;
 		return true;
 	}
@@ -104,15 +104,19 @@ namespace wg
 			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to Base::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
-		
+
 		if( s_guiInitCounter > 1 )
 		{
 			s_guiInitCounter--;			// This belongs to GfxBase, but we do like this anyway.
 			return true;
 		}
-	
+
 		// We need to make sure our objects are destroyed before continuing.
-		
+
+		// Clear the message queue so that widgets that are kept alive by
+		// the message router will be deleted.
+		s_pGUIContext->pMsgRouter->dispatch();
+
 		s_pGUIContext->pMsgRouter = nullptr;
 		s_pGUIContext->pInputHandler = nullptr;
 		s_pGUIContext->pSkinSlotManager = nullptr;
@@ -123,7 +127,7 @@ namespace wg
 		s_pGUIContext->pDefaultPackLayout = nullptr;
 
 		s_pGUIContext = nullptr;
-		
+
 		s_clipboardText.clear();
 
 		TextStyleManager::exit();
@@ -137,7 +141,7 @@ namespace wg
 	GUIContext_p Base::setContext( const GUIContext_p& pNewContext )
 	{
 		auto pOld = s_pGUIContext;
-		
+
 		if( pNewContext )
 			s_pGUIContext = pNewContext;
 		else
@@ -248,7 +252,7 @@ namespace wg
 		if( s_pGUIContext->pHostBridge )
 		{
 			auto stdString = CharSeq(text).getStdString();
-			
+
 			s_pGUIContext->pHostBridge->setClipboardText(stdString);
 		}
 	}
@@ -260,7 +264,7 @@ namespace wg
 		if( s_pGUIContext->pHostBridge )
 		{
 			auto stdString = s_pGUIContext->pHostBridge->getClipboardText();
-			
+
 			return String(stdString);
 		}
 		else
@@ -275,23 +279,23 @@ namespace wg
 	{
 		int64_t microPassed = timestamp - s_pGUIContext->timestamp;
 		s_pGUIContext->timestamp = timestamp;
-		
+
 		// Any too large delay is transformed into a minor update.
 		// This takes care of first call and freezes not messing
 		// up things too much.
-		
+
 		if( microPassed > 2000000 )
 			microPassed = 1000;
 
 		// Update wondergui systems
-		
+
 		s_pGUIContext->pInputHandler->_update(timestamp/1000);
 		s_pGUIContext->pSkinSlotManager->update(int(microPassed/1000));
-		
+
 		// Update widgets.
-		
+
 		bool bEmptyFound = false;
-		
+
 		for (auto pReceiver : s_pGUIContext->updateReceivers)
 		{
 			if( pReceiver )
@@ -299,7 +303,7 @@ namespace wg
 			else
 				bEmptyFound = true;
 		}
-		
+
 		if( bEmptyFound )
 			s_pGUIContext->updateReceivers.erase(std::remove(s_pGUIContext->updateReceivers.begin(), s_pGUIContext->updateReceivers.end(), nullptr), s_pGUIContext->updateReceivers.end() );
 	}
