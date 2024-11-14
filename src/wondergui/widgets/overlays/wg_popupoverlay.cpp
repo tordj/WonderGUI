@@ -181,7 +181,7 @@ namespace wg
 				break;
 			}
 		}
-			
+
 		// Adjust geometry to fit inside parent.
 
 		if( geo.right() > m_size.w )
@@ -277,7 +277,7 @@ namespace wg
 		if (geo != pSlot->m_geo)
 		{
 			BorderSPX overflow = pSlot->_widget()->_overflow();
-			
+
 			_onRequestRender(pSlot->m_geo + overflow, pSlot);
 			pSlot->m_geo = geo;
 			_onRequestRender(pSlot->m_geo + overflow, pSlot);
@@ -320,11 +320,11 @@ namespace wg
 						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
 					else if( pSlot->_widget()->_markTest( ofs - pSlot->m_geo.pos() ) )
 						pResult = pSlot->_widget();
-					
+
 				}
 
 				// We only allow actions on popups below if our popup is in peek-state.
-				
+
 				if( !pSlot->m_bPeek )
 					break;
 
@@ -519,7 +519,7 @@ namespace wg
 
 	void PopupOverlay::_receive( Msg * _pMsg )
 	{
-	
+
 		Overlay::_receive(_pMsg);
 
 		switch( _pMsg->type() )
@@ -559,7 +559,7 @@ namespace wg
 				else if(pSlot->m_state == Slot::State::OpeningDelay)
 				{
 					// Has not been shown yet, just close it immediately
-					
+
 					if (!pSlot->m_geo.contains(pointerPos) && !pSlot->m_launcherGeo.contains(pointerPos))
 					{
 						pSlot->m_state = Slot::State::Closing;
@@ -597,7 +597,7 @@ namespace wg
 						}
 					}
 				}
-				
+
 				// A popup in state Closing should be promoted to
 				// state Opening if pointer has entered its launcherGeo and
 				// to state WeakOpen if pointer has entered its geo.
@@ -628,8 +628,8 @@ namespace wg
 						}
 					}
 				}
-				
-				
+
+
 
 				// If pointer has entered a selectable widget of a popup that isn't the top one
 				// and all widgets between them have bPeek=true, they should all enter
@@ -706,13 +706,13 @@ namespace wg
 
 				CoordSPX 	pointerPos = _toLocal(static_cast<MouseReleaseMsg*>(_pMsg)->pointerSpxPos());
 				auto pSource = _findWidget(pointerPos, SearchMode::ActionTarget);
-				
+
 				if (!pSource || pSource == this)
 				{
 					// Release outside any popup.
-				
+
 					// Close top popup and any hierarchy of peek-popups below it.
-					
+
 					_removeTopSlotAndPeeks();
 				}
 				else
@@ -721,26 +721,26 @@ namespace wg
 					if(pSource == pTopPopup || pSource->isDescendantOf(pTopPopup) )
 					{
 						// Relese on top popup or child thereof
-						
+
 						if (pSource->isSelectable())
 						{
 							// We send 2 messages on selected:
 							// PopupSelectMsg from opener (like a PopupOpener if availabe) or PopupOverlay itself.
 							// Normal SelectMsg from selected widget itself.
-							
+
 							MsgRouter* pRouter = Base::msgRouter().rawPtr();
-							
+
 							if (pRouter)
 							{
 								if( pOpener )
 									pRouter->post(PopupSelectMsg::create(pOpener, pSource));
 								else
 									pRouter->post(PopupSelectMsg::create(this, pSource));
-								
-								
+
+
 								pRouter->post( SelectMsg::create(pSource) );
 							}
-							
+
 							if( pSlot->m_bCloseOnSelect )
 							{
 								int i = 1;
@@ -749,17 +749,17 @@ namespace wg
 
 								_removeSlots(0, i);
 							}
-								
+
 						}
 					}
 					else
 					{
 						// Release on lower popup or widget inside it or its opener.
 						// Figure out which one and close all popups ontop of it.
-						
+
 						int ofs = 0;
 						Widget * pPopup = popupSlots[ofs].m_pWidget;
-						
+
 						while( pSource != pPopup && !pSource->isDescendantOf(pPopup) && pSource != popupSlots[ofs].m_pOpener )
 							pPopup = popupSlots[++ofs].m_pWidget;
 
@@ -971,11 +971,11 @@ namespace wg
 	{
 		if( popupSlots.isEmpty() )
 			return;
-		
+
 		int i = 1;
 		while( i < popupSlots.size() && popupSlots[i].m_bPeek )
 			i++;
-		
+
 		_removeSlots(0, i);
 	}
 
