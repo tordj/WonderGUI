@@ -263,7 +263,7 @@ void GfxDeviceTester::setup_testdevices()
 
 		m_pLinearBackendSurface = pLinearDevice->displaySurface();
 
-		g_testdevices.push_back(pLinearDevice);
+//		g_testdevices.push_back(pLinearDevice);
 	}
 
 
@@ -325,7 +325,7 @@ void GfxDeviceTester::setup_testdevices()
 //	g_testdevices.push_back(pLinearDevice);
 
 	// Stream to Software
-
+/*
 	{
 		auto pSoftGfxDevice = SoftGfxDevice::create();
 		addDefaultSoftKernels( pSoftGfxDevice );
@@ -343,6 +343,7 @@ void GfxDeviceTester::setup_testdevices()
 
 //		g_testdevices.push_back(pStreamDevice);
 	}
+*/
 
 	// Stream to Gen2 Software
 
@@ -351,22 +352,24 @@ void GfxDeviceTester::setup_testdevices()
 		addDefaultSoftKernels(pBackend);
 
 		auto pBackendLogger = BackendLogger::create(std::cout, pBackend);
-		auto pGen2GfxDevice = GfxDeviceGen2::create(pBackendLogger);
+//		auto pGen2GfxDevice = GfxDeviceGen2::create(pBackendLogger);
 
 		auto pGen2CanvasSurface = SoftSurface::create(canvasBP);
-		auto pGen2SoftDevice = Device::create("Gen2 Software (SoftBackend)", pGen2GfxDevice, CanvasRef::None, pGen2CanvasSurface, this);
 
 		pBackend->defineCanvas(CanvasRef::Default, pGen2CanvasSurface);
 
-		auto pStreamPlayer = StreamPlayer::create(pGen2GfxDevice, SoftSurfaceFactory::create(), SoftEdgemapFactory::create());
+		auto pStreamPlayer = StreamPlayer::create(pBackendLogger, SoftSurfaceFactory::create(), SoftEdgemapFactory::create());
 
 		auto pStreamEncoder = StreamFastEncoder::create({ pStreamPlayer, pStreamPlayer->input });
-		auto pStreamGfxDevice = StreamDevice::create(pStreamEncoder);
-		pStreamGfxDevice->defineCanvas(CanvasRef::Default, { 512,512 }, PixelFormat::BGRA_8_sRGB);
+
+		auto pStreamBackend = StreamBackend::create(pStreamEncoder);
+		pStreamBackend->defineCanvas(CanvasRef::Default, { 512,512 }, PixelFormat::BGRA_8_sRGB);
+
+		auto pStreamGfxDevice = GfxDeviceGen2::create(pStreamBackend);
 
 		auto pStreamDevice = Device::create("Stream to Gen 2 Software", pStreamGfxDevice, CanvasRef::Default, pGen2CanvasSurface, this);
 
-//		g_testdevices.push_back(pStreamDevice);
+		g_testdevices.push_back(pStreamDevice);
 	}
 
 
