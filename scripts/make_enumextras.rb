@@ -6,9 +6,9 @@
 
 	$tasks = []
 
-	$tasks << Task.new( 'src/gear/wg_geartypes.h', 'src/gear/wg_gearenumextras.h', 'src/gear/wg_gearenumextras.cpp' )
-	$tasks << Task.new( 'src/gfx/wg_gfxtypes.h', 'src/gfx/wg_gfxenumextras.h', 'src/gfx/wg_gfxenumextras.cpp' )
-	$tasks << Task.new( 'src/gui/base/wg_types.h', 'src/gui/base/wg_enumextras.h', 'src/gui/base/wg_enumextras.cpp' )
+	$tasks << Task.new( 'src/wondergear/wg_geartypes.h', 'src/wondergear/wg_gearenumextras.h', 'src/wondergear/wg_gearenumextras.cpp' )
+	$tasks << Task.new( 'src/wondergfx/wg_gfxtypes.h', 'src/wondergfx/wg_gfxenumextras.h', 'src/wondergfx/wg_gfxenumextras.cpp' )
+	$tasks << Task.new( 'src/wondergui/base/wg_types.h', 'src/wondergui/base/wg_enumextras.h', 'src/wondergui/base/wg_enumextras.cpp' )
 
 
 def replaceAutoSection( path, newContent )

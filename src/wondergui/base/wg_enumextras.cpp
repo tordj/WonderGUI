@@ -117,6 +117,7 @@ namespace wg
 	const char * toString(MarkPolicy i)
 	{
 		static const char * names[] = { 
+			"Undefined",
 			"Ignore",
 			"AlphaTest",
 			"Geometry" };
@@ -141,6 +142,15 @@ namespace wg
 			"Original",
 			"Stretch",
 			"Scale" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(EdgePolicy i)
+	{
+		static const char * names[] = { 
+			"Confine",
+			"Clip" };
 
 		return names[(int)i];
 	}
@@ -186,6 +196,7 @@ namespace wg
 			"ItemMousePress",
 			"ItemsSelect",
 			"ItemsUnselect",
+			"PopupSelect",
 			"PopupClosed",
 			"ModalMoveOutside",
 			"ModalBlockedPress",
@@ -194,8 +205,7 @@ namespace wg
 			"PianoKeyRelease",
 			"Activate",
 			"Deactivate",
-			"Custom"
-		};
+			"Custom" };
 
 		return names[(int)i];
 	}
