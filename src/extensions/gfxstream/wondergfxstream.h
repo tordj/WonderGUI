@@ -27,7 +27,6 @@
 #include <wg_streambackend.h>
 #include <wg_streambuffer.h>
 #include <wg_streamdecoder.h>
-#include <wg_streamdevice.h>
 #include <wg_streamencoder.h>
 #include <wg_streamfastencoder.h>
 #include <wg_streamlogger.h>
@@ -40,7 +39,6 @@
 #include <wg_streamsplitter.h>
 #include <wg_streamsurface.h>
 #include <wg_streamsurfacefactory.h>
-#include <wg_streamtrimencoder.h>
 #include <wg_streamwrapper.h>
 #include <wg_streamwriter.h>
 #include <wg_streamedgemap.h>
