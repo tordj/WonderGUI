@@ -44,9 +44,10 @@ namespace wg
 	const static MouseButton     MouseButton_min     = MouseButton::None;
 	const static PlayMode        PlayMode_min        = PlayMode::Forward;
 	const static SearchMode      SearchMode_min      = SearchMode::MarkPolicy;
-	const static MarkPolicy      MarkPolicy_min      = MarkPolicy::Ignore;
+	const static MarkPolicy      MarkPolicy_min      = MarkPolicy::Undefined;
 	const static SizeConstraint  SizeConstraint_min  = SizeConstraint::None;
 	const static SizePolicy2D    SizePolicy2D_min    = SizePolicy2D::Original;
+	const static EdgePolicy      EdgePolicy_min      = EdgePolicy::Confine;
 	const static MsgType         MsgType_min         = MsgType::Dummy;
 	const static SortOrder       SortOrder_min       = SortOrder::None;
 	const static SelectMode      SelectMode_min      = SelectMode::Unselectable;
@@ -61,6 +62,7 @@ namespace wg
 	const static MarkPolicy      MarkPolicy_max      = MarkPolicy::Geometry;
 	const static SizeConstraint  SizeConstraint_max  = SizeConstraint::GreaterOrEqual;
 	const static SizePolicy2D    SizePolicy2D_max    = SizePolicy2D::ScaleDown;
+	const static EdgePolicy      EdgePolicy_max      = EdgePolicy::Clip;
 	const static MsgType         MsgType_max         = MsgType::Custom;
 	const static SortOrder       SortOrder_max       = SortOrder::Descending;
 	const static SelectMode      SelectMode_max      = SelectMode::FlipOnSelect;
@@ -75,6 +77,7 @@ namespace wg
 	const static int             MarkPolicy_size     = (int)MarkPolicy::Geometry + 1;
 	const static int             SizeConstraint_size = (int)SizeConstraint::GreaterOrEqual + 1;
 	const static int             SizePolicy2D_size   = (int)SizePolicy2D::ScaleDown + 1;
+	const static int             EdgePolicy_size     = (int)EdgePolicy::Clip + 1;
 	const static int             MsgType_size        = (int)MsgType::Custom + 1;
 	const static int             SortOrder_size      = (int)SortOrder::Descending + 1;
 	const static int             SelectMode_size     = (int)SelectMode::FlipOnSelect + 1;
@@ -89,6 +92,7 @@ namespace wg
 	const char * toString(MarkPolicy);
 	const char * toString(SizeConstraint);
 	const char * toString(SizePolicy2D);
+	const char * toString(EdgePolicy);
 	const char * toString(MsgType);
 	const char * toString(SortOrder);
 	const char * toString(SelectMode);
