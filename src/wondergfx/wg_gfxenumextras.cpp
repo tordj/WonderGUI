@@ -48,7 +48,7 @@ namespace wg
 
 	const char * toString(EdgemapPalette i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Undefined",
 			"Flat",
 			"ColorstripX",
@@ -72,8 +72,18 @@ namespace wg
 			"Min",
 			"Max",
 			"Morph",
-			"BlendFixedColor"
-		};
+			"BlendFixedColor" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(Alignment i)
+	{
+		static const char * names[] = { 
+			"Begin",
+			"Center",
+			"End",
+			"Justify" };
 
 		return names[(int)i];
 	}
@@ -81,6 +91,7 @@ namespace wg
 	const char * toString(Placement i)
 	{
 		static const char * names[] = { 
+			"Undefined",
 			"NorthWest",
 			"North",
 			"NorthEast",
@@ -169,8 +180,8 @@ namespace wg
 			"Bitplanes_A1_4",
 			"Bitplanes_A1_5",
 			"Bitplanes_A1_8",
-			"BGRX_8_linear",
-			"BGRA_8_linear" };
+			"BGRX_16_linear",
+			"BGRA_16_linear" };
 
 		return names[(int)i];
 	}
@@ -211,6 +222,19 @@ namespace wg
 			"Rot270",
 			"Rot270FlipX",
 			"Rot270FlipY" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(TransitionCurve i)
+	{
+		static const char * names[] = { 
+			"Linear",
+			"EaseIn",
+			"EaseOut",
+			"EaseInOut",
+			"Bezier",
+			"Parametric" };
 
 		return names[(int)i];
 	}
@@ -256,72 +280,16 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(GfxChunkId i)
+	const char * toString(SampleOrigo i)
 	{
 		static const char * names[] = { 
-			"OutOfData",
-			"BeginRender",
-			"EndRender",
-			"Flush",
-			"BeginCanvasUpdate",
-			"EndCanvasUpdate",
-			"SetClipList",
-			"ResetClipList",
-			"PushClipList",
-			"PopClipList",
-			"SetTintColor",
-			"SetTintGradient",
-			"ClearTintGradient",
-			"SetBlendMode",
-			"SetBlitSource",
-			"SetMorphFactor",
-			"SetRenderLayer",
-			"Fill",
-			"FillRect",
-			"DrawLineStraight",
-			"PlotPixels",
-			"DrawLineFromTo",
-			"DrawLineStraightDeprecated",
-			"Blit",
-			"BlitRect",
-			"FlipBlit",
-			"FlipBlitRect",
-			"StretchBlit",
-			"StretchBlitRect",
-			"StretchFlipBlit",
-			"StretchFlipBlitRect",
-			"PrecisionBlit",
-			"TransformBlit",
-			"RotScaleBlit",
-			"Tile",
-			"FlipTile",
-			"ScaleTile",
-			"ScaleFlipTile",
-			"DrawWave",
-			"FlipDrawWave",
-			"DrawElipse",
-			"DrawPieChart",
-			"DrawSegments",
-			"FlipDrawSegments",
-			"BlitNinePatch",
-			"EdgeSamples",
-			"CreateSurfaceDeprecated",
-			"BeginSurfaceUpdate",
-			"SurfacePixels",
-			"EndSurfaceUpdate",
-			"FillSurface",
-			"CopySurface",
-			"DeleteSurface",
-			"ProtocolVersion",
-			"TimeStampMS",
-			"CanvasList",
-			"SetFixedBlendColor",
-			"CreateSurface"
-		};
+			"Top",
+			"MiddleUp",
+			"MiddleDown",
+			"Bottom" };
 
 		return names[(int)i];
 	}
-
 
 //=========================================================================
 //. endAutoSection
