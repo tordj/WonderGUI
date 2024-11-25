@@ -893,6 +893,11 @@ namespace wg
 		cursorRect.x -= whitespace * whitespacesBeforeAfter;
 		cursorRect.w += whitespace * whitespacesBeforeAfter*2;
 		
+		spx maxLength = _size(pText).w;
+
+		limit( cursorRect.x, 0, maxLength );
+		limit( cursorRect.w, 0, maxLength - cursorRect.x );
+
 		return cursorRect;
 	}
 
