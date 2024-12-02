@@ -212,6 +212,16 @@ namespace wg
 		}
 	}
 
+	//____ canvasGeo() ________________________________________________________
+
+	Rect CanvasCapsule::canvasGeo() const
+	{
+		RectSPX contentRect = _contentRect(m_size);
+		RectSPX canvasArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
+
+		return spxToPts(canvasArea, m_scale);
+	}
+
 	//____ setClearColor() _______________________________________________________
 
 	void CanvasCapsule::setClearColor( HiColor color )
