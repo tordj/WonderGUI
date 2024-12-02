@@ -103,6 +103,16 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		void				setPlacement(Placement placement);
+		Placement			placement() const { return m_placement; }
+
+		void				setScaleCanvas(bool bScale);
+		bool				isCanvasScaling() { return m_bScaleCanvas; }
+
+		Rect				canvasGeo() const;
+
 		//.____ Appearance _________________________________________________
 
 		void				setSkin(Skin* pSkin) override;
@@ -119,12 +129,6 @@ namespace wg
 		
 		void				setCanvasLayers(CanvasLayers * pLayers);
 		CanvasLayers_p	 	canvasLayers() const { return m_pCanvasLayers; }
-
-		void				setPlacement(Placement placement);
-		Placement			placement() const { return m_placement;  }
-
-		void				setScaleCanvas(bool bScale);
-		bool				isCanvasScaling() { return m_bScaleCanvas; }
 
 		void				setClearColor( HiColor color );
 		HiColor				clearColor() const { return m_clearColor; }
