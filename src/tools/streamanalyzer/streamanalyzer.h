@@ -57,6 +57,7 @@ private:
 	void		_resetStream();							// Clear displays, delete surfaces.
 	void		_playFrames( int begin, int end, bool bOptimize );
 	void		_logFrames( int begin, int end, bool bOptimize, TextEditor * pDisplay );
+	void		_logBackend( int begin, int end, bool bOptimize, TextEditor * pDisplay );
 	void		_updateFrameCounterAndSlider();
 	void		_logFullStream();
 	void		_updateResourcesView();
@@ -77,7 +78,7 @@ private:
 
 	GfxDevice_p			m_pStreamGfxDevice;
 	GfxBackend_p		m_pStreamGfxBackend;
-	FrameTrimmer_p		m_pStreamTrimGfxBackend;
+	StreamTrimBackend_p	m_pStreamTrimGfxBackend;
 
 	SurfaceFactory_p	m_pStreamSurfaceFactory;
 	char *				m_pLinearCanvasBuffer = nullptr;
