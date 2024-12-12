@@ -113,10 +113,6 @@ namespace wg
 
 		// We need to make sure our objects are destroyed before continuing.
 
-		// Clear the message queue so that widgets that are kept alive by
-		// the message router will be deleted.
-		s_pGUIContext->pMsgRouter->dispatch();
-
 		s_pGUIContext->pMsgRouter = nullptr;
 		s_pGUIContext->pInputHandler = nullptr;
 		s_pGUIContext->pSkinSlotManager = nullptr;
