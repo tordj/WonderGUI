@@ -305,7 +305,7 @@ namespace wg
 		// PopupOverlay has its own _findWidget() method since we need special treatment of
 		// searchmode ACTION_TARGET when a menu is open.
 
-		if( mode == SearchMode::ActionTarget && !popupSlots.isEmpty() )
+		if( mode == SearchMode::ActionTarget && !popupSlots.isEmpty() && m_bBlockLeftMouseButton == true )
 		{
 			// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 
@@ -749,7 +749,6 @@ namespace wg
 
 								_removeSlots(0, i);
 							}
-
 						}
 					}
 					else
@@ -760,7 +759,7 @@ namespace wg
 						int ofs = 0;
 						Widget * pPopup = popupSlots[ofs].m_pWidget;
 
-						while( pSource != pPopup && !pSource->isDescendantOf(pPopup) && pSource != popupSlots[ofs].m_pOpener )
+						while( pSource != pPopup && ofs < popupSlots.size() && !pSource->isDescendantOf(pPopup) && pSource != popupSlots[ofs].m_pOpener )
 							pPopup = popupSlots[++ofs].m_pWidget;
 
 						_removeSlots(0, ofs);
@@ -780,13 +779,22 @@ namespace wg
 				if (popupSlots.isEmpty())
 					break;
 
-//				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
 
-				auto pSource = static_cast<Widget*>(_pMsg->originalSource().rawPtr());
+				auto pSource = static_cast<Widget*>(pMsg->originalSource().rawPtr());
 				if (!pSource || pSource == this )
 					_removeTopSlotAndPeeks();
 
-				_pMsg->swallow();
+				if( pMsg->button() != MouseButton::Left && m_bBlockLeftMouseButton )
+				{
+					CoordSPX 	pointerPos = _toLocal(pMsg->pointerSpxPos());
+
+					auto pTarget = _findWidget(pointerPos, SearchMode::ActionTarget);
+					if( pTarget && pTarget != this )
+						_pMsg->setRepost(pTarget, pTarget);
+				}
+				else
+					_pMsg->swallow();
 			}
 			break;
 

@@ -729,7 +729,7 @@ int main(int argc, char** argv)
 		//	textClipTest(pSlot);
 		//	textEditorTest(pSlot);
 		//	lineEditorTest(pSlot);
-		//	popupOpenerTest(pSlot);
+			popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
 		//	splitPanelTest(pSlot);
@@ -772,7 +772,7 @@ int main(int argc, char** argv)
 		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-		  scrollChartTest(pSlot);
+		//  scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
 		//	packPanelStressTest(pSlot);
 		//	packPanelStressTest2(pSlot);
@@ -1381,11 +1381,13 @@ bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black, 8 );
 
 	
-	auto pPopupOverlay = PopupOverlay::create( { .skin = ColorSkin::create(Color::PaleGoldenrod) } );
+	auto pPopupOverlay = PopupOverlay::create( { .blockLeftMouseButton = true, .skin = ColorSkin::create(Color::PaleGoldenrod) } );
 	* pEntry = pPopupOverlay;
 
 	auto pFlex = FlexPanel::create();
 	pPopupOverlay->mainSlot = pFlex;
+
+	pFlex->setSkin( ColorSkin::create(Color::OrangeRed) );
 
 	auto  pOpener = PopupOpener::create({ .closeOnSelect = false, .label = {.text = "OPEN POPUP"}, .skin = pButtonSkin });
 	pFlex->slots.pushBack(pOpener, { .pos = {50,50}, .size = {70,40} });
@@ -1408,6 +1410,21 @@ bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 	
 	auto pEntry3 = PopupOpener::create( { .attachPoint = Placement::East, .openOnHover = true, .popup = pSupPopup, .popupOverflow = 8, .skin = pButtonSkin });
 	pOpened->slots << pEntry3;
+
+//--------
+
+	auto pRawFlex = pFlex.rawPtr();
+
+	Base::msgRouter()->addRoute( pFlex, MsgType::MousePress, [pRawFlex](Msg * pMsg) {
+
+		static HiColor color = Color::RosyBrown;
+		static HiColor otherColor = Color::Cornsilk;
+
+		pRawFlex->setSkin( ColorSkin::create(color) );
+
+		std::swap(color,otherColor);
+	} );
+
 
 	return true;
 }

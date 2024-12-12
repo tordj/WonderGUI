@@ -124,6 +124,7 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			bool			blockLeftMouseButton = true;			// An open popup blocks other widgets from receiving mouse move and left button events. Other buttons still get through.
 			int				closingDelay = 200;
 			int				closingFade = 200;
 			bool			disabled = false;
@@ -161,6 +162,8 @@ namespace wg
 		PopupOverlay();
 		template<class BP> PopupOverlay(const BP& bp) : popupSlots(this), Overlay(bp)
 		{
+			m_bBlockLeftMouseButton = bp.blockLeftMouseButton;
+
 			m_openingDelayMs	= bp.openingDelay;
 			m_openingFadeMs		= bp.openingFade;
 			m_closingDelayMs	= bp.closingDelay;
@@ -221,8 +224,9 @@ namespace wg
 		int				m_openingFadeMs = 100;
 		int				m_closingDelayMs = 200;
 		int				m_closingFadeMs = 200;
-	};
 
+		bool			m_bBlockLeftMouseButton = true;
+	};
 
 } // namespace wg
 #endif //WG_POPUPOVERLAY_DOT_H

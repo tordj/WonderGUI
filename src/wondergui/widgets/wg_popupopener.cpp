@@ -182,13 +182,13 @@ namespace wg
 
 			case MsgType::MousePress:
 			{
-				if (!m_bOpenOnHover && static_cast<MouseButtonMsg*>(pMsg)->button() == m_mouseButton)
+				if (!m_bOpenOnHover )
 				{
 					if (m_bOpen)
 					{
 						_close();
 					}
-					else
+					else if(static_cast<MouseButtonMsg*>(pMsg)->button() == m_mouseButton)
 					{
 						_open();
 						Base::inputHandler()->_yieldButtonEvents(m_mouseButton, this, m_pPopup);
