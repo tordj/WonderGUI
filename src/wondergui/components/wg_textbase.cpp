@@ -197,7 +197,19 @@ namespace wg
 
 	void TextBase::_setText(const CharSeq& seq)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
+		CharSeq::CharBasket chars = seq.getChars();
+
+		if( chars.length == m_charBuffer.length() )
+		{
+			auto p1 = m_charBuffer.chars();
+			auto p2 = chars.ptr;
+			for( int i = 0 ; i < chars.length ; i++ )
+				if( (* p1++).equals(* p2++) == false )
+					break;
+
+			if( p2 == chars.ptr + chars.length )
+				return;
+		}
 
 		int removed = m_charBuffer.length();
 		m_charBuffer = seq;
@@ -206,7 +218,8 @@ namespace wg
 
 	void TextBase::_setText(const CharBuffer * buffer)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
+		if( m_charBuffer.compareTo(buffer) == 0 )
+			return;
 
 		int removed = m_charBuffer.length();
 		m_charBuffer = *buffer;
@@ -215,7 +228,8 @@ namespace wg
 
 	void TextBase::_setText(const String& str)
 	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to _modified()
+		if( TextTool::strcmp( m_charBuffer.chars(), str.chars() ) == 0 )
+			return;
 
 		int removed = m_charBuffer.length();
 		m_charBuffer = str;
