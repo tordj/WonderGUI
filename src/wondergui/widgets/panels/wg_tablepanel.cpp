@@ -546,7 +546,7 @@ spx TablePanel::_matchingHeight(spx width, int scale) const
 		}
 
 		spx availableWidth = width - totalPadding.w;
-		m_pLayoutX->getItemSizes(pColumnWidths, availableWidth, m_scale, m_nVisibleColumns, pItems);
+		m_pLayoutX->getItemSizes(pColumnWidths, availableWidth, scale, m_nVisibleColumns, pItems);
 
 		Base::memStackFree(itemBytes);
 
@@ -690,7 +690,7 @@ SizeSPX TablePanel::_defaultSize(int scale) const
 
 		Base::memStackFree(arrayBytes);
 
-		return defSize + _sumOfPadding(m_scale);
+		return defSize + _sumOfPadding(scale);
 	}
 }
 
@@ -762,7 +762,7 @@ SizeSPX TablePanel::_minSize(int scale) const
 
 		Base::memStackFree(arrayBytes);
 
-		return minSize + _sumOfPadding(m_scale);
+		return minSize + _sumOfPadding(scale);
 	}
 }
 
