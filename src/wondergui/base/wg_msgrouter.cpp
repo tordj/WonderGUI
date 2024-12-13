@@ -240,6 +240,13 @@ namespace wg
 		return false;
 	}
 
+	//____ clearMsgQueue() _______________________________________________________
+
+	int MsgRouter::clearMsgQueue()
+	{
+		m_msgQueue.clear();
+	}
+
 	//____ clearRoutes() _______________________________________________________
 
 	int MsgRouter::clearRoutes()

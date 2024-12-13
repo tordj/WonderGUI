@@ -83,6 +83,7 @@ namespace wg
 		int			deleteRoutesFrom( Object * pSource );
 		int			deleteRoutesFrom( MsgType type );
 
+		int			clearMsgQueue();		// Deletes all messages in queue without dispatching them.
 		int			clearRoutes();
 		int			garbageCollectRoutes();
 
