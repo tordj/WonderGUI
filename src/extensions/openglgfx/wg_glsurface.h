@@ -128,6 +128,8 @@ namespace wg
 
 		GLuint 		m_paletteTexture = 0;	// GL palette texture handle.
 
+		GLuint		m_framebufferId;		// Initialized and used when m_bCanvas is set.
+
 		GLuint 		m_texture = 0;		// GL texture handle.
 		GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.
 		GLenum		m_accessFormat;		// GL_BGR or GL_BGRA.
