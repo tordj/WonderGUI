@@ -103,7 +103,7 @@ namespace wg
 		const BorderSPX sourceFrame = align(ptsToSpx(patch.frame,pSurface->scale()));
 		const RectSPX _source = align(ptsToSpx(patch.block, pSurface->scale()));
 
-
+		const int surfScale = pSurface->scale();
 
 		// Sanity check & shortcuts.
 
@@ -193,63 +193,77 @@ namespace wg
 
 
 		// Convert offset in area to offset in bitmap.
-/*
-		TJFIX!!!
 
-RectI sourceOfs;
+//		This is a simplified version of code below which ignores rigid parts, since the calculation for the rigid parts is broken.
+
+		{
+			RectSPX sourceOfs;
+
+			sourceOfs.x = (int)(ofs.x / ((double)dest.w) * source.w);
+			sourceOfs.y = (int)(ofs.y / ((double)dest.h) * source.h);
+
+			// Do alpha test
+
+			int alpha = pSurface->alpha( CoordSPX(source.x + sourceOfs.x, source.y + sourceOfs.y) );
+
+			return (alpha >= opacityTreshold);
+		}
+/*
+
+		RectSPX sourceOfs;
 
 		if (markedSectionX == XSections::Center && (patch.rigidPartXSections & markedSectionY) != YSections::None)
 		{
-			int leftSrcLen = patch.rigidPartXOfs;
-			int rightSrcLen = source.w - patch.rigidPartXOfs - patch.rigidPartXLength;
+			int leftSrcLen = patch.rigidPartXOfs*surfScale;
+			int rightSrcLen = source.w - patch.rigidPartXOfs*surfScale - patch.rigidPartXLength*surfScale;
 
 			int totalSrcLen = leftSrcLen + rightSrcLen;
 
-			MU midDstLen = std::min(MU(patch.rigidPartXLength), dest.w);
+			spx midDstLen = std::min(spx(patch.rigidPartXLength*surfScale), dest.w);
 
-			MU leftDstLen = (dest.w - midDstLen) * leftSrcLen / totalSrcLen;
-			MU rightDstLen = dest.w - midDstLen - leftDstLen;
+			spx leftDstLen = (dest.w - midDstLen) * leftSrcLen / totalSrcLen;
+			spx rightDstLen = dest.w - midDstLen - leftDstLen;
 
 			if (ofs.x < leftDstLen)
-				sourceOfs.x = int(ofs.x.qpix / double(leftDstLen.qpix) * leftSrcLen);
+				sourceOfs.x = int(ofs.x / double(leftDstLen) * leftSrcLen);
 			else if (ofs.x < leftDstLen + midDstLen)
 				sourceOfs.x = int(ofs.x - leftDstLen) + leftSrcLen;
 			else
-				sourceOfs.x = int((ofs.x.qpix - leftDstLen.qpix - midDstLen.qpix) / double(rightDstLen.qpix) * rightSrcLen) + leftSrcLen + patch.rigidPartXLength;
+				sourceOfs.x = int((ofs.x - leftDstLen - midDstLen) / double(rightDstLen) * rightSrcLen) + leftSrcLen + patch.rigidPartXLength*surfScale;
 		}
 		else
-			sourceOfs.x = (int)(ofs.x.qpix / ((double)dest.w.qpix) * source.w);
+			sourceOfs.x = (int)(ofs.x / ((double)dest.w) * source.w);
 	
 		
 		if (markedSectionY == YSections::Center && (patch.rigidPartYSections & markedSectionX) != XSections::None)
 		{
-			int topSrcLen = patch.rigidPartYOfs;
-			int bottomSrcLen = source.h - patch.rigidPartYOfs - patch.rigidPartYLength;
+			int topSrcLen = patch.rigidPartYOfs*surfScale;
+			int bottomSrcLen = source.h - patch.rigidPartYOfs*surfScale - patch.rigidPartYLength*surfScale;
 
 			int totalSrcLen = topSrcLen + bottomSrcLen;
 
-			MU midDstLen = std::min(MU(patch.rigidPartYLength), dest.h);
+			spx midDstLen = std::min(spx(patch.rigidPartYLength*surfScale), dest.h);
 
-			MU topDstLen = (dest.h - midDstLen) * topSrcLen / totalSrcLen;
-			MU bottomDstLen = dest.h - midDstLen - topDstLen;
+			spx topDstLen = (dest.h - midDstLen) * topSrcLen / totalSrcLen;
+			spx bottomDstLen = dest.h - midDstLen - topDstLen;
 
 			if (ofs.y < topDstLen)
-				sourceOfs.y = int( ofs.y.qpix / double(topDstLen.qpix) * topSrcLen);
+				sourceOfs.y = int( ofs.y / double(topDstLen) * topSrcLen);
 			else if (ofs.y < topDstLen + midDstLen)
 				sourceOfs.y = int(ofs.y - topDstLen) + topSrcLen;
 			else
-				sourceOfs.y = int((ofs.y.qpix - topDstLen.qpix - midDstLen.qpix) / double(bottomDstLen.qpix) * bottomSrcLen) + topSrcLen + patch.rigidPartYLength;
+				sourceOfs.y = int((ofs.y - topDstLen - midDstLen) / double(bottomDstLen) * bottomSrcLen) + topSrcLen + patch.rigidPartYLength*surfScale;
 		}
 		else
-			sourceOfs.y = (int)(ofs.y.qpix / ((double)dest.h.qpix) * source.h);
+			sourceOfs.y = (int)(ofs.y / ((double)dest.h) * source.h);
 
 		// Do alpha test
 
-		int alpha = pSurface->alpha(source.x + sourceOfs.x, source.y + sourceOfs.y);
+		int alpha = pSurface->alpha( CoordSPX(source.x + sourceOfs.x, source.y + sourceOfs.y) );
 
 		return (alpha >= opacityTreshold);
-*/
-		return true;
+ */
+
 	}
 
 
