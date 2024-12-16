@@ -205,7 +205,10 @@ namespace wg
 			auto p2 = chars.ptr;
 			for( int i = 0 ; i < chars.length ; i++ )
 				if( (* p1++).equals(* p2++) == false )
+				{
+					p2--;
 					break;
+				}
 
 			if( p2 == chars.ptr + chars.length )
 				return;
