@@ -54,6 +54,8 @@ namespace wg
 			bool			disabled = false;
 			Finalizer_p		finalizer = nullptr;
 
+			GfxFlip			flip = GfxFlip::None;
+
 			Glow::Blueprint glow;
 
 			HiColor			gridColor = Color::DarkGray;
@@ -89,6 +91,11 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo TYPEINFO;
 
+		//.____ Appearance ____________________________________________________
+
+		void	setFlip( GfxFlip flip );
+		GfxFlip flip() const { return m_flip; }
+
 		//.____ Control _______________________________________________________
 
 		void	start();
@@ -108,6 +115,10 @@ namespace wg
 			m_maxDisplayTime = bp.maxDisplayTime > 0 ? bp.maxDisplayTime : bp.displayTime;
 
 			m_latency = bp.latency;
+
+			m_flip = bp.flip;
+			m_bAxisSwapped = ( bp.flip == GfxFlip::Rot90 || bp.flip == GfxFlip::Rot90FlipX || bp.flip == GfxFlip::Rot90FlipY ||
+							  bp.flip == GfxFlip::Rot270 || bp.flip == GfxFlip::Rot270FlipX || bp.flip == GfxFlip::Rot270FlipY );
 		}
 
 		virtual ~ScrollChart();
@@ -124,8 +135,10 @@ namespace wg
 
 		void		_requestFullRedraw();
 
-		
-		
+		// Use instead of m_chartCanvas.size(). Takes rotation into account.
+
+		SizeSPX		_canvasSize() const { return m_bAxisSwapped ? SizeSPX( m_chartCanvas.h, m_chartCanvas.w ) : SizeSPX( m_chartCanvas.w, m_chartCanvas.h ); }
+
 		//
 
 	protected:
@@ -133,9 +146,8 @@ namespace wg
 		int			m_maxDisplayTime = 4000000;
 		int64_t		m_latestTimestamp = 0;
 		int			m_latency = 10000;
-		
-	private:
 
+	private:
 		Surface_p	m_pScrollSurface;
 
 		int64_t		m_rightEdgeTimestamp = 0;
@@ -145,11 +157,13 @@ namespace wg
 		PixelFormat	m_scrollSurfaceFormat = PixelFormat::BGRA_8;
 		HiColor		m_scrollSurfaceBgColor = HiColor::Transparent;
 
+		GfxFlip		m_flip = GfxFlip::None;
+		bool		m_bAxisSwapped = false;				// Set if flip results in X and Y being swapped.
+
 		bool		m_bScrolling = false;
 
 		bool		m_bFullRedrawRequested = false;
 		bool		m_bPreRenderRequested = false;
-
 	};
 
 } // namespace wg

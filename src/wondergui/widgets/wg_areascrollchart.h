@@ -171,6 +171,8 @@ namespace wg
 			bool			disabled = false;
 			Finalizer_p		finalizer = nullptr;
 
+			GfxFlip			flip = GfxFlip::None;
+
 			bool			padWithLastSample = false;		// Pad with last sample when we run out of samples. Otherwise default sample is used.
 
 			Glow::Blueprint glow;

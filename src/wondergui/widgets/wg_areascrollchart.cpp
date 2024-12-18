@@ -160,9 +160,9 @@ namespace wg
 
 		spx * pConverted = (spx*) Base::memStackAlloc(wfSamples * sizeof(spx));
 
-		SizeI	canvas = m_chartCanvas.size() / 64;
+		SizeSPX canvasSize = _canvasSize();
 
-		float valueFactor = m_chartCanvas.h / (m_displayFloor - m_displayCeiling);
+		float valueFactor = canvasSize.h / (m_displayFloor - m_displayCeiling);
 
 		int64_t	pixelUS = beginUS;
 
@@ -339,7 +339,9 @@ namespace wg
 	{
 		int64_t	timestampStillDisplayed = m_latestTimestamp - m_maxDisplayTime - m_latency;
 
-		int microsecPerPixel = m_chartCanvas.w > 0 ? m_displayTime / (m_chartCanvas.w / 64) : 0;
+		SizeSPX canvasSize = _canvasSize();
+
+		int microsecPerPixel = canvasSize.w > 0 ? m_displayTime / (canvasSize.w / 64) : 0;
 
 		for( auto& entry : entries )
 		{

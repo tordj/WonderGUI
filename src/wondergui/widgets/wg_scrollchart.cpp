@@ -50,6 +50,17 @@ namespace wg
         return TYPEINFO;
     }
 
+	//____ setFlip() _____________________________________________________________
+
+	void ScrollChart::setFlip( GfxFlip flip )
+	{
+		m_flip = flip;
+		m_bAxisSwapped = ( flip == GfxFlip::Rot90 || flip == GfxFlip::Rot90FlipX || flip == GfxFlip::Rot90FlipY ||
+						  flip == GfxFlip::Rot270 || flip == GfxFlip::Rot270FlipX || flip == GfxFlip::Rot270FlipY );
+
+		_fullRefreshOfChart();
+	}
+
     //____ start() ____________________________________________________________
 
     void ScrollChart::start()
@@ -98,6 +109,9 @@ namespace wg
 
         SizeSPX wantedSize = m_size - _contentBorderSize(m_scale);
 
+		if( m_bAxisSwapped )
+			std::swap(wantedSize.w, wantedSize.h);
+
         if (m_pScrollSurface->pixelSize() * 64 != wantedSize)
             m_pScrollSurface = nullptr;
         else
@@ -108,13 +122,17 @@ namespace wg
 
     void ScrollChart::_renderCharts(GfxDevice* pDevice, const RectSPX& canvas)
     {
-        // Make sure we have a canvas
+		SizeSPX surfaceSize = canvas.size();
+		if( m_bAxisSwapped )
+			std::swap(surfaceSize.w,surfaceSize.h);
+
+		// Make sure we have a canvas
 
         if (m_pScrollSurface == nullptr)
         {
-            m_pScrollSurface = pDevice->surfaceFactory()->createSurface(WGBP(Surface, _.size = canvas.size() / 64, _.format = m_scrollSurfaceFormat, _.canvas = true));
-			m_rightEdgeOfs = canvas.w;
-			m_dirtLen = canvas.w;
+            m_pScrollSurface = pDevice->surfaceFactory()->createSurface(WGBP(Surface, _.size = surfaceSize / 64, _.format = m_scrollSurfaceFormat, _.canvas = true));
+			m_rightEdgeOfs = surfaceSize.w;
+			m_dirtLen = surfaceSize.w;
         }
 
         // Render the charts
@@ -127,13 +145,13 @@ namespace wg
             int overflow = m_dirtLen - m_rightEdgeOfs;
             if (overflow > 0)
             {
-                dirtyRects[0] = { 0, 0, m_rightEdgeOfs, canvas.h };
-                dirtyRects[1] = { canvas.w - overflow, 0, overflow, canvas.h };
+                dirtyRects[0] = { 0, 0, m_rightEdgeOfs, surfaceSize.h };
+                dirtyRects[1] = { surfaceSize.w - overflow, 0, overflow, surfaceSize.h };
                 nDirtyRects = 2;
             }
             else
             {
-                dirtyRects[0] = { m_rightEdgeOfs - m_dirtLen, 0, m_dirtLen, canvas.h };
+                dirtyRects[0] = { m_rightEdgeOfs - m_dirtLen, 0, m_dirtLen, surfaceSize.h };
                 nDirtyRects = 1;
             }
 
@@ -143,7 +161,7 @@ namespace wg
             pDevice->fill(m_scrollSurfaceBgColor);
             pDevice->setBlendMode(BlendMode::Blend);
 
-            _renderOnScrollSurface(pDevice, canvas.size(), m_rightEdgeOfs, m_rightEdgeTimestamp, m_dirtLen);
+            _renderOnScrollSurface(pDevice, surfaceSize, m_rightEdgeOfs, m_rightEdgeTimestamp, m_dirtLen);
 
             pDevice->endCanvasUpdate();
 
@@ -153,8 +171,39 @@ namespace wg
         // Copy scroll surface to our canvas
 
         pDevice->setBlitSource(m_pScrollSurface);
-        pDevice->blit({ canvas.x, canvas.y }, { m_rightEdgeOfs, 0, canvas.w - m_rightEdgeOfs, canvas.h });
-        pDevice->blit({ canvas.x + canvas.w - m_rightEdgeOfs,canvas.y }, { 0,0,m_rightEdgeOfs,canvas.h });
+
+
+		switch( m_flip )
+		{
+			case GfxFlip::None:
+			case GfxFlip::FlipY:
+			case GfxFlip::Rot180FlipX:
+				pDevice->flipBlit( {canvas.x, canvas.y}, { m_rightEdgeOfs, 0, surfaceSize.w - m_rightEdgeOfs, surfaceSize.h }, m_flip );
+				pDevice->flipBlit({ canvas.x + canvas.w - m_rightEdgeOfs,canvas.y }, { 0,0,m_rightEdgeOfs,surfaceSize.h }, m_flip );
+				break;
+
+			case GfxFlip::FlipX:
+			case GfxFlip::Rot180:
+			case GfxFlip::Rot180FlipY:
+				pDevice->flipBlit({canvas.x, canvas.y}, { 0,0,m_rightEdgeOfs,surfaceSize.h }, m_flip );
+				pDevice->flipBlit( { canvas.x + m_rightEdgeOfs,canvas.y }, { m_rightEdgeOfs, 0, surfaceSize.w - m_rightEdgeOfs, surfaceSize.h }, m_flip );
+				break;
+
+			case GfxFlip::Rot90:
+			case GfxFlip::Rot90FlipX:
+			case GfxFlip::Rot270FlipY:
+				pDevice->flipBlit( {canvas.x, canvas.y}, { m_rightEdgeOfs, 0, surfaceSize.w - m_rightEdgeOfs, surfaceSize.h }, m_flip );
+				pDevice->flipBlit({ canvas.x, canvas.y + canvas.h - m_rightEdgeOfs }, { 0, 0, m_rightEdgeOfs, surfaceSize.h }, m_flip );
+				break;
+
+
+			case GfxFlip::Rot90FlipY:
+			case GfxFlip::Rot270:
+			case GfxFlip::Rot270FlipX:
+				pDevice->flipBlit( {canvas.x, canvas.y}, { 0, 0, m_rightEdgeOfs, surfaceSize.h }, m_flip );
+				pDevice->flipBlit({ canvas.x, canvas.y + m_rightEdgeOfs }, { m_rightEdgeOfs, 0, surfaceSize.w - m_rightEdgeOfs, surfaceSize.h }, m_flip );
+				break;
+		}
     }
 
     //____ _update() ____________________________________________________________
@@ -168,7 +217,7 @@ namespace wg
 			if( m_bFullRedrawRequested )
 			{
 				_requestRenderChartArea();
-				m_dirtLen = m_chartCanvas.w;
+				m_dirtLen = _canvasSize().w;
 				m_bFullRedrawRequested = false;
 			}
 			return;
@@ -188,6 +237,8 @@ namespace wg
 		m_bPreRenderRequested = false;
 
         SizeSPX contentSize = m_chartCanvas;
+		if( m_bAxisSwapped )
+			std::swap(contentSize.w,contentSize.h);
 
         int64_t timestamp = m_latestTimestamp - m_latency;
 
