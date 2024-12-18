@@ -135,7 +135,7 @@ namespace wg
 				memcpy(m_pPalette, bp.palette, m_paletteSize);
 			}
 
-			if (m_pPixelDescription->A_mask > 0)
+			if (m_pPixelDescription->A_mask > 0 && bp.canvas == false)
 				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 		}
 
@@ -172,7 +172,7 @@ namespace wg
 				memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8));
 			}
 
-			if (m_pPixelDescription->A_mask > 0)
+			if (m_pPixelDescription->A_mask > 0 && bp.canvas == false)
 			{
 				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 
@@ -273,7 +273,7 @@ namespace wg
 
 			//
 			
-			if (m_pPixelDescription->A_mask > 0)
+			if (m_pPixelDescription->A_mask > 0 && bp.canvas == false)
 			{
 				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 
@@ -326,6 +326,22 @@ namespace wg
         glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0, m_accessFormat, m_pixelDataType, pPixelsToUpload);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 		HANDLE_GLERROR(glGetError());
+
+		//
+
+		if( m_bCanvas )
+		{
+			glGenFramebuffers(1, &m_framebufferId);
+
+			GLint			oldFrameBuffer;
+
+			glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &oldFrameBuffer);
+
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferId);
+			glFramebufferTexture(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_texture, 0);
+
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, oldFrameBuffer);
+		}
 
 		//
 
@@ -496,7 +512,9 @@ namespace wg
         if( m_pBlob )
             g_backingPixels -= m_size.w*m_size.h;
 
-        
+		if( m_bCanvas )
+			glDeleteFramebuffers(1, &m_framebufferId);
+
 		// Free the stuff
 
 		glDeleteTextures( 1, &m_texture );
@@ -639,6 +657,36 @@ namespace wg
 			CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
 
 			return HiColor::unpackLinearTab[m_pAlphaMap[coord.y * m_size.w + coord.x]];
+		}
+		else if( m_bCanvas )
+		{
+			GLint		oldViewport[4];
+			GLint		oldFrameBuffer;
+
+			glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &oldFrameBuffer);
+
+			glGetIntegerv(GL_VIEWPORT, oldViewport);
+
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferId);
+			if (glCheckFramebufferStatus(GL_READ_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			{
+				GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::OpenGL, "Can not read pixel from surface for unknow reason, returning 4096 as alpha value.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+
+				return 4096;
+			}
+
+			glViewport(0, 0, m_size.w, m_size.h);
+
+			CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
+
+			uint32_t	myPixel;
+			glReadPixels(coord.x, coord.y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &myPixel);
+
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, oldFrameBuffer);
+			glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
+
+			return HiColor::unpackLinearTab[ myPixel >> 24 ];
+
 		}
 		else
 			return 4096;
