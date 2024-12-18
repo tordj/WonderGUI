@@ -126,6 +126,18 @@ namespace wg
 		Gradient			m_endOutlineGradient;
 
 
+        // PID Constants
+        static constexpr float kMicrosecondsPerSecond = 1000000.0f;
+        static constexpr float kIntegralDecay = 0.98f;
+        static constexpr float kPidProportionalScale = 0.05f * 0.10f;
+        static constexpr float kPidIntegralScale = 0.1f * 1.00f;
+        static constexpr float kMaxSpeedupFactor = 2.0f;
+        static constexpr float kMaxSlowdownFactor = 0.5f;
+
+        // PID states
+        float m_lastError = 0.0f;
+        float m_errorIntegral = 0.0f;
+
 		// AreaChartEntry samples
 
 		std::vector<SampleSet>	m_samples;
