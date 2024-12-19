@@ -783,9 +783,10 @@ namespace wg
 
 				auto pSource = static_cast<Widget*>(pMsg->originalSource().rawPtr());
 				if (!pSource || pSource == this )
+				
 					_removeTopSlotAndPeeks();
 
-				if( pMsg->button() != MouseButton::Left && m_bBlockLeftMouseButton )
+				if( pSource == this && pMsg->button() != MouseButton::Left && m_bBlockLeftMouseButton )
 				{
 					CoordSPX 	pointerPos = _toLocal(pMsg->pointerSpxPos());
 
