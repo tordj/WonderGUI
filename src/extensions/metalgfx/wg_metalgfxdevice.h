@@ -210,7 +210,7 @@ namespace wg
         id<MTLRenderPipelineState> _compileRenderPipeline( NSString* label, NSString* vertexShader,
                                     NSString* fragmentShader, BlendMode blendMode, PixelFormat destFormat );
         
-        void    _resizeBuffers();
+		void    _resizeBuffers(int commandNeeded, int vertexNeeded, int clipListNeeded, int extrasNeeded, int segEdgeNeeded);
         void    _executeBuffer();
         void    _resetBuffers();
 
@@ -287,8 +287,7 @@ namespace wg
         int             m_extrasBufferSize = 4096;
         float *         m_pExtrasBuffer = nullptr;          // Pointer to content of extras buffer
         int             m_extrasOfs = 0;                    // Write offset in m_pExtrasData
-        int             m_neededExtras = 0;                 // Set to non-zero to potentially force a bigger jump in extrasBufferSize.
-        
+
         id<MTLBuffer>   m_clipListBufferId = nil;
         int             m_clipListBufferSize = 256;
         RectI *         m_pClipListBuffer = nullptr;
@@ -300,7 +299,6 @@ namespace wg
         float *         m_pSegEdgeBuffer = nullptr;
         int             m_segEdgeFlushPoint = 0;
         int             m_segEdgeOfs = 0;
-        int             m_neededSegEdge = 0;
         
         const int       c_segPalEntrySize = 2*4*4*c_maxSegments;  // Bytes per palette (4 pixels of 4 uint16_t per segment).
 
@@ -370,7 +368,7 @@ namespace wg
     inline void MetalGfxDevice::_beginDrawCommand(Command cmd )
     {
         if (m_commandOfs > m_commandBufferSize - 2 )
-            _resizeBuffers();
+            _resizeBuffers(2,0,0,0,0);
 
         m_cmd = cmd;
         m_pCmdFinalizer = &MetalGfxDevice::_drawCmdFinalizer;
@@ -386,7 +384,7 @@ namespace wg
     inline void MetalGfxDevice::_beginDrawCommandWithSource(Command cmd)
     {
         if (m_commandOfs > m_commandBufferSize - 2)
-            _resizeBuffers();
+			_resizeBuffers(2,0,0,0,0);
 
         m_cmd = cmd;
         m_pCmdFinalizer = &MetalGfxDevice::_drawCmdFinalizer;
@@ -405,7 +403,7 @@ namespace wg
     inline void MetalGfxDevice::_beginDrawCommandWithInt(Command cmd, int data)
     {
         if (m_commandOfs > m_commandBufferSize - 3)
-            _resizeBuffers();
+			_resizeBuffers(3,0,0,0,0);
 
         m_cmd = cmd;
         m_pCmdFinalizer = &MetalGfxDevice::_drawCmdFinalizer;
@@ -422,7 +420,7 @@ namespace wg
     inline void MetalGfxDevice::_beginClippedDrawCommand(Command cmd)
     {
         if (m_commandOfs > m_commandBufferSize - 4 || (m_clipCurrOfs == -1 && m_clipWriteOfs > m_clipListBufferSize - m_nClipRects) )
-            _resizeBuffers();
+            _resizeBuffers(4,0,m_nClipRects,0,0);
 
         if (m_clipCurrOfs == -1)
         {
@@ -454,7 +452,7 @@ namespace wg
     inline void MetalGfxDevice::_beginStateCommand(Command cmd, int dataSize)
     {
         if (m_commandOfs > m_commandBufferSize - dataSize - 1 )
-            _resizeBuffers();
+            _resizeBuffers(dataSize+1,0,0,0,0);
 
         m_cmd = cmd;
         m_pCmdFinalizer = &MetalGfxDevice::_dummyFinalizer;
@@ -467,7 +465,7 @@ namespace wg
 inline void MetalGfxDevice::_beginStateCommandWithAlignedData(Command cmd, int dataSize)
 {
 	if (m_commandOfs > m_commandBufferSize - dataSize - 1 - 1 )
-		_resizeBuffers();
+		_resizeBuffers(dataSize+2,0,0,0,0);
 
 	m_cmd = cmd;
 	m_pCmdFinalizer = &MetalGfxDevice::_dummyFinalizer;
