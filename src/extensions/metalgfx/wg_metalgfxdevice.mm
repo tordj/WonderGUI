@@ -1101,7 +1101,7 @@ MetalGfxDevice::MetalGfxDevice()
         //
 
 		if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
-			_resizeBuffers();
+			_resizeBuffers(2, 6*m_nClipRects, 0, 8, 0);
 
 		//
 		
@@ -1249,7 +1249,7 @@ MetalGfxDevice::MetalGfxDevice()
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - nPixels || m_extrasOfs > m_extrasBufferSize - 4 * nPixels)
-            _resizeBuffers();
+            _resizeBuffers(2, nPixels, 0, 4*nPixels, 0);
 
         if (m_cmd != Command::Plot)
         {
@@ -1295,7 +1295,7 @@ MetalGfxDevice::MetalGfxDevice()
         //
         
         if (m_vertexOfs > m_vertexBufferSize - 6 || m_extrasOfs > m_extrasBufferSize - 8 )
-              _resizeBuffers();
+              _resizeBuffers(2, 6, 0, 8, 0);
 
         if (m_cmd != Command::LineFromTo || m_clipCurrOfs == -1)
         {
@@ -1474,7 +1474,7 @@ MetalGfxDevice::MetalGfxDevice()
         //
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
-            _resizeBuffers();
+			_resizeBuffers(2, 6 * m_nClipRects, 0, 8, 0);
 
         if (m_cmd != Command::FillSubPixel)
         {
@@ -1600,7 +1600,7 @@ MetalGfxDevice::MetalGfxDevice()
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 )
-            _resizeBuffers();
+			_resizeBuffers(2, 6 * m_nClipRects, 0, 8, 0);
 
 		
 		if( type == OpType::Blur && m_cmd != Command::Blur )
@@ -1685,7 +1685,8 @@ MetalGfxDevice::MetalGfxDevice()
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
-            _resizeBuffers();
+			_resizeBuffers(2, 6 * m_nClipRects, 0, 8, 0);
+
 
 		if( type == OpType::Blur && m_cmd != Command::Blur )
 		{
@@ -1796,8 +1797,7 @@ MetalGfxDevice::MetalGfxDevice()
         
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 || m_segEdgeOfs > m_segEdgeBufferSize - segEdgeSpaceNeeded )            // various data, transform , colors, edgestrips
         {
-            m_neededSegEdge = segEdgeSpaceNeeded;
-            _resizeBuffers();
+			_resizeBuffers(2, 6 * m_nClipRects, 0, 8, segEdgeSpaceNeeded);
         }
         
         if (m_cmd != Command::Segments || m_nSegments != nSegments )
@@ -2164,12 +2164,12 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _resizeBuffers() ____________________________________________________
     
-    void MetalGfxDevice::_resizeBuffers()
+    void MetalGfxDevice::_resizeBuffers(int commandNeeded, int vertexNeeded, int clipListNeeded, int extrasNeeded, int segEdgeNeeded)
     {
         // We are modifying buffers even though a flush might be in progress.
         // We are assuming that original buffer will be kept alive and utilized during the flush.
         
-        if( (m_commandBufferSize - m_commandOfs) < m_commandBufferSize/4 )
+        if( (m_commandBufferSize - m_commandOfs) < commandNeeded  )
         {
             m_commandBufferSize *= 2;
             int * pNewBuffer = new int[m_commandBufferSize];
@@ -2178,9 +2178,10 @@ MetalGfxDevice::MetalGfxDevice()
             m_pCommandBuffer = pNewBuffer;
         }
 
-        if( (m_vertexBufferSize - m_vertexOfs) < m_vertexBufferSize/4 )
+        if( (m_vertexBufferSize - m_vertexOfs) <vertexNeeded )
         {
-            m_vertexBufferSize *= 2;
+			while( (m_vertexBufferSize - m_vertexOfs) < vertexNeeded )
+				m_vertexBufferSize *= 2;
 
             id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_vertexBufferSize*sizeof(Vertex) options:MTLResourceStorageModeShared];
 
@@ -2192,12 +2193,10 @@ MetalGfxDevice::MetalGfxDevice()
             m_vertexBufferId = newId;
         }
 
-        if( (m_extrasBufferSize - m_extrasOfs) < m_extrasBufferSize/4 || (m_extrasBufferSize - m_extrasOfs) < m_neededExtras )
+        if( (m_extrasBufferSize - m_extrasOfs) < extrasNeeded )
         {
-            m_extrasBufferSize *= 2;
-            while( (m_extrasBufferSize - m_extrasOfs) < m_neededExtras )
+            while( (m_extrasBufferSize - m_extrasOfs) < extrasNeeded )
                 m_extrasBufferSize *= 2;
-            m_neededExtras = 0;
 
             id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_extrasBufferSize*sizeof(float) options:MTLResourceStorageModeShared];
 
@@ -2209,9 +2208,10 @@ MetalGfxDevice::MetalGfxDevice()
             m_extrasBufferId = newId;
         }
 
-        if( (m_clipListBufferSize - m_clipWriteOfs) < m_clipListBufferSize/4 )
+        if( (m_clipListBufferSize - m_clipWriteOfs) < clipListNeeded )
         {
-            m_clipListBufferSize *= 2;
+			while( (m_clipListBufferSize - m_clipWriteOfs) < clipListNeeded )
+				m_clipListBufferSize *= 2;
 
             id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_clipListBufferSize*sizeof(RectI) options:MTLResourceStorageModeShared];
 
@@ -2223,12 +2223,10 @@ MetalGfxDevice::MetalGfxDevice()
             m_clipListBufferId = newId;
         }
         
-        if( (m_segEdgeBufferSize - m_segEdgeOfs ) < m_segEdgeBufferSize/4 || (m_segEdgeBufferSize - m_segEdgeOfs) < m_neededSegEdge )
+        if( (m_segEdgeBufferSize - m_segEdgeOfs) < segEdgeNeeded )
         {
-            m_segEdgeBufferSize *= 2;
-            while( (m_segEdgeBufferSize - m_segEdgeOfs) < m_neededSegEdge )
+            while( (m_segEdgeBufferSize - m_segEdgeOfs) < segEdgeNeeded )
                 m_segEdgeBufferSize *= 2;
-            m_neededSegEdge = 0;
 
             id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_segEdgeBufferSize*sizeof(float) options:MTLResourceStorageModeManaged];
 

@@ -175,6 +175,7 @@ namespace wg
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
+
 		if (newValue == oldValue)
 			return RectSPX();
 
@@ -220,7 +221,7 @@ namespace wg
 			spx totalLen = bHorizontal ? canvas.w : canvas.h;
 			spx minFillLength = ptsToSpx(m_minBarLength, scale);
 
-			spx sideLen = totalLen - minFillLength / 2;
+			spx sideLen = (totalLen - minFillLength) / 2;
 			spx centerLen = totalLen - sideLen * 2;
 
 			// Invert value if direction is inverted
@@ -236,12 +237,12 @@ namespace wg
 			spx ofs1, ofs2;
 
 			if (oldFraction < 0.5f)
-				ofs1 = oldFraction / 2.f * sideLen;
+				ofs1 = oldFraction * 2.f * sideLen;
 			else
 				ofs1 = sideLen + centerLen + (oldFraction - 0.5f) * 2.f * sideLen;
 
 			if (newFraction < 0.5f)
-				ofs2 = newFraction / 2.f * sideLen;
+				ofs2 = newFraction * 2.f * sideLen;
 			else
 				ofs2 = sideLen + centerLen + (newFraction - 0.5f) * 2.f * sideLen;
 
@@ -333,7 +334,7 @@ namespace wg
 
 			spx totalLen = bHorizontal ? canvas.w : canvas.h;
 
-			spx sideLen = totalLen - minFillLength / 2;
+			spx sideLen = (totalLen - minFillLength) / 2;
 			spx centerLen = totalLen - sideLen * 2;
 
 			// Invert value if direction is inverted
@@ -347,7 +348,7 @@ namespace wg
 
 			if (value < 0.5f)
 			{
-				ofs = value / 2.f * sideLen;
+				ofs = value * 2.f * sideLen;
 				len = sideLen + centerLen - ofs;
 			}
 			else
