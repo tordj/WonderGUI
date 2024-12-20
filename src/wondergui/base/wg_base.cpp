@@ -146,10 +146,30 @@ namespace wg
 		if( pNewContext )
 			s_pGUIContext = pNewContext;
 		else
-			s_pGUIContext = new GUIContext();
+		{
+			auto p = new GUIContext();
 
-		GfxBase::setContext(s_pGUIContext->pGfxContext);
-		s_pGUIContext->pGfxContext = GfxBase::context();
+			GfxBase::setContext(nullptr);
+			p->pGfxContext = GfxBase::context();
+
+			p->pDefaultCaret = Caret::create();
+
+			p->pDefaultTextLayout = BasicTextLayout::create({});
+
+			p->pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
+
+			p->pDefaultPackLayout = PackLayout::create( WGBP(PackLayout,
+																		 _.expandFactor = PackLayout::Factor::Weight,
+																		 _.shrinkFactor = PackLayout::Factor::Weight
+																		 ));
+			p->pMsgRouter = MsgRouter::create();
+			p->pInputHandler = InputHandler::create();
+			p->pSkinSlotManager = SkinSlotManager::create();
+
+			p->timestamp = 0;
+
+			s_pGUIContext = p;
+		}
 
 		return pOld;
 	}
@@ -257,6 +277,14 @@ namespace wg
 			s_pGUIContext->pHostBridge->setClipboardText(stdString);
 		}
 	}
+
+	//____ setHostBridge() _______________________________________________________
+
+	void Base::setHostBridge( HostBridge * pHostBridge )
+	{
+		s_pGUIContext->pHostBridge = pHostBridge;
+	}
+
 
 	//____ getClipboardText() ____________________________________________________
 

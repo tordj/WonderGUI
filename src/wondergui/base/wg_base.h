@@ -141,7 +141,7 @@ namespace wg
 		static void			setClipboardText( const String& text );
 		static String		getClipboardText();
 		
-
+		static void			setHostBridge( HostBridge * pHostBridge );
 		static HostBridge *	hostBridge() { return s_pGUIContext->pHostBridge; }
 
 
