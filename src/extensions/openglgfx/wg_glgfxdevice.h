@@ -209,7 +209,6 @@ namespace wg
 		CmdFinalizer_p	m_pCmdFinalizer;
 		int				m_cmdBeginVertexOfs;						// Saved for CmdFinalizer
 
-		GLuint			m_framebufferId;
 		int				m_nSegments;								// Number of segments for current segment command.
 
 		int				m_canvasYstart;

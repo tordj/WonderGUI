@@ -258,8 +258,6 @@ namespace wg
 
 		// Create the buffers we need for FrameBuffer and Vertices
 
-		glGenFramebuffers(1, &m_framebufferId);
-
 		glGenBuffers(1, &m_vertexBufferId);
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
 		glBufferData(GL_ARRAY_BUFFER, c_vertexBufferSize * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW);
@@ -382,7 +380,6 @@ namespace wg
 			glDeleteProgram(m_segmentsProg[i][1][1]);
 		}
 
-		glDeleteFramebuffers(1, &m_framebufferId);
 		glDeleteTextures(1, &m_extrasBufferTex);
 		glDeleteTextures(1, &m_segmentsTintTexId);
 
@@ -2482,11 +2479,10 @@ namespace wg
 		{
 			glEnable(GL_FRAMEBUFFER_SRGB);		// Always use SRGB on Canvas that is SRGB.
 
-			glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, pCanvas->getTexture(), 0);
+			glBindFramebuffer(GL_FRAMEBUFFER, pCanvas->m_framebufferId);
+//			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, pCanvas->getTexture(), 0);
 
-			GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-			glDrawBuffers(1, drawBuffers);
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			{
