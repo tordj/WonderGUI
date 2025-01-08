@@ -198,7 +198,7 @@ namespace wg
 						BorderSPX overflow = m_dragSlot._widget() ? m_dragSlot._widget()->_overflow() : BorderSPX();
 						
 						_requestRender(m_dragSlot.m_geo + overflow);
-						m_dragSlot.m_geo.setPos( pointerPos + m_dragWidgetOfs );
+						m_dragSlot.m_geo.setPos( align(pointerPos + m_dragWidgetOfs) );
 						_requestRender(m_dragSlot.m_geo + overflow);
 
 // MOVE TO TICK!						// Check if we entered/left a (possible) target.
@@ -228,7 +228,7 @@ namespace wg
 						BorderSPX overflow = m_dragSlot._widget() ? m_dragSlot._widget()->_overflow() : BorderSPX();
 
 						_requestRender(m_dragSlot.m_geo + overflow);
-						m_dragSlot.m_geo.setPos( pointerPos + m_dragWidgetOfs );
+						m_dragSlot.m_geo.setPos( align(pointerPos + m_dragWidgetOfs) );
 						_requestRender(m_dragSlot.m_geo + overflow);
 
 
