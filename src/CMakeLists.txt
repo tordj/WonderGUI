@@ -145,6 +145,8 @@ add_subdirectory(wonderapp/wappsdl2)
 
 add_subdirectory(tools)
 add_subdirectory(examples)
+add_subdirectory(themes)
+
 
 #install(TARGETS example01 DESTINATION ${WG_ROOT}/distribution/examples)
 

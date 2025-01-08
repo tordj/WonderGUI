@@ -27,11 +27,12 @@
 #include <vector>
 
 #include <wg_object.h>
-#include <wg_togglebutton.h>
 
 namespace wg
 {
-
+	class ToggleButton;
+	typedef	StrongPtr<ToggleButton>		ToggleButton_p;
+	typedef	WeakPtr<ToggleButton>		ToggleButton_wp;
 
 	class ToggleGroup;
 	typedef	StrongPtr<ToggleGroup>		ToggleGroup_p;
