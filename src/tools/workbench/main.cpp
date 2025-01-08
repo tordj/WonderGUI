@@ -750,7 +750,7 @@ int main(int argc, char** argv)
 		//	spinKnobTest(pSlot);
 		//  animKnobTest(pSlot);
 		//	canvasStackTest(pSlot);
-		//	doubleSkinTest(pSlot);
+			doubleSkinTest(pSlot);
 		//	timerTest(pSlot);
 		//	animPlayerTest(pSlot);
 		//	selectBoxTest(pSlot);
@@ -781,7 +781,7 @@ int main(int argc, char** argv)
 		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-		//	scrollChartTest(pSlot);
+		//  scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
 		//	packPanelStressTest(pSlot);
 		//	packPanelStressTest2(pSlot);
@@ -2131,7 +2131,7 @@ bool doubleSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
-
+/*
 	Surface_p pSurfKnob_bg = loadSurface("resources/knob_bg.png");
 	Surface_p pSurfKnob_fg = loadSurface("resources/knob_fg.png");
 
@@ -2140,16 +2140,37 @@ bool doubleSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .defaultSize = { 400,400 }, .pivot = { 0.5f, 540 / 600.f }, .placement = { 0.5f,0.5f }, .surface = pSurfArrow });
 
+	auto pClockFaceSkin = BlockSkin::create(pSurfClockFace);
+
 	auto pFillMeterSkin = FillMeterSkin::create({ .color = Color::Green, .direction = Direction::Up });
 
-	auto pDoubleSkin = DoubleSkin::create(pArrowSkin, pFillMeterSkin);
+	auto pDoubleSkin = DoubleSkin::create(pArrowSkin, pClockFaceSkin);
 
 	auto pKnob1 = Knob::create();
 	pKnob1->setSkin( pDoubleSkin );
 	pKnob1->setValue(0.5f);
 	pKnob1->setDragRange(500);
 
-	pBaseLayer->slots.pushBack(pKnob1, { .pos = {10, 10}, .size = {400, 100} });
+	pBaseLayer->slots.pushBack(pKnob1, { .pos = {10, 10}, .size = {400, 400} });
+*/
+
+	auto pShadowSurface = Base::defaultSurfaceFactory()->createSurface({ .size = {50,50} });
+	pShadowSurface->fill(Color::Purple);
+
+	auto pShadow = BlockSkin::create({ .overflow = 20, .surface = pShadowSurface });
+
+//	auto pShadow = ColorSkin::create({ .color = Color::Black, .overflow = 20 });
+
+	auto pForeground = ColorSkin::create({ .color = Color::White, .padding = 5 });
+
+	auto pDoubleSkin = DoubleSkin::create(pForeground, pShadow);
+
+	auto pTextEditor = TextEditor::create({ .skin = pDoubleSkin });
+
+	pTextEditor->editor.setText("HEJ");
+
+	pBaseLayer->slots.pushBack(pTextEditor, { .pos = {30, 30} });
+
 	*pSlot = pBaseLayer;
 	return true;
 }

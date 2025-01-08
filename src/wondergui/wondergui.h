@@ -170,6 +170,7 @@
 #include <wg_textstyle.h>
 #include <wg_textstylemanager.h>
 #include <wg_texttool.h>
+#include <wg_theme.h>
 #include <wg_tileskin.h>
 #include <wg_timer.h>
 #include <wg_togglebutton.h>
