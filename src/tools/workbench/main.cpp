@@ -1377,8 +1377,19 @@ bool lineEditorTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 {
+	auto pButtonSkin = BoxSkin::create( WGBP(BoxSkin,
+											 _.outlineThickness = 1,
+											 _.outlineColor = Color::Black,
+											 _.padding = 8,
+											 _.states = { { State::Default, { .color = Color::LightGrey }}, { State::Hovered, { .color = Color::Green }} }
+										));
 
-	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black, 8 );
+	auto pBackSkin = BoxSkin::create( WGBP(BoxSkin,
+											 _.outlineThickness = 1,
+											 _.outlineColor = Color::Black,
+											 _.padding = 8,
+											 _.color = Color::LightGrey
+										));
 
 	
 	auto pPopupOverlay = PopupOverlay::create( { .blockLeftMouseButton = true, .skin = ColorSkin::create(Color::PaleGoldenrod) } );
@@ -1392,7 +1403,7 @@ bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 	auto  pOpener = PopupOpener::create({ .closeOnSelect = false, .label = {.text = "OPEN POPUP"}, .skin = pButtonSkin });
 	pFlex->slots.pushBack(pOpener, { .pos = {50,50}, .size = {70,40} });
 
-	auto pOpened = PackPanel::create( { .axis = Axis::Y, .skin = pButtonSkin } );
+	auto pOpened = PackPanel::create( { .axis = Axis::Y, .skin = pBackSkin } );
 	pOpener->setPopup(pOpened);
 
 	auto pEntry1 = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
