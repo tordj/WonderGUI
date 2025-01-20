@@ -61,10 +61,10 @@ namespace wg
 			s_objectsDestroyed = 0;
 			s_pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 			s_pMemStack = new MemStack( 4096 );
-				
+
 			s_pGearContext = new GearContext();
 		}
-		
+
 		s_initCounter++;
 		return true;
 	}
@@ -78,14 +78,14 @@ namespace wg
 			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to GearBase::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
-		
+
 		if( s_initCounter > 1 )
 		{
 			s_initCounter--;
 			return true;
 		}
-		
-		
+
+
 		if( !s_pPtrPool->isEmpty() )
 		{
 			throwError(ErrorLevel::SilentError, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
@@ -93,7 +93,7 @@ namespace wg
 		}
 
 		s_initCounter = 0;
-		
+
 		if( !s_pMemStack->isEmpty() )
 		{
 			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
@@ -101,12 +101,12 @@ namespace wg
 
 		delete s_pPtrPool;
 		s_pPtrPool = nullptr;
-		
+
 		delete s_pMemStack;
 		s_pMemStack = nullptr;
 
 		// Our context should be the only object alive at this point. Still needed for the error-handler.
-		
+
 		if (s_objectsCreated != s_objectsDestroyed )
 			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 
@@ -118,7 +118,7 @@ namespace wg
 
 	void GearBase::throwError(ErrorLevel severity, ErrorCode code, const char * msg, const Object * pObject, const TypeInfo* pClassType, const char * function, const char * file, int line)
 	{
-		if (s_pGearContext->pErrorHandler)
+		if (s_pGearContext != nullptr && s_pGearContext->pErrorHandler)
 		{
 			Error	error;
 
@@ -185,7 +185,7 @@ namespace wg
 	GearContext_p GearBase::setContext( const GearContext_p& pNewContext )
 	{
 		GearContext_p p = s_pGearContext;
-	
+
 		if( pNewContext )
 			s_pGearContext = pNewContext;
 		else
