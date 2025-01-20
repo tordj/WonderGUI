@@ -77,6 +77,9 @@ namespace wg
 		bool		lockHidePointer();
 		bool		unlockShowPointer();
 
+		void		setStayEnteredList( intptr_t listId, Widget ** pBegin, Widget ** pEnd );
+		void		clearStayEnteredList( intptr_t listId );
+
 		//.____ Behavior ____________________________________________________________
 
 		void		mapKey(int native_keycode, Key translated_keycode);
@@ -112,8 +115,10 @@ namespace wg
 
 		ModKeys modifierKeys() const { return m_modKeys; }
 
-		Coord			pointerPos() {return m_pointerPos;}
-		CoordSPX		pointerSpxPos() {return m_pointerPosSPX;}
+		Coord		pointerPos() {return m_pointerPos;}
+		CoordSPX	pointerSpxPos() {return m_pointerPosSPX;}
+
+		bool		isEntered( Widget * pWidget ) const;
 
 		//.____ Misc _______________________________________________________
 
@@ -134,6 +139,8 @@ namespace wg
 		InputHandler();
 		~InputHandler();
 
+		bool		_isInStayEnteredList( Widget * pWidget ) const;
+
 		Widget *	_updateEnteredWidgets( Widget * pMarkedWidget, int64_t timestamp );
 
 		void		_processButtonPress( MouseButton button, int64_t timestamp );
@@ -147,7 +154,7 @@ namespace wg
 
 		bool		_focusChanged( Root * pRoot, Widget * pOldFocused, Widget * pNewFocused );
 
-		int			_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list );
+		int			_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list ) const;
 
 		void 		_setFocused( Widget * pWidget );
 		void 		_setUnfocused( Widget * pWidget );
@@ -156,7 +163,7 @@ namespace wg
 
 
 		char			m_inputId;
-		int64_t			m_timeStamp;
+		int64_t			m_timestamp;
 
 		Coord			m_pointerPos;
 		CoordSPX		m_pointerPosSPX;
@@ -219,6 +226,7 @@ namespace wg
 
 		std::map<int,std::vector<CommandEntry>> m_commandMap;
 
+		std::map<intptr_t,std::vector<Widget_wp>>	m_stayEnteredLists;
 	};
 
 

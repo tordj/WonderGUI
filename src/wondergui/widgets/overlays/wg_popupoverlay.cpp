@@ -100,6 +100,7 @@ namespace wg
 
 	PopupOverlay::~PopupOverlay()
 	{
+		Base::inputHandler()->clearStayEnteredList(intptr_t(this));
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -286,6 +287,32 @@ namespace wg
 		if (bDoResize)
 			pSlot->_setSize(geo, m_scale);
 	}
+
+	//____ _refreshStayEnteredList() _____________________________________________
+
+	void PopupOverlay::_refreshStayEnteredList()
+	{
+		if( popupSlots.isEmpty() )
+			Base::inputHandler()->clearStayEnteredList(intptr_t(this));
+		else
+		{
+			std::vector<Widget*> stayEnteredWidgets;
+
+			for( auto& slot : popupSlots )
+			{
+				Widget * pWidget = slot.m_pOpener;
+
+				while( pWidget != this && pWidget != nullptr )
+				{
+					stayEnteredWidgets.push_back(pWidget);
+					pWidget = pWidget->parent();
+				}
+			}
+
+			Base::inputHandler()->setStayEnteredList(intptr_t(this), stayEnteredWidgets.data(), stayEnteredWidgets.data() + stayEnteredWidgets.size() );
+		}
+	}
+
 
 	//____ _slotTypeInfo() ________________________________________________________
 
@@ -972,6 +999,8 @@ namespace wg
 
 		if( m_receivingUpdateCounter == 0 )
 			_startReceiveUpdates();
+
+		_refreshStayEnteredList();
 	}
 
 	//____ _removeTopSlotAndPeeks() ______________________________________________
@@ -1011,6 +1040,8 @@ namespace wg
 
 		if (popupSlots.isEmpty() && m_receivingUpdateCounter > 0)
 			_stopReceiveUpdates();
+
+		_refreshStayEnteredList();
 	}
 
 	//____ _beginOverlaySlots() __________________________________________________

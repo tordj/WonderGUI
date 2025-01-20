@@ -177,6 +177,8 @@ namespace wg
 		void			_restoreKeyboardFocus();
 		void			_updateGeo(Slot * pSlot, bool bForceResize = false);
 
+		void			_refreshStayEnteredList();
+
 		// Overloaded from Container
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;

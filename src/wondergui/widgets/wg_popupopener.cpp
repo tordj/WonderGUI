@@ -169,7 +169,6 @@ namespace wg
 			case MsgType::PopupClosed:
 			{
 				m_bOpen = false;
-				_setState(m_closeState);
 				break;
 			}
 
@@ -220,11 +219,6 @@ namespace wg
 
 	void PopupOpener::_setState(State state)
 	{
-		if (m_bOpen)
-		{
-			m_closeState = state;
-			state.setPressed(true);			// Force pressed state when popup is open.
-		}
 		Widget::_setState(state);
 		label._setState(state);
 		_requestRender(); //TODO: Only requestRender if text appearance has changed (let text.setState() return if rendering is needed)
@@ -239,7 +233,6 @@ namespace wg
 		{
 			pLayer->popupSlots.pushFront(m_pPopup, this, pLayer->toLocal(globalGeo()), m_attachPoint, m_bOpenOnHover, m_bCloseOnSelect, Size(1000000, 1000000), m_popupOverflow );
 			m_bOpen = true;
-			m_closeState = m_state;
 		}
 	}
 

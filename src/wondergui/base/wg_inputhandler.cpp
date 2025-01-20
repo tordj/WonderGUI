@@ -35,7 +35,7 @@ namespace wg
 	{
 		m_inputId 		= 1;	//TODO: Make unique between input handlers.
 
-		m_timeStamp 	= 0;
+		m_timestamp 	= 0;
 		m_pointerStyle 	= PointerStyle::Arrow;
 		m_modKeys 		= ModKeys::None;
 
@@ -244,7 +244,7 @@ namespace wg
 		CoordSPX	prevPointerPosSPX = m_pointerPosSPX;
 		
 		if( timestamp == 0 )
-			timestamp = m_timeStamp;
+			timestamp = m_timestamp;
 				
 		m_pointerPos = pos;
 		m_pMarkedRoot = pRoot;
@@ -391,7 +391,7 @@ namespace wg
 		{
 			Widget * pWidget = weakptr.rawPtr();
 
-			if ( pWidget && _widgetPosInList( pWidget, enteredWidgets ) < 0 )
+			if ( pWidget && (_widgetPosInList( pWidget, enteredWidgets ) < 0 && !_isInStayEnteredList(pWidget)) )
 			{
 				MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(pWidget);
@@ -408,7 +408,7 @@ namespace wg
 		{
 			Widget * pWidget = weakptr.rawPtr();
 
-			if( _widgetPosInList( pWidget, m_vEnteredWidgets ) < 0 )
+			if( _widgetPosInList( pWidget, m_vEnteredWidgets ) < 0 && !_isInStayEnteredList(pWidget) )
 			{
 				MouseEnterMsg_p p = MouseEnterMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(pWidget);
@@ -429,7 +429,7 @@ namespace wg
 
 	//____ _widgetPosInList() ________________________________________________________
 
-	int InputHandler::_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list )
+	int InputHandler::_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list ) const
 	{
 		for( size_t i = 0 ; i < list.size() ; i++ )
 			if( list[i].rawPtr() == pWidget )
@@ -466,7 +466,7 @@ namespace wg
 	void InputHandler::_processButtonPress( MouseButton button, int64_t timestamp )
 	{
 		if( timestamp == 0 )
-			timestamp = m_timeStamp;
+			timestamp = m_timestamp;
 
 		Widget* pWidget = m_pMarkedWidget.rawPtr();
 
@@ -534,7 +534,7 @@ namespace wg
 	void InputHandler::_processButtonRelease( MouseButton button, int64_t timestamp )
 	{
 		if( timestamp == 0 )
-			timestamp = m_timeStamp;
+			timestamp = m_timestamp;
 
 
 		// Post BUTTON_RELEASE events for widget that was pressed
@@ -637,7 +637,7 @@ namespace wg
 
 	void InputHandler::_setFocused( Widget * pWidget )
 	{
-		FocusGainedMsg_p pMsg = new FocusGainedMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timeStamp );
+		FocusGainedMsg_p pMsg = new FocusGainedMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timestamp );
 		Base::msgRouter()->post( pMsg );
 	}
 
@@ -645,7 +645,7 @@ namespace wg
 
 	void InputHandler::_setUnfocused( Widget * pWidget )
 	{
-		FocusLostMsg_p pMsg = new FocusLostMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timeStamp );
+		FocusLostMsg_p pMsg = new FocusLostMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timestamp );
 		Base::msgRouter()->post( pMsg );
 	}
 
@@ -663,7 +663,7 @@ namespace wg
 	void InputHandler::setKey( int nativeKeyCode, bool bPressed, int64_t timestamp )
 	{
 		if( timestamp == 0 )
-			timestamp = m_timeStamp;
+			timestamp = m_timestamp;
 
 		if( bPressed )
 			_processKeyPress( nativeKeyCode, timestamp );
@@ -791,7 +791,7 @@ namespace wg
 		if( m_pMarkedWidget )
 		{
 			if( timestamp == 0 )
-				timestamp = m_timeStamp;
+				timestamp = m_timestamp;
 			Base::msgRouter()->post( new WheelRollMsg( m_inputId, wheel, distance, bInvertScroll, m_pMarkedWidget.rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
 		}
 	}
@@ -807,6 +807,29 @@ namespace wg
 		return false;
 	}
 
+	//____ isEntered() ___________________________________________________________
+
+	bool InputHandler::isEntered( Widget * pWidget ) const
+	{
+		if( _widgetPosInList( pWidget, m_vEnteredWidgets ) >= 0 )
+			return true;
+
+		return _isInStayEnteredList(pWidget);
+	}
+
+	//____ _isInStayEnteredList() ____________________________________________________
+
+	bool InputHandler::_isInStayEnteredList( Widget * pWidget ) const
+	{
+		for( auto& vec : m_stayEnteredLists )
+		{
+			if( _widgetPosInList( pWidget, vec.second ) >= 0 )
+				return true;
+		}
+		
+		return false;
+	}
+
 	//____ _update() _________________________________________________________________
 
 	void InputHandler::_update( int64_t timestamp )
@@ -814,7 +837,7 @@ namespace wg
 		_handleButtonRepeats( timestamp );
 		_handleKeyRepeats( timestamp );
 
-		m_timeStamp = timestamp;
+		m_timestamp = timestamp;
 		
 		if( !m_bPointerMovedSinceUpdate )
 			setPointer(m_pMarkedRoot, m_pointerPos);
@@ -833,10 +856,10 @@ namespace wg
 				int64_t firstRepeat = m_latestPressTimestamps[button] + m_buttonRepeatDelay;
 				int64_t repeatPos;			// Next timestamp where a button repeat should occur.
 
-				if( m_timeStamp < firstRepeat )
+				if( m_timestamp < firstRepeat )
 					repeatPos = firstRepeat;
 				else
-					repeatPos = firstRepeat + ((m_timeStamp - firstRepeat) / m_buttonRepeatRate) * m_buttonRepeatRate + m_buttonRepeatRate;
+					repeatPos = firstRepeat + ((m_timestamp - firstRepeat) / m_buttonRepeatRate) * m_buttonRepeatRate + m_buttonRepeatRate;
 
 				while( repeatPos <= timestamp )
 				{
@@ -860,10 +883,10 @@ namespace wg
 			int64_t firstRepeat = key.pressTimestamp + m_keyRepeatDelay;
 			int64_t repeatPos;			// Next timestamp where a key repeat should occur.
 
-			if( m_timeStamp < firstRepeat )
+			if( m_timestamp < firstRepeat )
 				repeatPos = firstRepeat;
 			else
-				repeatPos = firstRepeat + ((m_timeStamp - firstRepeat) / m_keyRepeatRate) * m_keyRepeatRate + m_keyRepeatRate;
+				repeatPos = firstRepeat + ((m_timestamp - firstRepeat) / m_keyRepeatRate) * m_keyRepeatRate + m_keyRepeatRate;
 
 			while( repeatPos <= timestamp )
 			{
@@ -902,5 +925,68 @@ namespace wg
 		else
 			return false;
 	}
+
+	//____ setStayEnteredList() _____________________________________________
+
+	void InputHandler::setStayEnteredList( intptr_t listId, Widget ** pBegin, Widget ** pEnd )
+	{
+		std::vector<Widget_wp> vec;
+
+		// Only alredy entered widgets can stay entered
+
+		while( pBegin < pEnd )
+		{
+			Widget * pWidget = * pBegin++;
+			if( isEntered(pWidget) )
+				vec.push_back(pWidget);
+		}
+
+		// If this releases a previous list, we might need to leave some widgets
+
+		auto it = m_stayEnteredLists.find(listId );
+		if( it != m_stayEnteredLists.end() )
+		{
+			it->second.swap( vec );
+
+			for( auto& pWidget : vec )
+			{
+				if( pWidget != nullptr && !isEntered(pWidget) )
+				{
+					MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timestamp);
+					p->setCopyTo(pWidget);
+					Base::msgRouter()->post(p);
+				}
+			}
+		}
+		else
+		{
+			m_stayEnteredLists[listId] = vec;
+		}
+	}
+
+//____ clearStayEnteredList() _____________________________________________
+
+	void InputHandler::clearStayEnteredList( intptr_t listId )
+	{
+		auto it = m_stayEnteredLists.find(listId );
+		if( it != m_stayEnteredLists.end() )
+		{
+			std::vector<Widget_wp> vec;
+
+			it->second.swap( vec );
+			m_stayEnteredLists.erase(it);
+
+			for( auto& pWidget : vec )
+			{
+				if( pWidget != nullptr && !isEntered(pWidget) )
+				{
+					MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timestamp);
+					p->setCopyTo(pWidget);
+					Base::msgRouter()->post(p);
+				}
+			}
+		}
+	}
+
 
 } // namespace wg
