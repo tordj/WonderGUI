@@ -44,6 +44,7 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			spx				defaultLengthInChars = 20;		// Set to zero for returning default width calculated from actual text in field.
 			bool			disabled = false;
 			bool			dropTarget = false;
 			EditableText::Blueprint	editor;
@@ -75,6 +76,11 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		void				setDefaultLengthInChars( int whitespaceChars );
+		int					defaultLengthInChars() const { return m_defaultLengthInChars; }
+
 		//.____ Behavior ______________________________________________________
 
 		void				setReturnKeyAction(KeyAction action);
@@ -92,6 +98,7 @@ namespace wg
 			editor._initFromBlueprint(bp.editor);
 			editor.setMaxLines(1);
 			m_returnKeyAction = bp.returnKeyAction;
+			m_defaultLengthInChars = bp.defaultLengthInChars;
 		}
 
 		virtual ~LineEditor();
@@ -116,6 +123,7 @@ namespace wg
 	private:
 
 		spx				m_textScrollOfs;
+		int				m_defaultLengthInChars = 20;
 		KeyAction	m_returnKeyAction = KeyAction::ReleaseFocus;
 	};
 
