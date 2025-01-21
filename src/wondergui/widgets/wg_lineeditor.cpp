@@ -54,6 +54,17 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ setDefaultLengthInChars() _____________________________________________
+
+	void LineEditor::setDefaultLengthInChars( int whitespaceChars )
+	{
+		if( whitespaceChars != m_defaultLengthInChars )
+		{
+			m_defaultLengthInChars = whitespaceChars;
+			_requestResize();
+		}
+	}
+
 	//____ setReturnKeyAction() ______________________________________________
 
 	void LineEditor::setReturnKeyAction(KeyAction action)
@@ -69,23 +80,30 @@ namespace wg
 
 		SizeSPX	contentSize;
 
-		TextStyle * pStyle = editor._style();
-
-		Font_p pFont = pStyle->font();
-
-		if (pFont)
+		if( m_defaultLengthInChars < 1 )
 		{
-			pFont->setSize( pStyle->size( State::Default ) * scale );
-			contentSize.w = pFont->whitespaceAdvance() * 20;
-			contentSize.h = pFont->maxAscend() + pFont->maxDescend();
+			contentSize = editor._defaultSize(scale);
 		}
 		else
 		{
-			contentSize.w = 100 * scale;
-			contentSize.h = 16 * scale;
-		}
+			TextStyle * pStyle = editor._style();
 
-		contentSize = alignUp(contentSize);
+			Font_p pFont = pStyle->font();
+
+			if (pFont)
+			{
+				pFont->setSize( pStyle->size( State::Default ) * scale );
+				contentSize.w = pFont->whitespaceAdvance() * m_defaultLengthInChars;
+				contentSize.h = pFont->maxAscend() + pFont->maxDescend();
+			}
+			else
+			{
+				contentSize.w = 100 * scale;
+				contentSize.h = 16 * scale;
+			}
+
+			contentSize = alignUp(contentSize);
+		}
 
 		return m_skin.sizeForContent( contentSize, scale );
 	}

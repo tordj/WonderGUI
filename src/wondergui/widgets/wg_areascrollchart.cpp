@@ -358,7 +358,7 @@ namespace wg
 			auto it = beg;
 
 
-			while( it->timestamp < timestampStillNeeded && it != end )
+			while( it != end && it->timestamp < timestampStillNeeded )
 				it++;
 
 			if( it != beg )
