@@ -161,6 +161,7 @@ bool packPanelStressTest2(ComponentPtr<DynamicSlot> pEntry);
 bool blockingCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry);
 bool tablePanelTest2(ComponentPtr<DynamicSlot> pEntry);
+bool dragndropTest(ComponentPtr<DynamicSlot> pEntry);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -721,7 +722,7 @@ int main(int argc, char** argv)
 //		Base::update(int64_t(SDL_GetTicks()) * 1000 + 5000000);
 
 
-		auto pSlot = ComponentPtr(pRoot, pRoot->slot);
+		auto pSlot = ComponentPtr(pDnDLayer, pDnDLayer->mainSlot);
 
 		//	shadowLayerTest(pRoot->child.ptr());
 		//	stretchBlitTest(pRoot->child.ptr());
@@ -729,7 +730,7 @@ int main(int argc, char** argv)
 		//	textClipTest(pSlot);
 		//	textEditorTest(pSlot);
 		//	lineEditorTest(pSlot);
-			popupOpenerTest(pSlot);
+		//	popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
 		//	splitPanelTest(pSlot);
@@ -779,6 +780,7 @@ int main(int argc, char** argv)
 		//	blockingCapsuleTest(pSlot);
 		//	tablePanelTest(pSlot);
 		//	tablePanelTest2(pSlot);
+			dragndropTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -4218,3 +4220,59 @@ bool tablePanelTest2(ComponentPtr<DynamicSlot> pEntry)
 
 	return true;
 }
+
+bool dragndropTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pTargetSkin = BoxSkin::create(WGBP(BoxSkin,
+											_.outlineColor = Color::Black,
+											_.color = Color::Red,
+											_.states = { {State::Targeted, {.color = Color::Green}} }
+											));
+
+	auto pSourceSkin = BoxSkin::create(WGBP(BoxSkin,
+											_.outlineColor = Color::Black,
+											_.color = Color::Blue,
+											_.states = { {State::Hovered, {.color = Color::LightBlue}} }
+											));
+
+
+	auto pTarget1 = Filler::create(WGBP(Filler,
+										_.skin = pTargetSkin,
+										_.defaultSize = {50,50},
+										_.dropTarget = true,
+										_.id = 0x777));
+
+	auto pTarget2 = Filler::create(WGBP(Filler,
+										_.skin = pTargetSkin,
+										_.defaultSize = {50,50},
+										_.dropTarget = true,
+										_.id = 0x777));
+
+
+	auto pDragable = Filler::create(WGBP(Filler,
+										 _.skin = pSourceSkin,
+										 _.defaultSize = {50,50},
+										 _.pickable = true ));
+
+
+	pBaseLayer->slots.pushBack(pTarget1, { .pos = {20,300} } );
+	pBaseLayer->slots.pushBack(pTarget2, { .pos = {300,20} } );
+	pBaseLayer->slots.pushBack(pDragable, { .pos = {300,300} } );
+
+	Base::msgRouter()->addRoute(pTarget1, MsgType::DropProbe, [](Msg*pMsg){
+		static_cast<DropProbeMsg*>(pMsg)->accept();
+	});
+
+	Base::msgRouter()->addRoute(pTarget2, MsgType::DropProbe, [](Msg*pMsg){
+		static_cast<DropProbeMsg*>(pMsg)->accept();
+	});
+
+
+	*pEntry = pBaseLayer;
+
+	return true;
+}
+
