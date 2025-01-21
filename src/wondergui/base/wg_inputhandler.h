@@ -117,6 +117,7 @@ namespace wg
 
 		Coord		pointerPos() {return m_pointerPos;}
 		CoordSPX	pointerSpxPos() {return m_pointerPosSPX;}
+		PointerStyle pointerStyle() { return m_pointerStyle; }
 
 		bool		isEntered( Widget * pWidget ) const;
 

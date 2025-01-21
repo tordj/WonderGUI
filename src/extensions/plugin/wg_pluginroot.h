@@ -32,6 +32,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_slot.h>
 #include <wg_root.h>
+#include <wg_base.h>
 
 namespace wg
 {
@@ -68,7 +69,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static PluginRoot_p	create();
-		static PluginRoot_p	create( wg_obj myPluginCapsule );
+		static PluginRoot_p	create( wg_obj myPluginCapsule, GUIContext * pContext );
 
 		//.____ Components ____________________________________
 
@@ -133,7 +134,7 @@ namespace wg
 
 	protected:
 		PluginRoot();
-		PluginRoot(wg_obj myPluginCapsule);
+		PluginRoot(wg_obj myPluginCapsule, GUIContext * pContext);
 		~PluginRoot();
 
 		// SlotHolder methods
@@ -202,6 +203,8 @@ namespace wg
 		Widget_wp			m_pFocusedChild;
 		
 		wg_pluginroot_calls	m_interface;
+
+		GUIContext_p		m_pContext;
 	};
 
 

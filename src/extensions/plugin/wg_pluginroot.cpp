@@ -26,7 +26,7 @@
 #include <wg_plugingfxdevice.h>
 #include <wg_container.h>
 #include <wg_util.h>
-#include <wg_base.h>
+#include <wg_pluginbase.h>
 #include <wg_inputhandler.h>
 
 #include <wg_c_pluginroot.h>
@@ -45,9 +45,9 @@ namespace wg
 		return PluginRoot_p(new PluginRoot());
 	}
 
-	PluginRoot_p PluginRoot::create(wg_obj myPluginCapsule)
+	PluginRoot_p PluginRoot::create(wg_obj myPluginCapsule, GUIContext * pContext)
 	{
-		return PluginRoot_p(new PluginRoot(myPluginCapsule));
+		return PluginRoot_p(new PluginRoot(myPluginCapsule, pContext));
 	}
 
 
@@ -80,10 +80,10 @@ namespace wg
 		m_interface.onUpdate		= wg_onPluginUpdate;
 	}
 
-	PluginRoot::PluginRoot(wg_obj myPluginCapsule) : PluginRoot()
+	PluginRoot::PluginRoot(wg_obj myPluginCapsule, GUIContext * pContext) : PluginRoot()
 	{
 		m_pluginCapsule = myPluginCapsule;
-
+		m_pContext		= pContext;
 		PluginCalls::pluginCapsule->connect(m_pluginCapsule, static_cast<Object*>(this), &m_interface);
 	}
 
@@ -230,6 +230,8 @@ namespace wg
 
 	void PluginRoot::_preRender()
 	{
+		PluginBase::setContext(m_pContext);
+
 		for (auto& pWidget : m_preRenderCalls)
 		{
 			if( pWidget )
@@ -246,6 +248,8 @@ namespace wg
 		if (slot.isEmpty())
 			return;
 
+		PluginBase::setContext(m_pContext);
+
 		wg_obj hSurfFactory = PluginCalls::gfxDevice->surfaceFactory(device);
 		wg_obj hWaveFactory = PluginCalls::gfxDevice->edgemapFactory(device);
 
@@ -261,6 +265,8 @@ namespace wg
 
 	void PluginRoot::_resize(const SizeSPX& size, int scale)
 	{
+		PluginBase::setContext(m_pContext);
+
 		m_size = size;
 
 		if (scale >= 0)
@@ -274,6 +280,8 @@ namespace wg
 
 	void PluginRoot::_setState(State state)
 	{
+		PluginBase::setContext(m_pContext);
+
 		State oldState = m_state;
 		m_state = state;
 
@@ -321,15 +329,17 @@ namespace wg
 
 	PointerStyle PluginRoot::_pointerStyle() const
 	{
-		//TODO: Implement!!!
+		PluginBase::setContext(m_pContext);
 
-		return PointerStyle::Arrow;
+		return Base::inputHandler()->pointerStyle();
 	}
 
 	//____ _setPointerPos() ___________________________________________________
 
 	void PluginRoot::_setPointerPos( CoordSPX pos, int64_t timestamp )
 	{
+		PluginBase::setContext(m_pContext);
+
 		Base::inputHandler()->setPointer(this, Util::spxToPts(pos, m_scale), timestamp );
 	}
 
@@ -337,6 +347,8 @@ namespace wg
 
 	void PluginRoot::_setButtonState( int button, bool bPressed, int64_t timestamp )
 	{
+		PluginBase::setContext(m_pContext);
+
 		Base::inputHandler()->setButton((MouseButton) button, bPressed, timestamp );
 	}
 
@@ -344,6 +356,8 @@ namespace wg
 
 	void PluginRoot::_setKeyState( int nativeKeyCode, bool bPressed, int64_t timestamp )
 	{
+		PluginBase::setContext(m_pContext);
+
 		Base::inputHandler()->setKey(nativeKeyCode, bPressed, timestamp );
 	}
 
@@ -351,6 +365,8 @@ namespace wg
 
 	void PluginRoot::_putText( const char * pUTF8Text )
 	{
+		PluginBase::setContext(m_pContext);
+
 		Base::inputHandler()->putText(pUTF8Text);
 	}
 
@@ -358,6 +374,8 @@ namespace wg
 
 	void PluginRoot::_wheelRoll( int wheel, pts distance, bool bInvert, int64_t timestamp )
 	{
+		PluginBase::setContext(m_pContext);
+
 		Base::inputHandler()->setWheelRoll(wheel, distance, bInvert, timestamp);
 	}
 
@@ -366,6 +384,8 @@ namespace wg
 
 	void PluginRoot::_update(int microPassed, int64_t microsecTimestamp)
 	{
+		PluginBase::setContext(m_pContext);
+
 		Base::msgRouter()->dispatch();
 		Base::update(microsecTimestamp);
 	}

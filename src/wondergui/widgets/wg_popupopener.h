@@ -149,7 +149,6 @@ namespace wg
 		bool			m_bOpenOnHover = false;
 		bool			m_bOpen = false;
 		bool			m_bCloseOnSelect = true;
-		State			m_closeState;
 		MouseButton		m_mouseButton = MouseButton::Left;
 	};
 
