@@ -162,6 +162,7 @@ bool blockingCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry);
 bool tablePanelTest2(ComponentPtr<DynamicSlot> pEntry);
 bool dragndropTest(ComponentPtr<DynamicSlot> pEntry);
+bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -780,7 +781,8 @@ int main(int argc, char** argv)
 		//	blockingCapsuleTest(pSlot);
 		//	tablePanelTest(pSlot);
 		//	tablePanelTest2(pSlot);
-			dragndropTest(pSlot);
+		//	dragndropTest(pSlot);
+			fillerTransitionTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -4276,3 +4278,29 @@ bool dragndropTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
+bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+
+	auto pMyFiller = Filler::create( { .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Honeydew)  } );
+
+	pBaseLayer->slots.pushBack(pMyFiller, { .pos = {20,40} });
+
+	auto pButton1 = Button::create({ .label = { .text = "-" }, .skin = ColorSkin::create(Color::LightGrey) });
+	auto pButton2 = Button::create({ .label = { .text = "+" }, .skin = ColorSkin::create(Color::LightGrey) });
+
+	pBaseLayer->slots.pushBack( pButton1, { .pos = {10,10}, .size = {50,20} } );
+	pBaseLayer->slots.pushBack( pButton2, { .pos = {70,10}, .size = {50,20} } );
+
+	Base::msgRouter()->addRoute(pButton1, MsgType::Select, [pMyFiller](Msg*){ pMyFiller->setDefaultSize({30,30}, CoordTransition::create(200000, TransitionCurve::EaseInOut)); } );
+
+	Base::msgRouter()->addRoute(pButton2, MsgType::Select, [pMyFiller](Msg*){ pMyFiller->setDefaultSize({300,160}, CoordTransition::create(2000000, TransitionCurve::EaseInOut)); } );
+
+
+	*pEntry = pBaseLayer;
+
+	return true;
+
+}

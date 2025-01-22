@@ -51,12 +51,31 @@ namespace wg
 
 	//____ setDefaultSize() _______________________________________________________
 
-	void Filler::setDefaultSize( const Size& size )
+	void Filler::setDefaultSize( const Size& size, CoordTransition* pTransition )
 	{
-		if( size != m_defaultSize )
+		if( size == m_defaultSize )
+			return;
+
+		if( pTransition == nullptr )
 		{
 			m_defaultSize = size;
 			_requestResize();
+
+			if( m_pTransition )
+			{
+				_stopReceiveUpdates();
+				m_pTransition = nullptr;
+			}
+		}
+		else
+		{
+			if( m_pTransition == nullptr )
+				_startReceiveUpdates();
+
+			m_pTransition = pTransition;
+			m_transitionProgress = 0;
+			m_startSize = (m_defaultSize.w >= 0 && m_defaultSize.h >= 0) ? m_defaultSize : Util::spxToPts(Widget::_defaultSize(m_scale),m_scale);
+			m_endSize = (size.w >= 0 && size.h >= 0) ? size : Util::spxToPts(Widget::_defaultSize(m_scale),m_scale);
 		}
 	}
 
@@ -66,10 +85,46 @@ namespace wg
 	{
 		if (m_defaultSize.w >= 0 && m_defaultSize.h >= 0)
 		{
-			return SizeSPX(m_defaultSize*scale);
+			return Util::align(SizeSPX(m_defaultSize*scale));
 		}
 		else
 			return Widget::_defaultSize(scale);
 	}
+
+	//____ _update() _____________________________________________________________
+
+	void Filler::_update(int microPassed, int64_t microsecTimestamp)
+	{
+		if( m_pTransition == nullptr )
+			return;					// We assume a subclass is receiving updates.
+
+		m_transitionProgress += microPassed;
+
+		if( m_transitionProgress >= m_pTransition->duration())
+		{
+			m_transitionProgress = m_pTransition->duration();
+			_stopReceiveUpdates();
+			m_pTransition = nullptr;
+
+			if( m_defaultSize != m_endSize )
+			{
+				m_defaultSize = m_endSize;
+				_requestResize();
+			}
+		}
+		else
+		{
+			Coord c = m_pTransition->snapshot(m_transitionProgress, Coord{m_startSize.w,m_startSize.h}, Coord{m_endSize.w,m_endSize.h});
+
+			Size newSize(c.x,c.y);
+
+			if( m_defaultSize != newSize )
+			{
+				m_defaultSize = newSize;
+				_requestResize();
+			}
+		}
+	}
+
 
 } // namespace wg
