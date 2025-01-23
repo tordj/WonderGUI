@@ -49,7 +49,7 @@ namespace wg
 			int				id				= 0;
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
 			bool			pickable		= false;
-			int				pickCategory	= 0;
+			uint8_t			pickCategory	= 0;
 			PointerStyle	pointer			= PointerStyle::Undefined;
 			int				renderLayer		= -1;
 			bool			selectable		= true;
@@ -95,4 +95,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_SHADERCAPSULE_DOT_H
+#endif //WG_RENDERLAYERRCAPSULE_DOT_H

@@ -128,7 +128,7 @@ namespace wg
 			Size					maxEntrySize= { 1000000,1000000 };
 			Size					minEntrySize= {0,0};
 			bool					pickable 	= false;
-			int						pickCategory= 0;
+			uint8_t					pickCategory= 0;
 			PointerStyle			pointer 	= PointerStyle::Undefined;
 			bool					selectable 	= true;
 			Skin_p					skin;

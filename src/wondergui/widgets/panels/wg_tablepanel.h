@@ -198,7 +198,7 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::Undefined;
 			MaskOp			maskOp = MaskOp::Recurse;
 			bool			pickable = false;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
 
 			PackLayout_p	rowLayout;

@@ -371,6 +371,15 @@ namespace wg
 		Mask			///< Mask background against whole container.
 	};
 
+	//____ DropTypes _____________________________________________________________
+
+	enum class DropType
+	{
+		Undefined,
+		TextString,			///< Supplied dataset is a Dataset<std::string> object.
+		Widget,				///< Supplied dataset is a Dataset<Widget_p> object.
+		WidgetVector		///< Supplied dataset is a Dataset<std::vector<Widget_p>> object.
+	};
 
 
 } // namespace wg

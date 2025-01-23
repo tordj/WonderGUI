@@ -66,7 +66,7 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			int				maxDisplayTime = 0;    // microsec of samples saved for changes in displayTime. 0 = st to same as displayTime.
 			bool			pickable = false;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 

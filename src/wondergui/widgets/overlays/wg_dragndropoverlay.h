@@ -123,6 +123,8 @@ namespace wg
 		Slot			m_dragSlot;            // Slot for widget being dragged, when it is dragged.
 
 		Widget_p		m_pPicked;
+		DropType		m_dropType = DropType::Undefined;
+		int				m_category = 0;
 		BasicDataset_p	m_pDataset;
 
 		pts				m_dragStartTreshold;

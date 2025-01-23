@@ -483,7 +483,7 @@ namespace wg
 
 	const TypeInfo DragNDropMsg::TYPEINFO = { "DragNDropMsg", &Msg::TYPEINFO };
 
-	DragNDropMsg::DragNDropMsg( MsgType type, Widget * pSource, int pickCategory, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos )
+	DragNDropMsg::DragNDropMsg( MsgType type, Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos )
 	{
 		m_type = type;
 		m_pSource = pSource;
@@ -491,9 +491,10 @@ namespace wg
 		m_pFinalRecipient = pFinalReceiver;
 		m_modKeys = modKeys;
 		m_pointerPos = pointerPos;
-
 		m_pPickedFrom = pPickedFrom;
-		m_pickCategory = pickCategory;
+
+		m_dropType = dropType;
+		m_category = category;
 		m_pDataset = pDataset;
 	}
 
@@ -517,7 +518,7 @@ namespace wg
 	const TypeInfo DropPickMsg::TYPEINFO = { "DropPickMsg", &DragNDropMsg::TYPEINFO };
 
 	DropPickMsg::DropPickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos )
-	: DragNDropMsg( MsgType::DropPick, pSource, 0, nullptr, pSource, pFinalReceiver, modKeys, pointerPos ),
+	: DragNDropMsg( MsgType::DropPick, pSource, DropType::Undefined, 0, nullptr, pSource, pFinalReceiver, modKeys, pointerPos ),
 	m_dragWidgetPointerOfs(Coord()-pickOfs),
 	m_pickOfs(pickOfs)
 	{
@@ -528,8 +529,10 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	void DropPickMsg::setDataset( BasicDataset * pDataset )
+	void DropPickMsg::setContent( DropType type, int category, BasicDataset * pDataset )
 	{
+		m_dropType = type;
+		m_category = category;
 		m_pDataset = pDataset;
 	}
 
@@ -553,8 +556,8 @@ namespace wg
 
 	const TypeInfo DropProbeMsg::TYPEINFO = { "DropProbeMsg", &DragNDropMsg::TYPEINFO };
 
-	DropProbeMsg::DropProbeMsg(Widget * pSource, int pickCategory, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropProbe, pSource, pickCategory, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
+	DropProbeMsg::DropProbeMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
+		: DragNDropMsg( MsgType::DropProbe, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
 	{
 	}
 
@@ -572,9 +575,9 @@ namespace wg
 
 	const TypeInfo DropEnterMsg::TYPEINFO = { "DropEnterMsg", &DragNDropMsg::TYPEINFO };
 
-	DropEnterMsg::DropEnterMsg(Widget * pSource, int pickCategory, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget,
+	DropEnterMsg::DropEnterMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget,
 							   Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropEnter, pSource, pickCategory, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
+		: DragNDropMsg( MsgType::DropEnter, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_pDragWidget(pDragWidget)
 	{
 	}
@@ -599,9 +602,9 @@ namespace wg
 
 	const TypeInfo DropMoveMsg::TYPEINFO = { "DropMoveMsg", &DragNDropMsg::TYPEINFO };
 
-	DropMoveMsg::DropMoveMsg(Widget * pSource, int pickCategory, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget,
+	DropMoveMsg::DropMoveMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget,
 							 Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropMove, pSource, pickCategory, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
+		: DragNDropMsg( MsgType::DropMove, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_pDragWidget(pDragWidget)
 	{
 	}
@@ -625,8 +628,8 @@ namespace wg
 
 	const TypeInfo DropLeaveMsg::TYPEINFO = { "DropLeaveMsg", &DragNDropMsg::TYPEINFO };
 
-	DropLeaveMsg::DropLeaveMsg(Widget * pSource, int pickCategory, BasicDataset * pDataset, Widget * pPickedFrom, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropLeave, pSource, pickCategory, pDataset, pPickedFrom, nullptr, modKeys, pointerPos)
+	DropLeaveMsg::DropLeaveMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, ModKeys modKeys, Coord pointerPos)
+		: DragNDropMsg( MsgType::DropLeave, pSource, type, category, pDataset, pPickedFrom, nullptr, modKeys, pointerPos)
 	{
 	}
 
@@ -639,8 +642,8 @@ namespace wg
 
 	const TypeInfo DropDeliverMsg::TYPEINFO = { "DropDeliverMsg", &DragNDropMsg::TYPEINFO };
 
-	DropDeliverMsg::DropDeliverMsg(Widget * pSource, int pickCategory, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropDeliver, pSource, pickCategory, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
+	DropDeliverMsg::DropDeliverMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
+		: DragNDropMsg( MsgType::DropDeliver, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_bAccepted(false)
 	{
 	}
@@ -664,8 +667,8 @@ namespace wg
 
 	const TypeInfo DropCancelMsg::TYPEINFO = { "DropCancelMsg", &DragNDropMsg::TYPEINFO };
 
-	DropCancelMsg::DropCancelMsg(Widget * pPickedFrom, int pickCategory, BasicDataset * pDataset, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropCancel, pPickedFrom, pickCategory, pDataset, pPickedFrom, nullptr, modKeys, pointerPos)
+	DropCancelMsg::DropCancelMsg(Widget * pPickedFrom, DropType type, int category, BasicDataset * pDataset, ModKeys modKeys, Coord pointerPos)
+		: DragNDropMsg( MsgType::DropCancel, pPickedFrom, type, category, pDataset, pPickedFrom, nullptr, modKeys, pointerPos)
 	{
 	}
 
@@ -678,8 +681,8 @@ namespace wg
 
 	const TypeInfo DropCompleteMsg::TYPEINFO = { "DropCompleteMsg", &DragNDropMsg::TYPEINFO };
 
-	DropCompleteMsg::DropCompleteMsg(Widget * pPicked, Widget * pDeliveree, int pickCategory, BasicDataset * pDataset, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropComplete, pPicked, pickCategory, pDataset, pPicked, nullptr, modKeys, pointerPos),
+	DropCompleteMsg::DropCompleteMsg(Widget * pPicked, Widget * pDeliveree, DropType type, int category, BasicDataset * pDataset, ModKeys modKeys, Coord pointerPos)
+		: DragNDropMsg( MsgType::DropComplete, pPicked, type, category, pDataset, pPicked, nullptr, modKeys, pointerPos),
 		m_pDeliveree(pDeliveree)
 	{
 	}

@@ -72,7 +72,7 @@ namespace wg
 			CanvasLayers_p	layers			= nullptr;
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
 			bool			pickable		= false;
-			int				pickCategory	= 0;
+			uint8_t			pickCategory	= 0;
 			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
 			Placement		placement		= Placement::Center;
 			PointerStyle	pointer			= PointerStyle::Undefined;

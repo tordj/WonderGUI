@@ -213,7 +213,7 @@ namespace wg
 						if( pProbed && pProbed != this && pProbed != m_pProbed )
 						{
 							m_pProbed = pProbed;
-							Base::msgRouter()->post(new DropProbeMsg(pProbed, m_pickCategory, m_pDataset, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+							Base::msgRouter()->post(new DropProbeMsg(pProbed, m_dropType, m_category, m_pDataset, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
 						}
 
 						break;
@@ -246,7 +246,7 @@ namespace wg
 							// Untarget previous target. Probing possibly new target we leave for next round.
 
 							if( m_pTargeted )
-								Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_pickCategory, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
+								Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
 
 							m_pTargeted = nullptr;
 							m_dragState = DragState::Dragging;
@@ -256,7 +256,7 @@ namespace wg
 
 						if( m_pTargeted )                                   // Check our weak pointer just in case it has been deleted...
 						{
-							Base::msgRouter()->post(new DropMoveMsg(m_pTargeted, m_pickCategory, m_pDataset, m_pPicked, m_dragSlot._widget(), this, pMsg->modKeys(), pMsg->pointerPos()));
+							Base::msgRouter()->post(new DropMoveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, m_dragSlot._widget(), this, pMsg->modKeys(), pMsg->pointerPos()));
 						}
 
 						break;
@@ -277,13 +277,25 @@ namespace wg
 
 				auto pSource = static_cast<Widget*>(pMsg->originalSource().rawPtr());
 
-				while (pSource && pSource != this && !pSource->isPickable())
-					pSource = pSource->parent();
+				while (pSource && pSource != this && !pSource->isPickable() && !pSource->isPickHandle())
+					pSource = pSource->_parent();
+
+				Widget * pPickHandle = nullptr;
+
+				if(pSource && pSource != this && pSource->isPickHandle() )
+				{
+					pPickHandle = pSource;
+
+					while (pSource && pSource != this && !pSource->isPickable())
+						pSource = pSource->_parent();
+				}
 
 				if (pSource && pSource != this && pSource->isPickable())
 				{
+					if( pSource->isContainer() && static_cast<Container*>(pSource)->usePickHandles() && pPickHandle == nullptr )
+						break;					// Container uses pickHandles but no pickHandle was picked.
+
 					m_pPicked = pSource;
-					m_pickCategory = pSource->pickCategory();
 					m_dragState = DragState::Picking;
 				}
 				break;
@@ -316,9 +328,9 @@ namespace wg
 					{
 						if( m_pTargeted )
 						{
-							Base::msgRouter()->post(new DropDeliverMsg(m_pTargeted, m_pickCategory, m_pDataset, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+							Base::msgRouter()->post(new DropDeliverMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
 							m_dragState = DragState::Delivering;
-							Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_pickCategory, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
+							Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
 							m_pTargeted = nullptr;
 						}
 						else
@@ -339,8 +351,10 @@ namespace wg
 
 				if (pMsg->hasDataset() && m_dragState == DragState::Picked )
 				{
-					// Set dataset
+					// Grab data from the message
 
+					m_dropType = pMsg->dropType();
+					m_category = pMsg->category();
 					m_pDataset = pMsg->dataset();
 
 					// Set/generate drag widget (widget actually dragged across the screen)
@@ -384,7 +398,7 @@ namespace wg
 				{
 					Widget * pTargeted = static_cast<Widget*>(pMsg->sourceRawPtr());
 
-					Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_pickCategory, m_pDataset, m_pPicked, m_dragSlot._widget(),  this, pMsg->modKeys(), pMsg->pointerPos()));
+					Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, m_dragSlot._widget(),  this, pMsg->modKeys(), pMsg->pointerPos()));
 
 					m_pProbed = nullptr;
 					m_pTargeted = pTargeted;
@@ -454,12 +468,14 @@ namespace wg
 
 		if( m_pTargeted )
 		{
-			Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_pickCategory, m_pDataset, m_pPicked, modKeys, pointerPos));
+			Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, modKeys, pointerPos));
 			m_pTargeted = nullptr;
 		}
 
-		Base::msgRouter()->post(new DropCancelMsg(m_pPicked, m_pickCategory, nullptr, modKeys, pointerPos));
+		Base::msgRouter()->post(new DropCancelMsg(m_pPicked, m_dropType, m_category, nullptr, modKeys, pointerPos));
 		m_pPicked = nullptr;
+		m_dropType = DropType::Undefined;
+		m_category = 0;
 		m_pDataset = nullptr;
 		m_dragState = DragState::Idle;
 	}
@@ -478,8 +494,10 @@ namespace wg
 			m_dragSlot._setWidget(nullptr);
 		}
 
-		Base::msgRouter()->post(new DropCompleteMsg(m_pPicked, pDeliveredTo, m_pickCategory, m_pDataset, modKeys, pointerPos));
+		Base::msgRouter()->post(new DropCompleteMsg(m_pPicked, pDeliveredTo, m_dropType, m_category, m_pDataset, modKeys, pointerPos));
 		m_pPicked = nullptr;
+		m_dropType = DropType::Undefined;
+		m_category = 0;
 		m_pDataset = nullptr;
 		m_dragState = DragState::Idle;
 	}

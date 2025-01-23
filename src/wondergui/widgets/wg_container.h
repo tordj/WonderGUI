@@ -67,6 +67,11 @@ namespace wg
 
 			void		setSkin(Skin* pSkin) override;
 
+			//.____ Behavior ______________________________________________________
+
+			void		setUsePickHandles( bool bUseHandles );
+			bool		usePickHandles() { return m_bUsePickHandles;}
+
 			//.____ Misc ______________________________________________________
 
 			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(Util::ptsToSpx(ofs,m_scale),mode)); }
@@ -158,6 +163,7 @@ namespace wg
 			virtual void			_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip ) override;
 
 			bool					m_bSiblingsOverlap = true;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).		
+			bool					m_bUsePickHandles = false;
 			BorderSPX				m_overflow;
 
 	};

@@ -109,7 +109,7 @@ namespace wg
 			Skin_p			listSkin;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;

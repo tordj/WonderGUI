@@ -69,6 +69,13 @@ namespace wg
 			_requestResize();
 	}
 
+	//____ setUsePickingHandles() ____________________________________________
+
+	void Container::setUsePickHandles( bool bUseHandles )
+	{
+		m_bUsePickHandles = bUseHandles;
+	}
+
 	//____ contains() _________________________________________________________
 
 	bool Container::contains(const Widget * pWidget ) const

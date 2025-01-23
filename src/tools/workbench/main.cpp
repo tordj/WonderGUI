@@ -41,6 +41,8 @@
 #include <wg_freetypefont.h>
 
 #include <wg_tablepanel.h>
+#include <wg_reordercapsule.h>
+
 
 //#define USE_OPEN_GL
 
@@ -163,6 +165,7 @@ bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry);
 bool tablePanelTest2(ComponentPtr<DynamicSlot> pEntry);
 bool dragndropTest(ComponentPtr<DynamicSlot> pEntry);
 bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry);
+bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -782,7 +785,8 @@ int main(int argc, char** argv)
 		//	tablePanelTest(pSlot);
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
-			fillerTransitionTest(pSlot);
+		//	fillerTransitionTest(pSlot);
+			reorderCapsuleTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -4298,6 +4302,32 @@ bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry)
 
 	Base::msgRouter()->addRoute(pButton2, MsgType::Select, [pMyFiller](Msg*){ pMyFiller->setDefaultSize({300,160}, CoordTransition::create(2000000, TransitionCurve::EaseInOut)); } );
 
+
+	*pEntry = pBaseLayer;
+
+	return true;
+
+}
+
+bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pBucketSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black, .padding = 1 });
+
+	auto pBucket1 = ReorderCapsule::create( { .skin = pBucketSkin });
+
+	auto pPackPanel = PackPanel::create();
+
+	auto pFiller1 = Filler::create( { .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Honeydew)  } );
+	auto pFiller2 = Filler::create( { .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Chartreuse) } );
+
+	pPackPanel->slots.pushBack({pFiller1, pFiller2});
+
+	pBucket1->slot = pPackPanel;
+
+	pBaseLayer->slots.pushBack(pBucket1);
 
 	*pEntry = pBaseLayer;
 

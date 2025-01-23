@@ -90,7 +90,7 @@ namespace wg
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
 			MaskOp			maskOp			= MaskOp::Recurse;
 			bool			pickable		= false;
-			int				pickCategory	= 0;
+			uint8_t			pickCategory	= 0;
 			PointerStyle	pointer			= PointerStyle::Undefined;
 			float			resizeRatio		= 0.5f;
 			bool			selectable		= true;

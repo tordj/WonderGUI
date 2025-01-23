@@ -643,7 +643,7 @@ namespace wg
 
 	//____ setPickable() ____________________________________________________________
 
-	void Widget::setPickable( bool bPickable, int category )
+	void Widget::setPickable( bool bPickable, uint8_t category )
 	{
 		m_bPickable = bPickable;
 		m_pickCategory = category;
@@ -824,7 +824,7 @@ namespace wg
 				auto pMsg = static_cast<DropPickMsg*>(_pMsg);
 				if (!pMsg->hasDataset())
 				{
-					pMsg->setDataset(BasicDataset::create());
+					pMsg->setContent(DropType::Widget, m_pickCategory, Dataset<Widget_p>::create());
 				}
 				break;
 			}
