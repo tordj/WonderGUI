@@ -93,7 +93,7 @@ namespace wg
 
 		void		setMouseButton(MouseButton button);
 		MouseButton	mouseButton() const { return m_mouseButton; }
-		
+
 		void		setAttachPoint(Placement attachPoint);
 		Placement	attachPoint() const { return m_attachPoint;  }
 
@@ -103,7 +103,7 @@ namespace wg
 
 		SizeSPX			_defaultSize(int scale) const override;
 
-
+        bool            open() const { return m_bOpen; }
 	protected:
 		PopupOpener();
 
@@ -120,7 +120,7 @@ namespace wg
 			m_mouseButton	= bp.mouseButton;
 			m_popupOverflow	= bp.popupOverflow;
 		}
-		
+
 		virtual ~PopupOpener();
 
 		void			_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

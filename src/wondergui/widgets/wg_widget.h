@@ -110,7 +110,7 @@ namespace wg
 		//.____ Geometry ______________________________________________________
 
 		inline int			scale() const;
-	
+
 		inline const Size	size() const;
 		inline Rect			globalGeo() const;
 
@@ -138,7 +138,7 @@ namespace wg
 		void				releaseFromParent();
 
 		bool				isDescendantOf(Widget* pAncestor);
-		
+
 		Widget_p			commonAncestor(Widget* pOtherWidget);
 
 		//.____ State _________________________________________________________
@@ -154,7 +154,7 @@ namespace wg
 		virtual bool		setSelected( bool bSelected );
 		inline bool			isSelected();
 
-		
+
 		bool				grabFocus(bool bRaiseWindow = false);
 		bool				releaseFocus();
 		bool				isFocused();
@@ -203,10 +203,11 @@ namespace wg
 
 		void				bringIntoView( Border margin = 0);
 		void				bringIntoView( Rect area, Border margin = 0 );
-		
+
 		Surface_p			screenshot( const Surface::Blueprint& bp = Surface::Blueprint() );
 		Surface_p			screenshot(const Rect& rect, const Surface::Blueprint& bp = Surface::Blueprint() );
 
+        inline bool         mouseOnWidget(const Coord& coord) const;
 
 		//.____ Internal ______________________________________________________
 
@@ -224,6 +225,7 @@ namespace wg
 		inline const SizeSPX& _size() const;
 		inline int			_scale() const override;
 
+
 		inline RectSPX		_globalGeo() const;
 
 		inline CoordSPX		_toGlobal(const CoordSPX& coord) const;
@@ -239,11 +241,11 @@ namespace wg
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);
 
 		virtual void		_resize(const SizeSPX& size, int scale);
-		
+
 		inline bool			_hasOverflow() { return m_bOverflow; }
 		virtual BorderSPX	_overflow() const;
 		virtual RectSPX		_renderBounds() const;
-		
+
 		virtual void		_setState(State state);
 
 		virtual void		_receive(Msg* pMsg);
@@ -263,7 +265,7 @@ namespace wg
 
 			if( bp.markPolicy != MarkPolicy::Undefined )
 				m_markPolicy = bp.markPolicy;
-			
+
 			m_bPickable		= bp.pickable;
 			m_pickCategory	= bp.pickCategory;
 			m_pointerStyle	= bp.pointer;
@@ -271,7 +273,7 @@ namespace wg
 			m_bStickyFocus	= bp.stickyFocus;
 			m_bTabLock		= bp.tabLock;
 			m_tooltip		= bp.tooltip;
-			
+
 			if( bp.finalizer )
 				setFinalizer(bp.finalizer);
 
@@ -330,7 +332,7 @@ namespace wg
 		virtual CoordSPX	_componentToLocal( const Component * pComponent, CoordSPX coord ) const;
 		virtual CoordSPX	_componentToLocal( const Component * pComponent, RectSPX rect ) const;
 
-		
+
 		virtual void		_componentRequestRender( const Component * pComponent );
 		virtual void		_componentRequestRender( const Component * pComponent, const RectSPX& rect );
 		virtual void		_componentRequestResize( const Component * pComponent );
@@ -424,12 +426,12 @@ namespace wg
 	 * @brief Get scale of widget.
 	 *
 	 * Get the scale of the widget.
-	 * 
+	 *
 	 * The scale value specifies the size of a point in subpixels (1/64th pixel),
 	 * thus is 64 the default scale where one point equals one pixel. A scale
 	 * value of 128 doubles the size of the widget (if allowed by the parent)
 	 * and all content within, including fonts and graphics.
-	 * 
+	 *
 	 * @return Scale measured in subpixels per point.
 	 */
 
@@ -602,7 +604,7 @@ namespace wg
 	 *
 	 * @return The recommended width for the given height.
 	 */
-	 
+
 	pts Widget::matchingWidth( pts height ) const
 	{
 		return Util::spxToPts(_matchingWidth(Util::ptsToSpx(height, m_scale), m_scale), m_scale);		// Default is to stick with default height no matter what width.
@@ -689,6 +691,15 @@ namespace wg
 		return m_scale;
 	}
 
+    //____ mouseOnWidget() ___________________________________________________________
+
+    bool Widget::mouseOnWidget(const Coord& coord) const
+    {
+        const auto geo = Util::spxToPts(_globalGeo(), m_scale);
+        return coord.x >= geo.x  && coord.x <= geo.x + geo.w &&
+               coord.y >= geo.y  && coord.y <= geo.y + geo.y;
+    }
+
 	//____ _globalGeo() __________________________
 
 	RectSPX Widget::_globalGeo() const
@@ -773,7 +784,7 @@ namespace wg
 	};
 
 	//____ nextSibling() ____________________________________________________________
-	/** 
+	/**
 	 * @brief Get next sibling.
 	 *
 	 * Get the widgets next sibling. Order of siblings is determined by parent
@@ -790,7 +801,7 @@ namespace wg
 	}
 
 	//____ prevSibling() ____________________________________________________________
-	/** 
+	/**
 	 * @brief Get previous sibling.
 	 *
 	 * Get the widgets previous sibling. Order of siblings is determined by parent
@@ -811,17 +822,17 @@ namespace wg
 	 * @brief Set widgets tooltip string.
 	 *
 	 * Sets a string that is used as the tooltip for the widget. A tooltip with this
-	 * text will be displayed by the TooltipOverlay (if one is present in the hierarchy) when 
+	 * text will be displayed by the TooltipOverlay (if one is present in the hierarchy) when
 	 * the mouse hovers over the widget.
 	 *
-	 * Note: A widget may override the tooltip set by this method and display another 
+	 * Note: A widget may override the tooltip set by this method and display another
 	 * text, depending on the situation and exact position of the pointer.
-	 * 
+	 *
 	 */
 
-	void Widget::setTooltip(const String& str) 
-	{ 
-		m_tooltip = str; 
+	void Widget::setTooltip(const String& str)
+	{
+		m_tooltip = str;
 	}
 
 
@@ -833,14 +844,14 @@ namespace wg
 	 * Gets the string to be displayed in a tooltip when the mouse hovers over the widget.
 	 *
 	 * Note: This string might be different from what has been set using setTooltip().
-	 * Some widgets can decide to display something else depending on the situation 
+	 * Some widgets can decide to display something else depending on the situation
 	 * and exact position of the pointer.
 	 *
 	 * @return void
 	 */
 
-	String Widget::tooltip() const 
-	{ 
+	String Widget::tooltip() const
+	{
 		if(m_showToolTip)
 		{
 			return m_tooltip;
@@ -857,58 +868,58 @@ namespace wg
 
 	//____ setPointerStyle() __________________________________________________
 
-	void Widget::setPointerStyle(PointerStyle style) 
-	{ 
-		m_pointerStyle = style; 
+	void Widget::setPointerStyle(PointerStyle style)
+	{
+		m_pointerStyle = style;
 	}
 
 	//____ setMarkPolicy() ___________________________________________________
 
-	void Widget::setMarkPolicy(MarkPolicy policy) 
-	{ 
-		m_markPolicy = policy; 
+	void Widget::setMarkPolicy(MarkPolicy policy)
+	{
+		m_markPolicy = policy;
 	}
 
 	//____ markPolicy() ______________________________________________________
 
-	MarkPolicy Widget::markPolicy() const 
-	{ 
-		return m_markPolicy; 
+	MarkPolicy Widget::markPolicy() const
+	{
+		return m_markPolicy;
 	}
 
 	//____ setTabLock() _______________________________________________________
 
-	void Widget::setTabLock(bool bLock) 
-	{ 
-		m_bTabLock = bLock; 
+	void Widget::setTabLock(bool bLock)
+	{
+		m_bTabLock = bLock;
 	}
 
 	//____ isTabLocked() ______________________________________________________
 
-	bool Widget::isTabLocked() const 
-	{ 
-		return m_bTabLock; 
+	bool Widget::isTabLocked() const
+	{
+		return m_bTabLock;
 	}
 
 	//____ isPickable() _______________________________________________________
 
-	bool Widget::isPickable() const 
-	{ 
-		return m_bPickable; 
+	bool Widget::isPickable() const
+	{
+		return m_bPickable;
 	}
 
 	//____ pickCategory() _____________________________________________________
 
-	int Widget::pickCategory() const 
-	{ 
-		return m_pickCategory; 
+	int Widget::pickCategory() const
+	{
+		return m_pickCategory;
 	}
 
 	//____ isDropTarget() ____________________________________________________
 
-	bool Widget::isDropTarget() const 
-	{ 
-		return m_bDropTarget; 
+	bool Widget::isDropTarget() const
+	{
+		return m_bDropTarget;
 	}
 
 
