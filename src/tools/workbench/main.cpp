@@ -787,8 +787,8 @@ int main(int argc, char** argv)
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-		//	reorderCapsuleTest(pSlot);
-			widgetMoveTest(pSlot);
+			reorderCapsuleTest(pSlot);
+		//	widgetMoveTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -4324,8 +4324,11 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 	auto pFiller1 = Filler::create( { .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Honeydew)  } );
 	auto pFiller2 = Filler::create( { .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Chartreuse) } );
+	auto pFiller3 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Gainsboro) });
+	auto pFiller4 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::LemonCiffon) });
+	auto pFiller5 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Moccasin) });
 
-	pPackPanel->slots.pushBack({pFiller1, pFiller2});
+	pPackPanel->slots.pushBack({pFiller1, pFiller2, pFiller3, pFiller4, pFiller5 });
 
 	pBucket1->slot = pPackPanel;
 

@@ -229,14 +229,16 @@ namespace wg
 		EditCommand,
 		WheelRoll,
 
-		DropPick,
-		DropProbe,
-		DropEnter,
-		DropMove,
-		DropLeave,
-		DropDeliver,
-		DropCancel,
-		DropComplete,
+		DropPick,					// Sent to picked
+		DropSequenceStart,			// Sent to picked
+		DropSequenceAbort,			// Sent to picked
+		DropProbe,					// Sent to target
+		DropEnter,					// Sent to target
+		DropMove,					// Sent to target
+		DropLeave,					// Sent to target
+		DropDeliver,				// Sent to target
+		DropCancel,					// Sent to picked
+		DropComplete,				// Sent to picked
 
 		Select,						// Non-value widget triggered, like a button being pressed.
 		Unselect,					// Used by ToggleGroup when ToggleButton is unselected (but no other selected).

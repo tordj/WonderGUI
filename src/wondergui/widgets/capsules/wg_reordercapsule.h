@@ -86,16 +86,61 @@ namespace wg
 
 		virtual ~ReorderCapsule();
 
-		void	_receive(Msg* pMsg) override;
-		void	_update(int microPassed, int64_t microsecTimestamp) override;
+		void		_receive(Msg* pMsg) override;
+		void		_update(int microPassed, int64_t microsecTimestamp) override;
+		Container*	_ourContainer();
+		void		_markPosition(int pos);
+
+		uint8_t				m_dropCategory;
 
 
 		CoordTransition_p	m_pTransition;
+		bool				m_bTransitioning = false;
+		int					m_transitionProgress;
+		Size				m_transitionStartSize;
 
-		Filler_p			m_pInsertFiller;
-		Filler_p			m_pWithdrawFiller;
+		int					m_prevPos = -1;
+		int					m_hoveredPos = -1;
+		int					m_dropPos = -1;
+
+		Filler_p			m_pHoveredPosFiller;
+		Filler_p			m_pPrevPosFiller;
 
 		Widget_p			m_pPicked;
+		int					m_pickedPos;			// Offset in PackPanel
+		float				m_pickedWeight;			// Weight of picked widget
+
+
+
+
+		enum class TransitionState
+		{
+			Idle,
+			Leaving,
+			Entering,
+			Reordering,
+		};
+
+		enum class PickState
+		{
+			Unpicked,
+			Remaining,
+			Leaving,
+			Away,
+			Returning,
+			Canceled,
+			Completed,
+			Finishing
+		};
+
+		enum class DropState
+		{
+			Unprobed,
+		};
+
+
+		PickState			m_pickState = PickState::Unpicked;
+		DropState			m_dropState = DropState::Unprobed;
 
 	};
 
