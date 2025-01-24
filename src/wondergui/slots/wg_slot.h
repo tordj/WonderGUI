@@ -250,7 +250,7 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline void		setWidget(const Widget_p& pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
+		inline void		setWidget(const Widget_p& pWidget) { if (pWidget == m_pWidget) return; m_pHolder->_replaceChild(this, pWidget); }
 
 		//.____ Operators __________________________________________
 

@@ -33,32 +33,26 @@ namespace wg
 {
 	class Widget;
 
-
-	//____ _releaseGuardPointer() _____________________________________________
+	//____ _releaseUpdateIndex() _____________________________________________
 
 	template < class SlotType>
-	void StaticSlotVector<SlotType>::_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard)
+	int StaticSlotVector<SlotType>::_releaseUpdateIndex(Widget* pToRelease, int index)
 	{
-		Container * pParent = pToRelease->_parent();
 
-		if (pParent)
+		StaticSlot* pReleaseFromSlot = pToRelease->_slot();
+		if (!pReleaseFromSlot)
+			return index;
+
+		if (_contains(static_cast<SlotType*>(pReleaseFromSlot)))
 		{
-			StaticSlot * pReleaseFromSlot = pToRelease->_slot();
+			// We are releasing a widget from our own slot array, so we need to make sure index still is correct afterwards.
 
-			if (_contains(static_cast<SlotType*>(pReleaseFromSlot)))
-			{
-				// We are releasing a widget from our own slot array, so we need to make sure pointer still is correct afterwards.
-
-				int ofs = (int)((*pPointerToGuard) - _first());
-				if (*pPointerToGuard > pReleaseFromSlot)
-					ofs--;
-
-				pToRelease->releaseFromParent();
-				*pPointerToGuard = _first() + ofs;
-			}
-			else
-				pToRelease->releaseFromParent();
+			if (&m_pArray[index] > pReleaseFromSlot)
+				index--;
 		}
+
+		pToRelease->releaseFromParent();
+		return index;
 	}
 
 	//____ _move() ____________________________________________________________

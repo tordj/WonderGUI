@@ -190,7 +190,7 @@ namespace wg
 
 		//.____ Internal ____________________________________________
 		
-		void	_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);
+		int		_releaseUpdateIndex(Widget* pToRelease, int index);
 		void	_reorder(int order[]);
 
 		

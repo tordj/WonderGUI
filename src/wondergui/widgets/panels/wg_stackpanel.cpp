@@ -519,21 +519,22 @@ namespace wg
 			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Slot in StackPanel must contain pointer to widget and not nullptr.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
-		
-		auto pSlot = static_cast<StackPanelSlot*>(_pSlot);
-		
-		RectSPX oldRenderArea = pSlot->m_geo + pSlot->_widget()->_overflow();
 
-		auto pOldChild = pSlot->_widget();
-		pSlot->_setWidget(pNewChild);
-		pNewChild->_resize( pSlot->m_geo.size(), m_scale);
+		int index = slots._releaseUpdateIndex(pNewChild, static_cast<StackPanelSlot*>(_pSlot) - slots.begin());
+		auto& slot = slots.at(index);
 
-		RectSPX newRenderArea = pSlot->m_geo + pSlot->_widget()->_overflow();
+		RectSPX oldRenderArea = slot.m_geo + slot._widget()->_overflow();
+
+		auto pOldChild = slot._widget();
+		slot._setWidget(pNewChild);
+		pNewChild->_resize( slot.m_geo.size(), m_scale);
+
+		RectSPX newRenderArea = slot.m_geo + slot._widget()->_overflow();
 
 		if( pNewChild->_hasOverflow() || (pOldChild && pOldChild->_hasOverflow()))
 			_refreshOverflow();
 		
-		_childRequestResize(pSlot);
+		_childRequestResize(&slot);
 	}
 
 

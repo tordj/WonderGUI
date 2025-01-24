@@ -752,7 +752,7 @@ namespace wg
 	protected:
 		DropProbeMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos  );
 
-  		bool		m_bAccepted;
+  		bool		m_bAccepted = false;
 	};
 
 

@@ -166,6 +166,7 @@ bool tablePanelTest2(ComponentPtr<DynamicSlot> pEntry);
 bool dragndropTest(ComponentPtr<DynamicSlot> pEntry);
 bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry);
 bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
+bool widgetMoveTest(ComponentPtr<DynamicSlot> pEntry);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -786,7 +787,8 @@ int main(int argc, char** argv)
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-			reorderCapsuleTest(pSlot);
+		//	reorderCapsuleTest(pSlot);
+			widgetMoveTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -4330,6 +4332,32 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	pBaseLayer->slots.pushBack(pBucket1);
 
 	*pEntry = pBaseLayer;
+
+	return true;
+
+}
+
+bool widgetMoveTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+
+	auto pPackPanel = PackPanel::create();
+
+	auto pFiller1 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Honeydew) });
+	auto pFiller2 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Chartreuse) });
+	auto pFiller3 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::LavenderBlush) });
+
+	pPackPanel->slots.pushBack({ pFiller3 });
+
+
+	pBaseLayer->slots.pushBack(pPackPanel);
+
+	*pEntry = pBaseLayer;
+
+	pPackPanel->slots.insert(0, pFiller3);
+
 
 	return true;
 

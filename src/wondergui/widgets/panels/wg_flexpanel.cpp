@@ -491,16 +491,16 @@ namespace wg
 			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Slot in FlexPanel must contain pointer to widget and not nullptr.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
-		
-		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
-		slots._releaseGuardPointer(pNewChild, &pSlot);
 
-		pSlot->_setWidget(pNewChild);
+		int index = slots._releaseUpdateIndex(pNewChild, static_cast<FlexPanelSlot*>(_pSlot) - slots.begin());
+		auto& slot = slots.at(index);
 
-		if (pSlot->m_bVisible )
+		slot._setWidget(pNewChild);
+
+		if (slot.m_bVisible )
 		{
-			_refreshRealGeo(pSlot, true);
-			_onRequestRender(pSlot->m_geo + pSlot->_widget()->_overflow(), pSlot);	// In case geo was not refreshed, thus no request render from _refreshRealGeo().
+			_refreshRealGeo(&slot, true);
+			_onRequestRender(slot.m_geo + slot._widget()->_overflow(), &slot);	// In case geo was not refreshed, thus no request render from _refreshRealGeo().
 		}
 	}
 
