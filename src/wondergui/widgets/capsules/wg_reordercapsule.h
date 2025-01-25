@@ -90,6 +90,7 @@ namespace wg
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		Container*	_ourContainer();
 		void		_markPosition(int pos);
+		void		_endTransition();
 
 		uint8_t				m_dropCategory;
 
@@ -105,6 +106,8 @@ namespace wg
 
 		Filler_p			m_pHoveredPosFiller;
 		Filler_p			m_pPrevPosFiller;
+		int					m_transitionDelay = 200000;
+
 
 		Widget_p			m_pPicked;
 		int					m_pickedPos;			// Offset in PackPanel

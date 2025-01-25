@@ -135,14 +135,14 @@ namespace wg
 
 			case MsgType::DropCancel:
 			{
-
+				_endTransition();
 				m_pickState = PickState::Canceled;
 				break;
 			}
 
 			case MsgType::DropComplete:
 			{
-				m_pickState = PickState::Completed;
+				_endTransition();
 				break;
 			}
 
@@ -213,17 +213,30 @@ namespace wg
 			}
 
 			case MsgType::DropLeave:
-				_markPosition(m_pickedPos);
+				if( m_pickState != PickState::Completed)
+					_markPosition(m_pickedPos);
 				break;
 
 			case MsgType::DropDeliver:
 				auto pMsg = static_cast<DropDeliverMsg*>(_pMsg);
 
 				pMsg->accept();
+
+				_endTransition();
+				m_pickState = PickState::Completed;
 				break;
 
 		}
 	}
+
+	//____ _endTransition() ______________________________________________________
+
+	void ReorderCapsule::_endTransition()
+	{
+		m_transitionProgress = m_pTransition->duration();
+		m_bTransitioning = false;
+	}
+
 
 	//____ _update() _____________________________________________________________
 
@@ -245,7 +258,9 @@ namespace wg
 			Size targetSize = m_pPicked->defaultSize();
 			Size startSize = m_transitionStartSize;
 
-			Coord res = m_pTransition->snapshot(m_transitionProgress, Coord{ startSize.w, startSize.h }, Coord{ targetSize.w, targetSize.h });
+			int progress = std::max(0, m_transitionProgress);
+
+			Coord res = m_pTransition->snapshot(progress, Coord{ startSize.w, startSize.h }, Coord{ targetSize.w, targetSize.h });
 			Size newSize(res.x, res.y);
 
 			Size complementarySize = targetSize;
@@ -311,10 +326,7 @@ namespace wg
 				m_pickState = PickState::Unpicked;
 				_stopReceiveUpdates();
 			}
-
 		}
-
-
 
 		default:
 			break;
@@ -378,7 +390,7 @@ namespace wg
 			pPackPanel->slots.insert(pos, m_pHoveredPosFiller);
 		}
 
-		m_transitionProgress = 0;
+		m_transitionProgress =  -m_transitionDelay;
 		m_bTransitioning = true;
 		m_transitionStartSize = startSize;
 
