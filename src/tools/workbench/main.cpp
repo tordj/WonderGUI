@@ -36,12 +36,8 @@
 #include <wg_gledgemapfactory.h>
 #include <wg_glgfxdevice.h>
 
-#include <wg_areascrollchart.h>
-
 #include <wg_freetypefont.h>
 
-#include <wg_tablepanel.h>
-#include <wg_reordercapsule.h>
 
 
 //#define USE_OPEN_GL
@@ -167,6 +163,8 @@ bool dragndropTest(ComponentPtr<DynamicSlot> pEntry);
 bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry);
 bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 bool widgetMoveTest(ComponentPtr<DynamicSlot> pEntry);
+bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
+
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -787,9 +785,9 @@ int main(int argc, char** argv)
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-			reorderCapsuleTest(pSlot);
+		//	reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
-
+			labelCapsuleTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -4389,3 +4387,25 @@ bool widgetMoveTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 
 }
+
+bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::Honeydew));
+
+	auto pLabelCapsuleBackSkin = BoxSkin::create({ .color = HiColor::Transparent, .outlineColor = Color::Black, .padding = {15,2,2,2}, .spacing = {10,2,2,2} });
+
+	auto pLabelSkin = BoxSkin::create({ .color = Color::Honeydew, .outlineColor = Color::Black, .padding = 2, .spacing = { 0,10,0,10 } });
+
+
+	auto pLabelCapsule = LabelCapsule::create({ .label = {.text = "Label"}, .labelPlacement = Placement::North, .labelSkin = pLabelSkin, .skin = pLabelCapsuleBackSkin});
+
+	pLabelCapsule->slot = TextEditor::create({ .editor = {.text = "Write something here..." } });
+
+
+	pBaseLayer->slots.pushBack(pLabelCapsule);
+	*pEntry = pBaseLayer;
+	return true;
+
+}
+

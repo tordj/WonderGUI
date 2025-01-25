@@ -28,6 +28,7 @@
 #include <wg_animplayer.h>
 #include <wg_animskin.h>
 #include <wg_areachart.h>
+#include <wg_areascrollchart.h>
 #include <wg_bakeskin.h>
 #include <wg_base.h>
 #include <wg_basicnumberlayout.h>
@@ -86,6 +87,7 @@
 #include <wg_inputhandler.h>
 #include <wg_key.h>
 #include <wg_knob.h>
+#include <wg_labelcapsule.h>
 #include <wg_lambdapanel.h>
 #include <wg_lineeditor.h>
 #include <wg_list.h>
@@ -119,6 +121,7 @@
 #include <wg_rangeslider.h>
 #include <wg_receiver.h>
 #include <wg_renderlayercapsule.h>
+#include <wg_reordercapsule.h>
 #include <wg_root.h>
 #include <wg_rootpanel.h>
 #include <wg_scrollbar.h>
@@ -157,6 +160,7 @@
 #include <wg_surfacereader.h>
 #include <wg_surfacewriter.h>
 #include <wg_sysfont.h>
+#include <wg_tablepanel.h>
 #include <wg_text.h>
 #include <wg_textbase.h>
 #include <wg_textdisplay.h>
