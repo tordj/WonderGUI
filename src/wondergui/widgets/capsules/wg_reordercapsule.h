@@ -42,21 +42,27 @@ namespace wg
 
 		struct Blueprint
 		{
-			Object_p		baggage;
-			Widget_p		child;
-			bool			disabled		= false;
-			bool			dropTarget		= true;
-			Finalizer_p		finalizer		= nullptr;
-			int				id				= 0;
-			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
-			bool			pickable		= true;
-			uint8_t			pickCategory	= 0;
-			PointerStyle	pointer			= PointerStyle::Undefined;
-			bool			selectable		= true;
-			Skin_p			skin;
-			bool			stickyFocus 	= false;
-			bool			tabLock			= false;
-			String			tooltip;
+			Object_p			baggage;
+			Widget_p			child;
+			bool				disabled		= false;
+			bool				dropTarget		= true;
+			Finalizer_p			finalizer		= nullptr;
+			int					id				= 0;
+			MarkPolicy			markPolicy		= MarkPolicy::AlphaTest;
+			bool				pickable		= true;
+			uint8_t				pickCategory	= 0;
+			bool				pickHandle		= false;
+			PointerStyle		pointer			= PointerStyle::Undefined;
+			bool				selectable		= true;
+			Skin_p				skin;
+			bool				stickyFocus 	= false;
+			bool				tabLock			= false;
+			String				tooltip;
+			ValueTransition_p	transition;
+			int					transitionDelay = 200000;
+			Skin_p				transitionSkin;
+			bool				usePickHandles = false;
+
 		};
 
 
@@ -70,7 +76,16 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Appearance ____________________________________________________
 
+		void					setTransition(ValueTransition* pTransition);
+		ValueTransition_p		transition() const { return m_pTransition; }
+
+		void					setTransitionDelay(int microsec);
+		int						transitionDelay() const { return m_transitionDelay; }
+
+		void					setTransitionSkin(Skin* pSkin);
+		Skin_p					transitionSkin() const { return m_pTransitionSkin; }
 
 	protected:
 		ReorderCapsule();
@@ -78,6 +93,10 @@ namespace wg
 
 		template<class BP> ReorderCapsule( const BP& bp ) : Capsule(bp)
 		{
+			m_pTransition = bp.transition;
+			m_transitionDelay = bp.transitionDelay;
+			m_pTransitionSkin = bp.transitionSkin;
+
 			_init();
 
 			if (bp.child)
@@ -97,7 +116,7 @@ namespace wg
 		uint8_t				m_dropCategory;
 
 
-		CoordTransition_p	m_pTransition;
+		ValueTransition_p	m_pTransition;
 		bool				m_bTransitioning = false;
 		int					m_transitionProgress;
 		Size				m_transitionStartSize;
@@ -118,7 +137,8 @@ namespace wg
 
 		int					m_delayCountdown = 0;
 
-
+		Skin_p				m_pTransitionSkin;		//TODO: Use SkinSlots instead, one for transition in and one for transition out.
+													// Would allow for animated drop-points.
 
 		enum class TransitionState
 		{

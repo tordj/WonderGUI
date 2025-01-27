@@ -50,6 +50,28 @@ namespace wg
 
 		public:
 
+			//.____ Blueprint _____________________________________________________
+
+			struct Blueprint
+			{
+				Object_p		baggage;
+				bool			disabled = false;
+				bool			dropTarget = false;
+				Finalizer_p		finalizer = nullptr;
+				int				id = 0;
+				MarkPolicy		markPolicy = MarkPolicy::Undefined;
+				bool			pickable = false;
+				uint8_t			pickCategory = 0;
+				bool			pickHandle = false;
+				PointerStyle	pointer = PointerStyle::Undefined;
+				bool			selectable = true;
+				Skin_p			skin;
+				bool			stickyFocus = false;
+				bool			tabLock = false;
+				String			tooltip;
+				bool			usePickHandles = false;
+			};
+
 			//.____ Identification __________________________________________
 
 			const TypeInfo&		typeInfo(void) const override;
@@ -89,6 +111,7 @@ namespace wg
 			Container() {};
 			template<class BP> Container( const BP& bp ) : Widget(bp) 
 			{
+				m_bUsePickHandles = bp.usePickHandles;
 				m_overflow = m_skin.overflow(m_scale);
 			}
 

@@ -52,6 +52,7 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Ibeam;
 			KeyAction		returnKeyAction = KeyAction::ReleaseFocus;
 			bool			selectable = true;

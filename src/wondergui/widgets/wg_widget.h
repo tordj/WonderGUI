@@ -89,6 +89,7 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::Undefined;
 			bool			pickable = false;
 			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
@@ -269,6 +270,7 @@ namespace wg
 			
 			m_bPickable		= bp.pickable;
 			m_pickCategory	= bp.pickCategory;
+			m_bPickHandle	= bp.pickHandle;
 			m_pointerStyle	= bp.pointer;
 			m_bSelectable	= bp.selectable;
 			m_bStickyFocus	= bp.stickyFocus;

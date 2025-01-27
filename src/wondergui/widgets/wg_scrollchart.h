@@ -67,6 +67,7 @@ namespace wg
 			int				maxDisplayTime = 0;    // microsec of samples saved for changes in displayTime. 0 = st to same as displayTime.
 			bool			pickable = false;
 			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 

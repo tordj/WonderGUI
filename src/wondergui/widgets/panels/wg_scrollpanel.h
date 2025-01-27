@@ -66,6 +66,7 @@ namespace wg
 			pts					pageOverlap 		= 8;
 			bool				pickable 			= false;
 			uint8_t				pickCategory 		= 0;
+			bool				pickHandle			= false;
 			PointerStyle		pointer 			= PointerStyle::Undefined;
 			Scroller::Blueprint	scrollbarX;
 			Scroller::Blueprint	scrollbarY;
@@ -77,6 +78,7 @@ namespace wg
 			bool				tabLock 			= false;
 			String				tooltip;
 			CoordTransition_p	transition;
+			bool				usePickHandles		= false;
 			Axis				wheelOneAxis 		= Axis::Y;
 			Axis				wheelTwoAxis		= Axis::X;
 			ModKeys				wheelShift 			= ModKeys::Alt;

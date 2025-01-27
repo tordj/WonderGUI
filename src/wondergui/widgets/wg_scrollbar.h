@@ -66,6 +66,7 @@ namespace wg
 			pts				pageOverlap = 8;
 			bool			pickable = false;
 			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			Scroller::Blueprint	scrollbar;
 			bool			selectable = true;

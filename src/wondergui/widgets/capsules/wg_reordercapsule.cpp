@@ -58,15 +58,11 @@ namespace wg
 	{
 		m_dropCategory = 1;
 
-		m_pTransition = CoordTransition::create(300000, TransitionCurve::EaseOut);
+		if( !m_pTransition )
+			m_pTransition = ValueTransition::create(300000, TransitionCurve::EaseOut);
 
-		m_pHoveredPosFiller = Filler::create( WGBP(Filler, _.skin = ColorSkin::create(Color::CornflowerBlue) ) );
-		m_pPrevPosFiller = Filler::create(WGBP(Filler, _.skin = ColorSkin::create(Color::CornflowerBlue)));
-
-		m_pHoveredPosFiller->setId(1);
-		m_pHoveredPosFiller->setId(2);
-
-
+		m_pHoveredPosFiller = Filler::create( WGBP(Filler, _.skin = m_pTransitionSkin, _.markPolicy = MarkPolicy::Geometry ));
+		m_pPrevPosFiller = Filler::create(WGBP(Filler, _.skin = m_pTransitionSkin, _.markPolicy = MarkPolicy::Geometry ));
 	}
 
 	//____ destructor _____________________________________________________________
@@ -81,6 +77,29 @@ namespace wg
 	{
 		return TYPEINFO;
 	}
+
+	void ReorderCapsule::setTransition(ValueTransition* pTransition)
+	{
+		m_pTransition = pTransition;
+	}
+
+	void ReorderCapsule::setTransitionDelay(int microsec)
+	{
+		m_transitionDelay = microsec;
+	}
+
+	void ReorderCapsule::setTransitionSkin(Skin* pSkin)
+	{
+		if (pSkin != m_pTransitionSkin)
+		{
+			m_pTransitionSkin = pSkin;
+			m_pHoveredPosFiller->setSkin(pSkin);
+			m_pPrevPosFiller->setSkin(pSkin);
+
+		}
+	}
+
+
 
 	//____ _receive() ____________________________________________________________
 
@@ -110,9 +129,12 @@ namespace wg
 
 				if( pWidget && pWidget != this )
 				{
+					Coord offset = -(pMsg->pointerPos() - pWidget->globalGeo().pos());
+
 					auto pDataset = Dataset<Widget_wp>::create(pWidget);
 					pMsg->setContent(DropType::Widget, m_dropCategory, pDataset);
-					pMsg->setDragWidget(pWidget, {0,0} );		//TODO: Set pointer pos.
+					pMsg->setDragWidget(pWidget, offset );
+
 
 					m_pPicked = pWidget;
 
@@ -202,6 +224,11 @@ namespace wg
 						if (pMsg->pointerPos().x > markedGeo.x + markedGeo.w / 2)
 							index++;
 					}
+					else
+					{
+						if (pMsg->pointerPos().y > markedGeo.y + markedGeo.h / 2)
+							index++;
+					}
 
 					_markPosition(index);
 
@@ -252,19 +279,19 @@ namespace wg
 
 			int progress = std::max(0, m_transitionProgress);
 
-			Coord res = m_pTransition->snapshot(progress, Coord{ startSize.w, startSize.h }, Coord{ targetSize.w, targetSize.h });
-			Size newSize(res.x, res.y);
-
-			Size complementarySize = targetSize;
-
 			if (pPackPanel->axis() == Axis::X)
-				complementarySize.w -= newSize.w;
+			{
+				pts res = m_pTransition->snapshot(progress, startSize.w, targetSize.w);
+				m_pHoveredPosFiller->setDefaultSize({ res, m_transitionStartSize.h });
+				m_pPrevPosFiller->setDefaultSize({ targetSize.w - res, m_transitionStartSize.h });
+			}
 			else
-				complementarySize.h -= newSize.h;
+			{
+				pts res = m_pTransition->snapshot(progress, startSize.h, targetSize.h);
+				m_pHoveredPosFiller->setDefaultSize({ m_transitionStartSize.w, res });
+				m_pPrevPosFiller->setDefaultSize({ m_transitionStartSize.w, targetSize.h - res });
+			}
 
-
-			m_pHoveredPosFiller->setDefaultSize(newSize);
-			m_pPrevPosFiller->setDefaultSize(complementarySize);
 		}
 
 		if (m_delayCountdown > 0)
@@ -348,8 +375,11 @@ namespace wg
 
 	void ReorderCapsule::_markPosition(int pos)
 	{
-		m_markedPos = pos;
-		m_delayCountdown = m_transitionDelay;
+		if (pos != m_markedPos)
+		{
+			m_markedPos = pos;
+			m_delayCountdown = m_transitionDelay;
+		}
 	}
 
 	//____ _startTransition() _________________________________________________

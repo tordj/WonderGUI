@@ -59,6 +59,7 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			int				scale = 0;
 			bool			selectable = true;
@@ -66,6 +67,7 @@ namespace wg
 			bool			stickyFocus = false;
 			bool			tabLock = false;
 			String			tooltip;
+			bool			usePickHandles = false;
 		};
 
 		//.____ Creation __________________________________________

@@ -57,6 +57,7 @@ namespace wg
 			bool			openOnHover		= false;
 			bool			pickable		= false;
 			uint8_t			pickCategory	= 0;
+			bool			pickHandle		= false;
 			PointerStyle	pointer			= PointerStyle::Undefined;
 			Widget_p		popup;
 			Border			popupOverflow;

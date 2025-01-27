@@ -4309,6 +4309,17 @@ bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry)
 
 }
 
+Widget_p	createDragBoxWithHandle( Size size, Color color )
+{
+	auto pWidget = FlexPanel::create({ .defaultSize = size, .skin = ColorSkin::create(color) });
+	auto pHandle = Filler::create({ .defaultSize = size / 4, .pickHandle = true, .skin = BoxSkin::create({.color = color, .outlineColor = Color::Black }) });
+
+	pWidget->slots.pushBack(pHandle, { .pos = {size.w / 4, size.h / 4} });
+
+	return pWidget;
+}
+
+
 bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pBaseLayer = FlexPanel::create();
@@ -4317,15 +4328,15 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pBucketSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black, .padding = 1 });
 
 	{
-		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin });
+		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin, .usePickHandles = true });
 
 		auto pPackPanel = PackPanel::create();
 
-		auto pFiller1 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Honeydew) });
-		auto pFiller2 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Chartreuse) });
-		auto pFiller3 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Gainsboro) });
-		auto pFiller4 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::LemonCiffon) });
-		auto pFiller5 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Moccasin) });
+		auto pFiller1 = createDragBoxWithHandle( {100,50},Color::Honeydew);
+		auto pFiller2 = createDragBoxWithHandle({ 100,50 }, Color::Chartreuse);
+		auto pFiller3 = createDragBoxWithHandle({ 100,50 }, Color::Gainsboro);
+		auto pFiller4 = createDragBoxWithHandle({ 100,50 }, Color::LemonCiffon);
+		auto pFiller5 = createDragBoxWithHandle({ 100,50 }, Color::Moccasin);
 
 		pPackPanel->slots.pushBack({ pFiller1, pFiller2, pFiller3, pFiller4, pFiller5 });
 
@@ -4339,13 +4350,13 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	{
 		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin });
 
-		auto pPackPanel = PackPanel::create();
+		auto pPackPanel = PackPanel::create({ .axis = Axis::Y} );
 
-		auto pFiller1 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Red) });
-		auto pFiller2 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Green) });
-		auto pFiller3 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Blue) });
-		auto pFiller4 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Yellow) });
-		auto pFiller5 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Pink) });
+		auto pFiller1 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Red) });
+		auto pFiller2 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Green) });
+		auto pFiller3 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Blue) });
+		auto pFiller4 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Yellow) });
+		auto pFiller5 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Pink) });
 
 		pPackPanel->slots.pushBack({ pFiller1, pFiller2, pFiller3, pFiller4, pFiller5 });
 

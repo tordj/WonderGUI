@@ -649,6 +649,13 @@ namespace wg
 		m_pickCategory = category;
 	}
 
+	//____ setPickHandle() ____________________________________________________
+
+	void Widget::setPickHandle(bool bHandle)
+	{
+		m_bPickHandle = bHandle;
+	}
+
 	//____ _setSlot() ______________________________________________________________
 
 	void Widget::_setSlot(StaticSlot * pSlot)
