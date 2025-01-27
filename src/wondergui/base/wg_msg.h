@@ -733,6 +733,50 @@ namespace wg
 		Coord               m_pickOfs;
 	};
 
+	//____ DropTargetEnterMsg ______________________________________________
+
+	class DropTargetEnterMsg : public Msg
+	{
+		friend class DragNDropOverlay;
+	public:
+		//.____ Identification __________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content __________________________________________________
+
+		Widget_p	target() const;
+
+	protected:
+		DropTargetEnterMsg(Widget* pSource, Widget * pTarget );
+
+		Widget_p	m_pTarget;
+	};
+
+	//____ DropTargetLeaveMsg ______________________________________________
+
+	class DropTargetLeaveMsg : public Msg
+	{
+		friend class DragNDropOverlay;
+	public:
+		//.____ Identification __________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content __________________________________________________
+
+		Widget_p	target() const;
+
+	protected:
+		DropTargetLeaveMsg(Widget* pSource, Widget* pTarget);
+
+		Widget_p	m_pTarget;
+	};
+
+
+
 	//____ DropProbeMsg ___________________________________________________
 
 	class DropProbeMsg : public DragNDropMsg

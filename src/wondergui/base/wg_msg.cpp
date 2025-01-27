@@ -552,6 +552,47 @@ namespace wg
 		return m_dragWidgetPointerOfs;
 	}
 
+	//____ DropTargetEnterMsg _______________________________________________
+
+	const TypeInfo DropTargetEnterMsg::TYPEINFO = { "DropTargetEnterMsg", &Msg::TYPEINFO };
+
+	DropTargetEnterMsg::DropTargetEnterMsg(Widget* pSource, Widget* pTarget)
+	{
+		m_type = MsgType::DropTargetEnter;
+		m_pTarget = pTarget;
+	}
+
+	const TypeInfo& DropTargetEnterMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	Widget_p DropTargetEnterMsg::target() const
+	{
+		return m_pTarget;
+	}
+
+	//____ DropTargetLeaveMsg _______________________________________________
+
+	const TypeInfo DropTargetLeaveMsg::TYPEINFO = { "DropTargetLeaveMsg", &Msg::TYPEINFO };
+
+	DropTargetLeaveMsg::DropTargetLeaveMsg(Widget* pSource, Widget* pTarget)
+	{
+		m_type = MsgType::DropTargetLeave;
+		m_pTarget = pTarget;
+	}
+
+	const TypeInfo& DropTargetLeaveMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	Widget_p DropTargetLeaveMsg::target() const
+	{
+		return m_pTarget;
+	}
+
+
 	//____ DropProbeMsg ___________________________________________________
 
 	const TypeInfo DropProbeMsg::TYPEINFO = { "DropProbeMsg", &DragNDropMsg::TYPEINFO };
