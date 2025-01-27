@@ -58,7 +58,7 @@ namespace wg
 	{
 		m_dropCategory = 1;
 
-		m_pTransition = CoordTransition::create(500000, TransitionCurve::EaseOut);
+		m_pTransition = CoordTransition::create(300000, TransitionCurve::EaseOut);
 
 		m_pHoveredPosFiller = Filler::create( WGBP(Filler, _.skin = ColorSkin::create(Color::CornflowerBlue) ) );
 		m_pPrevPosFiller = Filler::create(WGBP(Filler, _.skin = ColorSkin::create(Color::CornflowerBlue)));
@@ -119,6 +119,7 @@ namespace wg
 					auto pPackPanel = static_cast<PackPanel*>(pContainer);
 					m_pickedPos = pPackPanel->slots.find(pWidget) - pPackPanel->slots.begin();
 
+					m_markedPos = m_pickedPos;
 					m_hoveredPos = m_pickedPos;
 
 					m_pHoveredPosFiller->setDefaultSize(pWidget->defaultSize() );
@@ -229,15 +230,6 @@ namespace wg
 		}
 	}
 
-	//____ _endTransition() ______________________________________________________
-
-	void ReorderCapsule::_endTransition()
-	{
-		m_transitionProgress = m_pTransition->duration();
-		m_bTransitioning = false;
-	}
-
-
 	//____ _update() _____________________________________________________________
 
 	void ReorderCapsule::_update(int microPassed, int64_t microsecTimestamp)
@@ -264,7 +256,7 @@ namespace wg
 			Size newSize(res.x, res.y);
 
 			Size complementarySize = targetSize;
-			
+
 			if (pPackPanel->axis() == Axis::X)
 				complementarySize.w -= newSize.w;
 			else
@@ -275,7 +267,10 @@ namespace wg
 			m_pPrevPosFiller->setDefaultSize(complementarySize);
 		}
 
-
+		if (m_delayCountdown > 0)
+			m_delayCountdown = std::max( 0, m_delayCountdown -= microPassed);
+		else if( m_bTransitioning == false && m_markedPos != -1 && m_markedPos != m_hoveredPos )
+			_startTransition(m_markedPos);
 
 
 
@@ -302,7 +297,7 @@ namespace wg
 		case PickState::Completed:
 		{
 			m_pickState = PickState::Finishing;
-			m_dropPos = m_hoveredPos;
+			m_dropPos = m_markedPos;
 			break;
 		}
 
@@ -323,6 +318,7 @@ namespace wg
 				m_pPicked = nullptr;
 				m_prevPos = -1;
 				m_hoveredPos = -1;
+				m_markedPos = -1;
 				m_pickState = PickState::Unpicked;
 				_stopReceiveUpdates();
 			}
@@ -348,17 +344,28 @@ namespace wg
 			return nullptr;
 	}
 
-	//____ _markPosition() _______________________________________________________
+	//____ _markPosition() ____________________________________________________
 
 	void ReorderCapsule::_markPosition(int pos)
+	{
+		m_markedPos = pos;
+		m_delayCountdown = m_transitionDelay;
+	}
+
+	//____ _startTransition() _________________________________________________
+
+	void ReorderCapsule::_startTransition(int pos)
 	{
 		auto pPackPanel = static_cast<PackPanel*>(_ourContainer());
 
 		if (pos == m_hoveredPos)
 			return;											// No movement.
 
-		std::swap(m_prevPos, m_hoveredPos);
-		std::swap(m_pPrevPosFiller, m_pHoveredPosFiller);
+		if (m_transitionProgress > m_pTransition->duration() / 2 )
+		{
+			std::swap(m_prevPos, m_hoveredPos);
+			std::swap(m_pPrevPosFiller, m_pHoveredPosFiller);
+		}
 
 		Size	startSize;
 
@@ -384,19 +391,26 @@ namespace wg
 				pos++;
 
 			m_hoveredPos = newHoveredPos;
-
+			 
 			m_pHoveredPosFiller->setDefaultSize(startSize);
 
 			pPackPanel->slots.insert(pos, m_pHoveredPosFiller);
 		}
 
-		m_transitionProgress =  -m_transitionDelay;
+		m_transitionProgress = 0;
 		m_bTransitioning = true;
 		m_transitionStartSize = startSize;
 
 
 	}
 
+	//____ _endTransition() ______________________________________________________
+
+	void ReorderCapsule::_endTransition()
+	{
+		m_transitionProgress = m_pTransition->duration();
+		m_bTransitioning = false;
+	}
 
 
 } // namespace wg

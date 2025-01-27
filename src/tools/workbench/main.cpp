@@ -785,9 +785,9 @@ int main(int argc, char** argv)
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-		//	reorderCapsuleTest(pSlot);
+			reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
-			labelCapsuleTest(pSlot);
+		//	labelCapsuleTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop

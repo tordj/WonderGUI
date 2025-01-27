@@ -90,7 +90,9 @@ namespace wg
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		Container*	_ourContainer();
 		void		_markPosition(int pos);
+		void		_startTransition(int pos);
 		void		_endTransition();
+
 
 		uint8_t				m_dropCategory;
 
@@ -103,6 +105,7 @@ namespace wg
 		int					m_prevPos = -1;
 		int					m_hoveredPos = -1;
 		int					m_dropPos = -1;
+		int					m_markedPos = -1;
 
 		Filler_p			m_pHoveredPosFiller;
 		Filler_p			m_pPrevPosFiller;
@@ -113,6 +116,7 @@ namespace wg
 		int					m_pickedPos;			// Offset in PackPanel
 		float				m_pickedWeight;			// Weight of picked widget
 
+		int					m_delayCountdown = 0;
 
 
 
