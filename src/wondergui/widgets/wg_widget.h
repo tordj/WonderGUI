@@ -88,7 +88,8 @@ namespace wg
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::Undefined;
 			bool			pickable = false;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
@@ -181,9 +182,12 @@ namespace wg
 		inline void			setTabLock(bool bLock);
 		inline bool			isTabLocked() const;
 
-		void                setPickable( bool bPickable, int category = 0 );
+		void                setPickable( bool bPickable, uint8_t category = 0 );
 		inline bool         isPickable() const;
-		inline int          pickCategory() const;
+		inline uint8_t      pickCategory() const;
+
+		void                setPickHandle(bool bHandle);
+		inline bool         isPickHandle() const;
 
 		void                setDropTarget( bool bDropTarget );
 		inline bool         isDropTarget() const;
@@ -268,6 +272,7 @@ namespace wg
 
 			m_bPickable		= bp.pickable;
 			m_pickCategory	= bp.pickCategory;
+			m_bPickHandle	= bp.pickHandle;
 			m_pointerStyle	= bp.pointer;
 			m_bSelectable	= bp.selectable;
 			m_bStickyFocus	= bp.stickyFocus;
@@ -373,6 +378,7 @@ namespace wg
 		uint16_t		m_scale = 64;
 
 		bool            m_bPickable = false;			// Set if this widget accepts to be the source of drag-n-drop operations.
+		bool			m_bPickHandle = false;
 		uint8_t         m_pickCategory = 0;				// Category of drag-n-drop operations. User defined.
 
 		bool            m_bDropTarget = false;			// Set if this widget accepts to be the target of drag-n-drop operations.
@@ -910,9 +916,16 @@ namespace wg
 
 	//____ pickCategory() _____________________________________________________
 
-	int Widget::pickCategory() const
+	uint8_t Widget::pickCategory() const 
+	{ 
+		return m_pickCategory; 
+	}
+
+	//____ isPickHandle() ____________________________________________________
+
+	bool Widget::isPickHandle() const
 	{
-		return m_pickCategory;
+		return m_bPickHandle;
 	}
 
 	//____ isDropTarget() ____________________________________________________

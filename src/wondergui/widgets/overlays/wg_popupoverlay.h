@@ -133,15 +133,17 @@ namespace wg
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
+			bool			pickHandle = false;
 			int				openingDelay = 100;
 			int				openingFade = 100;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
 			String			tooltip;
+			bool			usePickHandles = false;
 		};
 
 		//.____ Creation __________________________________________

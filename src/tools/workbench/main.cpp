@@ -36,11 +36,9 @@
 #include <wg_gledgemapfactory.h>
 #include <wg_glgfxdevice.h>
 
-#include <wg_areascrollchart.h>
-
 #include <wg_freetypefont.h>
 
-#include <wg_tablepanel.h>
+
 
 //#define USE_OPEN_GL
 
@@ -162,6 +160,11 @@ bool blockingCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry);
 bool tablePanelTest2(ComponentPtr<DynamicSlot> pEntry);
 bool dragndropTest(ComponentPtr<DynamicSlot> pEntry);
+bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry);
+bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
+bool widgetMoveTest(ComponentPtr<DynamicSlot> pEntry);
+bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
+
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -780,8 +783,11 @@ int main(int argc, char** argv)
 		//	blockingCapsuleTest(pSlot);
 		//	tablePanelTest(pSlot);
 		//	tablePanelTest2(pSlot);
-			dragndropTest(pSlot);
-
+		//	dragndropTest(pSlot);
+		//	fillerTransitionTest(pSlot);
+			reorderCapsuleTest(pSlot);
+		//	widgetMoveTest(pSlot);
+		//	labelCapsuleTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -4274,5 +4280,143 @@ bool dragndropTest(ComponentPtr<DynamicSlot> pEntry)
 	*pEntry = pBaseLayer;
 
 	return true;
+}
+
+bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+
+	auto pMyFiller = Filler::create( { .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Honeydew)  } );
+
+	pBaseLayer->slots.pushBack(pMyFiller, { .pos = {20,40} });
+
+	auto pButton1 = Button::create({ .label = { .text = "-" }, .skin = ColorSkin::create(Color::LightGrey) });
+	auto pButton2 = Button::create({ .label = { .text = "+" }, .skin = ColorSkin::create(Color::LightGrey) });
+
+	pBaseLayer->slots.pushBack( pButton1, { .pos = {10,10}, .size = {50,20} } );
+	pBaseLayer->slots.pushBack( pButton2, { .pos = {70,10}, .size = {50,20} } );
+
+	Base::msgRouter()->addRoute(pButton1, MsgType::Select, [pMyFiller](Msg*){ pMyFiller->setDefaultSize({30,30}, CoordTransition::create(200000, TransitionCurve::EaseInOut)); } );
+
+	Base::msgRouter()->addRoute(pButton2, MsgType::Select, [pMyFiller](Msg*){ pMyFiller->setDefaultSize({300,160}, CoordTransition::create(2000000, TransitionCurve::EaseInOut)); } );
+
+
+	*pEntry = pBaseLayer;
+
+	return true;
+
+}
+
+Widget_p	createDragBoxWithHandle( Size size, Color color )
+{
+	auto pWidget = FlexPanel::create({ .defaultSize = size, .skin = ColorSkin::create(color) });
+	auto pHandle = Filler::create({ .defaultSize = size / 4, .pickHandle = true, .skin = BoxSkin::create({.color = color, .outlineColor = Color::Black }) });
+
+	pWidget->slots.pushBack(pHandle, { .pos = {size.w / 4, size.h / 4} });
+
+	return pWidget;
+}
+
+
+bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pBucketSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black, .padding = 1 });
+
+	{
+		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin, .usePickHandles = true });
+
+		auto pPackPanel = PackPanel::create();
+
+		auto pFiller1 = createDragBoxWithHandle( {100,50},Color::Honeydew);
+		auto pFiller2 = createDragBoxWithHandle({ 100,50 }, Color::Chartreuse);
+		auto pFiller3 = createDragBoxWithHandle({ 100,50 }, Color::Gainsboro);
+		auto pFiller4 = createDragBoxWithHandle({ 100,50 }, Color::LemonCiffon);
+		auto pFiller5 = createDragBoxWithHandle({ 100,50 }, Color::Moccasin);
+
+		pPackPanel->slots.pushBack({ pFiller1, pFiller2, pFiller3, pFiller4, pFiller5 });
+
+		pBucket1->slot = pPackPanel;
+
+		pBaseLayer->slots.pushBack(pBucket1);
+	}
+
+	//----
+
+	{
+		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin });
+
+		auto pPackPanel = PackPanel::create({ .axis = Axis::Y} );
+
+		auto pFiller1 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Red) });
+		auto pFiller2 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Green) });
+		auto pFiller3 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Blue) });
+		auto pFiller4 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Yellow) });
+		auto pFiller5 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Pink) });
+
+		pPackPanel->slots.pushBack({ pFiller1, pFiller2, pFiller3, pFiller4, pFiller5 });
+
+		pBucket1->slot = pPackPanel;
+
+		pBaseLayer->slots.pushBack(pBucket1, { .pos = {10,200} });
+
+	}
+
+
+	*pEntry = pBaseLayer;
+
+	return true;
+
+}
+
+bool widgetMoveTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+
+	auto pPackPanel = PackPanel::create();
+
+	auto pFiller1 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Honeydew) });
+	auto pFiller2 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::Chartreuse) });
+	auto pFiller3 = Filler::create({ .defaultSize = {100,100}, .skin = ColorSkin::create(Color::LavenderBlush) });
+
+	pPackPanel->slots.pushBack({ pFiller3 });
+
+
+	pBaseLayer->slots.pushBack(pPackPanel);
+
+	*pEntry = pBaseLayer;
+
+	pPackPanel->slots.insert(0, pFiller3);
+
+
+	return true;
+
+}
+
+bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::Honeydew));
+
+	auto pLabelCapsuleBackSkin = BoxSkin::create({ .color = HiColor::Transparent, .outlineColor = Color::Black, .padding = {15,2,2,2}, .spacing = {10,2,2,2} });
+
+	auto pLabelSkin = BoxSkin::create({ .color = Color::Honeydew, .outlineColor = Color::Black, .padding = 2, .spacing = { 0,10,0,10 } });
+
+
+	auto pLabelCapsule = LabelCapsule::create({ .label = {.text = "Label"}, .labelPlacement = Placement::North, .labelSkin = pLabelSkin, .skin = pLabelCapsuleBackSkin});
+
+	pLabelCapsule->slot = TextEditor::create({ .editor = {.text = "Write something here..." } });
+
+
+	pBaseLayer->slots.pushBack(pLabelCapsule);
+	*pEntry = pBaseLayer;
+	return true;
+
 }
 

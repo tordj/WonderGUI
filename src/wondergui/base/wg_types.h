@@ -229,14 +229,16 @@ namespace wg
 		EditCommand,
 		WheelRoll,
 
-		DropPick,
-		DropProbe,
-		DropEnter,
-		DropMove,
-		DropLeave,
-		DropDeliver,
-		DropCancel,
-		DropComplete,
+		DropPick,					// Sent to picked
+		DropTargetEnter,			// Sent to picked
+		DropTargetLeave,			// Sent to picked
+		DropProbe,					// Sent to target
+		DropEnter,					// Sent to target
+		DropMove,					// Sent to target
+		DropLeave,					// Sent to target
+		DropDeliver,				// Sent to target
+		DropCancel,					// Sent to picked
+		DropComplete,				// Sent to picked
 
 		Select,						// Non-value widget triggered, like a button being pressed.
 		Unselect,					// Used by ToggleGroup when ToggleButton is unselected (but no other selected).
@@ -371,6 +373,15 @@ namespace wg
 		Mask			///< Mask background against whole container.
 	};
 
+	//____ DropTypes _____________________________________________________________
+
+	enum class DropType
+	{
+		Undefined,
+		TextString,			///< Supplied dataset is a Dataset<std::string> object.
+		Widget,				///< Supplied dataset is a Dataset<Widget_p> object.
+		WidgetVector		///< Supplied dataset is a Dataset<std::vector<Widget_p>> object.
+	};
 
 
 } // namespace wg

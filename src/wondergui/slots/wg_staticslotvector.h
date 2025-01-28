@@ -92,8 +92,7 @@ namespace wg
 		StaticSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 		~StaticSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
-		void			_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);
-
+		int		_releaseUpdateIndex(Widget* pToRelease, int index);
 
 	//////
 		inline SlotHolder *			_holder() { return m_pHolder; }

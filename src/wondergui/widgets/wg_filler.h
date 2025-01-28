@@ -26,6 +26,7 @@
 
 #include <wg_widget.h>
 #include <wg_skin.h>
+#include <wg_transitions.h>
 
 namespace wg
 {
@@ -63,7 +64,8 @@ namespace wg
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
@@ -85,7 +87,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		void	setDefaultSize( const Size& size );
+		void	setDefaultSize( const Size& size, CoordTransition* pTransition = nullptr );
 
 	protected:
 		Filler();
@@ -98,9 +100,16 @@ namespace wg
 		virtual ~Filler();
 
 		SizeSPX	_defaultSize(int scale) const override;
+		void	_update(int microPassed, int64_t microsecTimestamp) override;
 
 	private:
-		Size			m_defaultSize;
+		Size				m_defaultSize;
+
+		CoordTransition_p	m_pTransition;
+		int					m_transitionProgress = 0;
+
+		Size				m_startSize;
+		Size				m_endSize;
 	};
 
 

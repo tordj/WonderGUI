@@ -198,7 +198,8 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::Undefined;
 			MaskOp			maskOp = MaskOp::Recurse;
 			bool			pickable = false;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 
 			PackLayout_p	rowLayout;
@@ -215,7 +216,9 @@ namespace wg
 			Skin_p			skin;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
-			String			tooltip;			
+			String			tooltip;
+			bool			usePickHandles = false;
+
 		};
 		
 		//.____ Creation __________________________________________

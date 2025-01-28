@@ -187,7 +187,8 @@ namespace wg
 
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 
 			Placement		rightLabelPlacement = Placement::East;

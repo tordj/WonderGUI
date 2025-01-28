@@ -9,6 +9,7 @@ xcuserdata
 debug/
 deps/
 build/codelite-linux/
+distribution/
 
 doc/html/
 
@@ -24,7 +25,8 @@ alpha_blending_example_files/
 SDL2_image/
 
 SDL2/
-
+SDL2.framework/
+SDL2_image.framework/
 glew/
 
 build/

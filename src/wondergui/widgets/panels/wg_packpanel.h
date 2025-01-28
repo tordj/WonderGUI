@@ -103,7 +103,7 @@ namespace wg
 		
 		struct Blueprint
 		{
-			Axis			axis = Axis::X;
+			Axis			axis			= Axis::X;
 			Object_p		baggage;
 			bool			dropTarget 		= false;
 			bool			disabled 		= false;
@@ -113,7 +113,8 @@ namespace wg
 			MarkPolicy		markPolicy 		= MarkPolicy::AlphaTest;
 			MaskOp			maskOp			= MaskOp::Recurse;
 			bool			pickable 		= false;
-			int				pickCategory	= 0;
+			uint8_t			pickCategory	= 0;
+			bool			pickHandle		= false;
 			PointerStyle	pointer 		= PointerStyle::Undefined;
 			bool			selectable 		= true;
 			Skin_p			skin;
@@ -124,6 +125,7 @@ namespace wg
 			bool			stickyFocus		= false;
 			bool			tabLock 		= false;
 			String			tooltip;
+			bool			usePickHandles	= false;
 		};
 		
 		//.____ Creation __________________________________________

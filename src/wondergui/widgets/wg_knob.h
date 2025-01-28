@@ -60,7 +60,8 @@ namespace wg
 			bool			lockMouse	= true;
 			MarkPolicy		markPolicy	= MarkPolicy::AlphaTest;
 			bool			pickable	= false;
-			int				pickCategory= 0;
+			uint8_t			pickCategory= 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer		= PointerStyle::Undefined;
 			bool			selectable	= true;
 			Skin_p			skin;

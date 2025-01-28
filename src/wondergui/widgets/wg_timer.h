@@ -58,7 +58,8 @@ namespace wg
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
-			int				pickCategory = 0;
+			bool			pickHandle = false;
+			uint8_t			pickCategory = 0;
 			PlayMode		playMode = PlayMode::Forward;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;

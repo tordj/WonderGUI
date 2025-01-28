@@ -1396,8 +1396,11 @@ namespace wg
 			return;
 		}
 		
-		static_cast<Slot*>(pSlot)->_setWidget(pNewChild);
-		_childRequestResize(pSlot);
+		int index = slots._releaseUpdateIndex(pNewChild, static_cast<PackList::Slot*>(pSlot) - slots.begin());
+		auto& slot = slots.at(index);
+
+		slot._setWidget(pNewChild);
+		_childRequestResize(&slot);
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________

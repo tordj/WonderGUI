@@ -213,8 +213,12 @@ set( SOURCES
 	widgets/capsules/wg_canvascapsule.h
 	widgets/capsules/wg_capsule.cpp
 	widgets/capsules/wg_capsule.h
+	widgets/capsules/wg_labelcapsule.cpp
+	widgets/capsules/wg_labelcapsule.h
 	widgets/capsules/wg_renderlayercapsule.cpp
 	widgets/capsules/wg_renderlayercapsule.h
+	widgets/capsules/wg_reordercapsule.cpp
+	widgets/capsules/wg_reordercapsule.h
 	widgets/capsules/wg_scalecapsule.cpp
 	widgets/capsules/wg_scalecapsule.h
 	widgets/capsules/wg_sizecapsule.cpp

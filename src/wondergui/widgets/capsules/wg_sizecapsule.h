@@ -67,13 +67,16 @@ namespace wg
 			Size			maxSize = { 10000000,10000000 };
 			Size			minSize = { 0,0 };
 			bool			pickable = false;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
 			String			tooltip;
+			bool			usePickHandles = false;
+
 		};
 
 		//.____ Creation __________________________________________

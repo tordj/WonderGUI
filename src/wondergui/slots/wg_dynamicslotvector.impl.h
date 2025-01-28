@@ -180,11 +180,11 @@ namespace wg
 		{
 			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Inserting a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
 			return end();
-		}
-		
-		SlotType * pSlot = _insertEmpty(index);
+		}		
 
-		this->_releaseGuardPointer(pWidget, &pSlot);
+		index = this->_releaseUpdateIndex(pWidget, index);
+
+		SlotType* pSlot = _insertEmpty(index);
 		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -201,10 +201,9 @@ namespace wg
 			return end();
 		}
 		
-		SlotType * pSlot = pos;
-		pSlot = _insertEmpty(pSlot);
+		int index = this->_releaseUpdateIndex(pWidget, pos - _first());
 
-		this->_releaseGuardPointer(pWidget, &pSlot);
+		SlotType* pSlot = _insertEmpty(index);
 		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -222,9 +221,9 @@ namespace wg
 			return end();
 		}
 
-		SlotType * pSlot = _insertEmpty(index);
+		index = this->_releaseUpdateIndex(pWidget, index);
 
-		this->_releaseGuardPointer(pWidget, &pSlot);
+		SlotType * pSlot = _insertEmpty(index);
 		pSlot->_setWidget(pWidget);
 		pSlot->_setBlueprint(blueprint);
 		m_pHolder->_didAddSlots(pSlot, 1);
@@ -242,10 +241,9 @@ namespace wg
 			return end();
 		}
 
-		SlotType * pSlot = pos;
-		pSlot = _insertEmpty(pSlot);
+		int index = this->_releaseUpdateIndex(pWidget, pos - _first());
 
-		this->_releaseGuardPointer(pWidget, &pSlot);
+		SlotType * pSlot = _insertEmpty(index);
 		pSlot->_setWidget(pWidget);
 		pSlot->_setBlueprint(blueprint);
 		m_pHolder->_didAddSlots(pSlot, 1);
@@ -266,12 +264,14 @@ namespace wg
 			}
 		}
 
-		SlotType * pInsertionPoint = _insertEmpty(index, (int) entries.size());
+		for (auto& entry : entries)
+			index = this->_releaseUpdateIndex(entry.m_pChild, index);
 
-		SlotType * pSlot = pInsertionPoint;
+		SlotType* pInsertionPoint = _insertEmpty(index, (int)entries.size());
+
+		SlotType* pSlot = pInsertionPoint;
 		for (auto& entry : entries)
 		{
-			this->_releaseGuardPointer(entry.m_pChild, &pSlot);
 			pSlot->_setWidget(entry.m_pChild);
 
 			if( entry.m_pBP)
@@ -297,20 +297,24 @@ namespace wg
 			}
 		}
 
-		SlotType * pInsertionPoint = _insertEmpty(pos, (int) entries.size());
+		int index = pos - _first();
 
-		SlotType * pSlot = pInsertionPoint;
+		for (auto& entry : entries)
+			index = this->_releaseUpdateIndex(entry.m_pChild, index);
+
+		SlotType* pInsertionPoint = _insertEmpty(index, (int)entries.size());
+
+		SlotType* pSlot = pInsertionPoint;
 		for (auto& entry : entries)
 		{
-			this->_releaseGuardPointer(entry.m_pChild, &pSlot);
 			pSlot->_setWidget(entry.m_pChild);
 
-			if( entry.m_pBP)
+			if (entry.m_pBP)
 				pSlot->_setBlueprint(*entry.m_pBP);
 			pSlot++;
 		}
 
-		m_pHolder->_didAddSlots(pInsertionPoint, (int) entries.size());
+		m_pHolder->_didAddSlots(pInsertionPoint, (int)entries.size());
 		return iterator(pInsertionPoint);
 	}
 
@@ -463,34 +467,27 @@ namespace wg
 		return iterator(pTo);
 	}
 
-	//____ _releaseGuardPointer() _____________________________________________
+	//____ _releaseUpdateIndex() _____________________________________________
 
 	template < class SlotType>
-	void DynamicSlotVector<SlotType>::_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard)
+	int DynamicSlotVector<SlotType>::_releaseUpdateIndex(Widget* pToRelease, int index)
 	{
-		Container * pParent = pToRelease->_parent();
 
-		if (pParent)
+		StaticSlot* pReleaseFromSlot = pToRelease->_slot();
+		if (!pReleaseFromSlot)
+			return index;
+
+		if (_contains(static_cast<SlotType*>(pReleaseFromSlot)))
 		{
-			StaticSlot * pReleaseFromSlot = pToRelease->_slot();
+			// We are releasing a widget from our own slot array, so we need to make sure index still is correct afterwards.
 
-			if (_contains(static_cast<SlotType*>(pReleaseFromSlot)))
-			{
-				// We are releasing a widget from our own slot array, so we need to make sure pointer still is correct afterwards.
-
-				int ofs = (int)((*pPointerToGuard) - _first());
-				if (*pPointerToGuard > pReleaseFromSlot)
-					ofs--;
-
-				pToRelease->releaseFromParent();
-				*pPointerToGuard = _first() + ofs;
-			}
-			else
-				pToRelease->releaseFromParent();
+			if (&m_pArray[index] > pReleaseFromSlot)
+				index--;
 		}
+
+		pToRelease->releaseFromParent();
+		return index;
 	}
-
-
 
 
 	//____ _move() ____________________________________________________________

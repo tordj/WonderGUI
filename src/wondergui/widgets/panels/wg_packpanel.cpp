@@ -608,22 +608,22 @@ namespace wg
 			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Slot in PackPanel must contain pointer to widget and not nullptr.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
-		
-		auto pSlot = static_cast<PackPanelSlot* > (_pSlot);
-		slots._releaseGuardPointer(pNewChild, &pSlot);
 
-		Widget_p pOldChild = pSlot->_widget();
+		int index = slots._releaseUpdateIndex(pNewChild, static_cast<PackPanelSlot*>(_pSlot) - slots.begin());
+		auto& slot = slots.at(index);
 
-		pSlot->_setWidget(pNewChild);
+		Widget_p pOldChild = slot._widget();
 
-		if (pSlot->m_bVisible)
+		slot._setWidget(pNewChild);
+
+		if (slot.m_bVisible)
 		{
-			pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(m_scale);
-			pSlot->_widget()->_resize(pSlot->m_geo.size(), m_scale);
+			slot.m_defaultSize = slot._widget()->_defaultSize(m_scale);
+			slot._widget()->_resize(slot.m_geo.size(), m_scale);
 
-			RectSPX renderArea = pSlot->m_geo + pNewChild->_overflow();
+			RectSPX renderArea = slot.m_geo + pNewChild->_overflow();
 			if (pOldChild)
-				renderArea.growToContain(pSlot->m_geo + pOldChild->_overflow() );
+				renderArea.growToContain(slot.m_geo + pOldChild->_overflow() );
 			_requestRender(renderArea);
 
 			m_totalSpacing = _calcTotalSpacing(m_scale);

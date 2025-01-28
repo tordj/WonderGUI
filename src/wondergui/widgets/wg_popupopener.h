@@ -56,7 +56,8 @@ namespace wg
 			MouseButton		mouseButton		= MouseButton::Left;
 			bool			openOnHover		= false;
 			bool			pickable		= false;
-			int				pickCategory	= 0;
+			uint8_t			pickCategory	= 0;
+			bool			pickHandle		= false;
 			PointerStyle	pointer			= PointerStyle::Undefined;
 			Widget_p		popup;
 			Border			popupOverflow;

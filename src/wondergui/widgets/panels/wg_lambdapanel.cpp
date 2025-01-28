@@ -339,15 +339,15 @@ namespace wg
 			return;
 		}
 		
-		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
+		int index = slots._releaseUpdateIndex(pNewChild, static_cast<LambdaPanelSlot*>(_pSlot) - slots.begin());
+		auto& slot = slots.at(index);
 
-		slots._releaseGuardPointer(pNewChild, &pSlot);
-		pSlot->_setWidget(pNewChild);
+		slot._setWidget(pNewChild);
 
-   		if (pSlot->m_bVisible)
+   		if (slot.m_bVisible)
 		{
-			_updateGeo(pSlot);
-			_onRequestRender(pSlot->m_geo, pSlot);
+			_updateGeo(&slot);
+			_onRequestRender(slot.m_geo, &slot);
 		}
 	}
 

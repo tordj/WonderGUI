@@ -65,7 +65,8 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			pts				pageOverlap = 8;
 			bool			pickable = false;
-			int				pickCategory = 0;
+			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			Scroller::Blueprint	scrollbar;
 			bool			selectable = true;
