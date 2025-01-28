@@ -230,8 +230,8 @@ namespace wg
 		WheelRoll,
 
 		DropPick,					// Sent to picked
-		DropSequenceStart,			// Sent to picked
-		DropSequenceAbort,			// Sent to picked
+		DropTargetEnter,			// Sent to picked
+		DropTargetLeave,			// Sent to picked
 		DropProbe,					// Sent to target
 		DropEnter,					// Sent to target
 		DropMove,					// Sent to target
