@@ -89,13 +89,13 @@ namespace wg
 		Widget_p	popup() const { return m_pPopup;  }
 
 		void		setOpenOnHover(bool bOpen);
-		bool		openOnHover() const { return m_bOpenOnHover;  }
+		bool		openOnHover() const { return m_bOpenOnHover; }
 
 		void		setMouseButton(MouseButton button);
 		MouseButton	mouseButton() const { return m_mouseButton; }
 
 		void		setAttachPoint(Placement attachPoint);
-		Placement	attachPoint() const { return m_attachPoint;  }
+		Placement	attachPoint() const { return m_attachPoint; }
 
 		//.____ Internal ______________________________________________________
 
@@ -103,7 +103,7 @@ namespace wg
 
 		SizeSPX			_defaultSize(int scale) const override;
 
-        bool            open() const { return m_bOpen; }
+        bool            isOpen() const { return m_bOpen; }
 	protected:
 		PopupOpener();
 

@@ -696,8 +696,8 @@ namespace wg
     bool Widget::mouseOnWidget(const Coord& coord) const
     {
         const auto geo = Util::spxToPts(_globalGeo(), m_scale);
-        return coord.x >= geo.x  && coord.x <= geo.x + geo.w &&
-               coord.y >= geo.y  && coord.y <= geo.y + geo.y;
+        return coord.x >= geo.x  && coord.x < geo.x + geo.w &&
+               coord.y >= geo.y  && coord.y < geo.y + geo.h;
     }
 
 	//____ _globalGeo() __________________________
