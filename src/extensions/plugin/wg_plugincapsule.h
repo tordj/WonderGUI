@@ -67,6 +67,7 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			uint8_t			pickCategory = 0;
+			bool 			pickHandle = false;
 			PointerStyle	pointer = PointerStyle::Arrow;
 			bool			selectable = true;
 			Skin_p			skin;
