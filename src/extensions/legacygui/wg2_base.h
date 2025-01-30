@@ -133,7 +133,8 @@ public:
 	static int		DoubleClickDistanceTreshold() { assert(s_pContext!=0); return s_pContext->doubleClickDistanceTreshold; }
 
 	static wg::HostBridge * hostBridge() { return s_pContext->pHostBridge; }
-	
+	static void		setHostBridge( wg::HostBridge * pHostBridge);
+
 	static void		setDefaultStyle( wg::TextStyle* pStyle );
 	static wg::TextStyle_p	defaultStyle() { return wg::TextStyle::s_pDefaultStyle; }
 

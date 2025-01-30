@@ -209,6 +209,16 @@ void WgBase::setDefaultStyle( wg::TextStyle* pStyle )
 	wg::TextStyle::s_pDefaultStyle = pStyle;
 }
 
+//____ setHostBridge() ________________________________________________________
+
+void WgBase::setHostBridge( wg::HostBridge * pHostBridge )
+{
+	assert(s_pContext != 0);
+	s_pContext->pHostBridge = pHostBridge;
+}
+
+
+
 
 //____ SetWidgetTracking() __________________________________________________________
 
