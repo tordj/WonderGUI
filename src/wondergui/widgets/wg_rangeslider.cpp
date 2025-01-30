@@ -175,21 +175,43 @@ namespace wg
 			if (pMsg->button() != MouseButton::Left)
 				break;
 
-			CoordSPX pos = _toLocal(pMsg->pointerSpxPos());
-			RectSPX  beginHandle = _handleGeo(m_size, true);
-			RectSPX  endHandle = _handleGeo(m_size, false);
-			if (beginHandle.contains(pos))
+            bool beginHandlePressed = false;
+            bool endHandlePressed = false;
+
+            CoordSPX pos = _toLocal(pMsg->pointerSpxPos());
+
+            _handlesPressed(pos, beginHandlePressed, endHandlePressed);
+
+			if (beginHandlePressed)
 			{
 				_setHandleState(m_beginHandleState + State::Pressed, true);
 				m_valueAtPress = m_rangeBegin;
 			}
-			else if (endHandle.contains(pos))
+			else if (endHandlePressed)
 			{
 				_setHandleState(m_endHandleState + State::Pressed, false);
 				m_valueAtPress = m_rangeEnd;
 			}
 			else
 			{
+                RectSPX  beginHandle = _handleGeo(m_size, true);
+                RectSPX  endHandle = _handleGeo(m_size, false);
+
+                bool middleBackgroundPressed = false;
+                if(axis() == Axis::X)
+                {
+                    middleBackgroundPressed = (beginHandle.x + beginHandle.w) < pos.x && pos.x  < (endHandle.x - endHandle.w);
+                }
+                else
+                {
+                    middleBackgroundPressed = (beginHandle.y + beginHandle.h) < pos.y && pos.y < (endHandle.y - endHandle.h);
+                }
+
+                if(middleBackgroundPressed)
+                {
+                    m_dragMiddle = true;
+                    m_valueAtPress = m_rangeBegin;
+                }
 				//TODO: Handle click on background.
 			}
 			break;
@@ -201,6 +223,8 @@ namespace wg
 
 			if (pMsg->button() != MouseButton::Left)
 				break;
+
+            m_dragMiddle = false;
 
 			//				Coord pos = toLocal(pMsg->pointerPos());
 			//				Rect  handle = _handleGeo(m_size);
@@ -225,6 +249,37 @@ namespace wg
 
 		case MsgType::MouseDrag:
 		{
+            if(m_dragMiddle)
+			{
+				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
+
+				SizeSPX contentSize = m_size - m_skin.contentBorderSize(m_scale);
+				CoordSPX totalDrag = pMsg->_draggedTotal();
+
+				spx slideLen;
+				spx slided;
+
+				if (m_axis == Axis::X)
+				{
+					slideLen = contentSize.w;
+					slided = totalDrag.x;
+				}
+				else
+				{
+					slideLen = contentSize.h;
+					slided = -totalDrag.y;
+				}
+
+				float newValue = m_valueAtPress + slided / float(slideLen);
+
+				float length = m_rangeEnd - m_rangeBegin;
+
+				limit(newValue, 0.f, 1.f - length);
+
+				if (newValue != m_rangeBegin )
+					_setRange(newValue, newValue + length);
+			}
+
 			if (m_beginHandleState.isPressed() || m_endHandleState.isPressed())
 			{
 				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
@@ -373,6 +428,33 @@ namespace wg
 
 		}
 	}
+
+
+    void RangeSlider::_handlesPressed(CoordSPX pos, bool& beginHandlePressed, bool& endHandlePressed)
+    {
+        RectSPX  beginHandle = _handleGeo(m_size, true);
+        RectSPX  endHandle = _handleGeo(m_size, false);
+
+        if(isRangeDragable())
+        {
+            if(axis() == Axis::X)
+            {
+                beginHandlePressed = (pos.x <= beginHandle.x + beginHandle.w);
+                endHandlePressed = (pos.x >= endHandle.x - endHandle.w);
+
+            }
+            else
+            {
+                beginHandlePressed = (pos.y <= beginHandle.y + beginHandle.h);
+                endHandlePressed = (pos.y >= endHandle.y - endHandle.h);
+            }
+        }
+        else
+        {
+            beginHandlePressed = beginHandle.contains(pos);
+            endHandlePressed = endHandle.contains(pos);
+        }
+    }
 
 	//____ _setHandleState() __________________________________________________
 

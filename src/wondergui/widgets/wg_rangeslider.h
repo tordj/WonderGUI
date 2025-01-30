@@ -66,6 +66,7 @@ namespace wg
 			pts				defaultSlideLength = 64;
 			float			rangeBegin = 0.f;
 			float			rangeEnd = 1.f;
+            float		    minRange = 0.0f;
 			bool			selectable = true;
 			Skin_p			skin;
 			int				steps = 0;
@@ -105,6 +106,9 @@ namespace wg
 		void			setSteps(int nbSteps );
 		inline int		steps() const { return m_nbSteps; }
 
+        void            setRangeDragable(bool isDragable) { m_rangeDragable = isDragable; }
+        bool            isRangeDragable() const { return m_rangeDragable; }
+
 		//.____ Content _______________________________________________________
 
 		void			setRange(float begin, float end);
@@ -116,9 +120,10 @@ namespace wg
 
 		SizeSPX			_defaultSize(int scale) const override;
 
+
 	protected:
 		RangeSlider();
-		
+
 		template<class BP> RangeSlider(const BP& bp) : m_beginHandleSkin(this), m_endHandleSkin(this), Widget(bp)
 		{
 			m_axis = bp.axis;
@@ -127,6 +132,7 @@ namespace wg
 
 			m_defaultSlideLength = bp.defaultSlideLength;
 			m_nbSteps = bp.steps;
+            m_minRange = bp.minRange;
 
 			_updateDefaultSize();
 			_setRange(bp.rangeBegin,bp.rangeEnd);
@@ -142,6 +148,7 @@ namespace wg
 		SizeSPX		_calcDefaultSize(int scale) const;
 
 		void		_setRange(float begin, float end, bool bPostMsg = true);
+        void        _handlesPressed(CoordSPX pos, bool& beginHandlePressed, bool& endHandlePressed);
 		void		_setHandleState(State state, bool isBeginHandle);
 		RectSPX		_handleGeo(const RectSPX& widgetGeo, bool isbBeginHandle) const;
 
@@ -164,10 +171,15 @@ namespace wg
 		float		m_rangeEnd = 1.f;
 		float		m_minRange = 0.f;
 		float		m_valueAtPress = 0.f;
+        float       m_endValueAtPress = 0.f;
 		int			m_nbSteps = 0;
 		Axis		m_axis = Axis::X;
 		State		m_beginHandleState;
 		State		m_endHandleState;
+        bool        m_rangeDragable = false;
+        bool        m_dragMiddle = false;
+        spx         m_beginXAtPress;
+        spx         m_endXAtPress;
 	};
 
 
