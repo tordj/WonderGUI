@@ -43,28 +43,28 @@ WgPluginRoot::WgPluginRoot( wg_obj myPluginCapsule, WgPluginContext * pContext )
 	m_hook.m_pRoot = this;
 
 	m_interface.structSize		= sizeof(wg_pluginroot_calls);
-	
-	m_interface.matchingHeight	= wg_matchingPluginHeight;
-	m_interface.matchingWidth	= wg_matchingPluginWidth;
-	m_interface.defaultSize		= wg_defaultPluginSize;
-	m_interface.minSize			= wg_minPluginSize;
-	m_interface.maxSize			= wg_maxPluginSize;
-	m_interface.markTest		= wg_markTestPlugin;
-	m_interface.preRender		= wg_preRenderPlugin;
-	m_interface.render			= wg_renderPlugin;
-	m_interface.resize			= wg_resizePlugin;
-	m_interface.setState		= wg_setPluginState;
-	m_interface.receive			= wg_pluginReceive;
-	m_interface.pointerStyle	= wg_pluginPointerStyle;
-	m_interface.setPointerPos	= wg_setPluginPointerPos;
-	m_interface.setButtonState	= wg_setPluginButtonState;
-	m_interface.setKeyState		= wg_setPluginKeyState;
-	m_interface.putText			= wg_putPluginText;
-	m_interface.wheelRoll		= wg_pluginWheelRoll;
 
-	m_interface.onUpdate		= wg_onPluginUpdate;
-	
-	
+	m_interface.matchingHeight	= wg2_matchingPluginHeight;
+	m_interface.matchingWidth	= wg2_matchingPluginWidth;
+	m_interface.defaultSize		= wg2_defaultPluginSize;
+	m_interface.minSize			= wg2_minPluginSize;
+	m_interface.maxSize			= wg2_maxPluginSize;
+	m_interface.markTest		= wg2_markTestPlugin;
+	m_interface.preRender		= wg2_preRenderPlugin;
+	m_interface.render			= wg2_renderPlugin;
+	m_interface.resize			= wg2_resizePlugin;
+	m_interface.setState		= wg2_setPluginState;
+	m_interface.receive			= wg2_pluginReceive;
+	m_interface.pointerStyle	= wg2_pluginPointerStyle;
+	m_interface.setPointerPos	= wg2_setPluginPointerPos;
+	m_interface.setButtonState	= wg2_setPluginButtonState;
+	m_interface.setKeyState		= wg2_setPluginKeyState;
+	m_interface.putText			= wg2_putPluginText;
+	m_interface.wheelRoll		= wg2_pluginWheelRoll;
+
+	m_interface.onUpdate		= wg2_onPluginUpdate;
+
+
 	PluginCalls::pluginCapsule->connect(m_pluginCapsule, static_cast<void *>(this), &m_interface);
 }
 
@@ -169,7 +169,7 @@ bool WgPluginRoot::SetChild( WgWidget * pWidget )
 spx WgPluginRoot::_matchingHeight(spx width, int scale) const
 {
 	//NOTE! This does not take change of scale into account!
-	
+
 	if( m_hook.Widget() )
 		return m_hook.Widget()->MatchingPixelHeight(width/64)*64*scale/m_scale;	// This is incorrect but works when child is a WgFlexPanel and the best we can do without a lot of rewrite.
 	else
@@ -181,7 +181,7 @@ spx WgPluginRoot::_matchingHeight(spx width, int scale) const
 spx WgPluginRoot::_matchingWidth(spx height, int scale) const
 {
 	//NOTE! This does not take change of scale into account!
-	
+
 	if( m_hook.Widget() )
 		return m_hook.Widget()->MatchingPixelWidth(height/64)*64*scale/m_scale;	// This is incorrect but works when child is a WgFlexPanel and the best we can do without a lot of rewrite.
 	else
@@ -194,7 +194,7 @@ spx WgPluginRoot::_matchingWidth(spx height, int scale) const
 SizeSPX WgPluginRoot::_defaultSize(int scale) const
 {
 	//NOTE! This does not take change of scale into account!
-	
+
 	if( m_hook.Widget() )
 		return m_hook.Widget()->PreferredPointSize()*64*scale/m_scale;
 	else
@@ -206,7 +206,7 @@ SizeSPX WgPluginRoot::_defaultSize(int scale) const
 SizeSPX WgPluginRoot::_minSize(int scale) const
 {
 	//NOTE! This does not take change of scale into account!
-	
+
 	if( m_hook.Widget() )
 		return m_hook.Widget()->MinPixelSize()*64*scale/m_scale;
 	else
@@ -218,7 +218,7 @@ SizeSPX WgPluginRoot::_minSize(int scale) const
 SizeSPX WgPluginRoot::_maxSize(int scale) const
 {
 	//NOTE! This does not take change of scale into account!
-	
+
 	if( m_hook.Widget() )
 	{
 		SizeI sz = m_hook.Widget()->MaxPixelSize();
@@ -245,13 +245,13 @@ bool WgPluginRoot::_markTest(const CoordSPX& ofs)
 void WgPluginRoot::_preRender()
 {
 	WgPluginBase::setContext(m_pContext);
-	
+
 	for (auto& pWidget : m_preRenderCalls)
 	{
 		if( pWidget )
 			pWidget->_preRender();
 	}
-	
+
 	m_preRenderCalls.clear();
 }
 
@@ -264,7 +264,7 @@ void WgPluginRoot::_render(wg_obj device, const RectSPX& _canvas, const RectSPX&
 
 	WgPluginBase::setContext(m_pContext);
 
-	
+
 	wg_obj hSurfFactory = PluginCalls::gfxDevice->surfaceFactory(device);
 	wg_obj hWaveFactory = PluginCalls::gfxDevice->edgemapFactory(device);
 
@@ -273,17 +273,17 @@ void WgPluginRoot::_render(wg_obj device, const RectSPX& _canvas, const RectSPX&
 	auto pDevice = PluginGfxDevice::create(device, pSurfFactory, pWaveFactory);
 
 	WgPatches patches;
-	
-	
+
+
 	const RectSPX * pRects 	= pDevice->clipList();
 	int nRects 				= pDevice->clipListSize();
-	
+
 	for( int i = 0 ; i < nRects ; i++ )
 	{
 		patches.push({pRects[i].x/64, pRects[i].y/64, pRects[i].w/64, pRects[i].h/64} );
 	}
-	
-	
+
+
 	m_hook.Widget()->_renderPatches(pDevice, { _canvas.x/64, _canvas.y/64, _canvas.w/64, _canvas.h/64 }, { _window.x/64, _window.y/64, _window.w/64, _window.h/64 }, &patches);
 }
 
@@ -298,10 +298,10 @@ void WgPluginRoot::_resize(const SizeSPX& size, int scale)
 
 	auto oldSize = m_size;
 	auto oldScale = m_scale;
-	
+
 	m_size = size;
 	m_scale = scale;
-	
+
 	if( m_hook.Widget() )
 	{
 		m_bBlockRequestResize = true;			// _setScale() might issue requestResize() calls.
@@ -362,20 +362,20 @@ void WgPluginRoot::_setKeyState( int nativeKeyCode, bool bPressed, int64_t times
 	if( bPressed )
 	{
 		m_pEventHandler->QueueEvent( new WgEvent::KeyPress( nativeKeyCode ) );
-		
+
 		if( WgBase::TranslateKey(nativeKeyCode) == WG_KEY_RETURN )
 			m_pEventHandler->QueueEvent( new WgEvent::Character( 13 ) );
 	}
 	else
 		m_pEventHandler->QueueEvent( new WgEvent::KeyRelease( nativeKeyCode ) );
 }
-	
+
 //____ _putText() ___________________________________________________
 
 void WgPluginRoot::_putText( const char * pUTF8Text )
 {
 	const char * p = pUTF8Text;
-	
+
 	while( * p != 0 )
 	{
 		int chr = wg::TextTool::readChar(p);
@@ -421,7 +421,7 @@ bool WgPluginRoot::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesti
 
 		if( !result )
 			return false;
-			
+
 		return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
 	}
 }
@@ -436,7 +436,7 @@ bool WgPluginRoot::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing
 	WgPluginBase::setContext(m_pContext);
 
 	bool result = (bool) PluginCalls::pluginCapsule->releaseFocus(m_pluginCapsule);
-	
+
 	if( !result )
 		return false;
 
