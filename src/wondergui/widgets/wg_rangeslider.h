@@ -178,8 +178,6 @@ namespace wg
 		State		m_endHandleState;
         bool        m_rangeDragable = false;
         bool        m_dragMiddle = false;
-        spx         m_beginXAtPress;
-        spx         m_endXAtPress;
 	};
 
 

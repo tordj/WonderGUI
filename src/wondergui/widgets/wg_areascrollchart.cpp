@@ -472,9 +472,7 @@ namespace wg
 
         // PID Output
         usPerSample *= (1.0f - adjustment);
-        usPerSample = std::clamp(usPerSample,
-                                kMicrosecondsPerSecond / (sampleRate * kMaxSpeedupFactor),
-                                kMicrosecondsPerSecond / (sampleRate * kMaxSlowdownFactor));
+        limit(usPerSample, (kMicrosecondsPerSecond / (sampleRate * kMaxSpeedupFactor)), (kMicrosecondsPerSecond / (sampleRate * kMaxSlowdownFactor)));
 
         // dbg_print("proportional: %f \n", Kp * timeError);
         // dbg_print("integrated: %f \n", Ki * m_errorIntegral);
