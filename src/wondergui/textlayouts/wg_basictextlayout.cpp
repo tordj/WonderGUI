@@ -1124,7 +1124,6 @@ namespace wg
 		//
 
 		const Char * pBreakpoint = nullptr;
-		spx bpWidth = 0;
 
 		int nLines = 0;												//
 
@@ -1165,6 +1164,8 @@ namespace wg
 
 			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), *pGlyph);
 
+			spx preGlyphWidth = width;
+
 			if (pGlyph->advance > 0)
 			{
 				potentialWidth += pFont->kerning(*pPrevGlyph, *pGlyph);
@@ -1198,15 +1199,16 @@ namespace wg
 			}
 			else
 			{
-				if (width > maxLineWidth - eolCaretWidth && pBreakpoint != nullptr)
+				if (width > maxLineWidth - eolCaretWidth)
 				{
-					bpWidth += eolCaretWidth;
-
 					nLines++;
 
 					// Prepare for next line
 
-					pChars = pBreakpoint;
+					if( pBreakpoint )
+						pChars = pBreakpoint;
+					else if( preGlyphWidth == 0 )
+						pChars++;
 
 					width = 0;
 					potentialWidth = 0;
@@ -1220,7 +1222,6 @@ namespace wg
 					if (code == 32)
 					{
 						pBreakpoint = pChars + 1;
-						bpWidth = width;
 					}
 
 					pChars++;
@@ -1260,7 +1261,6 @@ namespace wg
 		//
 
 		const Char * pBreakpoint = nullptr;
-		spx bpWidth = 0;
 		spx bpMaxAscend = 0;
 		spx bpMaxDescend = 0;
 		spx bpMaxDescendGap = 0;							// Including the line gap.
@@ -1314,6 +1314,8 @@ namespace wg
 			// TODO: Support sub/superscript.
 
 			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), * pGlyph);
+
+			spx preGlyphWidth = width;
 
 			if (pGlyph->advance > 0)
 			{
@@ -1373,17 +1375,24 @@ namespace wg
 			}
 			else
 			{
-				if (pBreakpoint != nullptr && width > maxLineWidth - eolCaretWidth)
+				if ( width > maxLineWidth - eolCaretWidth)
 				{
-					bpWidth += eolCaretWidth;
-
 					// Update totalHeight
 
-					totalHeight += pChars->isEndOfText() ? bpMaxAscend + bpMaxDescend : align( (bpMaxAscend + bpMaxDescendGap) * m_softLineSpacing);
+					if( pBreakpoint )
+					{
+						totalHeight += align( (bpMaxAscend + bpMaxDescendGap) * m_softLineSpacing);
+						pChars = pBreakpoint;
+					}
+					else
+					{
+						totalHeight += 	align( (maxAscend + maxDescendGap) * m_softLineSpacing);
+						if( preGlyphWidth == 0 )
+							pChars++;
+					}
 
 					// Prepare for next line
 
-					pChars = pBreakpoint;
 
 					width = 0;
 					potentialWidth = 0;
@@ -1411,7 +1420,6 @@ namespace wg
 					if (code == 32 && m_bLineWrap)
 					{
 						pBreakpoint = pChars + 1;
-						bpWidth = width;
 						bpMaxAscend = maxAscend;
 						bpMaxDescend = maxDescend;
 						bpMaxDescendGap = maxDescendGap;							// Including the line gap.
@@ -1570,6 +1578,7 @@ namespace wg
 
 			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), * pGlyph);
 
+			int preGlyphWidth = width;
 			if (pGlyph->advance > 0)
 			{
 				potentialWidth += pFont->kerning(* pPrevGlyph, * pGlyph);
@@ -1642,30 +1651,40 @@ namespace wg
 			}
 			else
 			{
-				if (width > maxLineWidth - eolCaretWidth && pBreakpoint != nullptr )
+				if (width > maxLineWidth - eolCaretWidth )
 				{
-					bpWidth += eolCaretWidth;
+					if( pBreakpoint != nullptr )
+					{
+						pChars = pBreakpoint;
+						maxAscend = bpMaxAscend;
+						maxDescend = bpMaxDescend;
+						width = bpWidth;
+					}
+					else if( preGlyphWidth > 0 )
+						width = preGlyphWidth;
+					else
+						pChars++;
+
+					width += eolCaretWidth;
 
 					// Finish this line
 
-					pLines->length = int(pBreakpoint - (pTextStart + pLines->offset));
+					pLines->length = int(pChars - (pTextStart + pLines->offset));
 
-					pLines->width = bpWidth;
-					pLines->height = bpMaxAscend + bpMaxDescend;
-					pLines->base = bpMaxAscend;
-					pLines->spacing = align((bpMaxAscend + bpMaxDescendGap) * m_softLineSpacing);
+					pLines->width = width;
+					pLines->height = maxAscend + maxDescend;
+					pLines->base = maxAscend;
+					pLines->spacing = align((maxAscend + maxDescendGap) * m_softLineSpacing);
 					pLines++;
 
 					// Update size
 
-					if (bpWidth > size.w)
+					if (width > size.w)
 						size.w = bpWidth;
 
-					size.h += pChars->isEndOfText() ? bpMaxAscend + bpMaxDescend : align( (bpMaxAscend + bpMaxDescendGap) * m_softLineSpacing);
+					size.h += align( (maxAscend + maxDescendGap) * m_softLineSpacing);
 
 					// Prepare for next line
-
-					pChars = pBreakpoint;
 
 					pLines->offset = int(pChars - pTextStart);
 					width = 0;
@@ -1687,6 +1706,7 @@ namespace wg
 						maxDescend = 0;
 						maxDescendGap = 0;
 					}
+
 				}
 				else
 				{
