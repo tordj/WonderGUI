@@ -31,24 +31,24 @@
 extern "C" {
 #endif
 
-	wg_spx 		wg2_matchingPluginHeight(void* pPluginRoot, wg_spx width, int scale);
-	wg_spx 		wg2_matchingPluginWidth(void* pPluginRoot, wg_spx height, int scale);
-	wg_sizeSPX 	wg2_defaultPluginSize(void* pPluginRoot, int scale);
-	wg_sizeSPX 	wg2_minPluginSize(void* pPluginRoot, int scale);
-	wg_sizeSPX 	wg2_maxPluginSize(void* pPluginRoot, int scale);
-	int			wg2_markTestPlugin(void* pPluginRoot, wg_coordSPX ofs);
-	void 		wg2_preRenderPlugin(void* pPluginRoot);
-	void 		wg2_renderPlugin(void* pPluginRoot, wg_obj device, wg_rectSPX canvas, wg_rectSPX window);
-	void 		wg2_resizePlugin(void* pPluginRoot, wg_sizeSPX size, int scale);
-	void 		wg2_setPluginState(void* pPluginRoot, wg_state state);
-	void 		wg2_pluginReceive(void* pPluginRoot, wg_obj msg);
-	void 		wg2_setPluginPointerPos(void* pPluginRoot, wg_coordSPX pos, int64_t timestamp );
-	void 		wg2_setPluginButtonState(void* pPluginRoot, int button, int pressed, int64_t timestamp );
-	void 		wg2_setPluginKeyState(void* pPluginRoot, int nativeKeyCode, int pressed, int64_t timestamp );
-	void 		wg2_putPluginText(void* pPluginRoot, const char * pUTF8String );
-	void		wg2_pluginWheelRoll(void* pPluginRoot, int wheel, wg_pts distance, int bInvert, int64_t timestamp );
-	void 		wg2_onPluginUpdate(void* pPluginRoot, int microPassed, int64_t microsecTimestamp);
-	wg_pointerStyle wg2_pluginPointerStyle(void* pPluginRoot);
+	wg_spx 		wg_matchingPluginHeight(void* pPluginRoot, wg_spx width, int scale);
+	wg_spx 		wg_matchingPluginWidth(void* pPluginRoot, wg_spx height, int scale);
+	wg_sizeSPX 	wg_defaultPluginSize(void* pPluginRoot, int scale);
+	wg_sizeSPX 	wg_minPluginSize(void* pPluginRoot, int scale);
+	wg_sizeSPX 	wg_maxPluginSize(void* pPluginRoot, int scale);
+	int			wg_markTestPlugin(void* pPluginRoot, wg_coordSPX ofs);
+	void 		wg_preRenderPlugin(void* pPluginRoot);
+	void 		wg_renderPlugin(void* pPluginRoot, wg_obj device, wg_rectSPX canvas, wg_rectSPX window);
+	void 		wg_resizePlugin(void* pPluginRoot, wg_sizeSPX size, int scale);
+	void 		wg_setPluginState(void* pPluginRoot, wg_state state);
+	void 		wg_pluginReceive(void* pPluginRoot, wg_obj msg);
+	void 		wg_setPluginPointerPos(void* pPluginRoot, wg_coordSPX pos, int64_t timestamp );
+	void 		wg_setPluginButtonState(void* pPluginRoot, int button, int pressed, int64_t timestamp );
+	void 		wg_setPluginKeyState(void* pPluginRoot, int nativeKeyCode, int pressed, int64_t timestamp );
+	void 		wg_putPluginText(void* pPluginRoot, const char * pUTF8String );
+	void		wg_pluginWheelRoll(void* pPluginRoot, int wheel, wg_pts distance, int bInvert, int64_t timestamp );
+	void 		wg_onPluginUpdate(void* pPluginRoot, int microPassed, int64_t microsecTimestamp);
+	wg_pointerStyle wg_pluginPointerStyle(void* pPluginRoot);
 
 #ifdef __cplusplus
 }
