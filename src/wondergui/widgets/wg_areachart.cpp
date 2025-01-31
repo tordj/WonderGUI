@@ -213,7 +213,7 @@ namespace wg
 
 		for (auto& graph : entries)
 		{
-			if (graph.m_bVisible)
+			if (graph.m_bVisible && graph.m_pWaveform)
 			{
 				auto pEdgemap = graph.m_pWaveform->refresh();
 				pDevice->flipDrawEdgemap(canvas + graph.m_waveformPos, pEdgemap, graph.m_flip );
