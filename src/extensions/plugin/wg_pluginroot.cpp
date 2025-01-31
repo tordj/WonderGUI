@@ -513,7 +513,7 @@ namespace wg
 		if (!m_pluginCapsule)
 			return false;
 
-		if( m_pFocusedChild )
+		if( m_pFocusedChild && pWidget)
 		{
 			State s = m_pFocusedChild->state();
 			s.setFocused(false);
