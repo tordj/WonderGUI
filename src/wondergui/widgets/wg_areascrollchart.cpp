@@ -444,34 +444,47 @@ namespace wg
 
 	void AreaScrollChartEntry::addSamples(int nbSamples, float sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak )
 	{
+        if(m_samples.empty())
+            m_pDisplay->_initEntrySamples(this);
 
-		if( m_samples.empty() )
-			m_pDisplay->_initEntrySamples(this);
+        float usPerSample = kMicrosecondsPerSecond / sampleRate;
+        const int64_t timestamp = m_samples.back().timestamp; // Last sample currently.
 
-		//
+        // -------------------------------------------------------------
+        //                  --- PID REGULATION ---
+        // -------------------------------------------------------------
 
-		float usPerSample = 1000000 / sampleRate;
+        // control signal
+        const int64_t expectedEndTime = timestamp + (nbSamples * usPerSample); // Last samples timestamp with regulation.
 
-		int64_t timestamp = m_samples.back().timestamp;
-
-        // Calculate how far off we are
-        int64_t expectedEndTime = timestamp + (nbSamples * usPerSample);
+        // Target window
+        constexpr float typical_num_samples = 5.0f;
         float timeError = static_cast<float>(expectedEndTime - m_pDisplay->m_latestTimestamp);
-        float adjustmentFactor = std::min(std::abs(timeError / (nbSamples * usPerSample)), rateTweak);
 
-        if(timeError < 0)
-        {
-            // We're behind - speed up
-            usPerSample *= (1.0f - adjustmentFactor);
-        }
-        else if(timeError > 0)
-        {
-            // We're ahead - slow down
-            usPerSample *= (1.0f + adjustmentFactor);
-        }
+        // Integral error
+        const float rawIntegral = m_errorIntegral * kIntegralDecay + (1.0f-kIntegralDecay) * timeError;
+        m_errorIntegral = rawIntegral;
+
+        const float Kp = kPidProportionalScale / (nbSamples * usPerSample);
+        const float Ki = kPidIntegralScale / (nbSamples * usPerSample);
+
+        float adjustment = (Kp * timeError + Ki * m_errorIntegral);
+
+        // PID Output
+        usPerSample *= (1.0f - adjustment);
+        usPerSample = std::clamp(usPerSample,
+                                kMicrosecondsPerSecond / (sampleRate * kMaxSpeedupFactor),
+                                kMicrosecondsPerSecond / (sampleRate * kMaxSlowdownFactor));
+
+        // dbg_print("proportional: %f \n", Kp * timeError);
+        // dbg_print("integrated: %f \n", Ki * m_errorIntegral);
+        // dbg_print("derivating: %f \n", Kd * errorDerivative);
+        // dbg_print("adjustment: %f \n", -adjustment);
+        // dbg_print("nbSamples: %d \n", nbSamples);
+        // dbg_print("SampleTime: %f \n", usPerSample/kMicrosecondsPerSecond);
+        // dbg_print("timeError: %f \n", timeError/kMicrosecondsPerSecond);
 
         // Fill in the samples
-
 		int offset = (int) m_samples.size();
 		m_samples.resize(offset + nbSamples);
 
