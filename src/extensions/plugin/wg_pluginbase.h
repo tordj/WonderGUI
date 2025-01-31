@@ -39,7 +39,7 @@ namespace wg
 
 		static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge );
 		static bool exit();
-
+		
 		//.____ Misc ________________________________________________
 
 		const static TypeInfo	TYPEINFO;
