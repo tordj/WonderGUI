@@ -731,7 +731,7 @@ int main(int argc, char** argv)
 		//	stretchBlitTest(pRoot->child.ptr());
 		//	scrollIntoViewTest(pRoot->child.ptr());
 		//	textClipTest(pSlot);
-		//	textEditorTest(pSlot);
+			textEditorTest(pSlot);
 		//	lineEditorTest(pSlot);
 		//	popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
@@ -785,7 +785,7 @@ int main(int argc, char** argv)
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-			reorderCapsuleTest(pSlot);
+		//	reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
 		//	labelCapsuleTest(pSlot);
 
