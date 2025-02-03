@@ -157,13 +157,13 @@ namespace wg
 			case Placement::West:						// Centered left of launcherGeo.
 			{
 				geo.x = pSlot->m_launcherGeo.left() - geo.w;
-				geo.y = pSlot->m_launcherGeo.top() + pSlot->m_launcherGeo.h / 2 -geo.h / 2;
+				geo.y = align( pSlot->m_launcherGeo.top() + pSlot->m_launcherGeo.h / 2 -geo.h / 2 );
 				break;
 			}
 
 			case Placement::North:						// Centered above launcherGeo.
 			{
-				geo.x = pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 - geo.w/2;
+				geo.x = align( pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 - geo.w/2 );
 				geo.y = pSlot->m_launcherGeo.top() - geo.h;
 				break;
 			}
@@ -171,13 +171,13 @@ namespace wg
 			case Placement::East:						// Centered right of launcherGeo.
 			{
 				geo.x = pSlot->m_launcherGeo.right();
-				geo.y = pSlot->m_launcherGeo.top() + pSlot->m_launcherGeo.h/2 - geo.h/2;
+				geo.y = align( pSlot->m_launcherGeo.top() + pSlot->m_launcherGeo.h/2 - geo.h/2 );
 				break;
 			}
 
 			case Placement::South:						// Centered below launcherGeo.
 			{
-				geo.x = pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 - geo.w/2;
+				geo.x = align( pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 - geo.w/2 );
 				geo.y = pSlot->m_launcherGeo.bottom();
 				break;
 			}
