@@ -292,6 +292,7 @@ namespace wg
 
 	void PopupOverlay::_refreshStayEnteredList()
 	{
+
 		if( popupSlots.isEmpty() )
 			Base::inputHandler()->clearStayEnteredList(intptr_t(this));
 		else
@@ -300,18 +301,22 @@ namespace wg
 
 			for( auto& slot : popupSlots )
 			{
-				Widget * pWidget = slot.m_pOpener;
-
-				while( pWidget != this && pWidget != nullptr )
+				if( slot.m_state != Slot::State::Closing  && slot.m_state != Slot::State::ClosingDelay )
 				{
-					stayEnteredWidgets.push_back(pWidget);
-					pWidget = pWidget->parent();
+					Widget * pWidget = slot.m_pOpener;
+
+					while( pWidget != this && pWidget != nullptr )
+					{
+						stayEnteredWidgets.push_back(pWidget);
+						pWidget = pWidget->parent();
+					}
 				}
 			}
 
 			Base::inputHandler()->setStayEnteredList(intptr_t(this), stayEnteredWidgets.data(), stayEnteredWidgets.data() + stayEnteredWidgets.size() );
 		}
-	}
+
+ }
 
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -908,8 +913,14 @@ namespace wg
 
 		// Close any popup that is due for closing.
 
-		while (!popupSlots.isEmpty() && popupSlots._first()->m_state == Slot::State::Closing && popupSlots._first()->m_stateCounter >= m_closingFadeMs)
-			_removeSlots(0, 1);
+		for( auto p = popupSlots._begin() ; p < popupSlots._end() ; p++ )
+		{
+			if( p->m_state == Slot::State::Closing && p->m_stateCounter >= m_closingFadeMs )
+			{
+				_removeSlots( int(p - popupSlots._begin()), 1 );
+				p = popupSlots._begin();
+			}
+		}
 	}
 
 
@@ -981,6 +992,33 @@ namespace wg
 
 	void PopupOverlay::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bPeek, bool _bCloseOnSelect, SizeSPX _maxSize, BorderSPX overflow)
 	{
+		// Close unrelated popups
+
+		Widget * pWidget = _pOpener;
+
+		// Trace hierarchy from marked to one of our children.
+
+		while( pWidget != nullptr && pWidget->_parent() != this )
+			pWidget = pWidget->_parent();
+
+		//
+
+		if( pWidget != nullptr && pWidget != mainSlot._widget() )
+		{
+			auto p = popupSlots._first();
+			while (p->m_bPeek && p->_widget() != pWidget)
+			{
+				if (p->m_state != Slot::State::Closing && p->m_state != Slot::State::ClosingDelay)
+				{
+					p->m_state = Slot::State::ClosingDelay;
+					p->m_stateCounter = 0;
+				}
+				p++;
+			}
+		}
+
+		//
+
 		Slot * pSlot = popupSlots._pushFrontEmpty();
 		pSlot->m_pOpener = _pOpener;
 		pSlot->m_launcherGeo = _launcherGeo;

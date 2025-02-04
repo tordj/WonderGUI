@@ -1417,28 +1417,28 @@ bool popupOpenerTest2(ComponentPtr<DynamicSlot> pEntry)
 	pOpener->setPopup(pOpened);
 
 
-	auto pSubEntry1 = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
+	auto pSubEntry1 = Filler::create( { .defaultSize = { 100, 20 }, .id = 11, .skin = pButtonSkin });
 
-	auto pSubEntry2 = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
+	auto pSubEntry2 = Filler::create( { .defaultSize = { 100, 20 }, .id = 21, .skin = pButtonSkin });
 
-	auto pSubEntry3 = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
+	auto pSubEntry3 = Filler::create( { .defaultSize = { 100, 20 }, .id = 31, .skin = pButtonSkin });
 
-	auto pSubEntry4 = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
+	auto pSubEntry4 = Filler::create( { .defaultSize = { 100, 20 }, .id = 41, .skin = pButtonSkin });
 
 
-	auto  pEntry1_1 = PopupOpener::create({ .attachPoint =  Placement::West, .closeOnSelect = false, .label = {.text = "First"}, .openOnHover = true, .selectable = true, .skin = pButtonSkin });
+	auto  pEntry1_1 = PopupOpener::create({ .attachPoint =  Placement::West, .closeOnSelect = false, .id = 10, .label = {.text = "First"}, .openOnHover = true, .selectable = true, .skin = pButtonSkin });
 	pEntry1_1->setPopup(pSubEntry1);
 	pOpened->slots << pEntry1_1;
 
-	auto  pEntry1_2 = PopupOpener::create({ .attachPoint =  Placement::West, .closeOnSelect = false, .label = {.text = "Second"}, .openOnHover = true, .selectable = true, .skin = pButtonSkin });
+	auto  pEntry1_2 = PopupOpener::create({ .attachPoint =  Placement::West, .closeOnSelect = false, .id = 20, .label = {.text = "Second"}, .openOnHover = true, .selectable = true, .skin = pButtonSkin });
 	pEntry1_2->setPopup(pSubEntry2);
 	pOpened->slots << pEntry1_2;
 
-	auto  pEntry1_3 = PopupOpener::create({ .attachPoint =  Placement::West, .closeOnSelect = false, .label = {.text = "Third"}, .openOnHover = true, .selectable = true, .skin = pButtonSkin });
+	auto  pEntry1_3 = PopupOpener::create({ .attachPoint =  Placement::West, .closeOnSelect = false, .id = 30, .label = {.text = "Third"}, .openOnHover = true, .selectable = true, .skin = pButtonSkin });
 	pEntry1_3->setPopup(pSubEntry3);
 	pOpened->slots << pEntry1_3;
 
-	auto  pEntry1_4 = PopupOpener::create({ .attachPoint =  Placement::West, .closeOnSelect = false, .label = {.text = "Fourth"}, .openOnHover = true, .selectable = true, .skin = pButtonSkin });
+	auto  pEntry1_4 = PopupOpener::create({ .attachPoint =  Placement::West, .closeOnSelect = false, .id = 40, .label = {.text = "Fourth"}, .openOnHover = true, .selectable = true, .skin = pButtonSkin });
 	pEntry1_4->setPopup(pSubEntry4);
 	pOpened->slots << pEntry1_4;
 
