@@ -479,11 +479,11 @@ namespace wg
 	}
 
 
-	//____ DragNDropMsg _______________________________________________________
+	//____ DropMsg _______________________________________________________
 
-	const TypeInfo DragNDropMsg::TYPEINFO = { "DragNDropMsg", &Msg::TYPEINFO };
+	const TypeInfo DropMsg::TYPEINFO = { "DropMsg", &Msg::TYPEINFO };
 
-	DragNDropMsg::DragNDropMsg( MsgType type, Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos )
+	DropMsg::DropMsg( MsgType type, Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos )
 	{
 		m_type = type;
 		m_pSource = pSource;
@@ -498,100 +498,115 @@ namespace wg
 		m_pDataset = pDataset;
 	}
 
-	const TypeInfo& DragNDropMsg::typeInfo(void) const
+	const TypeInfo& DropMsg::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
-	bool DragNDropMsg::hasDataset() const 
+	bool DropMsg::hasDataset() const 
 	{ 
 		return m_pDataset; 
 	}
 
-	BasicDataset_p DragNDropMsg::dataset() const
+	BasicDataset_p DropMsg::dataset() const
 	{
 		return m_pDataset;
 	};
 
-	//____ DropPickMsg ___________________________________________________
+	//____ PickMsg ___________________________________________________
 
-	const TypeInfo DropPickMsg::TYPEINFO = { "DropPickMsg", &DragNDropMsg::TYPEINFO };
+	const TypeInfo PickMsg::TYPEINFO = { "PickMsg", &DropMsg::TYPEINFO };
 
-	DropPickMsg::DropPickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos )
-	: DragNDropMsg( MsgType::DropPick, pSource, DropType::Undefined, 0, nullptr, pSource, pFinalReceiver, modKeys, pointerPos ),
+	PickMsg::PickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos ) :
 	m_dragWidgetPointerOfs(Coord()-pickOfs),
 	m_pickOfs(pickOfs)
 	{
+		m_type = MsgType::Pick;
+		m_pSource = pSource;
+		m_pCopyTo = pSource;
+		m_pFinalRecipient = pFinalReceiver;
+		m_modKeys = modKeys;
+		m_pointerPos = pointerPos;
 	}
 
-	const TypeInfo& DropPickMsg::typeInfo(void) const
+	const TypeInfo& PickMsg::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
-	void DropPickMsg::setContent( DropType type, int category, BasicDataset * pDataset )
+	void PickMsg::setContent( DropType type, int category, BasicDataset * pDataset )
 	{
 		m_dropType = type;
 		m_category = category;
 		m_pDataset = pDataset;
 	}
 
-	void DropPickMsg::setDragWidget( Widget * pWidget, Coord pointerOfs )
+	void PickMsg::setDragWidget( Widget * pWidget, Coord pointerOfs )
 	{
 		m_pDragWidget = pWidget;
 		m_dragWidgetPointerOfs = pointerOfs;
 	}
 
-	Widget_p DropPickMsg::dragWidget() const
+	Widget_p PickMsg::dragWidget() const
 	{
 		return m_pDragWidget;
 	}
 
-	Coord DropPickMsg::dragWidgetPointerOfs() const
+	Coord PickMsg::dragWidgetPointerOfs() const
 	{
 		return m_dragWidgetPointerOfs;
 	}
 
-	//____ DropTargetEnterMsg _______________________________________________
-
-	const TypeInfo DropTargetEnterMsg::TYPEINFO = { "DropTargetEnterMsg", &Msg::TYPEINFO };
-
-	DropTargetEnterMsg::DropTargetEnterMsg(Widget* pSource, Widget* pTarget)
+	bool PickMsg::hasDataset() const
 	{
-		m_type = MsgType::DropTargetEnter;
+		return m_pDataset;
+	}
+
+	BasicDataset_p PickMsg::dataset() const
+	{
+		return m_pDataset;
+	};
+
+	//____ PickedEnterMsg _______________________________________________
+
+	const TypeInfo PickedEnterMsg::TYPEINFO = { "PickedEnterMsg", &Msg::TYPEINFO };
+
+	PickedEnterMsg::PickedEnterMsg(Widget* pSource, Widget* pTarget)
+	{
+		m_type = MsgType::PickedEnter;
 		m_pSource = pSource;
 		m_pCopyTo = pSource;
 		m_pTarget = pTarget;
 	}
 
-	const TypeInfo& DropTargetEnterMsg::typeInfo(void) const
+	const TypeInfo& PickedEnterMsg::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
-	Widget_p DropTargetEnterMsg::target() const
+	Widget_p PickedEnterMsg::target() const
 	{
 		return m_pTarget;
 	}
 
-	//____ DropTargetLeaveMsg _______________________________________________
+	//____ PickedLeaveMsg _______________________________________________
 
-	const TypeInfo DropTargetLeaveMsg::TYPEINFO = { "DropTargetLeaveMsg", &Msg::TYPEINFO };
+	const TypeInfo PickedLeaveMsg::TYPEINFO = { "PickedLeaveMsg", &Msg::TYPEINFO };
 
-	DropTargetLeaveMsg::DropTargetLeaveMsg(Widget* pSource, Widget* pTarget)
+	PickedLeaveMsg::PickedLeaveMsg(Widget* pSource, Widget* pTarget)
 	{
-		m_type = MsgType::DropTargetLeave;
+		m_type = MsgType::PickedLeave;
 		m_pSource = pSource;
 		m_pCopyTo = pSource;
 		m_pTarget = pTarget;
 	}
 
-	const TypeInfo& DropTargetLeaveMsg::typeInfo(void) const
+	const TypeInfo& PickedLeaveMsg::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
-	Widget_p DropTargetLeaveMsg::target() const
+	Widget_p PickedLeaveMsg::target() const
 	{
 		return m_pTarget;
 	}
@@ -599,10 +614,10 @@ namespace wg
 
 	//____ DropProbeMsg ___________________________________________________
 
-	const TypeInfo DropProbeMsg::TYPEINFO = { "DropProbeMsg", &DragNDropMsg::TYPEINFO };
+	const TypeInfo DropProbeMsg::TYPEINFO = { "DropProbeMsg", &DropMsg::TYPEINFO };
 
 	DropProbeMsg::DropProbeMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropProbe, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
+		: DropMsg( MsgType::DropProbe, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
 	{
 	}
 
@@ -618,11 +633,11 @@ namespace wg
 
 	//____ DropEnterMsg ___________________________________________________
 
-	const TypeInfo DropEnterMsg::TYPEINFO = { "DropEnterMsg", &DragNDropMsg::TYPEINFO };
+	const TypeInfo DropEnterMsg::TYPEINFO = { "DropEnterMsg", &DropMsg::TYPEINFO };
 
 	DropEnterMsg::DropEnterMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget,
 							   Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropEnter, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
+		: DropMsg( MsgType::DropEnter, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_pDragWidget(pDragWidget)
 	{
 	}
@@ -645,11 +660,11 @@ namespace wg
 
 	//____ DropMoveMsg ___________________________________________________
 
-	const TypeInfo DropMoveMsg::TYPEINFO = { "DropMoveMsg", &DragNDropMsg::TYPEINFO };
+	const TypeInfo DropMoveMsg::TYPEINFO = { "DropMoveMsg", &DropMsg::TYPEINFO };
 
 	DropMoveMsg::DropMoveMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget,
 							 Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropMove, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
+		: DropMsg( MsgType::DropMove, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_pDragWidget(pDragWidget)
 	{
 	}
@@ -671,10 +686,10 @@ namespace wg
 
 	//____ DropLeaveMsg ___________________________________________________
 
-	const TypeInfo DropLeaveMsg::TYPEINFO = { "DropLeaveMsg", &DragNDropMsg::TYPEINFO };
+	const TypeInfo DropLeaveMsg::TYPEINFO = { "DropLeaveMsg", &DropMsg::TYPEINFO };
 
 	DropLeaveMsg::DropLeaveMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropLeave, pSource, type, category, pDataset, pPickedFrom, nullptr, modKeys, pointerPos)
+		: DropMsg( MsgType::DropLeave, pSource, type, category, pDataset, pPickedFrom, nullptr, modKeys, pointerPos)
 	{
 	}
 
@@ -685,10 +700,10 @@ namespace wg
 
 	//____ DropDeliverMsg ___________________________________________________
 
-	const TypeInfo DropDeliverMsg::TYPEINFO = { "DropDeliverMsg", &DragNDropMsg::TYPEINFO };
+	const TypeInfo DropDeliverMsg::TYPEINFO = { "DropDeliverMsg", &DropMsg::TYPEINFO };
 
 	DropDeliverMsg::DropDeliverMsg(Widget * pSource, DropType type, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropDeliver, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
+		: DropMsg( MsgType::DropDeliver, pSource, type, category, pDataset, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_bAccepted(false)
 	{
 	}
@@ -708,36 +723,40 @@ namespace wg
 		m_bAccepted = bAccept;
 	}
 
-	//____ DropCancelMsg ___________________________________________________
+	//____ PickedCancelMsg ___________________________________________________
 
-	const TypeInfo DropCancelMsg::TYPEINFO = { "DropCancelMsg", &DragNDropMsg::TYPEINFO };
+	const TypeInfo PickedCancelMsg::TYPEINFO = { "PickedCancelMsg", &Msg::TYPEINFO };
 
-	DropCancelMsg::DropCancelMsg(Widget * pPickedFrom, DropType type, int category, BasicDataset * pDataset, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropCancel, pPickedFrom, type, category, pDataset, pPickedFrom, nullptr, modKeys, pointerPos)
+	PickedCancelMsg::PickedCancelMsg(Widget * pPickedFrom)
 	{
+		m_type = MsgType::PickedCancel;
+		m_pSource = pPickedFrom;
+		m_pCopyTo = pPickedFrom;
 	}
 
-	const TypeInfo& DropCancelMsg::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
-
-	//____ DropCompleteMsg ___________________________________________________
-
-	const TypeInfo DropCompleteMsg::TYPEINFO = { "DropCompleteMsg", &DragNDropMsg::TYPEINFO };
-
-	DropCompleteMsg::DropCompleteMsg(Widget * pPicked, Widget * pDeliveree, DropType type, int category, BasicDataset * pDataset, ModKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropComplete, pPicked, type, category, pDataset, pPicked, nullptr, modKeys, pointerPos),
-		m_pDeliveree(pDeliveree)
-	{
-	}
-
-	const TypeInfo& DropCompleteMsg::typeInfo(void) const
+	const TypeInfo& PickedCancelMsg::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
-	Widget_p DropCompleteMsg::deliveredTo() const
+	//____ PickedDeliverMsg ___________________________________________________
+
+	const TypeInfo PickedDeliverMsg::TYPEINFO = { "PickedDeliverMsg", &Msg::TYPEINFO };
+
+	PickedDeliverMsg::PickedDeliverMsg(Widget * pPicked, Widget * pDeliveree)
+	{
+		m_type = MsgType::PickedDeliver;
+		m_pSource = pPicked;
+		m_pCopyTo = pPicked;
+		m_pDeliveree = pDeliveree;
+	}
+
+	const TypeInfo& PickedDeliverMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	Widget_p PickedDeliverMsg::deliveredTo() const
 	{
 		return m_pDeliveree;
 	}

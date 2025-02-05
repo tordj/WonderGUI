@@ -826,9 +826,9 @@ namespace wg
 			case MsgType::FocusLost:
 				state.setFocused(false);
 				break;
-			case MsgType::DropPick:
+			case MsgType::Pick:
 			{
-				auto pMsg = static_cast<DropPickMsg*>(_pMsg);
+				auto pMsg = static_cast<PickMsg*>(_pMsg);
 				if (!pMsg->hasDataset())
 				{
 					pMsg->setContent(DropType::Widget, m_pickCategory, Dataset<Widget_p>::create());

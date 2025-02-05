@@ -183,7 +183,7 @@ namespace wg
 						if (abs(total.x) + abs(total.y) > ptsToSpx(m_dragStartTreshold,m_scale))
 						{
 							Coord pickOfs = pMsg->startPos() - m_pPicked->globalGeo().pos();
-							Base::msgRouter()->post(new DropPickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));
+							Base::msgRouter()->post(new PickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));
 							m_dragState = DragState::Picked;
 						}
 						break;
@@ -192,6 +192,8 @@ namespace wg
 					case DragState::Dragging:
 					{
 						CoordSPX pointerPos = pMsg->pointerSpxPos();
+
+						CoordSPX hotspotPos =  pointerPos + m_hotspotOfs;
 
 						// Move the drag-widget onscreen.
 
@@ -248,7 +250,7 @@ namespace wg
 							if( m_pTargeted )
 							{
 								Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
-								Base::msgRouter()->post(new DropTargetLeaveMsg(m_pPicked,m_pTargeted));
+								Base::msgRouter()->post(new PickedLeaveMsg(m_pPicked,m_pTargeted));
 							}
 
 							m_pTargeted = nullptr;
@@ -320,7 +322,7 @@ namespace wg
 					}
 					case Picked:
 					{
-						assert(false);		// There should be no mouse release msg before our DropPickMsg is returned.
+						assert(false);		// There should be no mouse release msg before our PickMsg is returned.
 					}
 					case Dragging:
 					{
@@ -346,9 +348,9 @@ namespace wg
 				break;
 			}
 
-			case MsgType::DropPick:
+			case MsgType::Pick:
 			{
-				auto pMsg = static_cast<DropPickMsg*>(_pMsg);
+				auto pMsg = static_cast<PickMsg*>(_pMsg);
 
 				assert(m_dragState == DragState::Picked);
 
@@ -371,6 +373,11 @@ namespace wg
 						m_dragWidgetOfs = ptsToSpx(pMsg->dragWidgetPointerOfs(),m_scale);
 						m_dragSlot._setWidget(pDragWidget);
 						dragWidgetSize = m_dragSlot._widget()->_defaultSize(m_scale);
+
+						if( pMsg->hotspot() == Placement::Undefined )
+							m_hotspotOfs.clear();
+						else
+							m_hotspotOfs = Util::placementToOfs(pMsg->hotspot(), {m_dragWidgetOfs, dragWidgetSize} );
 					}
 					else
 					{
@@ -403,7 +410,7 @@ namespace wg
 
 
 					Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, m_dragSlot._widget(),  this, pMsg->modKeys(), pMsg->pointerPos()));
-					Base::msgRouter()->post(new DropTargetEnterMsg(m_pPicked, pTargeted));
+					Base::msgRouter()->post(new PickedEnterMsg(m_pPicked, pTargeted));
 
 					m_pProbed = nullptr;
 					m_pTargeted = pTargeted;
@@ -477,7 +484,7 @@ namespace wg
 			m_pTargeted = nullptr;
 		}
 
-		Base::msgRouter()->post(new DropCancelMsg(m_pPicked, m_dropType, m_category, nullptr, modKeys, pointerPos));
+		Base::msgRouter()->post(new PickedCancelMsg(m_pPicked));
 		m_pPicked = nullptr;
 		m_dropType = DropType::Undefined;
 		m_category = 0;
@@ -499,7 +506,7 @@ namespace wg
 			m_dragSlot._setWidget(nullptr);
 		}
 
-		Base::msgRouter()->post(new DropCompleteMsg(m_pPicked, pDeliveredTo, m_dropType, m_category, m_pDataset, modKeys, pointerPos));
+		Base::msgRouter()->post(new PickedDeliverMsg(m_pPicked, pDeliveredTo));
 		m_pPicked = nullptr;
 		m_dropType = DropType::Undefined;
 		m_category = 0;

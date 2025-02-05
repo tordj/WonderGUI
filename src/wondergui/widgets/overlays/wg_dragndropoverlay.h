@@ -112,7 +112,7 @@ namespace wg
 		{
 			Idle,
 			Picking,		// Mouse button pressed, awaiting drag to pass treshold
-			Picked,			// Drag passed treshold, DropPickMsg sent.
+			Picked,			// Drag passed treshold, PickMsg sent.
 			Dragging,		// We have a dataset, a drag-widget and are dragging.
 			Targeting,      // We are hovering a widget that has accepted our target probing.
 			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
@@ -129,6 +129,7 @@ namespace wg
 
 		pts				m_dragStartTreshold;
 		CoordSPX		m_dragWidgetOfs;                // Drag widgets offset from pointer.
+		CoordSPX		m_hotspotOfs;					// Hotspot offset from pointer.
 
 		Widget_wp       m_pProbed;                     // Last widget we sent a DropProbeMsg to. To avoid sending multiple messages in a row to same while hovering.
 		Widget_wp       m_pTargeted;                   // Widget targeted while in state Targeting.

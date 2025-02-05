@@ -105,9 +105,9 @@ namespace wg
 	{
 		switch( _pMsg->type())
 		{
-			case MsgType::DropPick:
+			case MsgType::Pick:
 			{
-				auto pMsg = static_cast<DropPickMsg*>(_pMsg);
+				auto pMsg = static_cast<PickMsg*>(_pMsg);
 
 				// Find the panel inside us that we are affecting.
 
@@ -115,7 +115,7 @@ namespace wg
 
 				// Find out which child we picked
 
-				auto pickOfs = ptsToSpx( pMsg->pointerPos() - globalGeo().pos(), m_scale );
+				auto pickOfs = ptsToSpx( pMsg->pickOfs(), m_scale );
 
 				Widget * pWidget = _findWidget(pickOfs, SearchMode::ActionTarget);
 
@@ -126,7 +126,7 @@ namespace wg
 
 				if( pWidget && pWidget != this )
 				{
-					Coord offset = -(pMsg->pointerPos() - pWidget->globalGeo().pos());
+					Coord offset = -pMsg->pickOfs();
 
 					auto pDataset = Dataset<Widget_p>::create(pWidget);
 					pMsg->setContent(DropType::Widget, m_pickCategory, pDataset);
@@ -157,9 +157,9 @@ namespace wg
 				break;
 			}
 
-			case MsgType::DropTargetEnter:
+			case MsgType::PickedEnter:
 			{
-				auto pMsg = static_cast<DropTargetEnterMsg*>(_pMsg);
+				auto pMsg = static_cast<PickedEnterMsg*>(_pMsg);
 				if( pMsg->target() != this )
 				{
 					_markPosition(-1);
@@ -167,9 +167,9 @@ namespace wg
 				break;
 			}
 
-			case MsgType::DropTargetLeave:
+			case MsgType::PickedLeave:
 			{
-				auto pMsg = static_cast<DropTargetEnterMsg*>(_pMsg);
+				auto pMsg = static_cast<PickedEnterMsg*>(_pMsg);
 				if( pMsg->target() != this )
 				{
 					_markPosition(m_pickedPos);
@@ -177,14 +177,14 @@ namespace wg
 				break;
 			}
 
- 			case MsgType::DropCancel:
+ 			case MsgType::PickedCancel:
 			{
 				_endTransition();
 				m_pickState = PickState::Canceled;
 				break;
 			}
 
-			case MsgType::DropComplete:
+			case MsgType::PickedDeliver:
 			{
 				_endTransition();
 				m_pickState = PickState::Completed;
@@ -243,7 +243,7 @@ namespace wg
 
 			case MsgType::DropMove:
 			{
-				auto pMsg = static_cast<DragNDropMsg*>(_pMsg);
+				auto pMsg = static_cast<DropMsg*>(_pMsg);
 
 				Coord hoverCoord = pMsg->pointerPos() - globalGeo().pos();
 

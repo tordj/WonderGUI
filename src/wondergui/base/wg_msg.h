@@ -149,13 +149,13 @@ namespace wg
 	typedef	StrongPtr<PointerChangeMsg>		PointerChangeMsg_p;
 	typedef	WeakPtr<PointerChangeMsg>	PointerChangeMsg_wp;
 
-	class DragNDropMsg;
-	typedef StrongPtr<DragNDropMsg>        DragNDropMsg_p;
-	typedef WeakPtr<DragNDropMsg>    DragNDropMsg_wp;
+	class DropMsg;
+	typedef StrongPtr<DropMsg>        DropMsg_p;
+	typedef WeakPtr<DropMsg>    DropMsg_wp;
 
-	class DropPickMsg;
-	typedef StrongPtr<DropPickMsg>  DropPickMsg_p;
-	typedef WeakPtr<DropPickMsg>    DropPickMsg_wp;
+	class PickMsg;
+	typedef StrongPtr<PickMsg>  PickMsg_p;
+	typedef WeakPtr<PickMsg>    PickMsg_wp;
 
 	class DropProbeMsg;
 	typedef StrongPtr<DropProbeMsg>  DropProbeMsg_p;
@@ -177,13 +177,13 @@ namespace wg
 	typedef StrongPtr<DropDeliverMsg>        DropDeliverMsg_p;
 	typedef WeakPtr<DropDeliverMsg>    DropDeliverMsg_wp;
 
-	class DropCancelMsg;
-	typedef StrongPtr<DropCancelMsg>        DropCancelMsg_p;
-	typedef WeakPtr<DropCancelMsg>    DropCancelMsg_wp;
+	class PickedCancelMsg;
+	typedef StrongPtr<PickedCancelMsg>        PickedCancelMsg_p;
+	typedef WeakPtr<PickedCancelMsg>    PickedCancelMsg_wp;
 
-	class DropCompleteMsg;
-	typedef StrongPtr<DropCompleteMsg>       DropCompleteMsg_p;
-	typedef WeakPtr<DropCompleteMsg>    DropCompleteMsg_wp;
+	class PickedDeliverMsg;
+	typedef StrongPtr<PickedDeliverMsg>       PickedDeliverMsg_p;
+	typedef WeakPtr<PickedDeliverMsg>    PickedDeliverMsg_wp;
 
 
 	class SelectMsg;
@@ -669,9 +669,100 @@ namespace wg
 		PointerStyle	m_style;
 	};
 
-	//____ DragNDropMsg _______________________________________________________
+	//____ PickMsg ___________________________________________________
 
-   class DragNDropMsg : public Msg
+	class PickMsg : public Msg
+	{
+		friend class DragNDropOverlay;
+	public:
+		//.____ Identification __________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content ________________________________________________________
+
+		Coord				pickOfs() const { return m_pickOfs; }
+
+		void				setContent( DropType type, int category, BasicDataset * pDataset );
+
+		void				setHotspot( Placement hotspot );		// Placement::Undefined gives hotspot on cursor.
+		Placement			hotspot() const { return m_hotspot; }
+
+		void				setDragWidget( Widget * pWidget, Coord pointerOfs );
+		bool				hasDragWidget() const { return m_pDragWidget; }
+		Widget_p            dragWidget() const;
+		Coord				dragWidgetPointerOfs() const;
+
+		bool				hasDataset() const;
+		BasicDataset_p		dataset() const;
+		int                 category() const { return m_category; }
+		DropType			dropType() const { return m_dropType; }
+
+		Coord				pointerPos() const { return m_pointerPos; }
+		ModKeys				modKeys() const { return m_modKeys; }
+
+	protected:
+		PickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos );
+
+		Widget_p            m_pDragWidget;
+		Coord				m_dragWidgetPointerOfs;
+		Coord               m_pickOfs;
+		Placement			m_hotspot = Placement::Undefined;
+
+		DropType			m_dropType = DropType::Undefined;	// Type of data in m_pDataset.
+		int                 m_category = 0;						// User defined category.
+		BasicDataset_p      m_pDataset;							// Contains data being dropped.
+
+		Coord				m_pointerPos;		// Screen position of pointer.
+		ModKeys				m_modKeys;			// Modifier keys pressed when message posted.
+	};
+
+	//____ PickedEnterMsg ______________________________________________
+
+	class PickedEnterMsg : public Msg
+	{
+		friend class DragNDropOverlay;
+	public:
+		//.____ Identification __________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content __________________________________________________
+
+		Widget_p	target() const;
+
+	protected:
+		PickedEnterMsg(Widget* pSource, Widget * pTarget );
+
+		Widget_p	m_pTarget;
+	};
+
+	//____ PickedLeaveMsg ______________________________________________
+
+	class PickedLeaveMsg : public Msg
+	{
+		friend class DragNDropOverlay;
+	public:
+		//.____ Identification __________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content __________________________________________________
+
+		Widget_p	target() const;
+
+	protected:
+		PickedLeaveMsg(Widget* pSource, Widget* pTarget);
+
+		Widget_p	m_pTarget;
+	};
+
+	//____ DropMsg _______________________________________________________
+
+	class DropMsg : public Msg
 	{
 		friend class DragNDropOverlay;
 	public:
@@ -692,94 +783,20 @@ namespace wg
 		DropType			dropType() const { return m_dropType; }
 
 	protected:
-		DragNDropMsg( MsgType type, Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos );
+		DropMsg( MsgType type, Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos );
 
 		DropType			m_dropType;			// Type of data in m_pDataset.
 		int                 m_category;			// User defined category.
 		BasicDataset_p      m_pDataset;			// Contains data being dropped.
 
 		Coord				m_pointerPos;		// Screen position of pointer.
-   		ModKeys				m_modKeys;			// Modifier keys pressed when message posted.
+		ModKeys				m_modKeys;			// Modifier keys pressed when message posted.
 		Widget_p            m_pPickedFrom;
 	 };
 
-	//____ DropPickMsg ___________________________________________________
-
-	class DropPickMsg : public DragNDropMsg
-	{
-		friend class DragNDropOverlay;
-	public:
-		//.____ Identification __________________________________________
-
-		const TypeInfo&		typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
-		//.____ Content ________________________________________________________
-
-		void				setContent( DropType type, int category, BasicDataset * pDataset );
-
-		Coord				pickOfs() const { return m_pickOfs; }
-
-		void				setDragWidget( Widget * pWidget, Coord pointerOfs );
-		bool				hasDragWidget() const { return m_pDragWidget; }
-		Widget_p            dragWidget() const;
-		Coord				dragWidgetPointerOfs() const;
-
-	protected:
-		DropPickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos );
-
-		Widget_p            m_pDragWidget;
-		Coord				m_dragWidgetPointerOfs;
-		Coord               m_pickOfs;
-	};
-
-	//____ DropTargetEnterMsg ______________________________________________
-
-	class DropTargetEnterMsg : public Msg
-	{
-		friend class DragNDropOverlay;
-	public:
-		//.____ Identification __________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
-		//.____ Content __________________________________________________
-
-		Widget_p	target() const;
-
-	protected:
-		DropTargetEnterMsg(Widget* pSource, Widget * pTarget );
-
-		Widget_p	m_pTarget;
-	};
-
-	//____ DropTargetLeaveMsg ______________________________________________
-
-	class DropTargetLeaveMsg : public Msg
-	{
-		friend class DragNDropOverlay;
-	public:
-		//.____ Identification __________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
-		//.____ Content __________________________________________________
-
-		Widget_p	target() const;
-
-	protected:
-		DropTargetLeaveMsg(Widget* pSource, Widget* pTarget);
-
-		Widget_p	m_pTarget;
-	};
-
-
-
 	//____ DropProbeMsg ___________________________________________________
 
-	class DropProbeMsg : public DragNDropMsg
+	class DropProbeMsg : public DropMsg
 	{
 		friend class DragNDropOverlay;
 	public:
@@ -802,7 +819,7 @@ namespace wg
 
 	//____ DropEnterMsg ___________________________________________________
 
-	class DropEnterMsg : public DragNDropMsg
+	class DropEnterMsg : public DropMsg
 	{
 		friend class DragNDropOverlay;
 	public:
@@ -824,7 +841,7 @@ namespace wg
 
 	//____ DropMoveMsg ___________________________________________________
 
-	class DropMoveMsg : public DragNDropMsg
+	class DropMoveMsg : public DropMsg
 	{
 		friend class DragNDropOverlay;
 	public:
@@ -846,7 +863,7 @@ namespace wg
 
 	//____ DropLeaveMsg ___________________________________________________
 
-	class DropLeaveMsg : public DragNDropMsg
+	class DropLeaveMsg : public DropMsg
 	{
 		friend class DragNDropOverlay;
 	public:
@@ -864,7 +881,7 @@ namespace wg
 
 	//____ DropDeliverMsg ___________________________________________________
 
-	class DropDeliverMsg : public DragNDropMsg
+	class DropDeliverMsg : public DropMsg
 	{
 		friend class DragNDropOverlay;
 	public:
@@ -886,9 +903,9 @@ namespace wg
 	};
 
 
-	//____ DropCancelMsg ___________________________________________________
+	//____ PickedCancelMsg ___________________________________________________
 
-	class DropCancelMsg : public DragNDropMsg
+	class PickedCancelMsg : public Msg
 	{
 		friend class DragNDropOverlay;
 	public:
@@ -901,13 +918,13 @@ namespace wg
 
 
 	protected:
-		DropCancelMsg( Widget * pPickedFrom, DropType dropType, int category, BasicDataset * pDataset, ModKeys modKeys, Coord pointerPos );
+		PickedCancelMsg( Widget * pPickedFrom );
 
 	};
 
-	//____ DropCompleteMsg ___________________________________________________
+	//____ PickedDeliverMsg ___________________________________________________
 
-	class DropCompleteMsg : public DragNDropMsg
+	class PickedDeliverMsg : public Msg
 	{
 		friend class DragNDropOverlay;
 	public:
@@ -921,7 +938,7 @@ namespace wg
 		Widget_p 	deliveredTo() const;
 
 	protected:
-		DropCompleteMsg( Widget * pPicked, Widget * pDeliveree, DropType dropType, int category, BasicDataset * pDataset, ModKeys modKeys, Coord pointerPos );
+		PickedDeliverMsg( Widget * pPicked, Widget * pDeliveree );
 
   		Widget_p 	m_pDeliveree;
 	};

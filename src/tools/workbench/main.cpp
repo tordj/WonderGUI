@@ -4465,8 +4465,8 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 																		.padding = 4 })
 	});
 
-	Base::msgRouter()->addRoute(pSupply, MsgType::DropPick, [](Msg* _pMsg) {
-		auto pMsg = static_cast<DropPickMsg*>(_pMsg);
+	Base::msgRouter()->addRoute(pSupply, MsgType::Pick, [](Msg* _pMsg) {
+		auto pMsg = static_cast<PickMsg*>(_pMsg);
 		auto pMe = wg_dynamic_cast<LabelCapsule_p>(pMsg->source());
 
 		if( !pMe->slot.isEmpty() )
