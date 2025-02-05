@@ -56,8 +56,6 @@ namespace wg
 
 	void ReorderCapsule::_init()
 	{
-		m_dropCategory = 1;
-
 		if( !m_pTransition )
 			m_pTransition = ValueTransition::create(300000, TransitionCurve::EaseOut);
 
@@ -112,7 +110,6 @@ namespace wg
 				auto pMsg = static_cast<DropPickMsg*>(_pMsg);
 
 				// Find the panel inside us that we are affecting.
-				// We allow for capsules between us and the panel.
 
 				Container* pContainer = _ourContainer();
 
@@ -131,12 +128,13 @@ namespace wg
 				{
 					Coord offset = -(pMsg->pointerPos() - pWidget->globalGeo().pos());
 
-					auto pDataset = Dataset<Widget_wp>::create(pWidget);
-					pMsg->setContent(DropType::Widget, m_dropCategory, pDataset);
+					auto pDataset = Dataset<Widget_p>::create(pWidget);
+					pMsg->setContent(DropType::Widget, m_pickCategory, pDataset);
 					pMsg->setDragWidget(pWidget, offset );
 
 
 					m_pPicked = pWidget;
+					m_bPickedFromMe = true;
 
 					auto pPackPanel = static_cast<PackPanel*>(pContainer);
 					m_pickedPos = pPackPanel->slots.find(pWidget) - pPackPanel->slots.begin();
@@ -150,13 +148,36 @@ namespace wg
 					m_transitionProgress = m_pTransition->duration();
 
 					m_pickState = PickState::Remaining;
+
 					_startReceiveUpdates();
+					m_bReceivingUpdates = true;
+
 				}
 
 				break;
 			}
 
-			case MsgType::DropCancel:
+			case MsgType::DropTargetEnter:
+			{
+				auto pMsg = static_cast<DropTargetEnterMsg*>(_pMsg);
+				if( pMsg->target() != this )
+				{
+					_markPosition(-1);
+				}
+				break;
+			}
+
+			case MsgType::DropTargetLeave:
+			{
+				auto pMsg = static_cast<DropTargetEnterMsg*>(_pMsg);
+				if( pMsg->target() != this )
+				{
+					_markPosition(m_pickedPos);
+				}
+				break;
+			}
+
+ 			case MsgType::DropCancel:
 			{
 				_endTransition();
 				m_pickState = PickState::Canceled;
@@ -166,23 +187,60 @@ namespace wg
 			case MsgType::DropComplete:
 			{
 				_endTransition();
+				m_pickState = PickState::Completed;
 				break;
 			}
-
 
 			case MsgType::DropProbe:
 			{
 				auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
 
-				if (pMsg->dropType() == DropType::Widget && pMsg->category() == m_dropCategory)
+				if (pMsg->dropType() == DropType::Widget && pMsg->category() == m_pickCategory)
 				{
 					pMsg->accept();
-				}
 
+					if( !m_bPickedFromMe )
+					{
+						auto pCasted = wg_dynamic_cast<StrongPtr<Dataset<Widget_p>>>(pMsg->dataset());
+						m_pPicked = pCasted->data;
+
+						if( m_pickState == PickState::Finishing )
+						{
+							// Special treatment, transition from earlier leave is still running.
+							// We need to start from same state.
+
+//							m_transitionProgress = 0;
+
+							m_pickedPos = -1;
+							m_prevPos = -1;
+							m_markedPos = -1;
+
+							m_pPrevPosFiller->releaseFromParent();
+
+
+						}
+
+						m_pickState = PickState::Unpicked;
+					}
+				}
 				break;
 			}
 
 			case MsgType::DropEnter:
+			{
+				if( !m_bPickedFromMe )
+				{
+					if( !m_bReceivingUpdates )
+					{
+						_startReceiveUpdates();
+						m_bReceivingUpdates = true;
+					}
+				}
+
+
+				// No break, continue to DropMove!
+			}
+
 			case MsgType::DropMove:
 			{
 				auto pMsg = static_cast<DragNDropMsg*>(_pMsg);
@@ -233,16 +291,17 @@ namespace wg
 					_markPosition(index);
 
 				}
-				else
-					_markPosition(m_pickedPos);
-
 
 				break;
 			}
 
 			case MsgType::DropLeave:
-				if( m_pickState != PickState::Completed)
-					_markPosition(m_pickedPos);
+				_markPosition(m_pickedPos);
+
+				if( !m_bPickedFromMe )
+				{
+					m_pickState = PickState::Finishing;
+				}
 				break;
 
 			case MsgType::DropDeliver:
@@ -250,8 +309,11 @@ namespace wg
 
 				pMsg->accept();
 
-				_endTransition();
-				m_pickState = PickState::Completed;
+				if( !m_bPickedFromMe )
+				{
+					_endTransition();
+					m_pickState = PickState::Completed;
+				}
 				break;
 
 		}
@@ -295,24 +357,14 @@ namespace wg
 		}
 
 		if (m_delayCountdown > 0)
-			m_delayCountdown = std::max( 0, m_delayCountdown -= microPassed);
-		else if( m_bTransitioning == false && m_markedPos != -1 && m_markedPos != m_hoveredPos )
+			m_delayCountdown = std::max( 0, m_delayCountdown - microPassed);
+
+
+		if( m_delayCountdown == 0 && m_bTransitioning == false && m_markedPos != m_hoveredPos )
 			_startTransition(m_markedPos);
-
-
 
 		switch (m_pickState)
 		{
-		case PickState::Leaving:
-		{
-
-
-			break;
-		}
-
-		case PickState::Returning:
-			break;
-
 		case PickState::Canceled:
 		{
 			_markPosition(m_pickedPos);
@@ -330,7 +382,7 @@ namespace wg
 
 		case PickState::Finishing:
 		{
-			if (!m_bTransitioning)
+			if (!m_bTransitioning && m_delayCountdown == 0)
 			{
 				// Remove fillers.
 
@@ -339,15 +391,26 @@ namespace wg
 
 				// Reinsert picked widget.
 
-				pPackPanel->slots.insert(m_dropPos, m_pPicked);
+				if( m_bPickedFromMe )
+				{
+					_stopReceiveUpdates();
+					m_bReceivingUpdates = false;
+					m_bPickedFromMe = false;
+				}
+
+				if( m_dropPos >= 0 )
+				{
+					pPackPanel->slots.insert(m_dropPos, m_pPicked);
+					m_dropPos = -1;
+				}
 
 
 				m_pPicked = nullptr;
+				m_pickedPos = -1;
 				m_prevPos = -1;
 				m_hoveredPos = -1;
 				m_markedPos = -1;
 				m_pickState = PickState::Unpicked;
-				_stopReceiveUpdates();
 			}
 		}
 
@@ -399,7 +462,13 @@ namespace wg
 
 		Size	startSize;
 
-		if (pos == m_hoveredPos)
+		if( pos == -1 )
+		{
+			startSize = m_pHoveredPosFiller->defaultSize();
+			m_hoveredPos = pos;
+			m_pHoveredPosFiller->releaseFromParent();
+		}
+		else if (pos == m_hoveredPos)
 		{
 			startSize = m_pHoveredPosFiller->defaultSize();
 		}

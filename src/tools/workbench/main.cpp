@@ -734,8 +734,8 @@ int main(int argc, char** argv)
 		//	textClipTest(pSlot);
 		//	textEditorTest(pSlot);
 		//	lineEditorTest(pSlot);
-			popupOpenerTest(pSlot);
-			popupOpenerTest2(pSlot);
+		//	popupOpenerTest(pSlot);
+		//	popupOpenerTest2(pSlot);
 		//	scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
 		//	splitPanelTest(pSlot);
@@ -787,7 +787,7 @@ int main(int argc, char** argv)
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-		//	reorderCapsuleTest(pSlot);
+			reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
 		//	labelCapsuleTest(pSlot);
 
@@ -4393,8 +4393,12 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 	auto pBucketSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black, .padding = 1 });
 
+	//---- First container
+
 	{
 		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin, .usePickHandles = true });
+
+//		pBucket1->setTransitionSkin(BoxSkin::create( {.spacing = 2} ) );
 
 		auto pPackPanel = PackPanel::create();
 
@@ -4411,7 +4415,7 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 		pBaseLayer->slots.pushBack(pBucket1);
 	}
 
-	//----
+	//---- Second container
 
 	{
 		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin });
@@ -4432,9 +4436,56 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 	}
 
+	//---- trash can
+
+	auto pTrashCan = Filler::create({ 	.defaultSize = {100,100},
+										.dropTarget = true,
+										.skin = ColorSkin::create(Color::Black) });
+
+	pBaseLayer->slots.pushBack(pTrashCan, { .pos = {300,300}});
+
+	Base::msgRouter()->addRoute(pTrashCan, MsgType::DropProbe, [](Msg*pMsg) 
+	{
+		static_cast<DropProbeMsg*>(pMsg)->accept();
+	});
+
+	Base::msgRouter()->addRoute(pTrashCan, MsgType::DropDeliver, [](Msg*pMsg) 
+	{
+		static_cast<DropProbeMsg*>(pMsg)->accept();
+	});
+
+	//---- outside supply
+
+	auto pSupply = LabelCapsule::create({ 	.label = { .text = "SUPPLY" },
+											.labelSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black } ),
+											.pickable = true,
+											.skin = BoxSkin::create({ 	.color = Color::White,
+																		.outlineColor = Color::Black,
+																		.spacing = 10,
+																		.padding = 4 })
+	});
+
+	Base::msgRouter()->addRoute(pSupply, MsgType::DropPick, [](Msg* _pMsg) {
+		auto pMsg = static_cast<DropPickMsg*>(_pMsg);
+		auto pMe = wg_dynamic_cast<LabelCapsule_p>(pMsg->source());
+
+		if( !pMe->slot.isEmpty() )
+		{
+			auto pDataset = Dataset<Widget_p>::create(pMe->slot.widget());
+			pMsg->setContent(DropType::Widget, 0, pDataset);
+		}
+		else
+			pMsg->setContent(DropType::Undefined, 0, nullptr);
+
+	});
+
+	auto pFiller1 = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create(Color::Red) });
+
+	pSupply->slot = pFiller1;
+
+	pBaseLayer->slots.pushBack(pSupply, { .pos = {300, 200}, .size = {128,78}} );
 
 	*pEntry = pBaseLayer;
-
 	return true;
 
 }

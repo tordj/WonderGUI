@@ -112,9 +112,7 @@ namespace wg
 		void		_startTransition(int pos);
 		void		_endTransition();
 
-
-		uint8_t				m_dropCategory;
-
+		bool				m_bReceivingUpdates = false;
 
 		ValueTransition_p	m_pTransition;
 		bool				m_bTransitioning = false;
@@ -132,8 +130,10 @@ namespace wg
 
 
 		Widget_p			m_pPicked;
-		int					m_pickedPos;			// Offset in PackPanel
+		int					m_pickedPos = -1;			// Offset in PackPanel
 		float				m_pickedWeight;			// Weight of picked widget
+
+		int					m_bPickedFromMe = false;
 
 		int					m_delayCountdown = 0;
 
@@ -152,23 +152,13 @@ namespace wg
 		{
 			Unpicked,
 			Remaining,
-			Leaving,
-			Away,
-			Returning,
 			Canceled,
 			Completed,
 			Finishing
 		};
 
-		enum class DropState
-		{
-			Unprobed,
-		};
-
 
 		PickState			m_pickState = PickState::Unpicked;
-		DropState			m_dropState = DropState::Unprobed;
-
 	};
 
 

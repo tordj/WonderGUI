@@ -559,6 +559,8 @@ namespace wg
 	DropTargetEnterMsg::DropTargetEnterMsg(Widget* pSource, Widget* pTarget)
 	{
 		m_type = MsgType::DropTargetEnter;
+		m_pSource = pSource;
+		m_pCopyTo = pSource;
 		m_pTarget = pTarget;
 	}
 
@@ -579,6 +581,8 @@ namespace wg
 	DropTargetLeaveMsg::DropTargetLeaveMsg(Widget* pSource, Widget* pTarget)
 	{
 		m_type = MsgType::DropTargetLeave;
+		m_pSource = pSource;
+		m_pCopyTo = pSource;
 		m_pTarget = pTarget;
 	}
 

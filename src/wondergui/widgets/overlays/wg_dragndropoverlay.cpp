@@ -246,7 +246,10 @@ namespace wg
 							// Untarget previous target. Probing possibly new target we leave for next round.
 
 							if( m_pTargeted )
+							{
 								Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
+								Base::msgRouter()->post(new DropTargetLeaveMsg(m_pPicked,m_pTargeted));
+							}
 
 							m_pTargeted = nullptr;
 							m_dragState = DragState::Dragging;
@@ -330,7 +333,7 @@ namespace wg
 						{
 							Base::msgRouter()->post(new DropDeliverMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
 							m_dragState = DragState::Delivering;
-							Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
+//							Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
 							m_pTargeted = nullptr;
 						}
 						else
@@ -398,7 +401,9 @@ namespace wg
 				{
 					Widget * pTargeted = static_cast<Widget*>(pMsg->sourceRawPtr());
 
+
 					Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, m_dragSlot._widget(),  this, pMsg->modKeys(), pMsg->pointerPos()));
+					Base::msgRouter()->post(new DropTargetEnterMsg(m_pPicked, pTargeted));
 
 					m_pProbed = nullptr;
 					m_pTargeted = pTargeted;

@@ -232,13 +232,13 @@ namespace wg
 		DropPick,					// Sent to picked
 		DropTargetEnter,			// Sent to picked
 		DropTargetLeave,			// Sent to picked
+		DropCancel,					// Sent to picked
+		DropComplete,				// Sent to picked
 		DropProbe,					// Sent to target
 		DropEnter,					// Sent to target
 		DropMove,					// Sent to target
 		DropLeave,					// Sent to target
 		DropDeliver,				// Sent to target
-		DropCancel,					// Sent to picked
-		DropComplete,				// Sent to picked
 
 		Select,						// Non-value widget triggered, like a button being pressed.
 		Unselect,					// Used by ToggleGroup when ToggleButton is unselected (but no other selected).
