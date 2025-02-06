@@ -28,6 +28,7 @@
 #include <wg_surfacefactory.h>
 #include <wg_patches.h>
 #include <wg_image.h>
+#include <wg_root.h>
 
 
 
@@ -192,8 +193,8 @@ namespace wg
 					case DragState::Dragging:
 					{
 						CoordSPX pointerPos = pMsg->pointerSpxPos();
-
-						CoordSPX hotspotPos =  pointerPos + m_hotspotOfs;
+						CoordSPX hotspotSPX =  pointerPos + m_hotspotOfs;
+						Coord    hotspotPTS = spxToPts(hotspotSPX, _root()->scale());
 
 						// Move the drag-widget onscreen.
 
@@ -205,7 +206,7 @@ namespace wg
 
 // MOVE TO TICK!						// Check if we entered/left a (possible) target.
 
-						CoordSPX ofs = _toLocal(pointerPos);
+						CoordSPX ofs = _toLocal(hotspotSPX);
 
 						Widget * pProbed = _findWidget(ofs, SearchMode::ActionTarget );
 
@@ -215,7 +216,7 @@ namespace wg
 						if( pProbed && pProbed != this && pProbed != m_pProbed )
 						{
 							m_pProbed = pProbed;
-							Base::msgRouter()->post(new DropProbeMsg(pProbed, m_dropType, m_category, m_pDataset, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+							Base::msgRouter()->post(new DropProbeMsg(pProbed, m_dropType, m_category, m_pDataset, m_pPicked, this, pMsg->modKeys(), hotspotPTS ));
 						}
 
 						break;
@@ -224,6 +225,8 @@ namespace wg
 					case DragState::Targeting:
 					{
 						CoordSPX pointerPos = pMsg->pointerSpxPos();
+						CoordSPX hotspotSPX =  pointerPos + m_hotspotOfs;
+						Coord    hotspotPTS = spxToPts(hotspotSPX, _root()->scale());
 
 						// Move the drag-widget onscreen.
 
@@ -236,7 +239,7 @@ namespace wg
 
 // MOVE TO TICK!                        // Check if our target has changed
 
-						CoordSPX ofs = _toLocal(pointerPos);
+						CoordSPX ofs = _toLocal(hotspotSPX);
 
 						Widget * pHovered = _findWidget(ofs, SearchMode::ActionTarget );
 
@@ -249,7 +252,7 @@ namespace wg
 
 							if( m_pTargeted )
 							{
-								Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
+								Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), hotspotPTS));
 								Base::msgRouter()->post(new PickedLeaveMsg(m_pPicked,m_pTargeted));
 							}
 
@@ -261,7 +264,7 @@ namespace wg
 
 						if( m_pTargeted )                                   // Check our weak pointer just in case it has been deleted...
 						{
-							Base::msgRouter()->post(new DropMoveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, m_dragSlot._widget(), this, pMsg->modKeys(), pMsg->pointerPos()));
+							Base::msgRouter()->post(new DropMoveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, m_dragSlot._widget(), this, pMsg->modKeys(), hotspotPTS));
 						}
 
 						break;
@@ -326,20 +329,24 @@ namespace wg
 					}
 					case Dragging:
 					{
-						_cancel( pMsg->modKeys(), pMsg->pointerPos());
+						_cancel();
 						break;
 					}
 					case Targeting:
 					{
 						if( m_pTargeted )
 						{
-							Base::msgRouter()->post(new DropDeliverMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+							CoordSPX pointerPos = pMsg->pointerSpxPos();
+							CoordSPX hotspotSPX =  pointerPos + m_hotspotOfs;
+							Coord    hotspotPTS = spxToPts(hotspotSPX, _root()->scale());
+
+							Base::msgRouter()->post(new DropDeliverMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, this, pMsg->modKeys(), hotspotPTS));
 							m_dragState = DragState::Delivering;
 //							Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
 							m_pTargeted = nullptr;
 						}
 						else
-							_cancel( pMsg->modKeys(), pMsg->pointerPos());
+							_cancel();
 						break;
 					}
 					default:
@@ -393,7 +400,7 @@ namespace wg
 					m_dragState = DragState::Dragging;
 				}
 				else
-					_cancel( pMsg->modKeys(), pMsg->pointerPos());
+					_cancel();
 
 				break;
 			}
@@ -409,7 +416,7 @@ namespace wg
 					Widget * pTargeted = static_cast<Widget*>(pMsg->sourceRawPtr());
 
 
-					Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, m_dragSlot._widget(),  this, pMsg->modKeys(), pMsg->pointerPos()));
+					Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, m_dragSlot._widget(),  this, pMsg->modKeys(), pMsg->dropPos()));
 					Base::msgRouter()->post(new PickedEnterMsg(m_pPicked, pTargeted));
 
 					m_pProbed = nullptr;
@@ -451,10 +458,14 @@ namespace wg
 				// Check if our delivery was accepted and in that case complete, otherwise cancel.
 
 				if( pMsg->isAccepted() )
-					_complete( pMsg->deliveredTo(), pMsg->modKeys(), pMsg->pointerPos() );
+					_complete( pMsg->deliveredTo() );
 				else
-					_cancel(pMsg->modKeys(), pMsg->pointerPos());
+				{
+					Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, pMsg->modKeys(), pMsg->dropPos()));
+					m_pTargeted = nullptr;
 
+					_cancel();
+				}
 				break;
 			}
 
@@ -468,7 +479,7 @@ namespace wg
 
 	//____ _cancel() ________________________________________________________________
 
-	void DragNDropOverlay::_cancel( ModKeys modKeys, Coord pointerPos )
+	void DragNDropOverlay::_cancel()
 	{
 		if( m_dragSlot._widget())
 		{
@@ -476,12 +487,6 @@ namespace wg
 			
 			_requestRender(m_dragSlot.m_geo + overflow);
 			m_dragSlot._setWidget(nullptr);
-		}
-
-		if( m_pTargeted )
-		{
-			Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, modKeys, pointerPos));
-			m_pTargeted = nullptr;
 		}
 
 		Base::msgRouter()->post(new PickedCancelMsg(m_pPicked));
@@ -494,7 +499,7 @@ namespace wg
 
 	//____ _complete() _______________________________________________________________
 
-	void DragNDropOverlay::_complete( Widget * pDeliveredTo, ModKeys modKeys, Coord pointerPos )
+	void DragNDropOverlay::_complete( Widget * pDeliveredTo )
 	{
 		assert( !m_pTargeted );
 

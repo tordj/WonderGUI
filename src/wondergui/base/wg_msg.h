@@ -773,7 +773,7 @@ namespace wg
 
 		//.____ Content ________________________________________________________
 
-		Coord				pointerPos() const { return m_pointerPos; }
+		Coord				dropPos() const { return m_dropPos; }
 		ModKeys				modKeys() const { return m_modKeys; }
 
 		bool				hasDataset() const;
@@ -783,13 +783,13 @@ namespace wg
 		DropType			dropType() const { return m_dropType; }
 
 	protected:
-		DropMsg( MsgType type, Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos );
+		DropMsg( MsgType type, Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord dropPos );
 
 		DropType			m_dropType;			// Type of data in m_pDataset.
 		int                 m_category;			// User defined category.
 		BasicDataset_p      m_pDataset;			// Contains data being dropped.
 
-		Coord				m_pointerPos;		// Screen position of pointer.
+		Coord				m_dropPos;			// Global drop position, either position of pointer or hotspot if set.
 		ModKeys				m_modKeys;			// Modifier keys pressed when message posted.
 		Widget_p            m_pPickedFrom;
 	 };
@@ -811,7 +811,7 @@ namespace wg
 		bool			isAccepted() const { return m_bAccepted; }
 
 	protected:
-		DropProbeMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos  );
+		DropProbeMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord dropPos  );
 
   		bool		m_bAccepted = false;
 	};
@@ -834,7 +834,7 @@ namespace wg
 		Widget_p            dragWidget() const;
 
 	protected:
-		DropEnterMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos );
+		DropEnterMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModKeys modKeys, Coord dropPos );
 
 		Widget_p            m_pDragWidget;
 	};
@@ -856,7 +856,7 @@ namespace wg
 		Widget_p            dragWidget() const;
 
 	protected:
-		DropMoveMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos );
+		DropMoveMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModKeys modKeys, Coord dropPos );
 
 		Widget_p            m_pDragWidget;
 	};
@@ -875,7 +875,7 @@ namespace wg
 		//.____ Content ________________________________________________________
 
 	protected:
-		DropLeaveMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, ModKeys modKeys, Coord pointerPos );
+		DropLeaveMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, ModKeys modKeys, Coord dropPos );
 	};
 
 
@@ -897,7 +897,7 @@ namespace wg
 		bool		isAccepted() const { return m_bAccepted; }
 
 	protected:
-		DropDeliverMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord pointerPos );
+		DropDeliverMsg( Widget * pSource, DropType dropType, int category, BasicDataset * pDataset, Widget * pPickedFrom, Widget * pFinalReceiver, ModKeys modKeys, Coord dropPos );
 
   		bool		m_bAccepted;
 	};

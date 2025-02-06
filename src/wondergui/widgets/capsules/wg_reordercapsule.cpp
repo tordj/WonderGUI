@@ -126,18 +126,18 @@ namespace wg
 
 				if( pWidget && pWidget != this )
 				{
-					Coord offset = -pMsg->pickOfs();
+					Coord offset = -(pMsg->pointerPos() - pWidget->globalGeo().pos());
 
 					auto pDataset = Dataset<Widget_p>::create(pWidget);
 					pMsg->setContent(DropType::Widget, m_pickCategory, pDataset);
 					pMsg->setDragWidget(pWidget, offset );
-
+					pMsg->setHotspot(Placement::Center);
 
 					m_pPicked = pWidget;
 					m_bPickedFromMe = true;
 
 					auto pPackPanel = static_cast<PackPanel*>(pContainer);
-					m_pickedPos = pPackPanel->slots.find(pWidget) - pPackPanel->slots.begin();
+					m_pickedPos = int(pPackPanel->slots.find(pWidget) - pPackPanel->slots.begin());
 
 					m_markedPos = m_pickedPos;
 					m_hoveredPos = m_pickedPos;
@@ -245,7 +245,7 @@ namespace wg
 			{
 				auto pMsg = static_cast<DropMsg*>(_pMsg);
 
-				Coord hoverCoord = pMsg->pointerPos() - globalGeo().pos();
+				Coord hoverCoord = pMsg->dropPos() - globalGeo().pos();
 
 				Widget * pWidget = _findWidget( Util::ptsToSpx(hoverCoord, m_scale), SearchMode::ActionTarget);
 
@@ -279,12 +279,12 @@ namespace wg
 
 					if (pOurContainer->axis() == Axis::X)
 					{
-						if (pMsg->pointerPos().x > markedGeo.x + markedGeo.w / 2)
+						if (pMsg->dropPos().x > markedGeo.x + markedGeo.w / 2)
 							index++;
 					}
 					else
 					{
-						if (pMsg->pointerPos().y > markedGeo.y + markedGeo.h / 2)
+						if (pMsg->dropPos().y > markedGeo.y + markedGeo.h / 2)
 							index++;
 					}
 
@@ -316,6 +316,8 @@ namespace wg
 				}
 				break;
 
+			Default:
+				break;
 		}
 	}
 
