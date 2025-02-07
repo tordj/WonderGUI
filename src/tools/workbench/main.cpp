@@ -4396,7 +4396,7 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	//---- First container
 
 	{
-		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin, .usePickHandles = true });
+		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin, .usePickHandles = false });
 
 //		pBucket1->setTransitionSkin(BoxSkin::create( {.spacing = 2} ) );
 
@@ -4412,7 +4412,7 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 		pBucket1->slot = pPackPanel;
 
-		pBaseLayer->slots.pushBack(pBucket1);
+		pBaseLayer->slots.pushBack(pBucket1, { .pos = {10,10} });
 	}
 
 	//---- Second container
@@ -4438,9 +4438,19 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 	//---- trash can
 
-	auto pTrashCan = Filler::create({ 	.defaultSize = {100,100},
-										.dropTarget = true,
-										.skin = ColorSkin::create(Color::Black) });
+	auto pTrashCan = LabelCapsule::create({ .child = Filler::create( { .defaultSize = {100,100}}),
+											.dropTarget = true,
+											.label = { .text = "BLACK HOLE" },
+											.labelPlacement = Placement::North,
+											.labelSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black, .padding = 2 } ),
+											.pickable = false,
+											.skin = BoxSkin::create({ 	.color = Color::Black,
+																		.outlineColor = Color::Black,
+																		.spacing = 10,
+																		.padding = 4 })
+	});
+
+
 
 	pBaseLayer->slots.pushBack(pTrashCan, { .pos = {300,300}});
 
@@ -4457,7 +4467,8 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	//---- outside supply
 
 	auto pSupply = LabelCapsule::create({ 	.label = { .text = "SUPPLY" },
-											.labelSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black } ),
+											.labelPlacement = Placement::North,
+											.labelSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black, .padding = 2 } ),
 											.pickable = true,
 											.skin = BoxSkin::create({ 	.color = Color::White,
 																		.outlineColor = Color::Black,
@@ -4471,8 +4482,18 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 		if( !pMe->slot.isEmpty() )
 		{
-			auto pDataset = Dataset<Widget_p>::create(pMe->slot.widget());
+			auto pWidget = pMe->slot.widget();
+
+			static Color wheel[5] = { Color::LightCyan, Color::Beige, Color::Orchid, Color::SaddleBrown, Color::Seashell };
+			static int colorOfs = 0;
+
+
+			pMe->slot = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create( wheel[colorOfs++]) });
+
+			auto pDataset = Dataset<Widget_p>::create(pWidget);
 			pMsg->setContent(DropType::Widget, 0, pDataset);
+			pMsg->setDragWidget(pWidget, -pMsg->pickOfs());
+			pMsg->setHotspot(Placement::Center);
 		}
 		else
 			pMsg->setContent(DropType::Undefined, 0, nullptr);
