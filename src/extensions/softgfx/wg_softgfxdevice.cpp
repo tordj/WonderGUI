@@ -1736,6 +1736,17 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 					int beg = pEdgeStrips[y] * 4;
 					int end = pEdgeStrips[y + edgeStripPitch] * 4;
 
+					// Secure that edge isn't above previous one.
+
+					if (y > 0)
+					{
+						if (beg < pEdgeStrips[y - 1] * 4)
+							beg = pEdgeStrips[y - 1] * 4;
+
+						if (end < pEdgeStrips[y - 1 + edgeStripPitch] * 4)
+							end = pEdgeStrips[y - 1 + edgeStripPitch] * 4;
+					}
+
 					if (beg > end)
 						swap(beg, end);
 
