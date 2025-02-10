@@ -1731,21 +1731,26 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				int nEdges = 0;
 				int skippedSegments = 0;
 
+				int prevBeg = INT_MIN;
+				int prevEnd = INT_MIN;
+
 				for (int y = 0; y < nSegments - 1; y++)
 				{
 					int beg = pEdgeStrips[y] * 4;
 					int end = pEdgeStrips[y + edgeStripPitch] * 4;
 
-					// Secure that edge isn't above previous one.
+					// Secure that edge starts after previous one.
 
-					if (y > 0)
-					{
-						if (beg < pEdgeStrips[y - 1] * 4)
-							beg = pEdgeStrips[y - 1] * 4;
+					if (beg < prevBeg)
+						beg = prevBeg;
 
-						if (end < pEdgeStrips[y - 1 + edgeStripPitch] * 4)
-							end = pEdgeStrips[y - 1 + edgeStripPitch] * 4;
-					}
+					if (end < prevEnd)
+						end = prevEnd;
+
+					prevBeg = beg;
+					prevEnd = end;
+
+					//
 
 					if (beg > end)
 						swap(beg, end);
