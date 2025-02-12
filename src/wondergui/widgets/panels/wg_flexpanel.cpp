@@ -634,8 +634,14 @@ namespace wg
 			sz += SizeSPX( pSlot->m_topLeftPin.offset.x, pSlot->m_topLeftPin.offset.y );
 			sz -= SizeSPX( pSlot->m_bottomRightPin.offset.x, pSlot->m_bottomRightPin.offset.y );
 
-			sz.w /= (pSlot->m_bottomRightPin.origo.x - pSlot->m_topLeftPin.origo.x);
-			sz.h /= (pSlot->m_bottomRightPin.origo.y - pSlot->m_topLeftPin.origo.y);
+			auto dividerX = (pSlot->m_bottomRightPin.origo.x - pSlot->m_topLeftPin.origo.x);
+			auto dividerY = (pSlot->m_bottomRightPin.origo.y - pSlot->m_topLeftPin.origo.y);
+
+			if( dividerX > 0.f )
+				sz.w /= dividerX;
+
+			if( dividerY > 0.f )
+				sz.h /= dividerY;
 		}
 		else
 		{
