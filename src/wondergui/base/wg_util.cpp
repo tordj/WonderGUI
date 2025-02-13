@@ -440,6 +440,9 @@ namespace wg
 
 			case SizePolicy2D::Scale:
 			{
+				if( maxSize.w == 0 || maxSize.h == 0 )
+					return {0,0};
+
 				SizeSPX	size;
 
 				float	fracX = orgSize.w / (float) maxSize.w;
@@ -469,6 +472,9 @@ namespace wg
 
 			case SizePolicy2D::ScaleDown:
 			{
+				if( maxSize.w == 0 || maxSize.h == 0 )
+					return {0,0};
+
 				SizeSPX	size;
 
 				float	fracX = orgSize.w / (float) maxSize.w;
