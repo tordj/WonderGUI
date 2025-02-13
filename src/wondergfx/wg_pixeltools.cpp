@@ -1212,7 +1212,7 @@ static void read16_bitplanes(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, c
 
 
 
-static void copy_RGBA_8_to_BGR_8(const uint8_t* pSrc, uint8_t* pDst, int amount)
+static void copy_BGRA_8_to_BGR_8(const uint8_t* pSrc, uint8_t* pDst, int amount)
 {
 	for (int i = 0; i < amount; i++)
 	{
@@ -1223,7 +1223,7 @@ static void copy_RGBA_8_to_BGR_8(const uint8_t* pSrc, uint8_t* pDst, int amount)
 	}
 }
 
-static void copy_RGBA_8_to_BGRA_4(const uint8_t* pSrc, uint8_t* pDst, int amount)
+static void copy_BGRA_8_to_BGRA_4(const uint8_t* pSrc, uint8_t* pDst, int amount)
 {
 	for (int i = 0; i < amount; i++)
 	{
@@ -1237,7 +1237,7 @@ static void copy_RGBA_8_to_BGRA_4(const uint8_t* pSrc, uint8_t* pDst, int amount
 	}
 }
 
-static void copy_RGBA_8_to_BGR_565(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
+static void copy_BGRA_8_to_BGR_565(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
 {
 	auto pSrc = (uint32_t*)_pSrc;
 	auto pDst = (uint16_t*)_pDst;
@@ -1245,11 +1245,11 @@ static void copy_RGBA_8_to_BGR_565(const uint8_t* _pSrc, uint8_t* _pDst, int amo
 	for (int i = 0; i < amount; i++)
 	{
 		uint32_t col = * pSrc++;
-		* pDst++ = ((col >> 19) & 0x1F) | ((col >> 5) & 0x7E0) | ((col & 0xF8) << 8);
+		* pDst++ = ((col >> 3) & 0x1F) | ((col >> 5) & 0x7E0) | ((col & 0xF80000) >> 8);
 	}
 }
 
-static void copy_RGBA_8_to_RGB_565BE(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
+static void copy_BGRA_8_to_RGB_565BE(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
 {
 	auto pSrc = (uint32_t*)_pSrc;
 	auto pDst = (uint16_t*)_pDst;
@@ -1263,7 +1263,7 @@ static void copy_RGBA_8_to_RGB_565BE(const uint8_t* _pSrc, uint8_t* _pDst, int a
 	}
 }
 
-static void copy_RGBA_8_to_RGB_555BE(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
+static void copy_BGRA_8_to_RGB_555BE(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
 {
 	auto pSrc = (uint32_t*)_pSrc;
 	auto pDst = (uint16_t*)_pDst;
@@ -1277,7 +1277,7 @@ static void copy_RGBA_8_to_RGB_555BE(const uint8_t* _pSrc, uint8_t* _pDst, int a
 	}
 }
 
-static void copy_RGBA_8_to_Alpha_8(const uint8_t* pSrc, uint8_t* pDst, int amount)
+static void copy_BGRA_8_to_Alpha_8(const uint8_t* pSrc, uint8_t* pDst, int amount)
 {
 	for (int i = 0; i < amount; i++)
 	{
@@ -1294,22 +1294,22 @@ static PixelWriteFunc getChunkyWriteFuncFromBGRA8(PixelFormat dstFmt)
 	{
 	case PixelFormat::BGR_8_sRGB:
 	case PixelFormat::BGR_8_linear:
-		return copy_RGBA_8_to_BGR_8;
+		return copy_BGRA_8_to_BGR_8;
 
 	case PixelFormat::BGRA_4_linear:
-		return copy_RGBA_8_to_BGRA_4;
+		return copy_BGRA_8_to_BGRA_4;
 
 	case PixelFormat::BGR_565_linear:
-		return copy_RGBA_8_to_BGR_565;
+		return copy_BGRA_8_to_BGR_565;
 
 	case PixelFormat::RGB_565_bigendian:
-		return copy_RGBA_8_to_RGB_565BE;
+		return copy_BGRA_8_to_RGB_565BE;
 
 	case PixelFormat::RGB_555_bigendian:
-		return copy_RGBA_8_to_RGB_555BE;
+		return copy_BGRA_8_to_RGB_555BE;
 
 	case PixelFormat::Alpha_8:
-		return copy_RGBA_8_to_Alpha_8;
+		return copy_BGRA_8_to_Alpha_8;
 
 	default:
 		return nullptr;
