@@ -44,6 +44,7 @@ namespace wg
 			float				defaultTopSample = 0.f;
 			std::function<void(int64_t latestTimestamp, int64_t firstNeededTimestamp, int64_t lastNeededTimestamp, int64_t currentTimestamp)> fetcher;
 			Gradient			gradient;								// Overrides color when set.
+			int					id;
 			HiColor				outlineColor = Color8::DarkGrey;
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
 			pts					topOutlineThickness = 1;
@@ -52,6 +53,9 @@ namespace wg
 
         AreaScrollChartEntry();
 		AreaScrollChartEntry(const Blueprint& bp);
+
+		int		setId(int id) { m_id = id; }
+		int		id() const { return m_id; }
 
 		bool	addNowSample( float topSample, float bottomSample );
 		bool	addSampleWithTimestamp( int64_t timestamp, float topSample, float bottomSample );
@@ -97,6 +101,8 @@ namespace wg
 		AreaScrollChart* m_pDisplay = nullptr;
 
 		// Appearance
+
+		int					m_id = 0;
 
 		bool				m_bVisible = true;
 

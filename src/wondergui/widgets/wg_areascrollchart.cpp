@@ -395,6 +395,7 @@ namespace wg
 
 	AreaScrollChartEntry::AreaScrollChartEntry(const AreaScrollChartEntry::Blueprint& bp)
 	{
+		m_id						= bp.id;
 		m_bottomOutlineThickness 	= bp.bottomOutlineThickness;
 		m_fillColor					= bp.color;
 		m_fillGradient				= bp.gradient;
