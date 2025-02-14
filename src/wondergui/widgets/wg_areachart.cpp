@@ -472,6 +472,7 @@ namespace wg
 
 	AreaChartEntry::AreaChartEntry(const Blueprint& bp)
 	{
+		m_id = bp.id;
 		m_bottomOutlineThickness = bp.bottomOutlineThickness;
 		m_fillColor = bp.color;
 		m_fillGradient = bp.gradient;

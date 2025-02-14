@@ -42,17 +42,20 @@ namespace wg
 			HiColor				color = Color8::LightGrey;
 			GfxFlip				flip = GfxFlip::None;
 			Gradient			gradient;								// Overrides color when set.
+			int					id = 0;
 			HiColor				outlineColor = Color8::DarkGrey;
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
 			float				rangeBegin = 0.f;
 			float				rangeEnd = 1.f;
 			pts					topOutlineThickness = 1;
 			bool				visible = true;
-
 		};
 
 		AreaChartEntry() {}
 		AreaChartEntry(const Blueprint& bp);
+
+		int		setId(int id) { m_id = id; }
+		int		id() const { return m_id; }
 
 		bool	setColors(HiColor fill, HiColor outline, ColorTransition* pTransition = nullptr);
 		bool	setGradients(Gradient fill, Gradient outline, ColorTransition* pTransition = nullptr);
@@ -87,6 +90,8 @@ namespace wg
 		AreaChart*			m_pDisplay = nullptr;
 
 		// Appearance
+
+		int					m_id = 0;
 
 		bool				m_bVisible = true;
 
