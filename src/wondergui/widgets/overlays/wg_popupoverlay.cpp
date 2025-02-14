@@ -512,10 +512,10 @@ namespace wg
 
 			HiColor tint = HiColor::White;
 
-			if (p->pSlot->m_state == Slot::State::Opening)
+			if (p->pSlot->m_state == Slot::State::Opening && m_openingFadeMs > 0 )
 				tint.a = 4096 * p->pSlot->m_stateCounter / m_openingFadeMs;
 
-			if (p->pSlot->m_state == Slot::State::Closing)
+			if (p->pSlot->m_state == Slot::State::Closing && m_closingFadeMs > 0 )
 				tint.a = 4096 - (4096 * p->pSlot->m_stateCounter / m_closingFadeMs);
 
 			if (tint.a == 4096)
@@ -585,7 +585,11 @@ namespace wg
 					if (!pSlot->m_geo.contains(pointerPos) && !pSlot->m_launcherGeo.contains(pointerPos))
 					{
 						pSlot->m_state = Slot::State::Closing;
-						pSlot->m_stateCounter = (m_openingFadeMs - pSlot->m_stateCounter) * m_closingFadeMs / m_openingFadeMs;
+
+						if( m_openingFadeMs > 0 && m_closingFadeMs > 0 )
+							pSlot->m_stateCounter = (m_openingFadeMs - pSlot->m_stateCounter) * m_closingFadeMs / m_openingFadeMs;
+						else
+							pSlot->m_stateCounter = 0;
 					}
 				}
 				else if(pSlot->m_state == Slot::State::OpeningDelay)
@@ -644,7 +648,11 @@ namespace wg
 						if (popup.m_launcherGeo.contains(pointerPos))
 						{
 							popup.m_state = Slot::State::Opening;
-							popup.m_stateCounter = (m_closingFadeMs - popup.m_stateCounter) * m_openingFadeMs / m_closingFadeMs;
+
+							if( m_openingFadeMs > 0 && m_closingFadeMs > 0 )
+								popup.m_stateCounter = (m_closingFadeMs - popup.m_stateCounter) * m_openingFadeMs / m_closingFadeMs;
+							else
+								popup.m_stateCounter = 0;
 						}
 						else if (popup.m_geo.contains(pointerPos))
 						{
