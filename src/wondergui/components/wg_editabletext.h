@@ -99,6 +99,7 @@ namespace wg
 		bool			caretLineEnd();
 		bool			caretTextBegin();
 		bool			caretTextEnd();
+		void            requestFocus() { _requestFocus(true); }
 
 		//.____ Internal ______________________________________________________
 
@@ -106,7 +107,6 @@ namespace wg
 		void			_render(GfxDevice* pDevice, const RectSPX& _canvas) override;
 		void			_receive(Msg* pMsg) override;
 		void			_setState(State state) override;
-		
 	protected:
 
 		// Overloaded so we can update caret and selection
@@ -133,7 +133,7 @@ namespace wg
 
 		bool			caretPageUp();
 		bool			caretPageDown();
-		
+
 		bool			caretNextWord();
 		bool			caretPrevWord();
 
@@ -150,11 +150,11 @@ namespace wg
 
 		virtual bool	_caretVisible() const override { return m_editState.bCaret; }
 		virtual int		_caretOffset() const override { return m_editState.caretOfs; }
-		virtual std::tuple<int,int>	_selectedText() const override 
-		{ 
+		virtual std::tuple<int,int>	_selectedText() const override
+		{
 			int beg = std::min(m_editState.selectOfs,m_editState.caretOfs);
 			int end = std::max(m_editState.selectOfs,m_editState.caretOfs);
-			
+
 			return std::make_tuple(beg,end);
 		};
 
@@ -166,7 +166,7 @@ namespace wg
 			Mouse,
 			ApiCall
 		};
-		
+
 
 		bool			_moveCaret( int caretOfs, MoveMethod method );
 		void			_updateDisplayArea();
