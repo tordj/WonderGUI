@@ -64,7 +64,7 @@ namespace wg
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
-			Size			maxSize = { 10000000,10000000 };
+			Size			maxSize = { -1,-1 };
 			Size			minSize = { 0,0 };
 			bool			pickable = false;
 			uint8_t			pickCategory = 0;
@@ -127,7 +127,7 @@ namespace wg
 	private:
 
 		Size			m_minSize;
-		Size			m_maxSize = { 10000000, 10000000 };
+		Size			m_maxSize = { -1, -1 };
 		Size			m_defaultSize = { -1, -1 };
 	};
 

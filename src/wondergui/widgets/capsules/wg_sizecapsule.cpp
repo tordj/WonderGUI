@@ -125,18 +125,15 @@ namespace wg
 	   Widget * pChild = slot._widget();
 	   
 	   // Special handling of m_maxSize to allow -1 to equal MAX.
-	   
-	   Size maxPts = m_maxSize;
-	   if( maxPts.w < 0 )
-		   maxPts.w = 10000000;
-	   if( maxPts.h < 0 )
-		   maxPts.h = 10000000;
-	   
+	  
+	   SizeSPX maxSize;
+	   maxSize.w = m_maxSize.w < 0 ? 0x3FFFFFC0 : align(ptsToSpx(m_maxSize.w, scale));
+	   maxSize.h = m_maxSize.h < 0 ? 0x3FFFFFC0 : align(ptsToSpx(m_maxSize.h, scale));
+
 	   //
 	   
 	   SizeSPX defaultSize	= align(ptsToSpx(m_defaultSize, scale));
 	   SizeSPX minSize		= align(ptsToSpx(m_minSize, scale));
-	   SizeSPX maxSize		= align(ptsToSpx(maxPts, scale));
 
 	   if (!pChild)
 	   {
@@ -275,17 +272,12 @@ namespace wg
 
    SizeSPX SizeCapsule::_maxSize(int scale) const
    {
-	   Size maxPts = m_maxSize;
-	   if( maxPts.w < 0 )
-		   maxPts.w = 10000000;
-	   if( maxPts.h < 0 )
-		   maxPts.h = 10000000;
-	   
 	   SizeSPX size;
+	   size.w = m_maxSize.w < 0 ? 0x3FFFFFC0 : align(ptsToSpx(m_maxSize.w, scale));
+	   size.h = m_maxSize.h < 0 ? 0x3FFFFFC0 : align(ptsToSpx(m_maxSize.h, scale));
+
 	   if( slot._widget() )
-		   size = SizeSPX::min(align(ptsToSpx(maxPts, scale)),slot._widget()->_maxSize(scale));
-	   else
-		   size = align(ptsToSpx(maxPts, scale));
+		   size = SizeSPX::min(size,slot._widget()->_maxSize(scale));
 
 	   return size + m_skin.contentBorderSize(scale);
    }
@@ -313,10 +305,10 @@ namespace wg
 	   }
 	   else if (slot._widget())
 	   {
-		   pts max = m_maxSize.h >= 0 ? m_maxSize.h : 10000000;
-		   
+		   spx max = m_maxSize.h < 0 ? 0x3FFFFFC0 : align(ptsToSpx(m_maxSize.h, scale));
+
 		   spx h = slot._widget()->_matchingHeight(width, scale);
-		   limit(h, ptsToSpx(m_minSize.h,scale), ptsToSpx(max,scale));
+		   limit(h, ptsToSpx(m_minSize.h,scale), max);
 		   result = align(h);
 	   }
 	   else
@@ -348,10 +340,10 @@ namespace wg
 	   }
 	   else if( slot._widget() )
 	   {
-		   pts max = m_maxSize.w >= 0 ? m_maxSize.w : 10000000;
+		   spx max = m_maxSize.w < 0 ? 0x3FFFFFC0 : align(ptsToSpx(m_maxSize.w, scale));
 
 		   spx w = slot._widget()->_matchingWidth(height,scale);
-		   limit( w, ptsToSpx(m_minSize.w,scale), ptsToSpx(max,scale) );
+		   limit( w, ptsToSpx(m_minSize.w,scale), max );
 		   result = align(w);
 	   }
 	   else
