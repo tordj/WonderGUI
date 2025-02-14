@@ -54,7 +54,7 @@ namespace wg
         AreaScrollChartEntry();
 		AreaScrollChartEntry(const Blueprint& bp);
 
-		int		setId(int id) { m_id = id; }
+		void	setId(int id) { m_id = id; }
 		int		id() const { return m_id; }
 
 		bool	addNowSample( float topSample, float bottomSample );

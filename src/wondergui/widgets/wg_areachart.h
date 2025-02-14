@@ -54,7 +54,7 @@ namespace wg
 		AreaChartEntry() {}
 		AreaChartEntry(const Blueprint& bp);
 
-		int		setId(int id) { m_id = id; }
+		void	setId(int id) { m_id = id; }
 		int		id() const { return m_id; }
 
 		bool	setColors(HiColor fill, HiColor outline, ColorTransition* pTransition = nullptr);
