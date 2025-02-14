@@ -784,13 +784,14 @@ namespace wg
 		int nLines = _countLines( pText, pChars );
 
 		void * pBlock = _dataBlock(pText);
+
 		if( !pBlock || _header(pBlock)->nbLines != nLines )
 			pBlock = _reallocBlock(pText,nLines, _scale(pText), _hasCharStyles(pChars), _header(pBlock)->defaultSize, _header(pBlock)->textSize);
+		else
+			_header(pBlock)->hasCharStyles = _hasCharStyles(pChars);
 
 		_updateLineInfo( pText, pBlock, pChars, bAllowRequestResize );
 		_setTextDirty(pText);
-		
-		_header(pBlock)->hasCharStyles = _hasCharStyles(pChars);
 	}
 
 	//___ rectForRange() _________________________________________________________

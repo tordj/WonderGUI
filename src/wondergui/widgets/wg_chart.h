@@ -49,7 +49,7 @@ class Chart;
 			String			label;
 			Coord			labelAdjustment;
 			bool			labelAtEnd = false;
-			Placement		labelPlacement;
+			Placement		labelPlacement = Placement::Undefined;
 			Skin_p			labelSkin;
 
 			float			pos = 0.f;
