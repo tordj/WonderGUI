@@ -244,7 +244,7 @@ namespace wg
 
 	int MsgRouter::clearMsgQueue()
 	{
-		int nMessages = m_msgQueue.size();
+		int nMessages = (int) m_msgQueue.size();
 		m_msgQueue.clear();
 		return nMessages;
 	}

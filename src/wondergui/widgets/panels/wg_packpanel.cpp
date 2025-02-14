@@ -609,7 +609,7 @@ namespace wg
 			return;
 		}
 
-		int index = slots._releaseUpdateIndex(pNewChild, static_cast<PackPanelSlot*>(_pSlot) - slots.begin());
+		int index = slots._releaseUpdateIndex(pNewChild, int(static_cast<PackPanelSlot*>(_pSlot) - slots.begin()));
 		auto& slot = slots.at(index);
 
 		Widget_p pOldChild = slot._widget();

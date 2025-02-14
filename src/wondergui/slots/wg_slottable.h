@@ -92,7 +92,7 @@ namespace wg
 
 		int					rows() const { return m_nRows; }
 		int					columns() const { return m_nColumns; }
-		int					slots() const { return m_slots.size(); }
+		int					slots() const { return (int) m_slots.size(); }
 
 		DynamicSlot&		at(int row, int column);
 		const DynamicSlot&	at(int row, int column) const;

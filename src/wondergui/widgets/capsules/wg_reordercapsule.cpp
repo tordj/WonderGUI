@@ -305,6 +305,7 @@ namespace wg
 				break;
 
 			case MsgType::DropDeliver:
+			{
 				auto pMsg = static_cast<DropDeliverMsg*>(_pMsg);
 
 				pMsg->accept();
@@ -315,8 +316,9 @@ namespace wg
 					m_pickState = PickState::Completed;
 				}
 				break;
-
-			Default:
+			}
+				
+			default:
 				break;
 		}
 	}

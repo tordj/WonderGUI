@@ -201,7 +201,7 @@ namespace wg
 			return end();
 		}
 		
-		int index = this->_releaseUpdateIndex(pWidget, pos - _first());
+		int index = this->_releaseUpdateIndex(pWidget, int(pos - _first()));
 
 		SlotType* pSlot = _insertEmpty(index);
 		pSlot->_setWidget(pWidget);
@@ -241,7 +241,7 @@ namespace wg
 			return end();
 		}
 
-		int index = this->_releaseUpdateIndex(pWidget, pos - _first());
+		int index = this->_releaseUpdateIndex(pWidget, int(pos - _first()));
 
 		SlotType * pSlot = _insertEmpty(index);
 		pSlot->_setWidget(pWidget);
@@ -297,7 +297,7 @@ namespace wg
 			}
 		}
 
-		int index = pos - _first();
+		int index = int(pos - _first());
 
 		for (auto& entry : entries)
 			index = this->_releaseUpdateIndex(entry.m_pChild, index);

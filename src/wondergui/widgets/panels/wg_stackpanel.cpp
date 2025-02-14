@@ -520,7 +520,7 @@ namespace wg
 			return;
 		}
 
-		int index = slots._releaseUpdateIndex(pNewChild, static_cast<StackPanelSlot*>(_pSlot) - slots.begin());
+		int index = slots._releaseUpdateIndex(pNewChild, int(static_cast<StackPanelSlot*>(_pSlot) - slots.begin()));
 		auto& slot = slots.at(index);
 
 		RectSPX oldRenderArea = slot.m_geo + slot._widget()->_overflow();

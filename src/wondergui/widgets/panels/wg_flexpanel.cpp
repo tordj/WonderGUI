@@ -492,7 +492,7 @@ namespace wg
 			return;
 		}
 
-		int index = slots._releaseUpdateIndex(pNewChild, static_cast<FlexPanelSlot*>(_pSlot) - slots.begin());
+		int index = slots._releaseUpdateIndex(pNewChild, int(static_cast<FlexPanelSlot*>(_pSlot) - slots.begin()));
 		auto& slot = slots.at(index);
 
 		slot._setWidget(pNewChild);

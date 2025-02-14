@@ -178,6 +178,9 @@ const PixelDescription	pixelDescTab[PixelFormat_size] = {
 	{8, PixelType::Chunky, ColorSpace::Undefined, 0x0, 0x0, 0x0, 0xFF},						// Alpha_8
 
 	{16, PixelType::Chunky, ColorSpace::Linear, 0xF00, 0xF0, 0xF, 0xF000},					// BGRA_4_linear
+
+	{16, PixelType::Chunky, ColorSpace::Undefined, 0xF800, 0x07E0, 0x001F, 0},				// BGR_565
+	{16, PixelType::Chunky, ColorSpace::sRGB, 0xF800, 0x07E0, 0x001F, 0},					// BGR_565_sRGB
 	{16, PixelType::Chunky, ColorSpace::Linear, 0xF800, 0x07E0, 0x001F, 0},					// BGR_565_linear
 
 	{16, PixelType::Chunky_BE, ColorSpace::Linear, 0x001F, 0x07E0, 0xF800, 0},				// RGB_565_bigendian
@@ -224,6 +227,10 @@ PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 				case 16:
 					if( description == pixelDescTab[int(PixelFormat::BGRA_4_linear)])
 					   return PixelFormat::BGRA_4_linear;
+					if( description == pixelDescTab[int(PixelFormat::BGR_565)])
+					   return PixelFormat::BGR_565;
+					if( description == pixelDescTab[int(PixelFormat::BGR_565_sRGB)])
+					   return PixelFormat::BGR_565_sRGB;
 					if( description == pixelDescTab[int(PixelFormat::BGR_565_linear)])
 					   return PixelFormat::BGR_565_linear;
 					break;
@@ -458,6 +465,9 @@ int Util::gcd(int a, int b)
 
 		if (type == PixelFormat::Index_16)
 			type = GfxBase::defaultToSRGB() ? PixelFormat::Index_16_sRGB : PixelFormat::Index_16_linear;
+
+		if (type == PixelFormat::BGR_565)
+			type = GfxBase::defaultToSRGB() ? PixelFormat::BGR_565_sRGB : PixelFormat::BGR_565_linear;
 
 		return type;
 	}
