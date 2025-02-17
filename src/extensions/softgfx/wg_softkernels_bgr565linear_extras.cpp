@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_softkernels_bgr565_extras.h>
+#include <wg_softkernels_bgr565linear_extras.h>
 #include <wg_c_softgfx.h>
 
 using namespace wg;
@@ -432,24 +432,24 @@ static void _straight_blit_alpha8_to_bgr565linear_no_or_flat_tint_fixedblend(con
 }
 
 
-//____ wg_addExtraSoftKernelsForBGR565Canvas() __________________________________
+//____ wg_addExtraSoftKernelsForBGR565LinearCanvas() __________________________________
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-int	wg_addExtraSoftKernelsForBGR565Canvas( wg_obj device )
+int	wg_addExtraSoftKernelsForBGR565LinearCanvas( wg_obj device )
 {
 	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
 
-	return addExtraSoftKernelsForBGR565Canvas(pDevice);
+	return addExtraSoftKernelsForBGR565LinearCanvas(pDevice);
 }
 #ifdef __cplusplus
 }
 #endif
 
-//____ addExtraSoftKernelsForBGR565Canvas() __________________________________
+//____ addExtraSoftKernelsForBGR565LinearCanvas() __________________________________
 
-bool wg::addExtraSoftKernelsForBGR565Canvas( SoftGfxDevice * pDevice )
+bool wg::addExtraSoftKernelsForBGR565LinearCanvas( SoftGfxDevice * pDevice )
 {
 	pDevice->setFillKernel( TintMode::None, BlendMode::Replace, PixelFormat::BGR_565_linear, &_fill_bgr565linear_noblend_notint );
 

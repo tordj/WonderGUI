@@ -85,24 +85,24 @@ using namespace wg;
 
 namespace wg
 {
-	bool addBaseSoftKernelsForBGR565Canvas( SoftGfxDevice * pDevice );
+	bool addBaseSoftKernelsForBGR565LinearCanvas( SoftGfxDevice * pDevice );
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-int	wg_addBaseSoftKernelsForBGR565Canvas( wg_obj device )
+int	wg_addBaseSoftKernelsForBGR565LinearCanvas( wg_obj device )
 {
 	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
 
-	return addBaseSoftKernelsForBGR565Canvas(pDevice);
+	return addBaseSoftKernelsForBGR565LinearCanvas(pDevice);
 }
 
 #ifdef __cplusplus
 }
 #endif
 
-bool wg::addBaseSoftKernelsForBGR565Canvas( SoftGfxDevice * pDevice )
+bool wg::addBaseSoftKernelsForBGR565LinearCanvas( SoftGfxDevice * pDevice )
 {
 pDevice->setPlotKernel( BlendMode::Replace, PixelFormat::BGR_8_linear, _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_linear> );
 pDevice->setPlotKernel( BlendMode::Replace, PixelFormat::BGRX_8_linear, _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGRX_8_linear> );
