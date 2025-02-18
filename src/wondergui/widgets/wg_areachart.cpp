@@ -183,11 +183,11 @@ namespace wg
 		}
 		else
 		{
-			if (bColors)
-				pAreaChartEntry->m_bColorsChanged = true;
-
 			if (bSamples)
 				pAreaChartEntry->m_bSamplesChanged = true;
+
+			if (bColors)
+				pAreaChartEntry->m_bColorsChanged = true;
 		}
 
 		if (pAreaChartEntry->m_bVisible && !m_bPreRenderRequested)
@@ -563,6 +563,17 @@ namespace wg
 			m_pDisplay->_waveformNeedsRefresh(this, false, false, true);
 		}
 
+		return true;
+	}
+
+	//____ AreaChartEntry::setOutlineThickness() ___________________________________
+
+	bool AreaChartEntry::setOutlineThickness( pts topOutline, pts bottomOutline )
+	{
+		m_topOutlineThickness = topOutline;
+		m_bottomOutlineThickness = bottomOutline;
+
+		m_pDisplay->_waveformNeedsRefresh(this, false, true, false );
 		return true;
 	}
 

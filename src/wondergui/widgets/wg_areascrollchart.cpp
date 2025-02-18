@@ -621,6 +621,17 @@ namespace wg
 		return true;
 	}
 
+	//____ AreaScrollChartEntry::setOutlineThickness() ___________________________________
+
+	bool AreaScrollChartEntry::setOutlineThickness( pts topOutline, pts bottomOutline )
+	{
+		m_topOutlineThickness = topOutline;
+		m_bottomOutlineThickness = bottomOutline;
+		
+		m_pDisplay->_requestFullRedraw();
+		return true;
+	}
+
 	//____ AreaScrollChartEntry::latestSampleTimestamp() _________________________________
 
 	int64_t AreaScrollChartEntry::latestSampleTimestamp() const
@@ -630,8 +641,6 @@ namespace wg
 
 		return m_samples.back().timestamp;
 	}
-
-
 
 	//____ AreaScrollChartEntry::setVisible() _________________________________
 

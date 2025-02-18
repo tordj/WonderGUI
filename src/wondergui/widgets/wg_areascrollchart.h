@@ -68,6 +68,10 @@ namespace wg
 		bool	setColors(HiColor fill, HiColor outline, ColorTransition* pTransition = nullptr);
 		bool	setGradients(Gradient fill, Gradient outline, ColorTransition* pTransition = nullptr);
 
+		bool	setOutlineThickness( pts topOutline, pts bottomOutline );
+		pts		topOutlineThickness() const { return m_topOutlineThickness; }
+		pts		bottomOutlineThickness() const { return m_bottomOutlineThickness; }
+
 		int64_t latestSampleTimestamp() const;
 
 		void	setVisible(bool bVisible);
