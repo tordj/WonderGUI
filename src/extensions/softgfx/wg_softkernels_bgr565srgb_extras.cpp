@@ -381,34 +381,38 @@ static HiColor	s_fixedBlendCacheFgColor = HiColor::Undefined;
 static HiColor	s_fixedBlendCacheBgColor = HiColor::Undefined;
 
 //____ updateFixedBlendCache() ___________________________________________
-/*
+
 static void updateFixedBlendCache( HiColor bgCol, HiColor fgCol )
 {
 	s_fixedBlendCacheBgColor = bgCol;
 	s_fixedBlendCacheFgColor = bgCol;
 
-	int backB = bgCol.b;
-	int backG = bgCol.g;
-	int backR = bgCol.r;
+	int backB = HiColor::unpackSRGBTab[bgCol.b];
+	int backG = HiColor::unpackSRGBTab[bgCol.g];
+	int backR = HiColor::unpackSRGBTab[bgCol.r];
+
+	int frontB = HiColor::unpackSRGBTab[fgCol.b];
+	int frontG = HiColor::unpackSRGBTab[fgCol.g];
+	int frontR = HiColor::unpackSRGBTab[fgCol.r];
 
 	for( int i = 0 ; i < 256 ; i++ )
 	{
-		int alpha = (fgCol.a * i) / 4096;
-		int invAlpha = 255 - alpha;
+		int alpha = (fgCol.a * i) / 255;
+		int invAlpha = 4096 - alpha;
 
-		int outB = (backB * invAlpha + fgCol.b * alpha) >> 15;
-		int outG = (backG * invAlpha + fgCol.g * alpha) >> 15;
-		int outR = (backR * invAlpha + fgCol.r * alpha) >> 15;
+		int outB = HiColor::packSRGBTab[(backB * invAlpha + frontB * alpha)] >> 3;
+		int outG = HiColor::packSRGBTab[(backG * invAlpha + frontG * alpha)] >> 2;
+		int outR = HiColor::packSRGBTab[(backR * invAlpha + frontR * alpha)] >> 3;
 
 		uint16_t out = outB | (outG << 5) | (outR << 11 );
 		s_fixedBlendCache[i] = out;
 	}
 }
-*/
 
 
-//____ _straight_blit_alpha8_to_bgr565srgb_notint_fixedblend() ____________________________________________________________
-/*
+
+//____ _straight_blit_alpha8_to_bgr565srgb_no_or_flat_tint_fixedblend() ____________________________________________________________
+
 static void _straight_blit_alpha8_to_bgr565srgb_no_or_flat_tint_fixedblend(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
 {
 	// Setup conversion table
@@ -431,7 +435,7 @@ static void _straight_blit_alpha8_to_bgr565srgb_no_or_flat_tint_fixedblend(const
 		pDst += pitches.dstY;
 	}
 }
-*/
+
 
 //____ wg_addExtraSoftKernelsForBGR565sRGBCanvas() __________________________________
 
@@ -466,7 +470,7 @@ bool wg::addExtraSoftKernelsForBGR565sRGBCanvas( SoftGfxDevice * pDevice )
 	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::ReadOp::Normal, TintMode::None, BlendMode::Blend, PixelFormat::BGR_565_sRGB, _straight_blit_alpha8_to_bgr565srgb_notint_blend );
 
 	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::ReadOp::Normal, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_565_sRGB, _straight_blit_alpha8_to_bgr565srgb_flattint_blend );
-
+ */
 
 	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::ReadOp::Normal, TintMode::None, BlendMode::BlendFixedColor, PixelFormat::BGR_565_sRGB, _straight_blit_alpha8_to_bgr565srgb_no_or_flat_tint_fixedblend );
 
@@ -474,7 +478,7 @@ bool wg::addExtraSoftKernelsForBGR565sRGBCanvas( SoftGfxDevice * pDevice )
 
 
 	pDevice->setStraightBlitKernel( PixelFormat::BGRA_8_sRGB, SoftGfxDevice::ReadOp::Normal, TintMode::None, BlendMode::Replace, PixelFormat::BGR_565_sRGB, _straight_blit_bgrxa8srgb_to_bgr565srgb_notint_noblend );
-
+/*
 	pDevice->setStraightBlitKernel( PixelFormat::BGRX_8_sRGB, SoftGfxDevice::ReadOp::Normal, TintMode::None, BlendMode::Replace, PixelFormat::BGR_565_sRGB, _straight_blit_bgrxa8srgb_to_bgr565srgb_notint_noblend );
 
 	pDevice->setStraightBlitKernel( PixelFormat::BGRA_8_sRGB, SoftGfxDevice::ReadOp::Normal, TintMode::None, BlendMode::Blend, PixelFormat::BGR_565_sRGB, _straight_blit_bgra8srgb_to_bgr565srgb_notint_blend );
