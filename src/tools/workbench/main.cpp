@@ -3229,7 +3229,26 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 
 	pFlex->slots.pushBack(pButton, { .pos = {105, 220 } });
 
+	//---
 
+	auto pButton2 = Button::create({ .label = {.text = "RESIZE OUTLINE"}, .skin = pButtonSkin });
+
+	Base::msgRouter()->addRoute(pButton2, MsgType::Select, [pGraph](Msg* pMsg)
+	{
+		auto& entry = pGraph->entries.back();
+
+		pts top = entry.topOutlineThickness();
+
+		if( top == 1.f )
+			top = 5.f;
+		else
+			top = 1.f;
+
+		entry.setOutlineThickness(top, 0.f);
+	});
+
+
+	pFlex->slots.pushBack(pButton2, { .pos = {205, 220 } });
 	return true;
 }
 

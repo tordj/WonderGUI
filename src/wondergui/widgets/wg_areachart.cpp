@@ -570,10 +570,13 @@ namespace wg
 
 	bool AreaChartEntry::setOutlineThickness( pts topOutline, pts bottomOutline )
 	{
+		if( topOutline == m_topOutlineThickness && bottomOutline == m_bottomOutlineThickness )
+			return true;
+
 		m_topOutlineThickness = topOutline;
 		m_bottomOutlineThickness = bottomOutline;
 
-		m_pDisplay->_waveformNeedsRefresh(this, false, true, false );
+		m_pDisplay->_waveformNeedsRefresh(this, true, false, false );
 		return true;
 	}
 
@@ -583,6 +586,9 @@ namespace wg
 	{
 		limit(begin, 0.f, 1.f);
 		limit(end, begin, 1.f);
+
+		if( begin == m_begin && end == m_end )
+			return;
 
 		m_pDisplay->_setAreaChartEntryRange(this, begin, end);
 	}
@@ -668,11 +674,14 @@ namespace wg
 
 	void AreaChartEntry::setFlip( GfxFlip flip )
 	{
-		m_flip = flip;
-		m_bAxisSwapped = ( flip == GfxFlip::Rot90 || flip == GfxFlip::Rot90FlipX || flip == GfxFlip::Rot90FlipY ||
-						  flip == GfxFlip::Rot270 || flip == GfxFlip::Rot270FlipX || flip == GfxFlip::Rot270FlipY );
+		if( flip != m_flip )
+		{
+			m_flip = flip;
+			m_bAxisSwapped = ( flip == GfxFlip::Rot90 || flip == GfxFlip::Rot90FlipX || flip == GfxFlip::Rot90FlipY ||
+							  flip == GfxFlip::Rot270 || flip == GfxFlip::Rot270FlipX || flip == GfxFlip::Rot270FlipY );
 
-		m_pDisplay->_fullRefreshOfChart();
+			m_pDisplay->_fullRefreshOfChart();
+		}
 	}
 
 	//____ topSamples() _______________________________________________________

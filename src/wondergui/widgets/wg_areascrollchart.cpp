@@ -625,6 +625,9 @@ namespace wg
 
 	bool AreaScrollChartEntry::setOutlineThickness( pts topOutline, pts bottomOutline )
 	{
+		if( topOutline == m_topOutlineThickness && bottomOutline == m_bottomOutlineThickness )
+			return true;
+		
 		m_topOutlineThickness = topOutline;
 		m_bottomOutlineThickness = bottomOutline;
 		
