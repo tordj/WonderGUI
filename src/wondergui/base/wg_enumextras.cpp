@@ -117,6 +117,7 @@ namespace wg
 	const char * toString(MarkPolicy i)
 	{
 		static const char * names[] = { 
+			"Undefined",
 			"Ignore",
 			"AlphaTest",
 			"Geometry" };
@@ -137,12 +138,21 @@ namespace wg
 
 	const char * toString(SizePolicy2D i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Original",
 			"Stretch",
-			"Scale"
+			"Scale",
 			"StretchDown",
 			"ScaleDown" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(EdgePolicy i)
+	{
+		static const char * names[] = { 
+			"Confine",
+			"Clip" };
 
 		return names[(int)i];
 	}
@@ -169,15 +179,27 @@ namespace wg
 			"TextInput",
 			"EditCommand",
 			"WheelRoll",
-			"DropPick",
+			"Pick",
+			"PickedEnter",
+			"PickedLeave",
+			"PickedCancel",
+			"PickedDeliver",
 			"DropProbe",
 			"DropEnter",
 			"DropMove",
 			"DropLeave",
 			"DropDeliver",
+			"/* Old namesDropPick",
+			"PickedEnter",
+			"PickedLeave",
 			"PickedCancel",
 			"PickedDeliver",
-			"Select",
+			"DropProbe",
+			"DropEnter",
+			"DropMove",
+			"DropLeave",
+			"DropDeliver",
+			"*/Select",
 			"Unselect",
 			"Toggle",
 			"ScrollbarMove",
@@ -188,6 +210,7 @@ namespace wg
 			"ItemMousePress",
 			"ItemsSelect",
 			"ItemsUnselect",
+			"PopupSelect",
 			"PopupClosed",
 			"ModalMoveOutside",
 			"ModalBlockedPress",
@@ -196,8 +219,7 @@ namespace wg
 			"PianoKeyRelease",
 			"Activate",
 			"Deactivate",
-			"Custom"
-		};
+			"Custom" };
 
 		return names[(int)i];
 	}

@@ -202,8 +202,13 @@ namespace wg
 	
 		static const int16_t 	s_channel_4_1[256];		
 		static const int16_t	s_channel_4_2[256];
-		static const int16_t	s_channel_5[32];
-		static const int16_t	s_channel_6[64];
+
+		static const int16_t	s_channel_5_linear[32];
+		static const int16_t	s_channel_6_linear[64];
+
+		static const int16_t	s_channel_5_sRGB[32];
+		static const int16_t	s_channel_6_sRGB[64];
+
 		static const uint8_t	s_fast8_channel_4_1[256];
 		static const uint8_t 	s_fast8_channel_4_2[256];
 		static const uint8_t	s_fast8_channel_5[32];

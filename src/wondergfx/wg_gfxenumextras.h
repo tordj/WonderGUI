@@ -40,7 +40,8 @@ namespace wg
 
 	const static TintMode        TintMode_min        = TintMode::None;
 	const static BlendMode       BlendMode_min       = BlendMode::Undefined;
-	const static Placement       Placement_min       = Placement::NorthWest;
+	const static Alignment       Alignment_min       = Alignment::Begin;
+	const static Placement       Placement_min       = Placement::Undefined;
 	const static Direction       Direction_min       = Direction::Up;
 	const static Axis            Axis_min            = Axis::Undefined;
 	const static SampleMethod    SampleMethod_min    = SampleMethod::Nearest;
@@ -49,11 +50,14 @@ namespace wg
 	const static PixelType       PixelType_min       = PixelType::Chunky;
 	const static ColorSpace      ColorSpace_min      = ColorSpace::Undefined;
 	const static GfxFlip         GfxFlip_min         = GfxFlip::None;
+	const static TransitionCurve TransitionCurve_min = TransitionCurve::Linear;
 	const static CanvasRef       CanvasRef_min       = CanvasRef::None;
+	const static SampleOrigo     SampleOrigo_min     = SampleOrigo::Top;
 	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
 
 	const static TintMode        TintMode_max        = TintMode::GradientXY;
 	const static BlendMode       BlendMode_max       = BlendMode::BlendFixedColor;
+	const static Alignment       Alignment_max       = Alignment::Justify;
 	const static Placement       Placement_max       = Placement::Center;
 	const static Direction       Direction_max       = Direction::Left;
 	const static Axis            Axis_max            = Axis::Y;
@@ -63,11 +67,14 @@ namespace wg
 	const static PixelType       PixelType_max       = PixelType::Bitplanes;
 	const static ColorSpace      ColorSpace_max      = ColorSpace::sRGB;
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
+	const static TransitionCurve TransitionCurve_max = TransitionCurve::Parametric;
 	const static CanvasRef       CanvasRef_max       = CanvasRef::Canvas_32;
-	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::CreateSurface;
+	const static SampleOrigo     SampleOrigo_max     = SampleOrigo::Bottom;
+	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::FlipDrawEdgemap;
 
 	const static int             TintMode_size       = (int)TintMode::GradientXY + 1;
 	const static int             BlendMode_size      = (int)BlendMode::BlendFixedColor + 1;
+	const static int             Alignment_size      = (int)Alignment::Justify + 1;
 	const static int             Placement_size      = (int)Placement::Center + 1;
 	const static int             Direction_size      = (int)Direction::Left + 1;
 	const static int             Axis_size           = (int)Axis::Y + 1;
@@ -77,11 +84,14 @@ namespace wg
 	const static int             PixelType_size      = (int)PixelType::Bitplanes + 1;
 	const static int             ColorSpace_size     = (int)ColorSpace::sRGB + 1;
 	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;
+	const static int             TransitionCurve_size= (int)TransitionCurve::Parametric + 1;
 	const static int             CanvasRef_size      = (int)CanvasRef::Canvas_32 + 1;
-	const static int             GfxChunkId_size     = (int)GfxChunkId::CreateSurface + 1;
+	const static int             SampleOrigo_size    = (int)SampleOrigo::Bottom + 1;
+	const static int             GfxChunkId_size     = (int)GfxChunkId::FlipDrawEdgemap + 1;
 
 	const char * toString(TintMode);
 	const char * toString(BlendMode);
+	const char * toString(Alignment);
 	const char * toString(Placement);
 	const char * toString(Direction);
 	const char * toString(Axis);
@@ -91,7 +101,9 @@ namespace wg
 	const char * toString(PixelType);
 	const char * toString(ColorSpace);
 	const char * toString(GfxFlip);
+	const char * toString(TransitionCurve);
 	const char * toString(CanvasRef);
+	const char * toString(SampleOrigo);
 	const char * toString(GfxChunkId);
 
 //=========================================================================

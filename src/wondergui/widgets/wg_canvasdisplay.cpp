@@ -198,8 +198,10 @@ namespace wg
 			SizeSPX canvasSize = m_pCanvas->_canvasSize();
 
 			float scaleFactor = width / (float)canvasSize.w;
+			if( scaleFactor < 1.f )
+				canvasSize.h = alignUp(canvasSize.h * scaleFactor);
 
-			return alignUp(canvasSize.h * scaleFactor) + borderSize.h;
+			return canvasSize.h + borderSize.h;
 		}
 		else
 			return Widget::_matchingHeight(width, scale);
@@ -223,8 +225,10 @@ namespace wg
 			SizeSPX canvasSize = m_pCanvas->_canvasSize();
 
 			float scaleFactor = height / (float)canvasSize.h;
+			if( scaleFactor < 1.f )
+				canvasSize.w = alignUp(canvasSize.w * scaleFactor);
 
-			return alignUp(canvasSize.w * scaleFactor) + borderSize.w;
+			return canvasSize.w + borderSize.w;
 		}
 		else
 			return Widget::_matchingWidth(height, scale);

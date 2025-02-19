@@ -33,6 +33,8 @@
 #include "testsuites/edgemaptoolstests.h"
 #include "testsuites/waveformtests.h"
 
+#include <wg_softkernels_bgr565srgb_extras.h>
+
 
 using namespace wg;
 using namespace std;
@@ -169,7 +171,7 @@ void GfxDeviceTester::setup_testdevices()
 	
 	auto pReferenceDevice = Device::create( "Reference (SoftGfxDevice)", pSoftGfxDevice, CanvasRef::None, pCanvasSurface, this );
 
-	g_testdevices.push_back(pReferenceDevice);
+//	g_testdevices.push_back(pReferenceDevice);
 
 	// Native
 
@@ -179,7 +181,7 @@ void GfxDeviceTester::setup_testdevices()
 	auto pNativeDevice = Device::create(nativeDeviceName, pNativeGfxDevice, CanvasRef::None, Base::defaultSurfaceFactory()->createSurface(canvasBP), this );
 	
 	g_testdevices.push_back(pNativeDevice);
-	
+
 	// Linear
 	
 	auto pLinearOutputBlob = Blob::create(512*512*4);
@@ -251,7 +253,27 @@ void GfxDeviceTester::setup_testdevices()
 
 //		g_testdevices.push_back(pStreamDevice);
 	}
-	
+
+	// Software BGR_565_sRGB
+
+	{
+		Surface::Blueprint canvasBP565srgbBP = WGBP(Surface,
+												  _.size = {512,512},
+												  _.format = PixelFormat::BGR_565_sRGB,
+												  _.canvas = true );
+
+		auto pSoftGfxDevice = SoftGfxDevice::create();
+		addDefaultSoftKernels( pSoftGfxDevice );
+		addExtraSoftKernelsForBGR565sRGBCanvas( pSoftGfxDevice );
+		auto pCanvasSurface = SoftSurface::create( canvasBP565srgbBP );
+
+		pCanvasSurface->fill( Color::Green );
+
+		auto pReferenceDevice = Device::create( "Software BGR565sRGB (SoftGfxDevice)", pSoftGfxDevice, CanvasRef::None, pCanvasSurface, this );
+
+		g_testdevices.push_back(pReferenceDevice);
+	}
+
 }
 
 //____ destroy_testdevices() ____________________________________________________

@@ -21,20 +21,20 @@
 =========================================================================*/
 /**
  *  A handful of extra hand-tuned kernels for drawing/blitting on
- *  BGR555_bigendian canvas for some improved performance.
+ *  BGR565_bigendian canvas for some improved performance.
  *  
  */
 
 
-#ifndef WG_SOFTKERNELS_BGR565_EXTRAS_DOT_H
-#define WG_SOFTKERNELS_BGR565_EXTRAS_DOT_H
+#ifndef WG_SOFTKERNELS_BGR565SRGB_EXTRAS_DOT_H
+#define WG_SOFTKERNELS_BGR565SRGB_EXTRAS_DOT_H
 #pragma once
 
 #include <wg_softgfxdevice.h>
 
 namespace wg
 {
-	bool addExtraSoftKernelsForBGR565Canvas( SoftGfxDevice * pDevice );
+	bool addExtraSoftKernelsForBGR565sRGBCanvas( SoftGfxDevice * pDevice );
 };
 
-#endif //WG_SOFTKERNELS_BGR565_EXTRAS_DOT_H
+#endif //WG_SOFTKERNELS_BGR565SRGB_EXTRAS_DOT_H

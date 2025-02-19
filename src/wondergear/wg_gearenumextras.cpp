@@ -58,6 +58,7 @@ namespace wg
 			"IllegalCall",
 			"ResourceExhausted",
 			"RenderFailure",
+			"Performance",
 			"Other" };
 
 		return names[(int)i];

@@ -1119,8 +1119,31 @@ static void read16_BGRA_4(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, cons
 	}
 }
 
+static void read16_BGR_565_sRGB(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	uint64_t* pOut = (uint64_t*)pDst;
 
-static void read16_BGR_565(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t	acc = 0;
+
+		uint16_t bgr = *(uint16_t*)pSrc;
+
+		acc = conv_5_sRGB_to_8_linear[bgr & 0x1F];
+		acc <<= 16;
+
+		acc |= conv_6_sRGB_to_8_linear[(bgr >> 5) & 0x3F];
+		acc <<= 16;
+
+		acc |= conv_5_sRGB_to_8_linear[bgr >> 11];
+		acc <<= 16;
+
+		*pDst++ = acc | (acc << 8) | 0xFFFF;
+		pSrc += 2;
+	}
+}
+
+static void read16_BGR_565_linear(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
 {
 	uint64_t* pOut = (uint64_t*)pDst;
 
@@ -1299,6 +1322,7 @@ static PixelWriteFunc getChunkyWriteFuncFromBGRA8(PixelFormat dstFmt)
 	case PixelFormat::BGRA_4_linear:
 		return copy_BGRA_8_to_BGRA_4;
 
+	case PixelFormat::BGR_565_sRGB:
 	case PixelFormat::BGR_565_linear:
 		return copy_BGRA_8_to_BGR_565;
 
@@ -1458,6 +1482,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 			break;
 		}
 
+		case PixelFormat::BGR_565_sRGB:
 		case PixelFormat::BGR_565_linear:
 		{
 			uint32_t	buffer[64];
@@ -2001,17 +2026,26 @@ static std::tuple<PixelReadFunc, const void *, const void *, int> getReadFuncFor
 
 				break;
 
+			case PixelFormat::BGR_565_sRGB:
 			case PixelFormat::BGR_565_linear:
 				pReadFunc = readBGR_565;
-				if (bLinearDest)
+				if (srcDesc.colorSpace == dstDesc.colorSpace)
 				{
 					pTab1 = conv_5_to_8_straight;
 					pTab2 = conv_6_to_8_straight;
 				}
 				else
 				{
-					pTab1 = conv_5_linear_to_8_sRGB;
-					pTab2 = conv_6_linear_to_8_sRGB;
+					if(bLinearDest)
+					{
+						pTab1 = conv_5_sRGB_to_8_linear;
+						pTab2 = conv_6_sRGB_to_8_linear;
+					}
+					else
+					{
+						pTab1 = conv_5_linear_to_8_sRGB;
+						pTab2 = conv_6_linear_to_8_sRGB;
+					}
 				}
 				break;
 
@@ -2142,8 +2176,12 @@ static std::tuple<PixelReadFunc, const void*, const void*, int> getReadFuncFor64
 				pReadFunc = read16_BGRA_4;
 				break;
 
+			case PixelFormat::BGR_565_sRGB:
+				pReadFunc = read16_BGR_565_sRGB;
+				break;
+
 			case PixelFormat::BGR_565_linear:
-				pReadFunc = read16_BGR_565;
+				pReadFunc = read16_BGR_565_linear;
 				break;
 
 			case PixelFormat::Alpha_8:
@@ -2869,6 +2907,8 @@ int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18],
 			return 2;
 		}
 
+		case PixelFormat::BGR_565:
+		case PixelFormat::BGR_565_sRGB:
 		case PixelFormat::BGR_565_linear:
 		{
 			int b = pConvTab[color.b];

@@ -161,3 +161,23 @@ print "uint16_t conv_8_sRGB_to_16_linear[256] = {"
 	end
 
 	print "\n\n"
+
+print "int16_t s_channel_5_sRGB[32] 	= {"
+
+	max = 31 ** 2.2
+	for i in 0..31
+		val = (((i ** 2.2) / max) * 4096).round
+		print "#{val}, "
+	end
+
+	print "\n\n"
+
+print "int16_t s_channel_6_sRGB[64] 	= {"
+
+	max = 63 ** 2.2
+	for i in 0..63
+		val = (((i ** 2.2) / max) * 4096).round
+		print "#{val}, "
+	end
+
+	print "\n\n"

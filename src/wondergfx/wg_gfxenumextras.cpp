@@ -60,8 +60,18 @@ namespace wg
 			"Min",
 			"Max",
 			"Morph",
-			"BlendFixedColor"
-		};
+			"BlendFixedColor" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(Alignment i)
+	{
+		static const char * names[] = { 
+			"Begin",
+			"Center",
+			"End",
+			"Justify" };
 
 		return names[(int)i];
 	}
@@ -69,6 +79,7 @@ namespace wg
 	const char * toString(Placement i)
 	{
 		static const char * names[] = { 
+			"Undefined",
 			"NorthWest",
 			"North",
 			"NorthEast",
@@ -144,6 +155,8 @@ namespace wg
 			"Index_16_linear",
 			"Alpha_8",
 			"BGRA_4_linear",
+			"BGR_565",
+			"BGR_565_sRGB",
 			"BGR_565_linear",
 			"RGB_565_bigendian",
 			"RGB_555_bigendian",
@@ -157,8 +170,8 @@ namespace wg
 			"Bitplanes_A1_4",
 			"Bitplanes_A1_5",
 			"Bitplanes_A1_8",
-			"BGRX_8_linear",
-			"BGRA_8_linear" };
+			"BGRX_16_linear",
+			"BGRA_16_linear" };
 
 		return names[(int)i];
 	}
@@ -203,6 +216,19 @@ namespace wg
 		return names[(int)i];
 	}
 
+	const char * toString(TransitionCurve i)
+	{
+		static const char * names[] = { 
+			"Linear",
+			"EaseIn",
+			"EaseOut",
+			"EaseInOut",
+			"Bezier",
+			"Parametric" };
+
+		return names[(int)i];
+	}
+
 	const char * toString(CanvasRef i)
 	{
 		static const char * names[] = { 
@@ -240,6 +266,17 @@ namespace wg
 			"Canvas_30",
 			"Canvas_31",
 			"Canvas_32" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(SampleOrigo i)
+	{
+		static const char * names[] = { 
+			"Top",
+			"MiddleUp",
+			"MiddleDown",
+			"Bottom" };
 
 		return names[(int)i];
 	}
@@ -304,8 +341,17 @@ namespace wg
 			"TimeStampMS",
 			"CanvasList",
 			"SetFixedBlendColor",
-			"CreateSurface"
-		};
+			"CreateSurface",
+			"CreateEdgemap",
+			"SetEdgemapRenderSegments",
+			"SetEdgemapColors",
+			"SetEdgemapGradients",
+			"BeginEdgemapUpdate",
+			"EdgemapSamples",
+			"EndEdgemapUpdate",
+			"DeleteEdgemap",
+			"DrawEdgemap",
+			"FlipDrawEdgemap" };
 
 		return names[(int)i];
 	}
