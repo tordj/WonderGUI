@@ -149,6 +149,7 @@ namespace wg
 			if (keyCode == Key::Escape)
 			{
 				releaseFocus();
+				pMsg->swallow();
 				return;						// We don't swallow msg on purpose. Parent might also want to react on escape.
 			}
 
@@ -298,7 +299,7 @@ namespace wg
 		if( notification == ComponentNotif::TextModified )
 		{
 			auto p = static_cast<TextBase::NotifData*>(pData);
-			
+
 			Base::msgRouter()->post(TextEditMsg::create(&editor, p->offset, p->deleted, p->inserted));
 		}
 	}
