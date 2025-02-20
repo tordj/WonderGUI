@@ -161,7 +161,7 @@ namespace wg
 			bool bCanvas;
 		};
 		
-		constexpr static int c_clipListBufferSize = 512;
+		constexpr static int c_clipListBufferSize = 1024;		// Ridiculously high for most cases, but needed by StreamAnalyzer when rewinding a stream.
 
 		std::vector<ClipListInfo>	m_clipListInfoStack;		// Number of rects for each clipList pushed.
 
