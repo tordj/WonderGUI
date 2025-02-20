@@ -281,6 +281,7 @@ namespace wg
 		ItemsSelect,
 		ItemsUnselect,
 
+		PopupOpened,
 		PopupSelect,
 		PopupClosed,
 

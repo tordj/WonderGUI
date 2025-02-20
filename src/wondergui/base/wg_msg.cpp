@@ -1085,6 +1085,23 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ PopupOpenedMsg ____________________________________________
+
+	const TypeInfo PopupOpenedMsg::TYPEINFO = { "PopupOpenedMsg", &Msg::TYPEINFO };
+
+	PopupOpenedMsg::PopupOpenedMsg( Widget * pPopup, const Widget_wp& pOpener )
+	{
+		m_type			= MsgType::PopupOpened;
+		m_pCopyTo		= pOpener.rawPtr();
+		m_pSource		= pPopup;
+		m_pOpener		= pOpener;
+	}
+
+	const TypeInfo& PopupOpenedMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
 	//____ PopupClosedMsg ____________________________________________
 
 	const TypeInfo PopupClosedMsg::TYPEINFO = { "PopupClosedMsg", &Msg::TYPEINFO };

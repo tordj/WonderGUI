@@ -1284,6 +1284,28 @@ public:
 		Widget_p	m_pSelected;
 	};
 
+	//____ PopupOpenedMsg ______________________________________________________
+
+	class PopupOpenedMsg : public Msg
+	{
+		friend class PopupOverlay;
+	public:
+		//.____ Identification __________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content ________________________________________________________
+
+		Widget_p	opener() const { return m_pOpener; }
+
+	protected:
+		PopupOpenedMsg( Widget * pPopup, const Widget_wp& pOpener );
+
+		Widget_p	m_pOpener;
+	};
+
+
 	//____ PopupClosedMsg ______________________________________________________
 
 	class PopupClosedMsg : public Msg
@@ -1296,8 +1318,7 @@ public:
 		const static TypeInfo	TYPEINFO;
 
 	protected:
-		PopupClosedMsg( Widget * pPopup, const Widget_wp& pCaller );
-
+		PopupClosedMsg( Widget * pPopup, const Widget_wp& pOpener );
 	};
 
 

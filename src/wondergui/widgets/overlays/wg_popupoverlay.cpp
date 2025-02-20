@@ -1047,6 +1047,11 @@ namespace wg
 			_startReceiveUpdates();
 
 		_refreshStayEnteredList();
+
+
+		MsgRouter * pEH = Base::msgRouter().rawPtr();
+		if( pEH )
+			pEH->post( new PopupOpenedMsg( _pPopup, _pOpener ) );
 	}
 
 	//____ _removeTopSlotAndPeeks() ______________________________________________
