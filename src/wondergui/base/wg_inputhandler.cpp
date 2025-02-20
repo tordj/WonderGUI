@@ -239,17 +239,17 @@ namespace wg
 	void InputHandler::setPointer( Root * pRoot, Coord pos, int64_t timestamp )
 {
 		//TODO: How should we actually handle if pRoot == null?
-				
+
 		Coord	prevPointerPos = m_pointerPos;
 		CoordSPX	prevPointerPosSPX = m_pointerPosSPX;
-		
+
 		if( timestamp == 0 )
 			timestamp = m_timestamp;
-				
+
 		m_pointerPos = pos;
 		m_pMarkedRoot = pRoot;
 		m_pointerPosSPX = Util::ptsToSpx(pos, pRoot ? pRoot->scale() : 64);
-		
+
 		Widget_p pNowMarked = 0;
 		Widget_p pWidgetTarget = 0;
 
@@ -293,7 +293,7 @@ namespace wg
 			if (pFirstAlreadyMarked)
 			{
 				//TODO: Ideally we should still post mouseMove messages to widgets that have moved even if pointer has not moved.
-				
+
 				MouseMoveMsg_p p = MouseMoveMsg::create(m_inputId, pFirstAlreadyMarked, m_modKeys, pos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(pFirstAlreadyMarked);
 				Base::msgRouter()->post(p);
@@ -308,7 +308,7 @@ namespace wg
 					if (m_bButtonPressed[i])
 					{
 						CoordSPX pressPosSPX = Util::ptsToSpx(m_latestPressPosition[i], pRoot->scale());
-						
+
 						MouseDragMsg_p p = MouseDragMsg::create(m_inputId, (MouseButton)i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, pressPosSPX, prevPointerPosSPX, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 						p->setCopyTo(m_latestPressWidgets[i].rawPtr());
 						Base::msgRouter()->post(p);
@@ -316,8 +316,8 @@ namespace wg
 				}
 			}
 		}
-		
-		
+
+
 		// Update PointerStyle
 
 		PointerStyle newStyle = PointerStyle::Undefined;
@@ -546,9 +546,9 @@ namespace wg
 		pMsg->setCopyTo(pWidget);
 		Base::msgRouter()->post( pMsg );
 
-		// Post click event, if press didn't already resulted in a double click.
+		// Post click event, regardless of whether press resulted in a double click.
 
-		if( m_bButtonPressed[(int)button] && !m_latestPressDoubleClick[(int)button] )
+		if( m_bButtonPressed[(int)button] )
 		{
 			if (bIsInside)
 			{
@@ -826,7 +826,7 @@ namespace wg
 			if( _widgetPosInList( pWidget, vec.second ) >= 0 )
 				return true;
 		}
-		
+
 		return false;
 	}
 
@@ -838,7 +838,7 @@ namespace wg
 		_handleKeyRepeats( timestamp );
 
 		m_timestamp = timestamp;
-		
+
 		if( !m_bPointerMovedSinceUpdate )
 			setPointer(m_pMarkedRoot, m_pointerPos);
 
