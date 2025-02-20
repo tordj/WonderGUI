@@ -11,6 +11,10 @@ set(SOURCES
 	c-api/wg_c_softkernels_rgb555be_extras.h
 	c-api/wg_c_softkernels_rgb565be_base.h
 	c-api/wg_c_softkernels_rgb565be_extras.h
+	c-api/wg_c_softkernels_bgr565srgb_base.h
+	c-api/wg_c_softkernels_bgr565srgb_extras.h
+	c-api/wg_c_softkernels_bgr565linear_base.h
+	c-api/wg_c_softkernels_bgr565linear_extras.h
 
 	wg_softkernels_default.cpp
 	wg_softkernels_default.h
@@ -21,6 +25,11 @@ set(SOURCES
 	wg_softkernels_bgr565srgb_base.h
 	wg_softkernels_bgr565srgb_extras.cpp
 	wg_softkernels_bgr565srgb_extras.h
+
+	wg_softkernels_bgr565linear_base.cpp
+	wg_softkernels_bgr565linear_base.h
+	wg_softkernels_bgr565linear_extras.cpp
+	wg_softkernels_bgr565linear_extras.h
 
 	wg_softkernels_rgb555be_base.cpp
 	wg_softkernels_rgb555be_base.h
