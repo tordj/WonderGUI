@@ -70,7 +70,7 @@ namespace wg
 		@brief Set placement of child smaller than view.
 
 		Sets the placement of a child that is smaller than the view of the ScrollPanel.
-		
+
 		Default is NorthWest.
 	*/
 
@@ -80,7 +80,7 @@ namespace wg
 			return;
 
 		m_smallChildPlacement = placement;
-		
+
 		if (m_childCanvas.w < m_viewRegion.w || m_childCanvas.h < m_viewRegion.h)
 		{
 			_childWindowCorrection();
@@ -181,14 +181,14 @@ namespace wg
 	//____ setStepSize() ______________________________________________________
 	/**
 	*	@brief Set how much view will scroll when scrollbar button is pressed.
-	* 
+	*
 	*	StepSize determines how much the view content will scroll when a scrollbar
 	*	button is pressed.
-	* 
+	*
 	*	@param stepSize		Number of points to scroll the content when scrollbar button is pressed.
-	* 
+	*
 	*	This method sets the same stepSize for horizontal and vertical movement.
-	* 
+	*
 	*	Default value is 8.
 	*/
 
@@ -247,8 +247,8 @@ namespace wg
 	*	@param y		Number of points to scroll the content vertically when mouse wheel is rolled.
 	*
 	*	Default value is 24 for both (three times default value of button stepSize).
-	* 
-	*	Use setScrollWheels() to determine what wheel scrolls in what direction. 
+	*
+	*	Use setScrollWheels() to determine what wheel scrolls in what direction.
 	*	Also see setScrollWheelAxisShift().
 	*/
 
@@ -262,17 +262,17 @@ namespace wg
 
 	/**
 	*	@brief Set how much of previous content should remain visible when jumping pages.
-	* 
+	*
 	*	A scrollbar can be made to jump a 'page' when pressing above or below the bar itself.
 	*
 	*	When jumping a page it is often desirable to keep a small section of the previous content
 	*	visible, like the last line of displayed text. PageOverlap controls the amount of content
 	*	that should be kept visible.
-	* 
+	*
 	*	@param overlap	Set the overlapping of pages in points, for both horizontal and vertical page jumps.
-	* 
+	*
 	*	Default value is 8.
-	* 
+	*
 	*/
 
 	void ScrollPanel::setPageOverlap(pts overlap)
@@ -306,22 +306,22 @@ namespace wg
 	//____ setScrollWheelAxis() __________________________________________________
 	/**
 	*	@brief Set scroll direction for each scroll wheel.
-	* 
+	*
 	*	@param wheelOneAxis	Scroll direction for wheel one.
 	*	@param wheelTwoAxis	Scroll direction for wheel two.
 	*
 	*	Any parameter can also be set to Undefined to disable use of that scroll wheel.
-	*	
+	*
 	*	Default values are Y for wheelOneAxis and X for wheelTwoAxis, making the first scroll wheel control vertical
 	*	scrolling and any second scroll wheel control horizontal scrolling.
-	* 
-	*	Note that setScrollWheelAxisShift() can be used to switch the axis of the scroll wheels, 
+	*
+	*	Note that setScrollWheelAxisShift() can be used to switch the axis of the scroll wheels,
 	*   thus enable scrolling in both directions using only one mouse wheel.
-	* 
+	*
 	*	Also note that this setting doesn't affect how the scrollbars (if any) reacts to scroll wheels.
 	*	Hovering over a scrollbar and rolling wheel 1 will move the scrollbar forward/backward independent
 	*	of the scrollbars orientation. To disable this behavior you can call setStealWheelFromScrollbars().
-	* 
+	*
 	*/
 	void ScrollPanel::setScrollWheelAxis(Axis wheelOneAxis, Axis wheelTwoAxis)
 	{
@@ -332,13 +332,13 @@ namespace wg
 	//____ setScrollWheelAxisShift() __________________________________________
 	/**
 	*	@brief Set modifier keys used to shift axis scrolled by mouse wheel.
-	* 
+	*
 	*	Set a (combination of) modifier key(s) that, when pressed, swaps axis of
 	*	a scroll wheel. Making it scroll the view content horizontally instead of
 	*	vertically or vice versa.
-	* 
+	*
 	*	@param axisShift	Modifier keys to shift axis of mouse wheel.
-	* 
+	*
 	*	Default axisShift modifier key is ALT. To disable this feature, set axisShift to ModKeys::None.
 	*/
 	void ScrollPanel::setScrollWheelAxisShift(ModKeys axisShift)
@@ -349,16 +349,16 @@ namespace wg
 	//____ setStealWheelFromScrollbars() ________________________________________
 	/**
 	*	@brief Set scroll wheel to follow ScrollPanels settings when hovering a scrollbar.
-	* 
+	*
 	*	The scrollbars have their own way of handling the scroll wheel. Hovering over a scrollbar
 	*	and rolling the mouse wheel will make the scrollbar move forward or backward independently
 	*	of if it is a horizontal or vertical scrollbar.
-	* 
+	*
 	*	In some cases that is not what you need, instead you want the scroll wheel to behave the same
 	*	way no matter if it is hovering a scrollbar or not. This method lets you take control over that.
-	* 
+	*
 	*	@param bSteal	Set to TRUE to override scrollbars scroll wheel behavior with that of ScrollPanel.
-	* 
+	*
 	*/
 
 	void ScrollPanel::setStealWheelFromScrollbars(bool bSteal)
@@ -369,18 +369,18 @@ namespace wg
 	//____ setAutoscroll() ____________________________________________________
 	/**
 	*	@brief Set view to scroll when at end of content and new content is added.
-	* 
+	*
 	*	When Autoscroll is enabled, the view will automatically scroll to the end of
 	*	its content when new content is added, if it already was at the end.
-	* 
+	*
 	*	Example: If you have a ScrollPanel showing a TextDisplay to which new lines are
 	*	added continually (like a logfile), you might want the ScrollPanel to automatically
 	*	scroll down when new content is added if it already is showing the last line. Enabling
 	*   Autoscroll for the vertical dimension will make this happen.
-	* 
+	*
 	*	@param autoscrollX	Set to TRUE to enable horizontal autoscroll.
 	*	@param autoscrollY	Set to TRUE to enable vertical autoscroll.
-	* 	* 
+	* 	*
 	*	Autoscroll is by default disabled for both dimensions.
 	*/
 
@@ -398,7 +398,7 @@ namespace wg
 			x = 0.f;
 		else if( x > 1.f )
 			x = 1.f;
-		
+
 		if( y < 0.f )
 			y = 0.f;
 		else if( y > 1.f )
@@ -406,7 +406,7 @@ namespace wg
 
 		spx xOfs = m_childWindow.x - int((m_childCanvas.w - m_childWindow.w) * x);
 		spx yOfs = m_childWindow.y - int((m_childCanvas.h - m_childWindow.h) * y);
-		
+
 		if( pTransition || m_pDefaultTransition )
 			_setViewTransition({xOfs,yOfs}, pTransition);
 		else
@@ -418,8 +418,8 @@ namespace wg
 	bool ScrollPanel::setViewOffset( Coord _offset, CoordTransition * pTransition )
 	{
 		CoordSPX offset = ptsToSpx(_offset, m_scale);
-			
-		
+
+
 		if( pTransition || m_pDefaultTransition )
 			return _setViewTransition(offset, pTransition);
 		else
@@ -460,12 +460,12 @@ namespace wg
 	bool ScrollPanel::_setViewOffset( CoordSPX _offset )
 	{
 		CoordSPX offset = align(_offset);
-		
+
 		auto oldChildCanvasPos = m_childCanvas.pos();
 		auto wantedChildCanvasPos = -offset;
 
 		m_childCanvas.setPos(wantedChildCanvasPos);
-		
+
 		_childWindowCorrection();
 
 		if( oldChildCanvasPos != m_childCanvas.pos() )
@@ -473,7 +473,7 @@ namespace wg
 			_updateScrollbars();
 			_requestRender();
 		}
-		
+
 		return ( m_childCanvas.pos() == wantedChildCanvasPos);
 	}
 
@@ -483,22 +483,22 @@ namespace wg
 	{
 		if( !pTransition && !m_pDefaultTransition )
 			return false;
-		
+
 		m_startViewOfs = _viewOffset();
 		m_endViewOfs = offset;
-	
+
 		if( !m_pTransitionInUse )
 			_startReceiveUpdates();
-		
+
 		if( pTransition )
 			m_pTransitionInUse = pTransition;
 		else
 			m_pTransitionInUse = m_pDefaultTransition;
-		
+
 		m_transitionProgress = 0;
 
 		// Should probably return false if offset is not reachable.
-		
+
 		return true;
 	}
 
@@ -569,7 +569,7 @@ namespace wg
 	SizeSPX ScrollPanel::_defaultSize(int scale) const
 	{
 		SizeSPX sz;
-			
+
 		if( slot._widget() )
 			sz = slot._widget()->_defaultSize(scale);
 
@@ -597,7 +597,7 @@ namespace wg
 		bool bShowScrollbarY  = scrollbarY.isDisplayable()
 								&& (m_heightConstraint == SizeConstraint::None || m_heightConstraint == SizeConstraint::GreaterOrEqual )
 								&& (!m_bAutohideScrollbarY || content.h < m_childCanvas.h);
-		
+
 		bool bShowScrollbarX = scrollbarX.isDisplayable()
 								&& (m_widthConstraint == SizeConstraint::None || m_widthConstraint == SizeConstraint::GreaterOrEqual )
 								&& (!m_bAutohideScrollbarX || content.w < m_childCanvas.w);
@@ -610,13 +610,13 @@ namespace wg
 
 
 		if (bShowScrollbarY)
-			m_scrollbarYRegion = {	content.x + content.w - scrollbarYwidth, content.y, 
+			m_scrollbarYRegion = {	content.x + content.w - scrollbarYwidth, content.y,
 									scrollbarYwidth, bShowScrollbarX ? content.h - scrollbarXheight : content.h };
 		else
 			m_scrollbarYRegion.clear();
 
 		if (bShowScrollbarX)
-			m_scrollbarXRegion = {	content.x, content.y + content.h - scrollbarXheight, 
+			m_scrollbarXRegion = {	content.x, content.y + content.h - scrollbarXheight,
 									bShowScrollbarY ? content.w - scrollbarYwidth : content.w, scrollbarXheight };
 		else
 			m_scrollbarXRegion.clear();
@@ -638,7 +638,7 @@ namespace wg
 		Recalculates childWindow based on viewRegion, canvas-size and some rules.
 		childCanvas position is affected when view changes.
 	*/
-	
+
 	void ScrollPanel::_childWindowCorrection()
 	{
 		auto oldWindow = m_childWindow;
@@ -862,14 +862,14 @@ namespace wg
 		{
 			m_transitionProgress = 0;
 			m_pTransitionInUse = nullptr;
-			
+
 			_setViewOffset(m_endViewOfs);
 			_stopReceiveUpdates();
 		}
 		else
 		{
 			m_transitionProgress = timestamp;
-			
+
 			CoordSPX ofs = m_pTransitionInUse->snapshot(timestamp, m_startViewOfs, m_endViewOfs);
 			_setViewOffset(ofs);
 		}
@@ -920,15 +920,15 @@ namespace wg
 				}
 
 				spx movement = 0;
-
+				int inverter = p->invertScroll() ? -1 : 1;
 				if( direction == Axis::X )
 				{
-					movement = p->distance() * align(ptsToSpx(m_wheelStepSizeX, m_scale));
+					movement = inverter * p->distance() * align(ptsToSpx(m_wheelStepSizeX, m_scale));
 					m_childCanvas.x += movement;
 				}
 				else if( direction == Axis::Y )
 				{
-					movement = p->distance() * align(ptsToSpx(m_wheelStepSizeY, m_scale));
+					movement = inverter * p->distance() * align(ptsToSpx(m_wheelStepSizeY, m_scale));
 					m_childCanvas.y += movement;
 				}
 
@@ -976,7 +976,7 @@ namespace wg
 	void ScrollPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip)
 	{
 		RectSPX coverage = m_skin.coverage(geo, m_scale, m_state);
-		
+
 		patches.sub( RectSPX::overlap(coverage,clip) );
 
 		if( coverage.contains(_contentRect(geo)) )
@@ -1128,7 +1128,7 @@ namespace wg
 	Rect ScrollPanel::_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& _rect) const
 	{
 		RectSPX rect = _rect + m_childCanvas.pos();
-		
+
 		if( m_pHolder )
 			return m_pHolder->_childLocalSpxToGlobalPts( m_pSlot, rect );
 		else
@@ -1163,7 +1163,7 @@ namespace wg
 
 
 		_updateScrollbars();
-		
+
 		m_bChildRequestedResize = true;		// So that _resize() will know...
 		_requestResize();
 	}
@@ -1184,7 +1184,7 @@ namespace wg
 		{
 			RectSPX window = m_childWindow - m_childCanvas.pos();
 			CoordSPX	startPos = window.pos();
-			
+
 			for (int i = 0; i < 2; i++)
 			{
 				RectSPX inside = i == 0 ? niceToHaveArea : mustHaveArea;
@@ -1337,7 +1337,7 @@ namespace wg
 		_updateScrollbars();
 		_requestRender();
 	}
-	
+
 	//____ _scrollbarWheel() __________________________________________________
 
 	void ScrollPanel::_scrollbarWheel(const Scroller* pComponent, int dir)
