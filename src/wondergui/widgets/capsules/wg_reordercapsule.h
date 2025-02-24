@@ -48,7 +48,7 @@ namespace wg
 			bool				dropTarget		= true;
 			Finalizer_p			finalizer		= nullptr;
 			int					id				= 0;
-			MarkPolicy			markPolicy		= MarkPolicy::AlphaTest;
+			MarkPolicy			markPolicy		= MarkPolicy::Geometry;			// Differs from widget default!
 			bool				pickable		= true;
 			uint8_t				pickCategory	= 0;
 			bool				pickHandle		= false;

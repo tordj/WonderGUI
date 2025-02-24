@@ -49,6 +49,7 @@ namespace wg
 	ReorderCapsule::ReorderCapsule()
 	{
 		m_bPickable = true;
+		m_markPolicy = MarkPolicy::Geometry;
 		_init();
 	}
 

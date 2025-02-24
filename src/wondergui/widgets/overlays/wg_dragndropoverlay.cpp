@@ -183,7 +183,10 @@ namespace wg
 						CoordSPX total = pMsg->_draggedTotal();
 						if (abs(total.x) + abs(total.y) > ptsToSpx(m_dragStartTreshold,m_scale))
 						{
-							Coord pickOfs = pMsg->startPos() - m_pPicked->globalGeo().pos();
+							CoordSPX pickOfsSPX = pMsg->_startPos() - m_pPicked->_globalGeo().pos();
+
+							Coord pickOfs = spxToPts(pickOfsSPX, m_pPicked->scale());
+
 							Base::msgRouter()->post(new PickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));
 							m_dragState = DragState::Picked;
 						}
@@ -378,8 +381,11 @@ namespace wg
 					{
 						pDragWidget->releaseFromParent();
 						m_dragWidgetOfs = ptsToSpx(pMsg->dragWidgetPointerOfs(),m_scale);
+
+						dragWidgetSize = pDragWidget->_defaultSize(m_scale);
+						pDragWidget->_resize(dragWidgetSize, m_scale);
+
 						m_dragSlot._setWidget(pDragWidget);
-						dragWidgetSize = m_dragSlot._widget()->_defaultSize(m_scale);
 
 						if( pMsg->hotspot() == Placement::Undefined )
 							m_hotspotOfs.clear();
