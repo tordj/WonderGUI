@@ -90,6 +90,18 @@ WgSize WgFiller::PreferredPixelSize() const
 	return m_defaultSize*m_scale/WG_SCALE_BASE;
 }
 
+//____ SetSkinValue() _____________________________________________________________
+
+void WgFiller::SetSkinValue( float value )
+{
+	if( value != m_skinValue )
+	{
+		wg::RectSPX rect = m_pSkin->_dirtyRect(PixelSize()*64, m_scale, m_state, m_state, m_skinValue, value );
+		m_skinValue = value;
+		_requestRender( rect/64 );
+	}
+}
+
 //____ _setScale() ____________________________________________________________
 
 void WgFiller::_setScale(int scale)
@@ -117,7 +129,7 @@ void WgFiller::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 	if( m_pColors )
 		pDevice->fill( _canvas*64, m_pColors->Color(m_mode) );
     else if( m_pSkin )
-        _renderSkin(m_pSkin, pDevice, m_state, _canvas, m_scale);
+        _renderSkin(m_pSkin, pDevice, m_state, _canvas, m_scale, m_skinValue );
 }
 
 //____ _onAlphaTest() ___________________________________________________________
@@ -128,8 +140,8 @@ bool WgFiller::_onAlphaTest( const WgCoord& ofs )
 		return true;
 
 	if(m_pSkin)
-		return _markTestSkin(m_pSkin, ofs, PixelSize(), wg::State::Default, m_markOpacity, m_scale);
-	
+		return _markTestSkin(m_pSkin, ofs, PixelSize(), wg::State::Default, m_markOpacity, m_scale, m_skinValue);
+
 	return false;
 }
 
