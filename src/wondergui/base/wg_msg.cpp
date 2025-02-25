@@ -1214,6 +1214,21 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ PingMsg ___________________________________________________
+
+	const TypeInfo PingMsg::TYPEINFO = { "PingMsg", &Msg::TYPEINFO };
+
+	PingMsg::PingMsg(Object * pSource )
+	{
+		m_type = MsgType::Ping;
+		m_pSource = pSource;
+	}
+
+	const TypeInfo& PingMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
 
 	//____ PianoKeyReleaseMsg _________________________________________________
 

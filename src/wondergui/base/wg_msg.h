@@ -266,6 +266,10 @@ namespace wg
 	typedef	StrongPtr<DeactivateMsg>	DeactivateMsg_p;
 	typedef	WeakPtr<DeactivateMsg>		DeactivateMsg_wp;
 
+	class PingMsg;
+	typedef	StrongPtr<PingMsg>			PingMsg_p;
+	typedef	WeakPtr<PingMsg>			PingMsg_wp;
+
 
 	//____ Msg _________________________________________________________________
 	/**
@@ -1466,6 +1470,25 @@ public:
 	protected:
 			DeactivateMsg( Object * pSource );
 	};
+
+	//____ UpdateMsg _____________________________________________________
+
+	class PingMsg : public Msg
+	{
+	public:
+		//.____ Creation __________________________________________
+
+		static PingMsg_p	create( Object * pSource ) { return new PingMsg(pSource); }
+
+		//.____ Identification __________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+	protected:
+			PingMsg( Object * pSource );
+	};
+
 
 	//____ Internally posted messages ____________________________________________
 

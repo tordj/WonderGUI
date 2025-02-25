@@ -219,6 +219,7 @@ namespace wg
 			"PianoKeyRelease",
 			"Activate",
 			"Deactivate",
+			"Ping",
 			"Custom" };
 
 		return names[(int)i];

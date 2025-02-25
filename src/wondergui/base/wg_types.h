@@ -294,7 +294,9 @@ namespace wg
 		
 		Activate,
 		Deactivate,
-		Custom
+		Ping,
+
+		Custom,
 
 	};
 

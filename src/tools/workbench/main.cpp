@@ -4509,7 +4509,7 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 			pMe->slot = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create( wheel[colorOfs++]) });
 
-			auto pDataset = Dataset<Widget_p>::create(pWidget);
+			auto pDataset = ReorderCapsule::DropData::create({pWidget,0.f});
 			pMsg->setContent(DropType::Widget, 0, pDataset);
 			pMsg->setDragWidget(pWidget, -pMsg->pickOfs());
 			pMsg->setHotspot(Placement::Center);

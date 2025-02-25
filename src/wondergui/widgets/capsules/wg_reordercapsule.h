@@ -26,6 +26,7 @@
 #include <wg_capsule.h>
 #include <wg_transitions.h>
 #include <wg_filler.h>
+#include <wg_dataset.h>
 
 namespace wg
 {
@@ -37,6 +38,16 @@ namespace wg
 
 	class ReorderCapsule : public Capsule
 	{
+	public:
+
+		struct _dropdata{
+			Widget_p	pWidget;
+			float		weight;
+		};
+
+		typedef Dataset<_dropdata> DropData;
+
+
 	public:
 		//____ Blueprint __________________________________________
 
