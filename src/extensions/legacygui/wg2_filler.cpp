@@ -96,9 +96,17 @@ void WgFiller::SetSkinValue( float value )
 {
 	if( value != m_skinValue )
 	{
-		wg::RectSPX rect = m_pSkin->_dirtyRect(PixelSize()*64, m_scale, m_state, m_state, m_skinValue, value );
-		m_skinValue = value;
-		_requestRender( rect/64 );
+		if( m_pSkin )
+		{
+			wg::RectSPX rect = m_pSkin->_dirtyRect(PixelSize()*64, m_scale, m_state, m_state, m_skinValue, value );
+			m_skinValue = value;
+			_requestRender( rect/64 );
+		}
+		else
+		{
+			m_skinValue = value;
+		}
+
 	}
 }
 
