@@ -47,9 +47,10 @@ namespace wg
 		m_selectionBackColor	= bp.selectionBackColor;
 		m_selectionCharBlend	= bp.selectionCharBlend;
 		m_selectionCharColor	= bp.selectionCharColor;
-		
+
 		m_softLineSpacing		= bp.lineSpacing;
 		m_hardLineSpacing		= bp.lineSpacing + bp.paragraphSpacing;
+        m_bAutoElipsis          = bp.autoElipsis;
 
 		m_bLineWrap				= bp.wrap;
 
@@ -103,7 +104,7 @@ namespace wg
 			{
 				Base::_stopReceiveUpdates(this);
 				m_bReceivingUpdates = false;
-			}			
+			}
 		}
 	}
 
@@ -324,7 +325,7 @@ namespace wg
 	void BasicTextLayout::_update(int microPassed, int64_t microsecTimestamp)
 	{
 		if( _caretVisible(m_pFocusedText) )
-		{				
+		{
 			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 			if( pCaret )
 			{
@@ -371,6 +372,9 @@ namespace wg
 		if (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h)
 			popData = limitClipList(pDevice, canvas);
 
+        bool toLargeText = false;
+        if(pHeader->textSize.w > canvas.w)
+            toLargeText = true;
 
 		// Render back colors
 
@@ -413,9 +417,10 @@ namespace wg
 				lineStart.x = canvas.x + _linePosX( pLineInfo, canvas.w );
 				const Char * pChar = pCharArray + pLineInfo->offset;
 
-				Glyph glyph[2];
+				Glyph glyph[3];
 				Glyph* pGlyph		= &glyph[0];
 				Glyph* pPrevGlyph	= &glyph[1];
+				Glyph* pReplacementGlyph	= &glyph[2];
 
 				CoordSPX pos = lineStart;
 				pos.y += pLineInfo->base;
@@ -481,13 +486,38 @@ namespace wg
 					//
 
 					_getGlyphWithBitmap( pFont.rawPtr(), pChar->code(), * pGlyph);
+                    int elipsesStartPos = -1;
+                    if(toLargeText && m_bAutoElipsis)
+                    {
+                        _getGlyphWithBitmap( pFont.rawPtr(), m_iElipsesCode, * pReplacementGlyph);
+                        auto elipsesStartx =  canvas.w - pReplacementGlyph->rect.w;
+                        for(int x = 0; x < pLineInfo->length; x++)
+                        {
+                            auto xpos = charPos( pText, x).x;
+                            if(xpos > elipsesStartx)
+                            {
+                                elipsesStartPos = x-1;
+                                break;
+                            }
+                        }
+                    }
 
 					if( pGlyph->advance > 0 )
 					{
 						pos.x += pFont->kerning(*pPrevGlyph, *pGlyph);
 
-						pDevice->setBlitSource(pGlyph->pSurface);
-						pDevice->blit( CoordSPX(pos.x + pGlyph->bearingX, pos.y + pGlyph->bearingY), pGlyph->rect  );
+                        if(elipsesStartPos != -1 && x == elipsesStartPos)
+                        {
+                            pDevice->setBlitSource(pReplacementGlyph->pSurface);
+                            auto bearingY = -300;
+						    pDevice->blit( CoordSPX(pos.x, pos.y + bearingY), pReplacementGlyph->rect  );
+                            break;
+                        }
+                        else
+                        {
+                            pDevice->setBlitSource(pGlyph->pSurface);
+						    pDevice->blit( CoordSPX(pos.x + pGlyph->bearingX, pos.y + pGlyph->bearingY), pGlyph->rect  );
+                        }
 						pos.x += pGlyph->advance;
 					}
 					else if( pChar->code() == 32 )
@@ -508,7 +538,7 @@ namespace wg
 		// Render caret (if there is any)
 
 		if( _caretVisible(pText) )
-		{			
+		{
 			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 
 			if( pCaret )
@@ -588,7 +618,7 @@ namespace wg
 		{
 			LineInfo * pLine = pBegLine;
 			spx		yPos = canvas.y + begPos.y -pLine->base;
-			
+
 			RectSPX area;
 			area.x = canvas.x + begPos.x;
 			area.y = yPos;
@@ -654,11 +684,11 @@ namespace wg
 		int newEnd = std::max(selectOfs,caretOfs);
 
 		// Two cases here, either new and old selection overlaps or they are completely disjointed
-		
+
 		if( (newBeg < oldBeg && newEnd > oldBeg) || (newBeg > oldBeg && oldEnd > newBeg) )
 		{
 			//  Selection is overlapping, we just need to modify it at the edges
-			
+
 			if( oldBeg != newBeg )
 			{
 				int beg = std::min(oldBeg,newBeg);
@@ -673,21 +703,21 @@ namespace wg
 				int len = std::max(oldEnd,newEnd) - beg;
 
 				_setTextDirty( pText, rectForRange( pText, beg, len ) );
-			}			
+			}
 		}
 		else
 		{
 			// Selection is not overlapping, we have two dirty areas
-			
+
 			if( oldEnd != oldBeg )
 				_setTextDirty( pText, rectForRange( pText, oldBeg, oldEnd - oldBeg ));
 			if( newEnd != oldEnd > 0 )
 				_setTextDirty( pText, rectForRange( pText, newBeg, newEnd - newBeg ));
 		}
-		
+
 		// Update/redraw the caret
-		
-		caretMove( pText, caretOfs, oldCaretOfs );		
+
+		caretMove( pText, caretOfs, oldCaretOfs );
 	}
 
 	//____ onTextModified() ____________________________________________________
@@ -735,11 +765,11 @@ namespace wg
 				}
 			}
 		}
-		
+
 		// Check if we might need to requestRender because of state change.
-		
+
 		//TODO: Optimize: Go through and check all char styles to see if we need to setTextDirty.
-		
+
 		auto bHasCharStyles = _header(_dataBlock(pText))->hasCharStyles;
 
 		if( bHasCharStyles || !_baseStyle(pText)->isStateIdentical(newState, oldState) )
@@ -824,11 +854,11 @@ namespace wg
 			const LineInfo * pLine = pBegLine;
 
 			spx yPos = begPos.y - pLine->base;
-			
+
 			x1 = begPos.x;
 			y1 = yPos;
 			x2 = pLine->width + _linePosX(pLine, canvas.w);
-			
+
 			yPos += pLine->spacing;
 
 			pLine++;
@@ -873,7 +903,7 @@ namespace wg
 
 		return pCaret->dirtyRect( charRect(pText, _caretOfs(pText) ), _scale(pText) );
 	}
-	
+
 	//____ rectForCaretWithMargin() ______________________________________________
 
 	RectSPX BasicTextLayout::rectForCaretWithMargin( const TextItem * pText, int whitespacesBeforeAfter ) const
@@ -883,17 +913,17 @@ namespace wg
 			return RectSPX();
 
 		RectSPX cursorRect = pCaret->dirtyRect( charRect(pText, _caretOfs(pText) ), _scale(pText) );
-		
+
 		TextAttr		baseAttr;
 		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr, _scale(pText) );
 
 		baseAttr.pFont->setSize(baseAttr.size);
-		
+
 		spx whitespace = baseAttr.pFont->whitespaceAdvance();
-		
+
 		cursorRect.x -= whitespace * whitespacesBeforeAfter;
 		cursorRect.w += whitespace * whitespacesBeforeAfter*2;
-		
+
 		spx maxLength = _size(pText).w;
 
 		limit( cursorRect.x, 0, maxLength );
@@ -1465,7 +1495,7 @@ namespace wg
 		SizeSPX textSize;
 
 		int scale = _scale(pText);
-		
+
 		if (m_bLineWrap)
 		{
 			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update defaultSize.
@@ -1761,7 +1791,7 @@ namespace wg
 		pLines->offset = int(pChars - pTextStart);
 
 		attr.size = -1;								// Prevent reading uninitialized value further down.
-		
+
 		while( true )
 		{
 			if( pChars->styleHandle() != hCharStyle )
@@ -1874,8 +1904,8 @@ namespace wg
 			else
 				pChars++;
 		}
-		
-		
+
+
 		return alignUp(size);
 	}
 

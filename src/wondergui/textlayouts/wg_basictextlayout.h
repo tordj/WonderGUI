@@ -55,7 +55,8 @@ namespace wg
 
 			float		lineSpacing			= 1.f;
 			float		paragraphSpacing	= 0.f;					// Add to lineSpacing at hard line endings.
-			
+            bool        autoElipsis         = false;
+
 			bool		wrap = false;
 		};
 
@@ -161,7 +162,7 @@ namespace wg
 
 		int				_countLines( TextItem * pText, const Char * pChars ) const;
 		bool			_hasCharStyles( const Char * pChars ) const;
-		
+
 		int				_countFixedLines(const Char * pChars) const;
 		int				_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
 		spx				_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
@@ -216,8 +217,10 @@ namespace wg
 
 		float			m_hardLineSpacing = 1.f;
 		float			m_softLineSpacing = 1.f;
-		
+
 		TextItem *		m_pFocusedText = nullptr;
+        int             m_iElipsesCode = 57368;
+        bool            m_bAutoElipsis = false;
 	};
 
 
