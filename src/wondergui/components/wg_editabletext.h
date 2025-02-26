@@ -101,6 +101,8 @@ namespace wg
 		bool			caretTextEnd();
 		void            requestFocus() { _requestFocus(true); }
 
+		void			caretIntoView();			// Bring caret into view. Automatically done for all caret movements. 
+
 		//.____ Internal ______________________________________________________
 
 		void			_initFromBlueprint(const Blueprint& blueprint);

@@ -165,6 +165,7 @@ bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry);
 bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 bool widgetMoveTest(ComponentPtr<DynamicSlot> pEntry);
 bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
+bool elipsisTest(ComponentPtr<DynamicSlot> pEntry);
 
 
 void nisBlendTest();
@@ -787,9 +788,10 @@ int main(int argc, char** argv)
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-			reorderCapsuleTest(pSlot);
+		//	reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
 		//	labelCapsuleTest(pSlot);
+		elipsisTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -4577,3 +4579,20 @@ bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 }
 
+bool elipsisTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::Honeydew));
+
+	auto pTextLayout = BasicTextLayout::create({ .autoElipsis = true });
+
+	auto pEditorSkin = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Black, .padding = 2 });
+
+	auto pLineEditor = LineEditor::create( { .skin = pEditorSkin, .editor = { .layout = pTextLayout } });
+
+
+	pBaseLayer->slots.pushBack(pLineEditor);
+	*pEntry = pBaseLayer;
+	return true;
+
+}

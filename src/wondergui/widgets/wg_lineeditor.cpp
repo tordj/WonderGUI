@@ -98,7 +98,7 @@ namespace wg
 			}
 			else
 			{
-				contentSize.w = 100 * scale;
+				contentSize.w = m_defaultLengthInChars * 8 * scale;
 				contentSize.h = 16 * scale;
 			}
 
@@ -114,15 +114,15 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
+		RectSPX contentRect = m_skin.contentRect(_canvas, m_scale, m_state);
 
 		//
 
-		RectSPX textCanvas(canvas.x - m_textScrollOfs, canvas.y, editor._defaultSize(m_scale));
+		RectSPX textCanvas(contentRect.x - m_textScrollOfs, contentRect.y, _editorWidth(), contentRect.h);
 
 		// We need to clip to canvas since textCanvas can go outside our canvas.
 
-		auto pop = limitClipList(pDevice, canvas );
+		auto pop = limitClipList(pDevice, contentRect );
 		editor._render(pDevice, textCanvas );
 		popClipList(pDevice, pop);
 	}
@@ -131,12 +131,24 @@ namespace wg
 
 	void LineEditor::_setState( State state )
 	{
+		bool bEditorNeedsResize = m_state.isFocused() != state.isFocused();
+
 		Widget::_setState(state);
-
 		editor._setState(state);
-		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
-	}
 
+		if( !state.isFocused() )
+			m_textScrollOfs = 0;
+
+		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
+
+		if( bEditorNeedsResize )
+		{
+			editor._setSize( SizeSPX( _editorWidth(), m_size.h - m_skin.contentBorderSize(m_scale).h ), m_scale );
+
+			if( state.isFocused() )
+				editor.caretIntoView();
+		}
+	}
 
 	//____ _receive() ______________________________________________________________
 
@@ -187,7 +199,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		editor._setSize( SizeSPX( editor._defaultSize(m_scale).w, size.h - m_skin.contentBorderSize(m_scale).h ), m_scale );
+		editor._setSize( SizeSPX( _editorWidth(), size.h - m_skin.contentBorderSize(m_scale).h ), scale );
 	}
 
 	//____ _componentPos() __________________________________________________________
@@ -209,7 +221,7 @@ namespace wg
 		if (pComponent != &editor)
 			return m_size;
 
-		return SizeSPX( editor._defaultSize(m_scale).w, m_size.h - m_skin.contentBorderSize(m_scale).h );
+		return SizeSPX( _editorWidth(), m_size.h - m_skin.contentBorderSize(m_scale).h );
 	}
 
 	//____ _componentGeo() __________________________________________________________
@@ -221,7 +233,7 @@ namespace wg
 
 		RectSPX r = m_skin.contentRect( m_size, m_scale, m_state );
 		r.x -= m_textScrollOfs;
-		r.w = editor._defaultSize(m_scale).w;
+		r.w = _editorWidth();
 		return r;
 	}
 
@@ -259,12 +271,12 @@ namespace wg
 
 		SizeSPX defaultSize = editor._defaultSize(m_scale);
 
-		spx height = m_size.h - m_skin.contentBorderSize(m_scale).h;
+		SizeSPX contentSize = m_size - m_skin.contentBorderSize(m_scale);
 
-		if(defaultSize.h != height )
+		if(defaultSize.h != contentSize.h || (m_defaultLengthInChars < 1 && defaultSize.w != contentSize.w) )
 			_requestResize();
-
-		editor._setSize( SizeSPX(defaultSize.w, height ),m_scale);	// Component gets the default width right away.
+		else
+			editor._setSize( SizeSPX(_editorWidth(), contentSize.h ),m_scale);
 	}
 
 	//____ _componentRequestInView() ____________________________________________
@@ -303,5 +315,16 @@ namespace wg
 			Base::msgRouter()->post(TextEditMsg::create(&editor, p->offset, p->deleted, p->inserted));
 		}
 	}
+
+	//____ _editorWidth() ________________________________________________________
+
+	spx LineEditor::_editorWidth() const
+	{
+		if( m_state.isFocused() )
+			return editor._defaultSize(m_scale).w;
+		else
+			return _contentRect().w;
+	}
+
 
 } // namespace wg

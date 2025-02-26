@@ -1009,6 +1009,15 @@ namespace wg
 		return _moveCaret( ofs, MoveMethod::Mouse );
 	}
 
+	//____ caretIntoView() ______________________________________________________
+
+	void EditableText::caretIntoView()
+	{
+		if( m_editState.bCaret )
+			_updateDisplayArea();
+	}
+
+
 	//____ _caretSelectWord() __________________________________________________
 
 	bool EditableText::caretSelectWord()
