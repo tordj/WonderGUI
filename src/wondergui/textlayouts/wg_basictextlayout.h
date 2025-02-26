@@ -220,7 +220,7 @@ namespace wg
 
 		TextItem *		m_pFocusedText = nullptr;
         int             m_iElipsesCode = 57368;
-        bool            m_bAutoElipsis = false;
+        bool            m_bAutoElipsis = true;
 	};
 
 
