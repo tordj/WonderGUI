@@ -55,7 +55,7 @@ namespace wg
 
 			float		lineSpacing			= 1.f;
 			float		paragraphSpacing	= 0.f;					// Add to lineSpacing at hard line endings.
-            bool        autoElipsis         = false;
+            bool        autoElipsis         = true;
 
 			bool		wrap = false;
 		};
@@ -220,7 +220,7 @@ namespace wg
 
 		TextItem *		m_pFocusedText = nullptr;
         int             m_iElipsesCode = 57368;
-        bool            m_bAutoElipsis = true;
+        bool            m_bAutoElipsis = false;
 	};
 
 
