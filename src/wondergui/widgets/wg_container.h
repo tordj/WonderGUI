@@ -163,6 +163,7 @@ namespace wg
 			virtual void			_setState( State state ) override;
 
 			virtual void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
+			virtual void			_resize(const SizeSPX& size, int scale) override;
 
 			virtual BorderSPX		_calcOverflow();
 
