@@ -50,7 +50,7 @@ namespace wg
 
 		m_softLineSpacing		= bp.lineSpacing;
 		m_hardLineSpacing		= bp.lineSpacing + bp.paragraphSpacing;
-        m_bAutoElipsis          = bp.autoElipsis;
+        m_bAutoElipsis          = bp.autoEllipsis;
 
 		m_bLineWrap				= bp.wrap;
 
@@ -366,15 +366,18 @@ namespace wg
 
 		BlendMode renderMode = pDevice->blendMode();
 
+		Glyph 	ellipsisGlyph;
+		int		ellipsisLength;
+
 		// Limit our cliplist if needed
 
 		ClipPopData popData;
 		if (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h)
 			popData = limitClipList(pDevice, canvas);
 
-        bool toLargeText = false;
-        if(pHeader->textSize.w > canvas.w)
-            toLargeText = true;
+        bool bNeedsEllipsis = false;
+        if(m_bAutoElipsis && (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h))
+            bNeedsEllipsis = true;
 
 		// Render back colors
 
@@ -417,15 +420,15 @@ namespace wg
 				lineStart.x = canvas.x + _linePosX( pLineInfo, canvas.w );
 				const Char * pChar = pCharArray + pLineInfo->offset;
 
-				Glyph glyph[3];
+				Glyph glyph[2];
 				Glyph* pGlyph		= &glyph[0];
 				Glyph* pPrevGlyph	= &glyph[1];
-				Glyph* pReplacementGlyph	= &glyph[2];
 
 				CoordSPX pos = lineStart;
 				pos.y += pLineInfo->base;
 
-				bool bRecalcColor = false;
+				bool 	bRecalcColor = false;
+				bool	bEllipsisDrawn = false;
 
 				for( int x = 0 ; x < pLineInfo->length ; x++ )
 				{
@@ -451,6 +454,21 @@ namespace wg
 							pFont = attr.pFont;
 							pFont->setSize(attr.size);
 							pPrevGlyph->advance = 0;								// No kerning against across different fonts or character of different size.
+
+							if( bNeedsEllipsis )
+							{
+								if( pFont->hasGlyph(c_ellipsisCode) )
+								{
+									_getGlyphWithBitmap( pFont.rawPtr(), c_ellipsisCode, ellipsisGlyph);
+									ellipsisLength = ellipsisGlyph.advance;
+								}
+								else
+								{
+									Glyph temp;
+									_getGlyphWithBitmap( pFont.rawPtr(), '.', temp);
+									ellipsisLength = temp.advance * 3;
+								}
+							}
 						}
 
 						if( attr.color != localTint )
@@ -486,38 +504,47 @@ namespace wg
 					//
 
 					_getGlyphWithBitmap( pFont.rawPtr(), pChar->code(), * pGlyph);
-                    int elipsesStartPos = -1;
-                    if(toLargeText && m_bAutoElipsis)
-                    {
-                        _getGlyphWithBitmap( pFont.rawPtr(), m_iElipsesCode, * pReplacementGlyph);
-                        auto elipsesStartx =  canvas.w - pReplacementGlyph->rect.w;
-                        for(int x = 0; x < pLineInfo->length; x++)
-                        {
-                            auto xpos = charPos( pText, x).x;
-                            if(xpos > elipsesStartx)
-                            {
-                                elipsesStartPos = x-1;
-                                break;
-                            }
-                        }
-                    }
 
 					if( pGlyph->advance > 0 )
 					{
-						pos.x += pFont->kerning(*pPrevGlyph, *pGlyph);
+						if( bNeedsEllipsis && pLineInfo->width > canvas.w && pos.x + pGlyph->advance + ellipsisLength > canvas.w )
+						{
+							if( !bEllipsisDrawn )
+							{
+								if( pFont->hasGlyph(c_ellipsisCode) )
+								{
+									pos.x += pFont->kerning(*pPrevGlyph, ellipsisGlyph);
 
-                        if(elipsesStartPos != -1 && x == elipsesStartPos)
-                        {
-                            pDevice->setBlitSource(pReplacementGlyph->pSurface);
-                            auto bearingY = -300;
-						    pDevice->blit( CoordSPX(pos.x, pos.y + bearingY), pReplacementGlyph->rect  );
-                            break;
-                        }
-                        else
-                        {
-                            pDevice->setBlitSource(pGlyph->pSurface);
-						    pDevice->blit( CoordSPX(pos.x + pGlyph->bearingX, pos.y + pGlyph->bearingY), pGlyph->rect  );
-                        }
+									pDevice->setBlitSource(ellipsisGlyph.pSurface);
+									pDevice->blit( CoordSPX(pos.x + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
+								}
+								else
+								{
+									Glyph temp;
+
+									_getGlyphWithBitmap( pFont.rawPtr(), '.', temp);
+
+									pos.x += pFont->kerning(*pPrevGlyph, temp);
+
+									pDevice->setBlitSource(temp.pSurface);
+									pDevice->blit( CoordSPX(pos.x + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+									pos.x += temp.advance;
+									pDevice->blit( CoordSPX(pos.x + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+									pos.x += temp.advance;
+									pDevice->blit( CoordSPX(pos.x + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+								}
+
+								bEllipsisDrawn = true;
+							}
+						}
+						else
+						{
+							pos.x += pFont->kerning(*pPrevGlyph, *pGlyph);
+
+							pDevice->setBlitSource(pGlyph->pSurface);
+							pDevice->blit( CoordSPX(pos.x + pGlyph->bearingX, pos.y + pGlyph->bearingY), pGlyph->rect  );
+						}
+
 						pos.x += pGlyph->advance;
 					}
 					else if( pChar->code() == 32 )

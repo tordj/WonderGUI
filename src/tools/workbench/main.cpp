@@ -4584,14 +4584,17 @@ bool elipsisTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::Honeydew));
 
-	auto pTextLayout = BasicTextLayout::create({ .autoElipsis = true });
+	auto pTextLayout = BasicTextLayout::create({ .autoEllipsis = true });
 
 	auto pEditorSkin = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Black, .padding = 2 });
 
 	auto pLineEditor = LineEditor::create( { .skin = pEditorSkin, .editor = { .layout = pTextLayout } });
 
+	auto pTextEditor = TextEditor::create( { .skin = pEditorSkin, .editor = { .layout = pTextLayout } });
+
 
 	pBaseLayer->slots.pushBack(pLineEditor);
+	pBaseLayer->slots.pushBack(pTextEditor, { .pos = {10,50}, .size = {200,50}});
 	*pEntry = pBaseLayer;
 	return true;
 
