@@ -173,6 +173,7 @@ namespace wg
 			"MouseRelease",
 			"MouseClick",
 			"MouseDoubleClick",
+			"MouseTripleClick",
 			"KeyPress",
 			"KeyRepeat",
 			"KeyRelease",

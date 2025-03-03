@@ -185,10 +185,10 @@ namespace wg
 
 		bool			m_bButtonPressed[MouseButton_size];
 
+		int				m_pressOrdinal[MouseButton_size];				// Single, double, triple click counter.
 		Widget_wp		m_latestPressWidgets[MouseButton_size];		// Widget that received the latest press, for each button.
 		int64_t			m_latestPressTimestamps[MouseButton_size];	// Timestamp of the latest press, for each button.
 		Coord			m_latestPressPosition[MouseButton_size];	// Coord of the latest press, for each button.
-		bool			m_latestPressDoubleClick[MouseButton_size];	// Set if latest press resulted in a double-click.
 
 		// Current key states
 
