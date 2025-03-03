@@ -376,7 +376,7 @@ namespace wg
 			popData = limitClipList(pDevice, canvas);
 
         bool bNeedsEllipsis = false;
-        if(m_bAutoElipsis && (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h))
+        if(m_bAutoElipsis && (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h) && !_caretVisible(pText) )
             bNeedsEllipsis = true;
 
 		// Render back colors
@@ -427,8 +427,18 @@ namespace wg
 				CoordSPX pos = lineStart;
 				pos.y += pLineInfo->base;
 
+				bool bLineHasEllipsis = false;
+				if( bNeedsEllipsis )
+				{
+					if( pLineInfo->width > canvas.w )
+						bLineHasEllipsis = true;
+					else if( m_bLineWrap && i+1 < pHeader->nbLines && lineStart.y + pLineInfo->spacing + pLineInfo[1].height > clip.y + clip.h )
+						bLineHasEllipsis = true;
+				}
+
 				bool 	bRecalcColor = false;
 				bool	bEllipsisDrawn = false;
+				spx		ellipsisX = pos.x;
 
 				for( int x = 0 ; x < pLineInfo->length ; x++ )
 				{
@@ -507,7 +517,7 @@ namespace wg
 
 					if( pGlyph->advance > 0 )
 					{
-						if( bNeedsEllipsis && pLineInfo->width > canvas.w && pos.x + pGlyph->advance + ellipsisLength > canvas.w )
+						if( bLineHasEllipsis && pos.x + pGlyph->advance + ellipsisLength > canvas.w )
 						{
 							if( !bEllipsisDrawn )
 							{
@@ -516,7 +526,7 @@ namespace wg
 									pos.x += pFont->kerning(*pPrevGlyph, ellipsisGlyph);
 
 									pDevice->setBlitSource(ellipsisGlyph.pSurface);
-									pDevice->blit( CoordSPX(pos.x + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
+									pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
 								}
 								else
 								{
@@ -527,11 +537,11 @@ namespace wg
 									pos.x += pFont->kerning(*pPrevGlyph, temp);
 
 									pDevice->setBlitSource(temp.pSurface);
-									pDevice->blit( CoordSPX(pos.x + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
-									pos.x += temp.advance;
-									pDevice->blit( CoordSPX(pos.x + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
-									pos.x += temp.advance;
-									pDevice->blit( CoordSPX(pos.x + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+									pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+									ellipsisX += temp.advance;
+									pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+									ellipsisX += temp.advance;
+									pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
 								}
 
 								bEllipsisDrawn = true;
@@ -546,6 +556,7 @@ namespace wg
 						}
 
 						pos.x += pGlyph->advance;
+						ellipsisX = pos.x;
 					}
 					else if( pChar->code() == 32 )
 						pos.x += pFont->whitespaceAdvance();
@@ -553,7 +564,43 @@ namespace wg
 					std::swap(pPrevGlyph, pGlyph);
 					pChar++;
 				}
+
+				// If we wrap text we might need to add ellipsis even though line text fits on line.
+
+				if( bLineHasEllipsis && !bEllipsisDrawn )
+				{
+					if( pFont->hasGlyph(c_ellipsisCode) )
+					{
+						pos.x += pFont->kerning(*pPrevGlyph, ellipsisGlyph);
+
+						pDevice->setBlitSource(ellipsisGlyph.pSurface);
+						pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
+					}
+					else
+					{
+						Glyph temp;
+
+						_getGlyphWithBitmap( pFont.rawPtr(), '.', temp);
+
+						pos.x += pFont->kerning(*pPrevGlyph, temp);
+
+						pDevice->setBlitSource(temp.pSurface);
+						pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+						ellipsisX += temp.advance;
+						pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+						ellipsisX += temp.advance;
+						pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+					}
+
+					bEllipsisDrawn = true;
+				}
+
+				// In linewrap mode we need to prevent us from drawing an extra half-hidden line below our ellipsis
+
+				if( m_bLineWrap && bEllipsisDrawn )
+					break;
 			}
+
 
 			lineStart.y += pLineInfo->spacing;
 			pLineInfo++;
