@@ -175,6 +175,8 @@ namespace wg
 				slot.setWidget(bp.child);
 			
 			glow._initFromBlueprint(bp.glow);
+
+			m_canvasSize = m_size;
 		}
 		
 		virtual ~CanvasCapsule();
