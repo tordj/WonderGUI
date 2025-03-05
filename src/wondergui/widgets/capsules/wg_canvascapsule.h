@@ -154,6 +154,8 @@ namespace wg
 		
 		template<class BP> CanvasCapsule(const BP& bp) : Capsule(bp), glow(this)
 		{
+			m_canvasSize = m_size;
+
 			m_pFactory		= bp.surfaceFactory;
 			m_canvasFormat	= bp.pixelFormat;
 			m_pCanvasLayers = bp.layers;
@@ -170,13 +172,12 @@ namespace wg
 			m_clearColor	= bp.clearColor;
 			
 			m_bSkinAroundCanvas = bp.skinAroundCanvas;
-			
+
 			if( bp.child )
 				slot.setWidget(bp.child);
 			
 			glow._initFromBlueprint(bp.glow);
 
-			m_canvasSize = m_size;
 		}
 		
 		virtual ~CanvasCapsule();
