@@ -366,7 +366,6 @@ namespace wg
 
 		BlendMode renderMode = pDevice->blendMode();
 
-		int		ellipsisLength;
 
 		// Limit our cliplist if needed
 
@@ -374,9 +373,30 @@ namespace wg
 		if (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h)
 			popData = limitClipList(pDevice, canvas);
 
-        bool bNeedsEllipsis = false;
-        if(m_bAutoElipsis && (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h) && !_caretVisible(pText) )
-            bNeedsEllipsis = true;
+		Glyph	ellipsisGlyph;
+		int		ellipsisLength;
+		bool 	bNeedsEllipsis = false;
+
+		if(m_bAutoElipsis && (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h) && !_caretVisible(pText) )
+		{
+			bNeedsEllipsis = true;
+
+			// Get glyph bitmap and length based on baseAttr.
+
+			pFont = baseAttr.pFont;
+			pFont->setSize(baseAttr.size);
+
+			if( pFont->hasGlyph(c_ellipsisCode) )
+			{
+				_getGlyphWithBitmap( pFont.rawPtr(), c_ellipsisCode, ellipsisGlyph);
+				ellipsisLength = ellipsisGlyph.advance;
+			}
+			else
+			{
+				_getGlyphWithBitmap( pFont.rawPtr(), '.', ellipsisGlyph);
+				ellipsisLength = ellipsisGlyph.advance * 3;
+			}
+		}
 
 		// Render back colors
 
@@ -423,17 +443,33 @@ namespace wg
 				Glyph* pGlyph		= &glyph[0];
 				Glyph* pPrevGlyph	= &glyph[1];
 
-				CoordSPX pos = lineStart;
-				pos.y += pLineInfo->base;
-
 				bool bLineHasEllipsis = false;
 				if( bNeedsEllipsis )
 				{
 					if( pLineInfo->width > canvas.w )
 						bLineHasEllipsis = true;
-					else if( m_bLineWrap && i+1 < pHeader->nbLines && lineStart.y + pLineInfo->spacing + pLineInfo[1].height > clip.y + clip.h )
-						bLineHasEllipsis = true;
+					else if( m_bLineWrap )
+					{
+						if( i+1 < pHeader->nbLines && lineStart.y + pLineInfo->spacing + pLineInfo[1].height > clip.y + clip.h )
+						{
+							bLineHasEllipsis = true;
+
+							// With lineWrap we readjust text for line that gets ellipsis since that might make it all fit.
+
+							lineStart.x = std::max( canvas.x, canvas.x + _linePosX( pLineInfo, canvas.w - ellipsisLength ));
+						}
+						else if( lineStart.y + pLineInfo->spacing + pLineInfo->height > clip.y + clip.h )
+						{
+							// Prevent partially displayed line from being displayed.
+							// We might get here if previous line with ellipsis is skipped due to clipping.
+
+							break;
+						}
+					}
 				}
+
+				CoordSPX pos = lineStart;
+				pos.y += pLineInfo->base;
 
 				bool 	bRecalcColor = false;
 				spx		ellipsisX = pos.x;
@@ -462,22 +498,6 @@ namespace wg
 							pFont = attr.pFont;
 							pFont->setSize(attr.size);
 							pPrevGlyph->advance = 0;								// No kerning against across different fonts or character of different size.
-
-							if( bNeedsEllipsis )
-							{
-								Glyph temp;
-
-								if( pFont->hasGlyph(c_ellipsisCode) )
-								{
-									_getGlyphWithoutBitmap( pFont.rawPtr(), c_ellipsisCode, temp);
-									ellipsisLength = temp.advance;
-								}
-								else
-								{
-									_getGlyphWithoutBitmap( pFont.rawPtr(), '.', temp);
-									ellipsisLength = temp.advance * 3;
-								}
-							}
 						}
 
 						if( attr.color != localTint )
@@ -516,7 +536,7 @@ namespace wg
 
 					if( pGlyph->advance > 0 )
 					{
-						if( bLineHasEllipsis && pos.x + pGlyph->advance + ellipsisLength > canvas.w )
+						if( bLineHasEllipsis && (pos.x - canvas.x) + pGlyph->advance + ellipsisLength > canvas.w )
 							break;
 
 						pos.x += pFont->kerning(*pPrevGlyph, *pGlyph);
@@ -534,33 +554,30 @@ namespace wg
 					pChar++;
 				}
 
-				// If we wrap text we might need to add ellipsis even though line text fits on line.
+				//
 
 				if( bLineHasEllipsis )
 				{
-					Glyph temp;
+					// Do kerning if font and size is same as for ellipsis.
+
+					if( baseAttr.pFont == attr.pFont && baseAttr.size == attr.size )
+						pos.x += pFont->kerning(*pPrevGlyph, ellipsisGlyph);
+
+					// Blit ellipsis.
+
+					pDevice->setBlitSource(ellipsisGlyph.pSurface);
 
 					if( pFont->hasGlyph(c_ellipsisCode) )
 					{
-						_getGlyphWithBitmap( pFont.rawPtr(), c_ellipsisCode, temp);
-
-						pos.x += pFont->kerning(*pPrevGlyph, temp);
-
-						pDevice->setBlitSource(temp.pSurface);
-						pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+						pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
 					}
 					else
 					{
-						_getGlyphWithBitmap( pFont.rawPtr(), '.', temp);
-
-						pos.x += pFont->kerning(*pPrevGlyph, temp);
-
-						pDevice->setBlitSource(temp.pSurface);
-						pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
-						ellipsisX += temp.advance;
-						pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
-						ellipsisX += temp.advance;
-						pDevice->blit( CoordSPX(ellipsisX + temp.bearingX, pos.y + temp.bearingY), temp.rect  );
+						pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
+						ellipsisX += ellipsisGlyph.advance;
+						pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
+						ellipsisX += ellipsisGlyph.advance;
+						pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
 					}
 
 					// In linewrap mode we need to prevent us from drawing an extra half-hidden line below our ellipsis
