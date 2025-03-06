@@ -354,6 +354,9 @@ namespace wg
 
 	void Widget::setSkin(Skin* pNewSkin)
 	{
+		if( pNewSkin == m_skin.get() )
+			return;
+
 		Skin_p pOldSkin = m_skin.get();
 		bool	bOldOverflow = m_bOverflow;
 
