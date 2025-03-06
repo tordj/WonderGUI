@@ -779,7 +779,7 @@ int main(int argc, char** argv)
 		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-		//  scrollChartTest(pSlot);
+			scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
 		//	packPanelStressTest(pSlot);
 		//	packPanelStressTest2(pSlot);
@@ -791,7 +791,7 @@ int main(int argc, char** argv)
 		//	reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
 		//	labelCapsuleTest(pSlot);
-		elipsisTest(pSlot);
+		//	elipsisTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -3163,7 +3163,7 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 	pGraph->entries.pushBack({
 		.bottomOutlineThickness = 0,
 		.color = Color::Transparent,
-		.flip = GfxFlip::Rot270,
+		/*.flip = GfxFlip::Rot270,*/
 		.outlineColor = Color::Red,
 		.topOutlineThickness = 5,
 		});
@@ -3249,8 +3249,31 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 		entry.setOutlineThickness(top, 0.f);
 	});
 
-
 	pFlex->slots.pushBack(pButton2, { .pos = {205, 220 } });
+
+	//---
+
+	auto pButton3 = Button::create({ .label = {.text = "RESIZE RANGE"}, .skin = pButtonSkin });
+
+	Base::msgRouter()->addRoute(pButton3, MsgType::Select, [pGraph](Msg* pMsg)
+	{
+		static bool bExpanded = false;
+
+		if( bExpanded )
+		{
+			pGraph->setDisplayRange(0.5f, -0.5f, ValueTransition::create( 400000 ) );
+			bExpanded = false;
+		}
+		else
+		{
+			pGraph->setDisplayRange(0.3f, -0.3f, ValueTransition::create( 400000 ) );
+			bExpanded = true;
+		}
+	});
+
+
+
+	pFlex->slots.pushBack(pButton3, { .pos = {105, 250 } });
 	return true;
 }
 
@@ -3915,8 +3938,27 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 
 	Base::msgRouter()->addRoute(pButtonSpeedUp, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->setDisplayTime(pScrollChart->displayTime()-500000); });
 
+	//---
 
+	auto pButtonRange = Button::create({ .label = {.text = "RANGE"}, .skin = pButtonSkin });
 
+	Base::msgRouter()->addRoute(pButtonRange, MsgType::Select, [pScrollChart](Msg* pMsg)
+	{
+		static bool bExpanded = false;
+
+		if( bExpanded )
+		{
+			pScrollChart->setDisplayRange(2.f, 0.f, ValueTransition::create( 400000 ) );
+			bExpanded = false;
+		}
+		else
+		{
+			pScrollChart->setDisplayRange(1.f, 0.f, ValueTransition::create( 400000 ) );
+			bExpanded = true;
+		}
+	});
+
+	pBaseLayer->slots.pushBack(pButtonRange, { .origo = Placement::SouthWest, .pos = {5 + 500,-5} });
 
 	
 	return true;

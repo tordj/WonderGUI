@@ -72,21 +72,75 @@ namespace wg
 
 	//____ setDisplayRange() __________________________________________________
 
-	void Chart::setDisplayRange(float ceiling, float floor)
+	void Chart::setDisplayRange(float ceiling, float floor, ValueTransition * pTransition )
 	{
 		if (ceiling == m_displayCeiling && floor == m_displayFloor)
 			return;
 
-		m_displayCeiling = ceiling;
-		m_displayFloor = floor;
+		if( pTransition )
+		{
+			if( !m_pRangeTransition )
+				_startReceiveUpdates();
+
+			m_pRangeTransition = pTransition;
+			m_rangeTransitionProgress = 0;
+
+			m_endDisplayFloor = floor;
+			m_endDisplayCeiling = ceiling;
+
+			m_startDisplayFloor = m_displayFloor;
+			m_startDisplayCeiling = m_displayCeiling;
+		}
+		else
+		{
+			_stopRangeTransition();
+
+			m_displayCeiling = ceiling;
+			m_displayFloor = floor;
+		}
 
 		_fullRefreshOfChart();
+		_repositionAllLabels();
 	}
+
+	//____ _stopRangeTransition() ________________________________________________
+
+	void Chart::_stopRangeTransition()
+	{
+		if( m_pRangeTransition )
+		{
+			_stopReceiveUpdates();
+			m_pRangeTransition = nullptr;
+			m_rangeTransitionProgress = 0;
+		}
+	}
+
 
 	//____ _update() __________________________________________________________
 
 	void Chart::_update(int microPassed, int64_t microsecTimestamp)
 	{
+		if( m_pRangeTransition )
+		{
+			int timestamp = m_rangeTransitionProgress + microPassed;
+
+			if (timestamp >= m_pRangeTransition->duration())
+			{
+				m_displayFloor = m_endDisplayFloor;
+				m_displayCeiling = m_endDisplayCeiling;
+				_stopRangeTransition();
+			}
+			else
+			{
+				m_rangeTransitionProgress = timestamp;
+				m_displayFloor = m_pRangeTransition->snapshot(timestamp, m_startDisplayFloor, m_endDisplayFloor);
+				m_displayCeiling = m_pRangeTransition->snapshot(timestamp, m_startDisplayCeiling, m_endDisplayCeiling);
+			}
+
+			_fullRefreshOfChart();
+			_repositionAllLabels();
+		}
+
 		glow._update(microPassed);
 	}
 

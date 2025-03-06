@@ -165,7 +165,7 @@ class Chart;
 
 		//.____ Appearance _______________________________________________
 
-		void	setDisplayRange(float ceiling, float floor);
+		void	setDisplayRange(float ceiling, float floor, ValueTransition * pTransition = nullptr );
 
 		float	displayCeiling() const { return m_displayCeiling;  }
 		float	displayFloor() const { return m_displayFloor; }
@@ -223,13 +223,14 @@ class Chart;
 		float			m_displayCeiling = 0.f;
 		float			m_displayFloor = 1.f;
 
-
 	private:
 
 		bool		_recalcChartCanvas();
 		void		_repositionAllLabels();
 		CoordSPX	_sideLabelOffset(GridLine* pLine);
 		CoordSPX	_topBottomLabelOffset(GridLine* pLine);
+
+		void		_stopRangeTransition();
 
 		SkinSlot		m_displaySkin;
 
@@ -250,6 +251,13 @@ class Chart;
 
 		Surface_p		m_pChartCanvas;
 
+		ValueTransition_p	m_pRangeTransition;
+		int					m_rangeTransitionProgress = 0;
+
+		float			m_startDisplayCeiling = 0.f;
+		float			m_endDisplayCeiling = 0.f;
+		float			m_startDisplayFloor = 1.f;
+		float			m_endDisplayFloor = 1.f;
 	};
 
 
