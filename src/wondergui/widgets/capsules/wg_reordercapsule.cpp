@@ -78,15 +78,28 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ isReordering() ________________________________________________________
+
+	bool ReorderCapsule::isReordering() const
+	{
+		return m_pickState != PickState::Unpicked;
+	}
+
+	//____ setTransition() _______________________________________________________
+
 	void ReorderCapsule::setTransition(ValueTransition* pTransition)
 	{
 		m_pTransition = pTransition;
 	}
 
+	//____ setTransitionDelay() __________________________________________________
+
 	void ReorderCapsule::setTransitionDelay(int microsec)
 	{
 		m_transitionDelay = microsec;
 	}
+
+	//____ setTransitionSkin() ___________________________________________________
 
 	void ReorderCapsule::setTransitionSkin(Skin* pSkin)
 	{
@@ -95,11 +108,8 @@ namespace wg
 			m_pTransitionSkin = pSkin;
 			m_pHoveredPosFiller->setSkin(pSkin);
 			m_pPrevPosFiller->setSkin(pSkin);
-
 		}
 	}
-
-
 
 	//____ _receive() ____________________________________________________________
 
@@ -137,6 +147,24 @@ namespace wg
 					pMsg->setContent(DropType::Widget, m_pickCategory, pDataset);
 					pMsg->setDragWidget(pWidget, offset );
 					pMsg->setHotspot(Placement::Center);
+
+					if( !m_bDragOutside )
+					{
+						Rect confinement = pPackPanel->globalGeo();
+
+						if( pPackPanel->axis() == Axis::X )
+						{
+							confinement.y += confinement.h/2;
+							confinement.h = 0;
+						}
+						else
+						{
+							confinement.x += confinement.w/2;
+							confinement.w = 0;
+						}
+
+						pMsg->setDragConfinement(confinement);
+					}
 
 					m_pPicked = pWidget;
 					m_bPickedFromMe = true;

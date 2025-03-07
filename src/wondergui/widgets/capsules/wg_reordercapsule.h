@@ -56,6 +56,7 @@ namespace wg
 			Object_p			baggage;
 			Widget_p			child;
 			bool				disabled		= false;
+			bool				dragOutside		= false;
 			bool				dropTarget		= true;
 			Finalizer_p			finalizer		= nullptr;
 			int					id				= 0;
@@ -87,6 +88,10 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ State __________________________________________________________
+
+		bool					isReordering() const;
+
 		//.____ Appearance ____________________________________________________
 
 		void					setTransition(ValueTransition* pTransition);
@@ -104,9 +109,10 @@ namespace wg
 
 		template<class BP> ReorderCapsule( const BP& bp ) : Capsule(bp)
 		{
-			m_pTransition = bp.transition;
-			m_transitionDelay = bp.transitionDelay;
-			m_pTransitionSkin = bp.transitionSkin;
+			m_pTransition 		= bp.transition;
+			m_transitionDelay	= bp.transitionDelay;
+			m_pTransitionSkin	= bp.transitionSkin;
+			m_bDragOutside		= bp.dragOutside;
 
 			_init();
 
@@ -124,6 +130,7 @@ namespace wg
 		void		_endTransition();
 
 		bool				m_bReceivingUpdates = false;
+		bool				m_bDragOutside = false;
 
 		ValueTransition_p	m_pTransition;
 		bool				m_bTransitioning = false;
@@ -150,14 +157,6 @@ namespace wg
 
 		Skin_p				m_pTransitionSkin;		//TODO: Use SkinSlots instead, one for transition in and one for transition out.
 													// Would allow for animated drop-points.
-
-		enum class TransitionState
-		{
-			Idle,
-			Leaving,
-			Entering,
-			Reordering,
-		};
 
 		enum class PickState
 		{

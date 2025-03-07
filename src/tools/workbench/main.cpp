@@ -788,7 +788,7 @@ int main(int argc, char** argv)
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-		//	reorderCapsuleTest(pSlot);
+			reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
 		//	labelCapsuleTest(pSlot);
 		//	elipsisTest(pSlot);
@@ -4459,7 +4459,7 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	//---- First container
 
 	{
-		auto pBucket1 = ReorderCapsule::create({ .skin = pBucketSkin, .usePickHandles = false });
+		auto pBucket1 = ReorderCapsule::create({ .dragOutside = true, .skin = pBucketSkin, .usePickHandles = false });
 
 //		pBucket1->setTransitionSkin(BoxSkin::create( {.spacing = 2} ) );
 
