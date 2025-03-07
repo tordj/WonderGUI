@@ -26,6 +26,7 @@
 #include <wg_capsule.h>
 #include <wg_transitions.h>
 #include <wg_filler.h>
+#include <wg_dataset.h>
 
 namespace wg
 {
@@ -38,6 +39,16 @@ namespace wg
 	class ReorderCapsule : public Capsule
 	{
 	public:
+
+		struct _dropdata{
+			Widget_p	pWidget;
+			float		weight;
+		};
+
+		typedef Dataset<_dropdata> DropData;
+
+
+	public:
 		//____ Blueprint __________________________________________
 
 		struct Blueprint
@@ -48,7 +59,7 @@ namespace wg
 			bool				dropTarget		= true;
 			Finalizer_p			finalizer		= nullptr;
 			int					id				= 0;
-			MarkPolicy			markPolicy		= MarkPolicy::AlphaTest;
+			MarkPolicy			markPolicy		= MarkPolicy::Geometry;			// Differs from widget default!
 			bool				pickable		= true;
 			uint8_t				pickCategory	= 0;
 			bool				pickHandle		= false;

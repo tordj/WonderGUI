@@ -39,6 +39,7 @@ namespace wg
 
 	CanvasCapsule::CanvasCapsule() : glow(this)
 	{
+		m_canvasSize = m_size;
 	}
 
 	//____ destructor _____________________________________________________________
@@ -604,8 +605,12 @@ namespace wg
 			return Capsule::_findWidget(ofs, mode);
 	}
 
-	void CanvasCapsule::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
+	void CanvasCapsule::_childRequestRender(StaticSlot* pSlot, const RectSPX& _rect)
 	{
+//		assert( RectSPX(m_canvasSize).contains(_rect));
+
+		auto rect = RectSPX::overlap(_rect,RectSPX(m_canvasSize));
+
 		m_patches.add(rect);
 
 		RectSPX dirt;

@@ -557,6 +557,8 @@ namespace wg
 
 			m_pDisplay->_requestFullRedraw();
 		}
+		else if( pTransition && pTransition == m_pColorTransition && fill == m_endFillColor && outline == m_endOutlineColor )
+			return false;	// We ignore re-setting of same transition. Return false since result will differ form request.
 
 		if (fill == m_fillColor && outline == m_outlineColor)
 			return true;
@@ -576,6 +578,9 @@ namespace wg
 		}
 		else
 		{
+			if( m_pColorTransition )
+				_endColorTransition();
+
 			m_fillColor = fill;
 			m_outlineColor = outline;
 
@@ -599,6 +604,9 @@ namespace wg
 
 		if (pTransition)
 		{
+			if( pTransition == m_pColorTransition && fill == m_endFillGradient && outline == m_endOutlineGradient )
+				return false;	// We ignore re-setting of same transition. Return false since result will differ form request.
+
 			m_pColorTransition = pTransition;
 			m_colorTransitionProgress = 0;
 
@@ -612,6 +620,9 @@ namespace wg
 		}
 		else
 		{
+			if( m_pColorTransition )
+				_endColorTransition();
+
 			m_fillGradient = fill;
 			m_outlineGradient = outline;
 

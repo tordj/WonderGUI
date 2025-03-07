@@ -173,6 +173,7 @@ namespace wg
 			"MouseRelease",
 			"MouseClick",
 			"MouseDoubleClick",
+			"MouseTripleClick",
 			"KeyPress",
 			"KeyRepeat",
 			"KeyRelease",
@@ -219,6 +220,7 @@ namespace wg
 			"PianoKeyRelease",
 			"Activate",
 			"Deactivate",
+			"Ping",
 			"Custom" };
 
 		return names[(int)i];

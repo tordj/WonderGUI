@@ -710,7 +710,7 @@ namespace wg
 		}
 		
 		Panel::_resize(size, scale);
-		_refreshChildGeo(true);			// Needs to requestRender() if size was not changed.
+		_refreshChildGeo(false);
 
 		if (slots.isEmpty())
 			_refreshOverflow();

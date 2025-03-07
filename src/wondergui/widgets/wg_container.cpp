@@ -444,6 +444,21 @@ namespace wg
 		}
 	}
 
+	//____ _resize() __________________________________________________________
+
+	void Container::_resize(const SizeSPX& size, int scale)
+	{
+		int oldScale = m_scale;
+
+		Widget::_resize(size, scale);
+
+		// This is not optimal. Overflow might be refreshed twice. Once now
+		// and once later when subclass goes through its children.
+
+		if( scale != oldScale && m_skin.overflowsGeo() )
+			_refreshOverflow();
+	}
+
 	//____ _calcOverflow() ____________________________________________________
 
 	BorderSPX Container::_calcOverflow()

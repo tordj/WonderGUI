@@ -158,8 +158,10 @@ namespace wg
 				//TODO: Doesn't check if we stay on link during whole click.
 				if( m_pMarkedLink )
 				{
-					MouseButton button = static_cast<MouseClickMsg*>(pMsg)->button();
-					Base::msgRouter()->post( MouseClickMsg::create(pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
+					auto pClickMsg = static_cast<MouseClickMsg*>(pMsg);
+
+					MouseButton button = pClickMsg->button();
+					Base::msgRouter()->post( MouseClickMsg::create(pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp(), pClickMsg->duration(), pClickMsg->ordinal() ) );
 
 					if( button == MouseButton::Left )
 					{

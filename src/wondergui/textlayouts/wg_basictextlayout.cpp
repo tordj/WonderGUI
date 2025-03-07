@@ -47,9 +47,10 @@ namespace wg
 		m_selectionBackColor	= bp.selectionBackColor;
 		m_selectionCharBlend	= bp.selectionCharBlend;
 		m_selectionCharColor	= bp.selectionCharColor;
-		
+
 		m_softLineSpacing		= bp.lineSpacing;
 		m_hardLineSpacing		= bp.lineSpacing + bp.paragraphSpacing;
+        m_bAutoElipsis          = bp.autoEllipsis;
 
 		m_bLineWrap				= bp.wrap;
 
@@ -103,7 +104,7 @@ namespace wg
 			{
 				Base::_stopReceiveUpdates(this);
 				m_bReceivingUpdates = false;
-			}			
+			}
 		}
 	}
 
@@ -324,7 +325,7 @@ namespace wg
 	void BasicTextLayout::_update(int microPassed, int64_t microsecTimestamp)
 	{
 		if( _caretVisible(m_pFocusedText) )
-		{				
+		{
 			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 			if( pCaret )
 			{
@@ -365,12 +366,37 @@ namespace wg
 
 		BlendMode renderMode = pDevice->blendMode();
 
+
 		// Limit our cliplist if needed
 
 		ClipPopData popData;
 		if (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h)
 			popData = limitClipList(pDevice, canvas);
 
+		Glyph	ellipsisGlyph;
+		int		ellipsisLength;
+		bool 	bNeedsEllipsis = false;
+
+		if(m_bAutoElipsis && (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h) && !_caretVisible(pText) )
+		{
+			bNeedsEllipsis = true;
+
+			// Get glyph bitmap and length based on baseAttr.
+
+			pFont = baseAttr.pFont;
+			pFont->setSize(baseAttr.size);
+
+			if( pFont->hasGlyph(c_ellipsisCode) )
+			{
+				_getGlyphWithBitmap( pFont.rawPtr(), c_ellipsisCode, ellipsisGlyph);
+				ellipsisLength = ellipsisGlyph.advance;
+			}
+			else
+			{
+				_getGlyphWithBitmap( pFont.rawPtr(), '.', ellipsisGlyph);
+				ellipsisLength = ellipsisGlyph.advance * 3;
+			}
+		}
 
 		// Render back colors
 
@@ -417,10 +443,36 @@ namespace wg
 				Glyph* pGlyph		= &glyph[0];
 				Glyph* pPrevGlyph	= &glyph[1];
 
+				bool bLineHasEllipsis = false;
+				if( bNeedsEllipsis )
+				{
+					if( pLineInfo->width > canvas.w )
+						bLineHasEllipsis = true;
+					else if( m_bLineWrap )
+					{
+						if( i+1 < pHeader->nbLines && lineStart.y + pLineInfo->spacing + pLineInfo[1].height > clip.y + clip.h )
+						{
+							bLineHasEllipsis = true;
+
+							// With lineWrap we readjust text for line that gets ellipsis since that might make it all fit.
+
+							lineStart.x = std::max( canvas.x, canvas.x + _linePosX( pLineInfo, canvas.w - ellipsisLength ));
+						}
+						else if( lineStart.y + pLineInfo->spacing + pLineInfo->height > clip.y + clip.h )
+						{
+							// Prevent partially displayed line from being displayed.
+							// We might get here if previous line with ellipsis is skipped due to clipping.
+
+							break;
+						}
+					}
+				}
+
 				CoordSPX pos = lineStart;
 				pos.y += pLineInfo->base;
 
-				bool bRecalcColor = false;
+				bool 	bRecalcColor = false;
+				spx		ellipsisX = pos.x;
 
 				for( int x = 0 ; x < pLineInfo->length ; x++ )
 				{
@@ -484,11 +536,16 @@ namespace wg
 
 					if( pGlyph->advance > 0 )
 					{
+						if( bLineHasEllipsis && (pos.x - canvas.x) + pGlyph->advance + ellipsisLength > canvas.w )
+							break;
+
 						pos.x += pFont->kerning(*pPrevGlyph, *pGlyph);
 
 						pDevice->setBlitSource(pGlyph->pSurface);
 						pDevice->blit( CoordSPX(pos.x + pGlyph->bearingX, pos.y + pGlyph->bearingY), pGlyph->rect  );
+
 						pos.x += pGlyph->advance;
+						ellipsisX = pos.x;
 					}
 					else if( pChar->code() == 32 )
 						pos.x += pFont->whitespaceAdvance();
@@ -496,6 +553,39 @@ namespace wg
 					std::swap(pPrevGlyph, pGlyph);
 					pChar++;
 				}
+
+				//
+
+				if( bLineHasEllipsis )
+				{
+					// Do kerning if font and size is same as for ellipsis.
+
+					if( baseAttr.pFont == attr.pFont && baseAttr.size == attr.size )
+						pos.x += pFont->kerning(*pPrevGlyph, ellipsisGlyph);
+
+					// Blit ellipsis.
+
+					pDevice->setBlitSource(ellipsisGlyph.pSurface);
+
+					if( pFont->hasGlyph(c_ellipsisCode) )
+					{
+						pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
+					}
+					else
+					{
+						pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
+						ellipsisX += ellipsisGlyph.advance;
+						pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
+						ellipsisX += ellipsisGlyph.advance;
+						pDevice->blit( CoordSPX(ellipsisX + ellipsisGlyph.bearingX, pos.y + ellipsisGlyph.bearingY), ellipsisGlyph.rect  );
+					}
+
+					// In linewrap mode we need to prevent us from drawing an extra half-hidden line below our ellipsis
+
+					if( m_bLineWrap )
+						break;
+				}
+
 			}
 
 			lineStart.y += pLineInfo->spacing;
@@ -508,7 +598,7 @@ namespace wg
 		// Render caret (if there is any)
 
 		if( _caretVisible(pText) )
-		{			
+		{
 			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 
 			if( pCaret )
@@ -588,7 +678,7 @@ namespace wg
 		{
 			LineInfo * pLine = pBegLine;
 			spx		yPos = canvas.y + begPos.y -pLine->base;
-			
+
 			RectSPX area;
 			area.x = canvas.x + begPos.x;
 			area.y = yPos;
@@ -654,11 +744,11 @@ namespace wg
 		int newEnd = std::max(selectOfs,caretOfs);
 
 		// Two cases here, either new and old selection overlaps or they are completely disjointed
-		
+
 		if( (newBeg < oldBeg && newEnd > oldBeg) || (newBeg > oldBeg && oldEnd > newBeg) )
 		{
 			//  Selection is overlapping, we just need to modify it at the edges
-			
+
 			if( oldBeg != newBeg )
 			{
 				int beg = std::min(oldBeg,newBeg);
@@ -673,21 +763,21 @@ namespace wg
 				int len = std::max(oldEnd,newEnd) - beg;
 
 				_setTextDirty( pText, rectForRange( pText, beg, len ) );
-			}			
+			}
 		}
 		else
 		{
 			// Selection is not overlapping, we have two dirty areas
-			
+
 			if( oldEnd != oldBeg )
 				_setTextDirty( pText, rectForRange( pText, oldBeg, oldEnd - oldBeg ));
 			if( newEnd != oldEnd > 0 )
 				_setTextDirty( pText, rectForRange( pText, newBeg, newEnd - newBeg ));
 		}
-		
+
 		// Update/redraw the caret
-		
-		caretMove( pText, caretOfs, oldCaretOfs );		
+
+		caretMove( pText, caretOfs, oldCaretOfs );
 	}
 
 	//____ onTextModified() ____________________________________________________
@@ -735,11 +825,11 @@ namespace wg
 				}
 			}
 		}
-		
+
 		// Check if we might need to requestRender because of state change.
-		
+
 		//TODO: Optimize: Go through and check all char styles to see if we need to setTextDirty.
-		
+
 		auto bHasCharStyles = _header(_dataBlock(pText))->hasCharStyles;
 
 		if( bHasCharStyles || !_baseStyle(pText)->isStateIdentical(newState, oldState) )
@@ -824,11 +914,11 @@ namespace wg
 			const LineInfo * pLine = pBegLine;
 
 			spx yPos = begPos.y - pLine->base;
-			
+
 			x1 = begPos.x;
 			y1 = yPos;
 			x2 = pLine->width + _linePosX(pLine, canvas.w);
-			
+
 			yPos += pLine->spacing;
 
 			pLine++;
@@ -873,7 +963,7 @@ namespace wg
 
 		return pCaret->dirtyRect( charRect(pText, _caretOfs(pText) ), _scale(pText) );
 	}
-	
+
 	//____ rectForCaretWithMargin() ______________________________________________
 
 	RectSPX BasicTextLayout::rectForCaretWithMargin( const TextItem * pText, int whitespacesBeforeAfter ) const
@@ -883,17 +973,17 @@ namespace wg
 			return RectSPX();
 
 		RectSPX cursorRect = pCaret->dirtyRect( charRect(pText, _caretOfs(pText) ), _scale(pText) );
-		
+
 		TextAttr		baseAttr;
 		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr, _scale(pText) );
 
 		baseAttr.pFont->setSize(baseAttr.size);
-		
+
 		spx whitespace = baseAttr.pFont->whitespaceAdvance();
-		
+
 		cursorRect.x -= whitespace * whitespacesBeforeAfter;
 		cursorRect.w += whitespace * whitespacesBeforeAfter*2;
-		
+
 		spx maxLength = _size(pText).w;
 
 		limit( cursorRect.x, 0, maxLength );
@@ -1465,7 +1555,7 @@ namespace wg
 		SizeSPX textSize;
 
 		int scale = _scale(pText);
-		
+
 		if (m_bLineWrap)
 		{
 			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update defaultSize.
@@ -1761,7 +1851,7 @@ namespace wg
 		pLines->offset = int(pChars - pTextStart);
 
 		attr.size = -1;								// Prevent reading uninitialized value further down.
-		
+
 		while( true )
 		{
 			if( pChars->styleHandle() != hCharStyle )
@@ -1874,8 +1964,8 @@ namespace wg
 			else
 				pChars++;
 		}
-		
-		
+
+
 		return alignUp(size);
 	}
 

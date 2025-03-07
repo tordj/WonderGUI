@@ -121,6 +121,8 @@ namespace wg
 
 		void			_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
+		spx				_editorWidth() const;
+
 	private:
 
 		spx				m_textScrollOfs;

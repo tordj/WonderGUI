@@ -221,6 +221,7 @@ namespace wg
 		MouseRelease,
 		MouseClick,
 		MouseDoubleClick,
+		MouseTripleClick,
 
 		KeyPress,
 		KeyRepeat,
@@ -294,7 +295,9 @@ namespace wg
 		
 		Activate,
 		Deactivate,
-		Custom
+		Ping,
+
+		Custom,
 
 	};
 

@@ -254,8 +254,12 @@ namespace wg
 				break;
 			}
 			case MsgType::MouseClick:
-				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(static_cast<MouseClickMsg*>(_pMsg)->button()).c_str() );
+			{
+				MouseClickMsg_p pMsg = static_cast<MouseClickMsg*>(_pMsg);
+
+				snprintf( params, c_paramLen, " button=%s duration=%d ordinal=%d", _formatMouseButton(pMsg->button()).c_str(), pMsg->duration(), pMsg->ordinal() );
 				break;
+			}
 			case MsgType::MouseDoubleClick:
 				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(static_cast<MouseDoubleClickMsg*>(_pMsg)->button()).c_str() );
 				break;

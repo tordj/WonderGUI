@@ -49,6 +49,9 @@ public:
 	void	SetPreferredPointSize( const WgSize& size );
 	WgSize	PreferredPixelSize() const override;
 
+	void	SetSkinValue( float value );
+	float	SkinValue() const { return m_skinValue; }
+
 protected:
 
 	bool	_isColorChanged( WgMode newMode ) const;
@@ -64,6 +67,8 @@ private:
 	WgColorsetPtr	m_pColors;
 	WgSize			m_defaultSize;
 	WgMode			m_mode;
+
+	float			m_skinValue = 1.f;			// Range 0.f -> 1.f. Used for meter-skins.
 
 };
 

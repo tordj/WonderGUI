@@ -165,6 +165,7 @@ bool fillerTransitionTest(ComponentPtr<DynamicSlot> pEntry);
 bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 bool widgetMoveTest(ComponentPtr<DynamicSlot> pEntry);
 bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
+bool elipsisTest(ComponentPtr<DynamicSlot> pEntry);
 
 
 void nisBlendTest();
@@ -778,7 +779,7 @@ int main(int argc, char** argv)
 		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-		//  scrollChartTest(pSlot);
+			scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
 		//	packPanelStressTest(pSlot);
 		//	packPanelStressTest2(pSlot);
@@ -787,9 +788,10 @@ int main(int argc, char** argv)
 		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-			reorderCapsuleTest(pSlot);
+		//	reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
 		//	labelCapsuleTest(pSlot);
+		//	elipsisTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -3161,7 +3163,7 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 	pGraph->entries.pushBack({
 		.bottomOutlineThickness = 0,
 		.color = Color::Transparent,
-		.flip = GfxFlip::Rot270,
+		/*.flip = GfxFlip::Rot270,*/
 		.outlineColor = Color::Red,
 		.topOutlineThickness = 5,
 		});
@@ -3247,8 +3249,31 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 		entry.setOutlineThickness(top, 0.f);
 	});
 
-
 	pFlex->slots.pushBack(pButton2, { .pos = {205, 220 } });
+
+	//---
+
+	auto pButton3 = Button::create({ .label = {.text = "RESIZE RANGE"}, .skin = pButtonSkin });
+
+	Base::msgRouter()->addRoute(pButton3, MsgType::Select, [pGraph](Msg* pMsg)
+	{
+		static bool bExpanded = false;
+
+		if( bExpanded )
+		{
+			pGraph->setDisplayRange(0.5f, -0.5f, ValueTransition::create( 400000 ) );
+			bExpanded = false;
+		}
+		else
+		{
+			pGraph->setDisplayRange(0.3f, -0.3f, ValueTransition::create( 400000 ) );
+			bExpanded = true;
+		}
+	});
+
+
+
+	pFlex->slots.pushBack(pButton3, { .pos = {105, 250 } });
 	return true;
 }
 
@@ -3913,8 +3938,27 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 
 	Base::msgRouter()->addRoute(pButtonSpeedUp, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->setDisplayTime(pScrollChart->displayTime()-500000); });
 
+	//---
 
+	auto pButtonRange = Button::create({ .label = {.text = "RANGE"}, .skin = pButtonSkin });
 
+	Base::msgRouter()->addRoute(pButtonRange, MsgType::Select, [pScrollChart](Msg* pMsg)
+	{
+		static bool bExpanded = false;
+
+		if( bExpanded )
+		{
+			pScrollChart->setDisplayRange(2.f, 0.f, ValueTransition::create( 400000 ) );
+			bExpanded = false;
+		}
+		else
+		{
+			pScrollChart->setDisplayRange(1.f, 0.f, ValueTransition::create( 400000 ) );
+			bExpanded = true;
+		}
+	});
+
+	pBaseLayer->slots.pushBack(pButtonRange, { .origo = Placement::SouthWest, .pos = {5 + 500,-5} });
 
 	
 	return true;
@@ -4509,7 +4553,7 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 			pMe->slot = Filler::create({ .defaultSize = {100,50}, .skin = ColorSkin::create( wheel[colorOfs++]) });
 
-			auto pDataset = Dataset<Widget_p>::create(pWidget);
+			auto pDataset = ReorderCapsule::DropData::create({pWidget,0.f});
 			pMsg->setContent(DropType::Widget, 0, pDataset);
 			pMsg->setDragWidget(pWidget, -pMsg->pickOfs());
 			pMsg->setHotspot(Placement::Center);
@@ -4577,3 +4621,27 @@ bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 }
 
+bool elipsisTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::Honeydew));
+
+	auto pTextLayout = BasicTextLayout::create({ .autoEllipsis = true });
+	auto pTextLayout2 = BasicTextLayout::create({ .autoEllipsis = true, .wrap = true });
+
+	auto pEditorSkin = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Black, .padding = 2 });
+
+	auto pLineEditor = LineEditor::create( { .skin = pEditorSkin, .editor = { .layout = pTextLayout } });
+
+	auto pTextEditor = TextEditor::create( { .skin = pEditorSkin, .editor = { .layout = pTextLayout } });
+
+	auto pTextEditor2 = TextEditor::create( { .skin = pEditorSkin, .editor = { .layout = pTextLayout2 } });
+
+
+	pBaseLayer->slots.pushBack(pLineEditor);
+	pBaseLayer->slots.pushBack(pTextEditor, { .pos = {10,50}, .size = {200,50}});
+	pBaseLayer->slots.pushBack(pTextEditor2, { .pos = {10,300}, .size = {200,60}});
+	*pEntry = pBaseLayer;
+	return true;
+
+}

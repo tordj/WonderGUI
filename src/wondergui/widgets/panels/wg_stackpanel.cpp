@@ -54,7 +54,7 @@ namespace wg
 		if (policy != m_sizePolicy)
 		{
 			m_sizePolicy = policy;
-			static_cast<StackPanel*>(DynamicSlot::_holder())->_updateChildGeo(this,this+1);
+			static_cast<StackPanel*>(DynamicSlot::_holder())->_updateChildGeo(this,this+1, true);
 		}
 	}
 
@@ -65,7 +65,7 @@ namespace wg
 		if (placement != m_placement)
 		{
 			m_placement = placement;
-			static_cast<StackPanel*>(DynamicSlot::_holder())->_updateChildGeo(this, this + 1);
+			static_cast<StackPanel*>(DynamicSlot::_holder())->_updateChildGeo(this, this + 1, true);
 		}
 	}
 
@@ -294,7 +294,7 @@ namespace wg
 		//TODO: Optimize. If size is same then we only need to update those that have requested resize.
 
 		Panel::_resize(size,scale);
-		_updateChildGeo(slots.begin(),slots.end());
+		_updateChildGeo(slots.begin(),slots.end(), false);
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -392,7 +392,7 @@ namespace wg
 		for (int i = 0; i < nb; i++)
 			pSlot[i].m_margin	= padding;
 
-		_updateChildGeo(pSlot,pSlot+nb);
+		_updateChildGeo(pSlot,pSlot+nb, true);
 		_refreshOverflow();
 
 		SizeSPX newDefault =_calcDefaultSize(m_scale);
@@ -407,7 +407,7 @@ namespace wg
 		for (int i = 0; i < nb; i++)
 			pSlot[i].m_margin	= *pPaddings++;
 
-		_updateChildGeo(pSlot,pSlot+nb);
+		_updateChildGeo(pSlot,pSlot+nb, true);
 		_refreshOverflow();
 
 		SizeSPX newDefault = _calcDefaultSize(m_scale);
@@ -654,7 +654,7 @@ namespace wg
 
 	//____ _updateChildGeo() ___________________________________________________________
 
-	void StackPanel::_updateChildGeo(StackPanelSlot* pSlot, StackPanelSlot* pEnd)
+	void StackPanel::_updateChildGeo(StackPanelSlot* pSlot, StackPanelSlot* pEnd, bool bRender)
 	{
 		while( pSlot != pEnd )
 		{
@@ -664,13 +664,13 @@ namespace wg
 			{
 				auto pWidget = pSlot->_widget();
 
-				if (pSlot->m_bVisible)
+				if (bRender && pSlot->m_bVisible)
 					_requestRender(pSlot->m_geo + pWidget->_overflow() );
 
 				pSlot->m_geo = newGeo;
  				pSlot->_setSize(newGeo.size(), m_scale);
 
-				if (pSlot->m_bVisible)
+				if (bRender && pSlot->m_bVisible)
 					_requestRender(pSlot->m_geo + pWidget->_overflow() );
 
 				pSlot->m_bResizeRequired = false;

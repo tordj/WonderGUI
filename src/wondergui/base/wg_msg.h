@@ -113,6 +113,10 @@ namespace wg
 	typedef	StrongPtr<MouseDoubleClickMsg>		MouseDoubleClickMsg_p;
 	typedef	WeakPtr<MouseDoubleClickMsg>	MouseDoubleClickMsg_wp;
 
+	class MouseTripleClickMsg;
+	typedef	StrongPtr<MouseTripleClickMsg>	MouseTripleClickMsg_p;
+	typedef	WeakPtr<MouseTripleClickMsg>	MouseTripleClickMsg_wp;
+
 	class MouseDragMsg;
 	typedef	StrongPtr<MouseDragMsg>		MouseDragMsg_p;
 	typedef	WeakPtr<MouseDragMsg>	MouseDragMsg_wp;
@@ -265,6 +269,10 @@ namespace wg
 	class DeactivateMsg;
 	typedef	StrongPtr<DeactivateMsg>	DeactivateMsg_p;
 	typedef	WeakPtr<DeactivateMsg>		DeactivateMsg_wp;
+
+	class PingMsg;
+	typedef	StrongPtr<PingMsg>			PingMsg_p;
+	typedef	WeakPtr<PingMsg>			PingMsg_wp;
 
 
 	//____ Msg _________________________________________________________________
@@ -1467,6 +1475,25 @@ public:
 			DeactivateMsg( Object * pSource );
 	};
 
+	//____ UpdateMsg _____________________________________________________
+
+	class PingMsg : public Msg
+	{
+	public:
+		//.____ Creation __________________________________________
+
+		static PingMsg_p	create( Object * pSource ) { return new PingMsg(pSource); }
+
+		//.____ Identification __________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+	protected:
+			PingMsg( Object * pSource );
+	};
+
+
 	//____ Internally posted messages ____________________________________________
 
 	class MouseDragMsg : public MouseButtonMsg
@@ -1532,16 +1559,24 @@ public:
 	public:
 		//.____ Creation __________________________________________
 
-		inline static MouseClickMsg_p create(char inputId, MouseButton button, Object * pSource, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp)
-									{ return new MouseClickMsg(inputId, button, pSource, modKeys, pointerPos, pointerPosSPX, timestamp); }
+		inline static MouseClickMsg_p create(char inputId, MouseButton button, Object * pSource, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp, int duration, int ordinal )
+									{ return new MouseClickMsg(inputId, button, pSource, modKeys, pointerPos, pointerPosSPX, timestamp, duration, ordinal); }
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Content ______________________________________________
+
+		int		duration() const { return m_duration; }
+		int		ordinal() const { return m_ordinal; }
+
 	protected:
-		MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp );
+		MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp, int duration, int ordinal );
+
+		int		m_duration;
+		int		m_ordinal;
 	};
 
 	class MouseDoubleClickMsg : public MouseButtonMsg
@@ -1560,6 +1595,24 @@ public:
 	protected:
 		MouseDoubleClickMsg( char inputId, MouseButton button, Object * pWidget, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp );
 	};
+
+	class MouseTripleClickMsg : public MouseButtonMsg
+	{
+	public:
+		//.____ Creation __________________________________________
+
+		inline static MouseTripleClickMsg_p create(char inputId, MouseButton button, Object * pSource, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp)
+					{ return new MouseTripleClickMsg(inputId, button, pSource, modKeys, pointerPos, pointerPosSPX, timestamp); }
+
+		//.____ Identification __________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+	protected:
+		MouseTripleClickMsg( char inputId, MouseButton button, Object * pWidget, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp );
+	};
+
 
 	class KeyRepeatMsg : public KeyMsg
 	{

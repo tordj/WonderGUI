@@ -25,6 +25,7 @@
 #include <wg_colorskin.h>
 #include <wg_dataset.h>
 #include <wg_packpanel.h>
+#include <wg_msgrouter.h>
 
 namespace wg
 {
@@ -49,6 +50,7 @@ namespace wg
 	ReorderCapsule::ReorderCapsule()
 	{
 		m_bPickable = true;
+		m_markPolicy = MarkPolicy::Geometry;
 		_init();
 	}
 
@@ -126,9 +128,12 @@ namespace wg
 
 				if( pWidget && pWidget != this )
 				{
+					auto pPackPanel = static_cast<PackPanel*>(pContainer);
+					auto pFound = pPackPanel->slots.find(pWidget);
+
 					Coord offset = -(pMsg->pointerPos() - pWidget->globalGeo().pos());
 
-					auto pDataset = Dataset<Widget_p>::create(pWidget);
+					auto pDataset = ReorderCapsule::DropData::create({pWidget,pFound->weight()});
 					pMsg->setContent(DropType::Widget, m_pickCategory, pDataset);
 					pMsg->setDragWidget(pWidget, offset );
 					pMsg->setHotspot(Placement::Center);
@@ -136,14 +141,17 @@ namespace wg
 					m_pPicked = pWidget;
 					m_bPickedFromMe = true;
 
-					auto pPackPanel = static_cast<PackPanel*>(pContainer);
-					m_pickedPos = int(pPackPanel->slots.find(pWidget) - pPackPanel->slots.begin());
+
+
+					m_pickedPos = int( pFound - pPackPanel->slots.begin());
+					m_pickedWeight = pFound->weight();
 
 					m_markedPos = m_pickedPos;
 					m_hoveredPos = m_pickedPos;
 
 					m_pHoveredPosFiller->setDefaultSize(pWidget->defaultSize() );
 					static_cast<DynamicSlot*>(pWidget->_slot())->setWidget(m_pHoveredPosFiller);
+
 
 					m_transitionProgress = m_pTransition->duration();
 
@@ -201,8 +209,9 @@ namespace wg
 
 					if( !m_bPickedFromMe )
 					{
-						auto pCasted = wg_dynamic_cast<StrongPtr<Dataset<Widget_p>>>(pMsg->dataset());
-						m_pPicked = pCasted->data;
+						auto pCasted = wg_dynamic_cast<StrongPtr<DropData>>(pMsg->dataset());
+						m_pPicked = pCasted->data.pWidget;
+						m_pickedWeight = pCasted->data.weight;
 
 						if( m_pickState == PickState::Finishing )
 						{
@@ -404,8 +413,10 @@ namespace wg
 
 				if( m_dropPos >= 0 )
 				{
-					pPackPanel->slots.insert(m_dropPos, m_pPicked);
+					pPackPanel->slots.insert(m_dropPos, m_pPicked)->setWeight(m_pickedWeight);
 					m_dropPos = -1;
+
+					Base::msgRouter()->post(PingMsg::create(this));	//TODO: Should not send this message if we just canceled.
 				}
 
 
@@ -497,7 +508,7 @@ namespace wg
 			 
 			m_pHoveredPosFiller->setDefaultSize(startSize);
 
-			pPackPanel->slots.insert(pos, m_pHoveredPosFiller);
+			pPackPanel->slots.insert(pos, m_pHoveredPosFiller)->setWeight(m_pickedWeight);
 		}
 
 		m_transitionProgress = 0;

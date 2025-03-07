@@ -272,20 +272,23 @@ namespace wg
 
 		// Update geometry if it has changed.
 
-		if (pSlot->_geo().size() != geo.size())
+		if (pSlot->_geo().size() != geo.size() || pSlot->_widget()->scale() != m_scale )
 			bDoResize = true;
+
 
 		if (geo != pSlot->m_geo)
 		{
 			BorderSPX overflow = pSlot->_widget()->_overflow();
 
-			_onRequestRender(pSlot->m_geo + overflow, pSlot);
+			if( !pSlot->m_geo.isEmpty() )
+				_onRequestRender(pSlot->m_geo + overflow, pSlot);
 			pSlot->m_geo = geo;
 			_onRequestRender(pSlot->m_geo + overflow, pSlot);
 		}
 
 		if (bDoResize)
 			pSlot->_setSize(geo, m_scale);
+
 	}
 
 	//____ _refreshStayEnteredList() _____________________________________________
@@ -618,7 +621,7 @@ namespace wg
 						{
 							popup.m_state = popup.m_bPeek ? Slot::State::PeekOpen : Slot::State::FixedOpen;
 							popup.m_stateCounter = 0;
-							_requestRender( popup.m_geo );
+							_requestRender( popup._widget()->_renderBounds() + popup.m_geo.pos() );
 						}
 						else if (popup.m_geo.contains(pointerPos))
 						{
@@ -659,7 +662,7 @@ namespace wg
 							Slot * p = &popup;
 							while (p != popupSlots._end() && p->m_state == Slot::State::Closing)
 							{
-								_requestRender(p->m_geo);
+								_requestRender(p->_widget()->_renderBounds() + p->m_geo.pos());
 								p->m_state = Slot::State::WeakOpen;
 								p->m_stateCounter = 0;
 								p++;
@@ -888,7 +891,7 @@ namespace wg
 				}
 			case Slot::State::Opening:
 				popup.m_stateCounter += ms;
-				_requestRender(popup.m_geo);
+				_requestRender(popup._widget()->_renderBounds() + popup.m_geo.pos());
 				if (popup.m_stateCounter >= m_openingFadeMs)
 				{
 					popup.m_stateCounter = 0;
@@ -910,7 +913,7 @@ namespace wg
 				}
 			case Slot::State::Closing:
 				popup.m_stateCounter += ms;
-				_requestRender(popup.m_geo);
+				_requestRender(popup._widget()->_renderBounds() + popup.m_geo.pos());
 				// Removing any closed popups is done in next loop
 				break;
 			default:

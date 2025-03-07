@@ -96,6 +96,7 @@ namespace wg
 	{
 		if( m_type == MsgType::MouseClick ||
 			m_type == MsgType::MouseDoubleClick ||
+			m_type == MsgType::MouseTripleClick ||
 			m_type == MsgType::MouseDrag ||
 			m_type == MsgType::MousePress ||
 			m_type == MsgType::MouseRelease ||
@@ -305,10 +306,12 @@ namespace wg
 
 	const TypeInfo MouseClickMsg::TYPEINFO = { "MouseClickMsg", &MouseButtonMsg::TYPEINFO };
 
-	MouseClickMsg::MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,pointerPosSPX,timestamp)
+	MouseClickMsg::MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp, int duration, int ordinal ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,pointerPosSPX,timestamp)
 	{
 		m_type = MsgType::MouseClick;
 		m_pSource		= pSource;
+		m_duration		= duration;
+		m_ordinal		= ordinal;
 	}
 
 	const TypeInfo& MouseClickMsg::typeInfo(void) const
@@ -327,6 +330,21 @@ namespace wg
 	}
 
 	const TypeInfo& MouseDoubleClickMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	//____ MouseTripleClickMsg _____________________________________________________
+
+	const TypeInfo MouseTripleClickMsg::TYPEINFO = { "MouseTripleClickMsg", &MouseButtonMsg::TYPEINFO };
+
+	MouseTripleClickMsg::MouseTripleClickMsg( char inputId, MouseButton button, Object * pSource, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,pointerPosSPX,timestamp)
+	{
+		m_type = MsgType::MouseTripleClick;
+		m_pSource		= pSource;
+	}
+
+	const TypeInfo& MouseTripleClickMsg::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
@@ -1210,6 +1228,21 @@ namespace wg
 	}
 
 	const TypeInfo& DeactivateMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	//____ PingMsg ___________________________________________________
+
+	const TypeInfo PingMsg::TYPEINFO = { "PingMsg", &Msg::TYPEINFO };
+
+	PingMsg::PingMsg(Object * pSource )
+	{
+		m_type = MsgType::Ping;
+		m_pSource = pSource;
+	}
+
+	const TypeInfo& PingMsg::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}

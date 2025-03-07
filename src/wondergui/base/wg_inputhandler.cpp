@@ -54,6 +54,7 @@ namespace wg
 		{
 			m_bButtonPressed[i] = false;
 			m_latestPressTimestamps[i] = 0;
+			m_pressOrdinal[i] = 0;
 		}
 	}
 
@@ -495,7 +496,7 @@ namespace wg
 
 		// Handle possible double-click
 
-		bool doubleClick = false;
+		int newPressCount = 0;		// Revert back to zero unless conditions below are fullfilled.
 
 		if( m_latestPressTimestamps[(int)button] + m_doubleClickTimeTreshold > timestamp )
 		{
@@ -506,25 +507,51 @@ namespace wg
 				distance.y <= m_doubleClickDistanceTreshold &&
 				distance.y >= -m_doubleClickDistanceTreshold )
 				{
-					if (pWidget && pWidget == m_latestPressWidgets[(int)button].rawPtr())
-					{
-						auto p = MouseDoubleClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
-						p->setCopyTo(pWidget);
-						Base::msgRouter()->post(p);
-					}
-					else
-						Base::msgRouter()->post(MouseDoubleClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
 
-					doubleClick = true;
+					switch(m_pressOrdinal[(int)button])
+					{
+						case 0:
+						{
+							if (pWidget && pWidget == m_latestPressWidgets[(int)button].rawPtr())
+							{
+								auto p = MouseDoubleClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
+								p->setCopyTo(pWidget);
+								Base::msgRouter()->post(p);
+							}
+							else
+								Base::msgRouter()->post(MouseDoubleClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
+							break;
+						}
+
+						case 1:
+						{
+							if (pWidget && pWidget == m_latestPressWidgets[(int)button].rawPtr())
+							{
+								auto p = MouseTripleClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
+								p->setCopyTo(pWidget);
+								Base::msgRouter()->post(p);
+							}
+							else
+								Base::msgRouter()->post(MouseTripleClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
+							break;
+						}
+
+						default:
+							break;
+					}
+
+					newPressCount = m_pressOrdinal[(int)button] + 1;
 				}
 		}
+
 
 		// Save info for the future
 
 		m_latestPressWidgets[(int)button]		= pWidget;
 		m_latestPressTimestamps[(int)button]	= timestamp;
 		m_latestPressPosition[(int)button]		= m_pointerPos;
-		m_latestPressDoubleClick[(int)button]	= doubleClick;
+		m_pressOrdinal[(int)button] 				= newPressCount;
+
 	}
 
 
@@ -548,17 +575,14 @@ namespace wg
 
 		// Post click event, regardless of whether press resulted in a double click.
 
-		if( m_bButtonPressed[(int)button] )
+		if (bIsInside)
 		{
-			if (bIsInside)
-			{
-				auto p = MouseClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
-				p->setCopyTo(pWidget);
-				Base::msgRouter()->post(p);
-			}
-			else
-				Base::msgRouter()->post(MouseClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
+			auto p = MouseClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp, timestamp - m_latestPressTimestamps[(int)button], m_pressOrdinal[int(button)]);
+			p->setCopyTo(pWidget);
+			Base::msgRouter()->post(p);
 		}
+		else
+			Base::msgRouter()->post(MouseClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp, timestamp - m_latestPressTimestamps[(int)button], m_pressOrdinal[int(button)]));
 	}
 
 
