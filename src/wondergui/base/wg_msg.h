@@ -702,6 +702,10 @@ namespace wg
 		Widget_p            dragWidget() const;
 		Coord				dragWidgetPointerOfs() const;
 
+		void				setDragConfinement( Rect geo) { m_dragConfinement = geo; }
+		bool				hasDragConfinement() const { return !m_dragConfinement.isEmpty(); }
+		Rect				dragConfinement() const { return m_dragConfinement; }
+
 		bool				hasDataset() const;
 		BasicDataset_p		dataset() const;
 		int                 category() const { return m_category; }
@@ -717,6 +721,7 @@ namespace wg
 		Coord				m_dragWidgetPointerOfs;
 		Coord               m_pickOfs;
 		Placement			m_hotspot = Placement::Undefined;
+		wg::Rect			m_dragConfinement = {0, 0, 0, 0};
 
 		DropType			m_dropType = DropType::Undefined;	// Type of data in m_pDataset.
 		int                 m_category = 0;						// User defined category.

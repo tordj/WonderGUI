@@ -62,6 +62,13 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ isDragInProgress() ____________________________________________________
+
+	bool DragNDropOverlay::isDragInProgress() const
+	{
+		return m_dragState != DragState::Idle;
+	}
+
 	//____ _slotTypeInfo() ________________________________________________________
 
 	const TypeInfo&	DragNDropOverlay::_slotTypeInfo(const StaticSlot * pSlot) const
@@ -112,7 +119,7 @@ namespace wg
 			SizeSPX max = SizeSPX::max(pref, p->m_geo.size());
 
 			RectSPX renderBounds = RectSPX{ p->m_geo.pos(), max } + p->_widget()->_overflow();
-			
+
 			_requestRender(RectSPX::overlap({ 0,0,m_size }, renderBounds));
 			p->_setSize(pref, m_scale);
 		}
@@ -197,14 +204,22 @@ namespace wg
 					{
 						CoordSPX pointerPos = pMsg->pointerSpxPos();
 						CoordSPX hotspotSPX =  pointerPos + m_hotspotOfs;
+
+						if( m_dragRestriction != RectSPX(0,0,0,0) )
+						{
+							hotspotSPX = m_dragRestriction.limit(hotspotSPX);
+							pointerPos = hotspotSPX - m_hotspotOfs;
+						}
+
 						Coord    hotspotPTS = spxToPts(hotspotSPX, _root()->scale());
 
 						// Move the drag-widget onscreen.
 
 						BorderSPX overflow = m_dragSlot._widget() ? m_dragSlot._widget()->_overflow() : BorderSPX();
-						
+
 						_requestRender(m_dragSlot.m_geo + overflow);
 						m_dragSlot.m_geo.setPos( align(pointerPos + m_dragWidgetOfs) );
+
 						_requestRender(m_dragSlot.m_geo + overflow);
 
 // MOVE TO TICK!						// Check if we entered/left a (possible) target.
@@ -229,6 +244,13 @@ namespace wg
 					{
 						CoordSPX pointerPos = pMsg->pointerSpxPos();
 						CoordSPX hotspotSPX =  pointerPos + m_hotspotOfs;
+
+						if( m_dragRestriction != RectSPX(0,0,0,0) )
+						{
+							hotspotSPX = m_dragRestriction.limit(hotspotSPX);
+							pointerPos = hotspotSPX - m_hotspotOfs;
+						}
+
 						Coord    hotspotPTS = spxToPts(hotspotSPX, _root()->scale());
 
 						// Move the drag-widget onscreen.
@@ -341,6 +363,13 @@ namespace wg
 						{
 							CoordSPX pointerPos = pMsg->pointerSpxPos();
 							CoordSPX hotspotSPX =  pointerPos + m_hotspotOfs;
+
+							if( m_dragRestriction != RectSPX(0,0,0,0) )
+							{
+								hotspotSPX = m_dragRestriction.limit(hotspotSPX);
+								pointerPos = hotspotSPX - m_hotspotOfs;
+							}
+
 							Coord    hotspotPTS = spxToPts(hotspotSPX, _root()->scale());
 
 							Base::msgRouter()->post(new DropDeliverMsg(m_pTargeted, m_dropType, m_category, m_pDataset, m_pPicked, this, pMsg->modKeys(), hotspotPTS));
@@ -371,6 +400,7 @@ namespace wg
 					m_dropType = pMsg->dropType();
 					m_category = pMsg->category();
 					m_pDataset = pMsg->dataset();
+					m_dragRestriction = _toLocal(ptsToSpx(pMsg->dragConfinement(), m_scale));
 
 					// Set/generate drag widget (widget actually dragged across the screen)
 
@@ -490,7 +520,7 @@ namespace wg
 		if( m_dragSlot._widget())
 		{
 			BorderSPX overflow = m_dragSlot._widget() ? m_dragSlot._widget()->_overflow() : BorderSPX();
-			
+
 			_requestRender(m_dragSlot.m_geo + overflow);
 			m_dragSlot._setWidget(nullptr);
 		}
@@ -498,6 +528,7 @@ namespace wg
 		Base::msgRouter()->post(new PickedCancelMsg(m_pPicked));
 		m_pPicked = nullptr;
 		m_dropType = DropType::Undefined;
+		m_dragRestriction = {0, 0, 0, 0};
 		m_category = 0;
 		m_pDataset = nullptr;
 		m_dragState = DragState::Idle;
@@ -520,6 +551,7 @@ namespace wg
 		Base::msgRouter()->post(new PickedDeliverMsg(m_pPicked, pDeliveredTo));
 		m_pPicked = nullptr;
 		m_dropType = DropType::Undefined;
+		m_dragRestriction = {0, 0, 0, 0};
 		m_category = 0;
 		m_pDataset = nullptr;
 		m_dragState = DragState::Idle;
@@ -539,7 +571,7 @@ namespace wg
 		RectSPX newRenderBounds = pNewWidget ? RectSPX{0,0,newSize} + pNewWidget->_overflow() : RectSPX();
 
 		m_dragSlot.m_geo.setSize(newSize);
-		
+
 		RectSPX combRenderBounds = RectSPX::boundsExcludingEmpty(oldRenderBounds, newRenderBounds) + m_dragSlot.m_geo.pos();
 
 		if( !combRenderBounds.isEmpty() )

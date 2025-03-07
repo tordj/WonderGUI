@@ -192,14 +192,14 @@ namespace wg
 		inline Type		height() const { return top+bottom; }
 		inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }		///< @brief Sets the thickness of all sides to 0.
 		inline bool		isEmpty() const { return (left + top + right + bottom) == 0; }
-		
+
 		inline BorderT<Type>	scale(int scale) const { return BorderT<Type>( top*scale / 4096,right*scale / 4096,bottom*scale / 4096,left*scale / 4096); } // Only for WG2 compatibility!
 
 		inline bool	contains(const BorderT<Type>& border) const;			///< @brief Check if border is smaller in all directions.
 
 		void growToContain( const BorderT<Type>& border );
 
-		
+
 		static inline BorderT<Type> min( const BorderT<Type>& r1, const BorderT<Type>& r2 );
 		static inline BorderT<Type> max( const BorderT<Type>& r1, const BorderT<Type>& r2 );
 		static inline BorderT<Type> diff( const RectT<Type>& inner, const RectT<Type>& outer );
@@ -502,6 +502,7 @@ namespace wg
 		inline bool contains( const RectT<Type>& rect ) const;			///< @brief Check if rectangle is fully within our rectangle.
 
 		inline CoordT<Type> limit( const CoordT<Type>& coord ) const;			///< @brief Limit given coordinate to stay within rectangle.
+		inline RectT<Type> limit( const RectT<Type>& rect ) const;				///< @brief Limit given rectangle to stay fully within our rectangle.
 		inline CoordT<Type> center() const { return {x+w/2,y+h/2}; }
 		inline RectT<Type> center(SizeT<Type> sz) const { return { x + (w-sz.w) / 2,y + (h-sz.h) / 2, sz }; }
 
@@ -697,6 +698,36 @@ namespace wg
 		return out;
 	}
 
+	//_____________________________________________________________________________
+	/**
+	 * Limit given rect to stay within this rectangle.
+	 *
+	 * @param rect Rect to limit to the bounds of.
+	 *
+	 * @return Rect, limited to the geometry of this rectangle.
+	 **/
+	template<typename Type>
+	inline RectT<Type> RectT<Type>::limit( const RectT<Type>& rect ) const
+	{
+		RectT<Type> out = rect;
+		if(out.w > w)
+			out.w = w;
+
+		if(out.h > h)
+			out.h = h;
+
+		if(out.right() > right())
+			out.x = x + w - out.w;
+		else if(out.left() < left())
+			out.x = x;
+
+		if(out.top() < top())
+			out.y = y;
+		else if(out.bottom() > bottom())
+			out.y = y + h - out.h;
+
+		return out;
+	}
 
 	//_____________________________________________________________________________
 	/**
@@ -1117,12 +1148,12 @@ namespace wg
 	{
 		if( r1.isEmpty() )
 			return r2;
-		
+
 		if( r2.isEmpty() )
 			return r1;
 
 		RectT<Type> out;
-		
+
 		out.x = r1.x < r2.x ? r1.x : r2.x;
 		out.y = r1.y < r2.y ? r1.y : r2.y;
 		out.w = (r1.x + r1.w > r2.x + r2.w ? r1.x + r1.w : r2.x + r2.w) - out.x;

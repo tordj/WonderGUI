@@ -70,6 +70,10 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ State _______________________________________________________________
+
+		bool			isDragInProgress() const;
+
 	protected:
 		DragNDropOverlay();
 		template<class BP> DragNDropOverlay(const BP& bp) : m_dragSlot(this), Overlay(bp) {}
@@ -126,6 +130,7 @@ namespace wg
 		DropType		m_dropType = DropType::Undefined;
 		int				m_category = 0;
 		BasicDataset_p	m_pDataset;
+		RectSPX			m_dragRestriction = {0, 0, 0, 0};
 
 		pts				m_dragStartTreshold;
 		CoordSPX		m_dragWidgetOfs;                // Drag widgets offset from pointer.
