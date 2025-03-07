@@ -44,12 +44,12 @@ namespace wg
 			Object_p		baggage;
 			Widget_p		child;
 			bool			disabled = false;
-			Text::Blueprint	label;
-			Placement		labelPlacement = Placement::NorthWest;
-			Skin_p			labelSkin;
 			bool			dropTarget = true;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
+			Text::Blueprint	label;
+			Placement		labelPlacement = Placement::NorthWest;
+			Skin_p			labelSkin;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = true;
 			uint8_t			pickCategory = 0;

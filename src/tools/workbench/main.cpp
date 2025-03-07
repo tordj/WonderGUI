@@ -4465,8 +4465,8 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 											.pickable = false,
 											.skin = BoxSkin::create({ 	.color = Color::Black,
 																		.outlineColor = Color::Black,
-																		.spacing = 10,
-																		.padding = 4 })
+																		.padding = 4,
+																		.spacing = 10 })
 	});
 
 
@@ -4491,8 +4491,8 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 											.pickable = true,
 											.skin = BoxSkin::create({ 	.color = Color::White,
 																		.outlineColor = Color::Black,
-																		.spacing = 10,
-																		.padding = 4 })
+																		.padding = 4,
+																		.spacing = 10 })
 	});
 
 	Base::msgRouter()->addRoute(pSupply, MsgType::Pick, [](Msg* _pMsg) {
