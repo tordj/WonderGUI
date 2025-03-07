@@ -839,10 +839,41 @@ namespace wg
 
 		m_timestamp = timestamp;
 
-		if( !m_bPointerMovedSinceUpdate )
-			setPointer(m_pMarkedRoot, m_pointerPos);
+		// If mouse doesn't move but a new widet shows up under it, we should wait until that widget doesn't move
+		// and then mark it.
 
-		m_bPointerMovedSinceUpdate = false;
+		if (m_bPointerMovedSinceUpdate)
+		{
+			m_pWidgetUnderStillPointer = nullptr;
+
+			m_bPointerMovedSinceUpdate = false;
+		}
+		else
+		{
+			auto	pRoot = m_pMarkedRoot;
+			auto&	pos	= m_pointerPos;
+
+
+			if (pRoot && pRoot->geo().contains(pos))
+			{
+				Widget* pMarked = pRoot->findWidget(m_pointerPos, SearchMode::ActionTarget);
+				if (pMarked)
+				{
+					RectSPX markedGeo = pMarked->_globalGeo();
+
+					if (pMarked != m_pWidgetUnderStillPointer || markedGeo != m_widgetUnderStillPointerGeo)
+					{
+						m_pWidgetUnderStillPointer = pMarked;
+						m_widgetUnderStillPointerGeo = markedGeo;
+
+						m_lastChangeUnderStillPointer = timestamp;
+					}
+					else if(m_lastChangeUnderStillPointer + m_stillPointerMarkDelay < timestamp )
+						setPointer(pRoot, pos);
+				}
+			}
+		}
+
 	}
 
 	//____ _handleButtonRepeats() _________________________________________

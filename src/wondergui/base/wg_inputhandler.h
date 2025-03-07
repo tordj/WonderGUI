@@ -227,7 +227,16 @@ namespace wg
 
 		std::map<int,std::vector<CommandEntry>> m_commandMap;
 
+		//
+
 		std::map<intptr_t,std::vector<Widget_wp>>	m_stayEnteredLists;
+
+		//
+		
+		Widget_wp		m_pWidgetUnderStillPointer;
+		RectSPX			m_widgetUnderStillPointerGeo;
+		int64_t			m_lastChangeUnderStillPointer;
+		int				m_stillPointerMarkDelay = 200;		// Millisec of stillness under widget before marking.
 	};
 
 
