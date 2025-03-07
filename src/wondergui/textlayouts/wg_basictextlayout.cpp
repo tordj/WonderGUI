@@ -358,7 +358,7 @@ namespace wg
 		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr, _scale(pText) );
 
 		TextAttr		attr;
-		Font_p 			pFont;
+		Font_p 			pFont = nullptr;
 		TextStyle_h		hStyle = 0xFFFF;
 
 		HiColor	baseTint = pDevice->tintColor();
