@@ -292,17 +292,22 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->surfaceFactory.createSurfaceFromRawData = &wg_createSurfaceFromRawData;
 
 	pBody->edgemap.structSize				= sizeof(wg_edgemap_calls);
-	pBody->edgemap.edgemapPixelSize		= &wg_edgemapPixelSize;
+	pBody->edgemap.edgemapPixelSize			= &wg_edgemapPixelSize;
 	pBody->edgemap.setRenderSegments		= &wg_setRenderSegments;
 	pBody->edgemap.getRenderSegments		= &wg_getRenderSegments;
-	pBody->edgemap.edgemapColor			= &wg_edgemapColor;
-	pBody->edgemap.edgemapGradient		= &wg_edgemapGradient;
-	pBody->edgemap.edgemapSegments		= &wg_edgemapSegments;
+	pBody->edgemap.edgemapColor				= &wg_edgemapColor;
+	pBody->edgemap.edgemapGradient			= &wg_edgemapGradient;
+	pBody->edgemap.edgemapSegments			= &wg_edgemapSegments;
 	pBody->edgemap.edgemapSamples			= &wg_edgemapSamples;
-	pBody->edgemap.importSpxSamples		= &wg_importSpxSamples;
+	pBody->edgemap.importSpxSamples			= &wg_importSpxSamples;
 	pBody->edgemap.importFloatSamples		= &wg_importFloatSamples;
-	pBody->edgemap.exportSpxSamples		= &wg_exportSpxSamples;
+	pBody->edgemap.exportSpxSamples			= &wg_exportSpxSamples;
 	pBody->edgemap.exportFloatSamples		= &wg_exportFloatSamples;
+
+	pBody->edgemap.edgemapColors			= &wg_edgemapColors;
+	pBody->edgemap.edgemapGradients			= &wg_edgemapGradients;
+	pBody->edgemap.setEdgemapColors			= &wg_setEdgemapColors;
+	pBody->edgemap.setEdgemapGradients		= &wg_setEdgemapGradients;
 
 	pBody->edgemapFactory.structSize		= sizeof(wg_edgemapfactory_calls);
 	pBody->edgemapFactory.createEdgemap	= &wg_createEdgemap;

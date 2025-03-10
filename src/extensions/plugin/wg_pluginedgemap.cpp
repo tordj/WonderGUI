@@ -66,6 +66,34 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ setColors() ___________________________________________________________
+
+	bool PluginEdgemap::setColors( int begin, int end, const HiColor * pColors )
+	{
+		return (bool) PluginCalls::edgemap->setEdgemapColors(m_cEdgemap, begin, end, (const wg_color*) pColors );
+	}
+
+	//____ setGradients() ________________________________________________________
+
+	bool PluginEdgemap::setGradients( int begin, int end, const Gradient * pGradients )
+	{
+		return (bool) PluginCalls::edgemap->setEdgemapGradients(m_cEdgemap, begin, end, (const wg_gradient*) pGradients );
+	}
+
+	//____ colors() ______________________________________________________________
+
+	const HiColor * PluginEdgemap::colors() const
+	{
+		return (const HiColor *) PluginCalls::edgemap->edgemapColors(m_cEdgemap);
+	}
+
+	//____ gradients() ___________________________________________________________
+
+	const Gradient * PluginEdgemap::gradients() const
+	{
+		return (const Gradient *) PluginCalls::edgemap->edgemapGradients(m_cEdgemap);
+	}
+
 	//____ color() ____________________________________________________________
 
 	HiColor PluginEdgemap::color(int segment) const

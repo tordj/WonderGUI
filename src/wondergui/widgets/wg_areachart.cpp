@@ -281,8 +281,11 @@ namespace wg
 					graph.m_fillColor = graph.m_endFillColor;
 					graph.m_outlineColor = graph.m_endOutlineColor;
 
-					graph.m_fillGradient = graph.m_endFillGradient;
-					graph.m_outlineGradient = graph.m_endOutlineGradient;	
+					if (!graph.m_fillGradient.isUndefined())
+					{
+						graph.m_fillGradient = graph.m_endFillGradient;
+						graph.m_outlineGradient = graph.m_endOutlineGradient;
+					}
 				}
 				else
 				{

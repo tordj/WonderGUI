@@ -57,6 +57,12 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
+		bool	setColors( int begin, int end, const HiColor * pColors ) override;
+		bool	setGradients( int begin, int end, const Gradient * pGradients ) override;
+
+		const HiColor * colors() const override;
+		const Gradient * gradients() const override;
+
 		HiColor		color(int segment) const override;
 		Gradient	gradient(int segment) const override;
 

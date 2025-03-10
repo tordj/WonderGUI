@@ -64,6 +64,29 @@ wg_gradient wg_edgemapGradient(wg_obj edgemap, int segment)
 	return *(wg_gradient*)&gradient;
 }
 
+const wg_color * wg_edgemapColors(wg_obj edgemap)
+{
+	auto pColors = getPtr(edgemap)->colors();
+	return (const wg_color*) pColors;
+
+}
+
+const wg_gradient *	wg_edgemapGradients(wg_obj edgemap)
+{
+	auto pGradients = getPtr(edgemap)->gradients();
+	return (const wg_gradient*) pGradients;
+}
+
+int wg_setEdgemapColors( wg_obj edgemap, int begin, int end, const wg_color * pColors )
+{
+	return getPtr(edgemap)->setColors( begin, end, (const HiColor*) pColors );
+}
+
+int wg_setEdgemapGradients( wg_obj edgemap, int begin, int end, const wg_gradient * pGradients )
+{
+	return getPtr(edgemap)->setGradients( begin, end, (const Gradient*) pGradients );
+}
+
 int wg_edgemapSegments(wg_obj edgemap)
 {
 	return getPtr(edgemap)->segments();

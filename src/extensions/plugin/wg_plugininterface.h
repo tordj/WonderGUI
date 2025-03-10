@@ -423,6 +423,12 @@ typedef struct wg_edgemap_calls_struct
 	int 				(*exportSpxSamples)(wg_obj edgemap, wg_sampleOrigo origo, wg_spx* pDestination, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
 	int 				(*exportFloatSamples)(wg_obj edgemap, wg_sampleOrigo origo, float* pDestination, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
 
+	const wg_color *	(*edgemapColors)(wg_obj edgemap);
+	const wg_gradient *	(*edgemapGradients)(wg_obj edgemap);
+
+	int					(*setEdgemapColors)( wg_obj edgemap, int begin, int end, const wg_color * pColors );
+	int					(*setEdgemapGradients)( wg_obj edgemap, int begin, int end, const wg_gradient * pGradients );
+
 } wg_edgemap_calls;
 
 
