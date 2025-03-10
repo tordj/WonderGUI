@@ -82,7 +82,7 @@ namespace wg
 			Axis				wheelOneAxis 		= Axis::Y;
 			Axis				wheelTwoAxis		= Axis::X;
 			ModKeys				wheelShift 			= ModKeys::Alt;
-			pts					wheelStepSize 		= 8*3;
+			pts					wheelStepSize 		= 1*3;
 		};
 		
 		//.____ Creation __________________________________________
@@ -303,7 +303,7 @@ namespace wg
 		spx				m_viewYOfs = 0, m_viewYLen = 0, m_canvasYLen = 0;
 
 		pts				m_stepSizeX = 8, m_stepSizeY = 8;
-		pts				m_wheelStepSizeX = 8*3, m_wheelStepSizeY = 8*3;
+		pts				m_wheelStepSizeX = 1*3, m_wheelStepSizeY = 1*3;
 		pts				m_pageOverlapX = 8, m_pageOverlapY = 8;
 
 		Axis			m_wheelOneAxis = Axis::Y;		// What wheel should be used for horizontal scrolling. (0=none)
