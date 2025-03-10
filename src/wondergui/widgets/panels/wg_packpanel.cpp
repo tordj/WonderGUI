@@ -49,9 +49,9 @@ namespace wg
 	}
 
 	void PackPanelSlot::setWeight(float weight)
-	{ 
-		if (weight != m_weight) 
-			static_cast<PackPanel*>(_holder())->_reweightSlots(this, 1, weight); 
+	{
+		if (weight != m_weight)
+			static_cast<PackPanel*>(_holder())->_reweightSlots(this, 1, weight);
 	}
 
 
@@ -226,7 +226,7 @@ namespace wg
 		if (scale != m_scale)
 		{
 			spx dummy1, dummy2;
-			
+
 			return _calcDefaultContentSize(scale, dummy1, dummy2) + m_skin.contentBorderSize(scale);
 		}
 		else
@@ -267,7 +267,7 @@ namespace wg
 
 				spx maxAscend = 0;
 				spx maxDescend = 0;
-				
+
 				for( auto pS = slots.begin() ; pS != slots.end() ; pS++ )
 				{
 					if( pS->m_bVisible )
@@ -275,17 +275,17 @@ namespace wg
 						spx breadth = pS->_widget()->_matchingHeight( *pOutput, scale );
 						spx ascend = align(breadth * pS->m_baseline);
 						spx descend = breadth - ascend;
-						
+
 						if( ascend > maxAscend )
 							maxAscend = ascend;
-						
+
 						if( descend > maxDescend )
 							maxDescend = descend;
 
 						pOutput++;
 					}
 				}
-				
+
 				height = maxAscend + maxDescend;
 
 				// Release temporary memory area
@@ -341,7 +341,7 @@ namespace wg
 
 		height -= padding.h;
 		spx width = 0;
-		
+
 		if (slots.size() > 0)
 		{
 			auto pLayout = m_pLayout ? m_pLayout : Base::defaultPackLayout();
@@ -374,17 +374,17 @@ namespace wg
 							spx breadth = pS->_widget()->_matchingWidth( *pOutput, scale );
 							spx ascend = align(breadth * pS->m_baseline);
 							spx descend = breadth - ascend;
-							
+
 							if( ascend > maxAscend )
 								maxAscend = ascend;
-							
+
 							if( descend > maxDescend )
 								maxDescend = descend;
 
 							pOutput++;
 						}
 					}
-					
+
 					width = maxAscend + maxDescend;
 
 					// Release temporary memory area
@@ -695,22 +695,22 @@ namespace wg
 	void PackPanel::_resize( const SizeSPX& size, int scale )
 	{
 		if( scale != m_scale )
-		{			
+		{
 			for (auto pSlot = slots.begin(); pSlot != slots.end(); pSlot++)
 			{
 				pSlot->m_bResizeRequired = true;
 				pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(scale);
 			}
-			
+
 			m_totalSpacing = _calcTotalSpacing(scale);
 
 			//TODO: This is slow since we repeat the above loop, but we need to support PackLayout that modifies default size.
 
 			m_defaultContentSize = _calcDefaultContentSize(scale, m_maxAscend, m_maxDescend);
 		}
-		
+
 		Panel::_resize(size, scale);
-		_refreshChildGeo(false);
+		_refreshChildGeo(true);
 
 		if (slots.isEmpty())
 			_refreshOverflow();
@@ -721,7 +721,7 @@ namespace wg
 	SizeSPX PackPanel::_calcDefaultContentSize( int scale, spx& maxAscend, spx& maxDescend ) const
 	{
 		spx length = 0;
-		
+
 		maxAscend = 0;
 		maxDescend = 0;
 
@@ -751,10 +751,10 @@ namespace wg
 
 						spx ascend = align(breadth * pS->m_baseline);
 						spx descend = breadth - ascend;
-						
+
 						if( ascend > maxAscend )
 							maxAscend = ascend;
-						
+
 						if( descend > maxDescend )
 							maxDescend = descend;
 
@@ -783,10 +783,10 @@ namespace wg
 								spx breadth = p->m_defaultSize.h;
 								spx ascend = align(breadth * p->m_baseline);
 								spx descend = breadth - ascend;
-								
+
 								if( ascend > maxAscend )
 									maxAscend = ascend;
-								
+
 								if( descend > maxDescend )
 									maxDescend = descend;
 							}
@@ -802,10 +802,10 @@ namespace wg
 								spx breadth = p->m_defaultSize.w;
 								spx ascend = align(breadth * p->m_baseline);
 								spx descend = breadth - ascend;
-								
+
 								if( ascend > maxAscend )
 									maxAscend = ascend;
-								
+
 								if( descend > maxDescend )
 									maxDescend = descend;
 							}
@@ -822,14 +822,14 @@ namespace wg
 							{
 								SizeSPX defaultSize = p->_widget()->_defaultSize(scale);
 								length += defaultSize.w;
-								
+
 								spx breadth = defaultSize.h;
 								spx ascend = align(breadth * p->m_baseline);
 								spx descend = breadth - ascend;
-								
+
 								if( ascend > maxAscend )
 									maxAscend = ascend;
-								
+
 								if( descend > maxDescend )
 									maxDescend = descend;
 							}
@@ -843,14 +843,14 @@ namespace wg
 							{
 								SizeSPX defaultSize = p->_widget()->_defaultSize(scale);
 								length += defaultSize.h;
-	
+
 								spx breadth = defaultSize.w;
 								spx ascend = align(breadth * p->m_baseline);
 								spx descend = breadth - ascend;
-								
+
 								if( ascend > maxAscend )
 									maxAscend = ascend;
-								
+
 								if( descend > maxDescend )
 									maxDescend = descend;
 							}
@@ -858,7 +858,7 @@ namespace wg
 					}
 				}
 			}
-			
+
 			length += scale == m_scale ? m_totalSpacing : _calcTotalSpacing(scale);
 		}
 
@@ -876,7 +876,7 @@ namespace wg
 
 		if( m_slotAlignment == Alignment::Justify )
 			return;
-		
+
 		SizeSPX sz = m_size - m_skin.contentBorderSize(m_scale);
 		CoordSPX contentOfs = m_skin.contentOfs(m_scale, State::Default);
 		spx givenBreadth = m_axis == Axis::X ? sz.h : sz.w;
@@ -888,8 +888,8 @@ namespace wg
 			baselineOffset += pos.y;
 		else
 			baselineOffset += pos.x;
-		
-				
+
+
 		for (auto p = slots.begin(); p != slots.end(); p++)
 		{
 			if( p->m_bVisible )
@@ -900,7 +900,7 @@ namespace wg
 				if( m_axis == Axis::X )
 				{
 					slotOfs -= align(p->m_baseline * p->m_geo.h);
-					
+
 					if( slotOfs != p->m_geo.y )
 					{
 						RectSPX geo = p->m_geo;
@@ -913,14 +913,14 @@ namespace wg
 						{
 							renderArea.h += slotOfs - geo.y;
 						}
-						
+
 						p->m_geo.y = slotOfs;
 					}
 				}
 				else
 				{
 					slotOfs -= align(p->m_baseline * p->m_geo.w);
-					
+
 					if( slotOfs != p->m_geo.x )
 					{
 						RectSPX geo = p->m_geo;
@@ -933,7 +933,7 @@ namespace wg
 						{
 							renderArea.w += slotOfs - geo.x;
 						}
-				
+
 						p->m_geo.x = slotOfs;
 					}
 				}
@@ -960,7 +960,7 @@ namespace wg
 			case Alignment::Justify:
 				return 0;
 		}
-		
+
 		return 0;
 	}
 
@@ -968,7 +968,7 @@ namespace wg
 
 	spx PackPanel::_calcTotalSpacing( int scale ) const
 	{
-		
+
 		int nVisible = 0;
 		for( auto& slot : slots )
 		{
@@ -978,7 +978,7 @@ namespace wg
 
 		if( nVisible == 0 )
 			return 0;				// No spacing if we have no visible slots.
-		
+
 		return 	align(ptsToSpx(m_spacingBefore, scale)) +
 				align(ptsToSpx(m_spacingAfter, scale)) +
 				align(ptsToSpx(m_spacingBetween, scale)) * (nVisible - 1);
@@ -1003,7 +1003,7 @@ namespace wg
 //		spx spacingAfter = align(ptsToSpx(m_spacingAfter, m_scale));
 		spx spacingBetween = align(ptsToSpx(m_spacingBetween, m_scale));
 
-		
+
 		givenLength -= m_totalSpacing;
 
 		// Optimized special case, just copy preferred to length.
@@ -1024,11 +1024,11 @@ namespace wg
 			pos.x += baselineOffset;
 			pos.y += spacingBefore;
 		}
-		
+
 		if( wantedLength == givenLength && !pLayout->doesCalcWantedLength() )
 		{
 			RectSPX geo;
-			
+
 			for (auto p = slots.begin(); p != slots.end(); p++)
 			{
 				if( p->m_bVisible )
@@ -1046,7 +1046,7 @@ namespace wg
 							geo.h = p->m_defaultSize.h;
 							geo.y -= align(p->m_baseline * geo.h);
 						}
-						
+
 						pos.x += p->m_defaultSize.w + spacingBetween;
 					}
 					else
@@ -1123,7 +1123,7 @@ namespace wg
 			pLayout->getItemSizes(pOutput, givenLength, m_scale, nItems, pItemArea);
 
 			RectSPX geo;
-			
+
 			for (auto p = slots.begin(); p != slots.end(); p++)
 			{
 				if( p->m_bVisible )
