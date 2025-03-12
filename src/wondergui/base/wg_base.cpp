@@ -144,7 +144,10 @@ namespace wg
 		auto pOld = s_pGUIContext;
 
 		if( pNewContext )
+		{
 			s_pGUIContext = pNewContext;
+			GfxBase::setContext(pNewContext->pGfxContext);
+		}
 		else
 		{
 			auto p = new GUIContext();
