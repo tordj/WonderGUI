@@ -45,7 +45,7 @@ namespace wg
 		return PluginRoot_p(new PluginRoot());
 	}
 
-	PluginRoot_p PluginRoot::create(wg_obj myPluginCapsule, GUIContext * pContext)
+	PluginRoot_p PluginRoot::create(wg_obj myPluginCapsule, PluginContext * pContext)
 	{
 		return PluginRoot_p(new PluginRoot(myPluginCapsule, pContext));
 	}
@@ -80,7 +80,7 @@ namespace wg
 		m_interface.onUpdate		= wg_onPluginUpdate;
 	}
 
-	PluginRoot::PluginRoot(wg_obj myPluginCapsule, GUIContext * pContext) : PluginRoot()
+	PluginRoot::PluginRoot(wg_obj myPluginCapsule, PluginContext * pContext) : PluginRoot()
 	{
 		m_pluginCapsule = myPluginCapsule;
 		m_pContext		= pContext;

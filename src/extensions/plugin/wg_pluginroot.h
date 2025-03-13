@@ -32,7 +32,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_slot.h>
 #include <wg_root.h>
-#include <wg_base.h>
+#include <wg_pluginbase.h>
 
 namespace wg
 {
@@ -69,7 +69,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static PluginRoot_p	create();
-		static PluginRoot_p	create( wg_obj myPluginCapsule, GUIContext * pContext );
+		static PluginRoot_p	create( wg_obj myPluginCapsule, PluginContext * pContext );
 
 		//.____ Components ____________________________________
 
@@ -134,7 +134,7 @@ namespace wg
 
 	protected:
 		PluginRoot();
-		PluginRoot(wg_obj myPluginCapsule, GUIContext * pContext);
+		PluginRoot(wg_obj myPluginCapsule, PluginContext * pContext);
 		~PluginRoot();
 
 		// SlotHolder methods
@@ -204,7 +204,7 @@ namespace wg
 		
 		wg_pluginroot_calls	m_interface;
 
-		GUIContext_p		m_pContext;
+		PluginContext_p		m_pContext;
 	};
 
 

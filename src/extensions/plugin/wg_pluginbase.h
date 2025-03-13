@@ -56,7 +56,7 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		static PluginContext_p	setContext( const GUIContext_p& pNewContext );
+		static PluginContext_p	setContext( const PluginContext_p& pNewContext );
 		static PluginContext_p	context() { return s_pPluginContext; }
 
 		static void				setHostBridge( HostBridge * pHostBridge );
