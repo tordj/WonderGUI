@@ -31,6 +31,20 @@
 namespace wg
 {
 
+	class PluginContext : public Object
+	{
+		friend class PluginBase;
+
+		wg_plugin_interface		pluginInterface;
+
+		PluginHostBridge *		pHostBridge;	// Needs a local copy so we can delete it with the context.
+		GUIContext_p			pGUIContext;
+	};
+
+	typedef	StrongPtr<PluginContext>	PluginContext_p;
+	typedef	WeakPtr<PluginContext>		PluginContext_wp;
+
+
 	class PluginBase : public Base
 	{
 	public:
@@ -40,16 +54,22 @@ namespace wg
 		static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge );
 		static bool exit();
 
+		//.____ Content _____________________________________________
+
+		static PluginContext_p	setContext( const GUIContext_p& pNewContext );
+		static PluginContext_p	context() { return s_pPluginContext; }
+
+		static void				setHostBridge( HostBridge * pHostBridge );
+
+
 		//.____ Misc ________________________________________________
 
 		const static TypeInfo	TYPEINFO;
 
-		static bool			isInitialized() { return s_pluginInitCounter > 0; }
-
 	private:
-		static	int				s_pluginInitCounter;
 
-		static	PluginHostBridge *	s_pHostBridge;
+		static	PluginContext_p	s_pPluginContext;
+
 	};
 
 

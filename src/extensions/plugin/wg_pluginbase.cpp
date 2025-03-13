@@ -30,28 +30,28 @@ namespace wg
 
 	const TypeInfo	PluginBase::TYPEINFO = { "PluginBase", &Base::TYPEINFO };
 
-	int					PluginBase::s_pluginInitCounter = 0;
-	PluginHostBridge *	PluginBase::s_pHostBridge = nullptr;
+	PluginContext_p		PluginBase::s_pPluginContext;
 
 
 	//___ init() ______________________________________________________________
 
 	bool PluginBase::init(wg_plugin_interface* pCallsCollection, void * pRealHostBridge)
 	{
-		if( s_pluginInitCounter > 0 )
-		{
-			s_pluginInitCounter++;
-			return true;
-		}
-		
 		if( !PluginCalls::_init(pCallsCollection) )
 			return false;								// Host has too old ABI.
-		
-		s_pHostBridge = new PluginHostBridge(pRealHostBridge);
-				
-		Base::init(s_pHostBridge);
-		
-		s_pluginInitCounter = 1;
+
+		Base::init(nullptr);
+		Base::setContext(nullptr);
+
+		auto pHostBridge = new PluginHostBridge(pRealHostBridge);
+		Base::setHostBridge(pHostBridge);
+
+		s_pPluginContext = new PluginContext();
+
+		s_pPluginContext->pHostBridge = pHostBridge;
+		s_pPluginContext->pluginInterface = * pCallsCollection;
+		s_pPluginContext->pGUIContext = Base::context();
+
 		return true;
 	}
 
@@ -59,28 +59,32 @@ namespace wg
 
 	bool PluginBase::exit()
 	{
-		if( s_pluginInitCounter <= 0 )
-		{
-			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to PluginBase::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
-			return false;
-		}
-		
-		if( s_pluginInitCounter > 1 )
-		{
-			s_pluginInitCounter--;			// This belongs to GfxBase, but we do like this anyway.
-			return true;
-		}
-
 		bool res = Base::exit();
 
-		delete s_pHostBridge;
-		s_pHostBridge = nullptr;
+		delete s_pPluginContext->pHostBridge;
 
-		s_pluginInitCounter = 0;
+		s_pPluginContext = nullptr;
 		return res;
 	}
 
+	//____ setContext() __________________________________________________________
 
+	PluginContext_p PluginBase::setContext( const GUIContext_p& pNewContext )
+	{
+		s_pPluginContext = pNewContext;
+		PluginCalls::_init(&pNewContext->pluginInterface);
+	}
+
+	//____ setHostBridge() _______________________________________________________
+
+	void PluginBase::setHostBridge( HostBridge * pHostBridge )
+	{
+		delete s_pPluginContext->pHostBridge;
+
+		s_pPluginContext->pHostBridge = new PluginHostBridge(pHostBridge);
+
+		Base::setHostBridge(pHostBridge);
+	}
 }
 
 
