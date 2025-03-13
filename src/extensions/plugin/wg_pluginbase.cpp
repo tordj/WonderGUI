@@ -71,13 +71,13 @@ namespace wg
 
 	PluginContext_p PluginBase::setContext( const PluginContext_p& pNewContext )
 	{
-		if( pNewContext == s_pPluginContext )
-			return pNewContext;
-
 		auto pOld = s_pPluginContext;
 
-		s_pPluginContext = pNewContext;
-		PluginCalls::_init(&pNewContext->pluginInterface);
+		if( pNewContext != s_pPluginContext )
+		{
+			s_pPluginContext = pNewContext;
+			PluginCalls::_init(&pNewContext->pluginInterface);
+		}
 
 		Base::setContext(pNewContext->pGUIContext);
 		return pOld;
