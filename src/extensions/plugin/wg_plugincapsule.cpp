@@ -335,6 +335,8 @@ namespace wg
 	{
 		if(m_pPluginRoot)
 			m_calls.onUpdate(m_pPluginRoot, microPassed, microsecTimestamp);
+		else
+			_stopReceiveUpdates();
 	}
 
 
@@ -417,7 +419,6 @@ namespace wg
 
 	void PluginCapsule::_disconnectPlugin()
 	{
-		_stopReceiveUpdates();
 		std::memset(&m_calls, 0, sizeof(m_calls));
 		m_pPluginRoot = nullptr;
 	}
