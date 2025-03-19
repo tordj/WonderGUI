@@ -455,33 +455,30 @@ namespace wg
         //                  --- PID REGULATION ---
         // -------------------------------------------------------------
 
-        // control signal
-        const int64_t expectedEndTime = timestamp + (nbSamples * usPerSample); // Last samples timestamp with regulation.
+        // Control signal
+        const int64_t expectedEndTime = timestamp + (nbSamples * usPerSample);
 
-        // Target window
-        constexpr float typical_num_samples = 5.0f;
-        float timeError = static_cast<float>(expectedEndTime - m_pDisplay->m_latestTimestamp);
+        // Proportional Error
+        const float timeError = static_cast<float>(expectedEndTime - m_pDisplay->m_latestTimestamp);
 
-        // Integral error
-        const float rawIntegral = m_errorIntegral * kIntegralDecay + (1.0f-kIntegralDecay) * timeError;
-        m_errorIntegral = rawIntegral;
+        // If we are more then 1 second ahead. Just stop adding new data.
+        // This means we loose data, but this only happens during startup and preset changes while streaming.
+        if(timeError < -kMicrosecondsPerSecond)
+            return;
 
+        // PID constants
         const float Kp = kPidProportionalScale / (nbSamples * usPerSample);
         const float Ki = kPidIntegralScale / (nbSamples * usPerSample);
+
+        // Integral error
+        m_errorIntegral = m_errorIntegral * kIntegralDecay + (1.0f-kIntegralDecay) * timeError;
+        limit(m_errorIntegral, -1.0f/Kp, 1.0f/Kp);
 
         float adjustment = (Kp * timeError + Ki * m_errorIntegral);
 
         // PID Output
         usPerSample *= (1.0f - adjustment);
         limit(usPerSample, (kMicrosecondsPerSecond / (sampleRate * kMaxSpeedupFactor)), (kMicrosecondsPerSecond / (sampleRate * kMaxSlowdownFactor)));
-
-        // dbg_print("proportional: %f \n", Kp * timeError);
-        // dbg_print("integrated: %f \n", Ki * m_errorIntegral);
-        // dbg_print("derivating: %f \n", Kd * errorDerivative);
-        // dbg_print("adjustment: %f \n", -adjustment);
-        // dbg_print("nbSamples: %d \n", nbSamples);
-        // dbg_print("SampleTime: %f \n", usPerSample/kMicrosecondsPerSecond);
-        // dbg_print("timeError: %f \n", timeError/kMicrosecondsPerSecond);
 
         // Fill in the samples
 		int offset = (int) m_samples.size();
@@ -638,10 +635,10 @@ namespace wg
 	{
 		if( topOutline == m_topOutlineThickness && bottomOutline == m_bottomOutlineThickness )
 			return true;
-		
+
 		m_topOutlineThickness = topOutline;
 		m_bottomOutlineThickness = bottomOutline;
-		
+
 		m_pDisplay->_requestFullRedraw();
 		return true;
 	}
