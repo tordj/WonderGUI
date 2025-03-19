@@ -91,13 +91,14 @@ bool WgPluginBase::exit()
 
 WgPluginContext_p WgPluginBase::setContext( const WgPluginContext_p& pNewContext )
 {
-	// Set context for plugins works differently than for GearBase/GfxBase/Base.
-	// If you want a new context you should call init() again.
-	
-	if( pNewContext == nullptr )
-		return s_pContext;
-	
 	auto pOldContext = s_pContext;
+
+	if (pNewContext == nullptr)
+	{
+		WgBase::setContext(nullptr);
+		s_pContext->pBaseContext = WgBase::context();
+		return pOldContext;
+	}
 	
 	s_pContext = pNewContext;
 	WgBase::setContext(pNewContext->pBaseContext);

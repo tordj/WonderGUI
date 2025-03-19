@@ -111,11 +111,6 @@ namespace wg
 			return true;
 		}
 
-		// We need to clear the message queue before we delete message router. Messages might keep
-		// widgets alive that access message router in their destructor.
-
-		s_pGUIContext->pMsgRouter->clearMsgQueue();
-
 		// We need to make sure our objects are destroyed before continuing.
 
 		s_pGUIContext->pMsgRouter = nullptr;

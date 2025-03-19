@@ -73,6 +73,13 @@ namespace wg
 	{
 		auto pOld = s_pPluginContext;
 
+		if (pNewContext == nullptr)
+		{
+			Base::setContext(nullptr);
+			s_pPluginContext->pGUIContext = Base::context();
+			return pOld;
+		}
+
 		if( pNewContext != s_pPluginContext )
 		{
 			s_pPluginContext = pNewContext;
@@ -80,6 +87,7 @@ namespace wg
 		}
 
 		Base::setContext(pNewContext->pGUIContext);
+
 		return pOld;
 	}
 
