@@ -567,6 +567,30 @@ namespace wg
 		_resizeCanvasAndChild();
 	}
 
+	//____ _root() ___________________________________________________________________
+
+	Root * CanvasCapsule::_root()
+	{
+		Root * pRoot = Capsule::_root();
+
+		if( !pRoot )
+		{
+			// We don't have any root, but we might have one through a CanvasDisplay.
+
+			for( auto pSideDisplay : m_sideDisplays )
+			{
+				Container * pParent = pSideDisplay->_parent();
+				if( pParent )
+				{
+					pRoot = pParent->_root();
+					if( pRoot )
+						return pRoot;
+				}
+			}
+		}
+
+		return pRoot;
+	}
 	//____ _findWidget() ____________________________________________________________
 
 	Widget * CanvasCapsule::_findWidget( const CoordSPX& ofs, SearchMode mode )

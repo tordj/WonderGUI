@@ -182,6 +182,8 @@ namespace wg
 		
 		virtual ~CanvasCapsule();
 
+		Root *				_root() override;
+
 		Widget* 			_findWidget(const CoordSPX& ofs, SearchMode mode) override;
 
 		void				_resizeCanvasAndChild();

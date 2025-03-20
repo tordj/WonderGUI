@@ -47,6 +47,7 @@ namespace wg
 	class Container : public Widget, protected SlotHolder
 	{
 		friend class SlotHolder;
+		friend class CanvasCapsule;
 
 		public:
 
