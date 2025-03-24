@@ -123,13 +123,35 @@ protected:
     int m_iNoteFilterPos = 0;
 
     std::string m_kNote = "";
-	const std::string g_sTone[70] = {u8"G\u266f0", "A0", u8"A\u266f0", "B0",
-                                     "C1", u8"C\u266f1", "D1", u8"E\u266d1", "E1", "F1", u8"F\u266f1", "G1", u8"G\u266f1", "A1", u8"A\u266f1", "B1",
-                                     "C2", u8"C\u266f2", "D2", u8"E\u266d2", "E2", "F2", u8"F\u266f2", "G2", u8"G\u266f2", "A2", u8"A\u266f2", "B2",
-                                     "C3", u8"C\u266f3", "D3", u8"E\u266d3", "E3", "F3", u8"F\u266f3", "G3", u8"G\u266f3", "A3", u8"A\u266f3", "B3",
-                                     "C4", u8"C\u266f4", "D4", u8"E\u266d4", "E4", "F4", u8"F\u266f4", "G4", u8"G\u266f4", "A4", u8"A\u266f4", "B4",
-                                     "C5", u8"C\u266f5", "D5", u8"E\u266d5", "E5", "F5", u8"F\u266f5", "G5", u8"G\u266f5", "A5", u8"A\u266f5", "B5",
-                                     "C6", u8"C\u266f6", "D6", u8"E\u266d6", "E6", "F6"};
+	const std::string g_sTone[70] = { 	reinterpret_cast<const char *>(u8"G\u266f0"),"A0",
+										reinterpret_cast<const char *>(u8"A\u266f0"),"B0","C1",
+										reinterpret_cast<const char *>(u8"C\u266f1"), "D1",
+										reinterpret_cast<const char *>(u8"E\u266d1"), "E1", "F1",
+										reinterpret_cast<const char *>(u8"F\u266f1"), "G1",
+										reinterpret_cast<const char *>(u8"G\u266f1"), "A1",
+										reinterpret_cast<const char *>(u8"A\u266f1"), "B1", "C2",
+										reinterpret_cast<const char *>(u8"C\u266f2"), "D2",
+										reinterpret_cast<const char *>(u8"E\u266d2"), "E2", "F2",
+										reinterpret_cast<const char *>(u8"F\u266f2"), "G2",
+										reinterpret_cast<const char *>(u8"G\u266f2"), "A2",
+										reinterpret_cast<const char *>(u8"A\u266f2"), "B2", "C3",
+										reinterpret_cast<const char *>(u8"C\u266f3"), "D3",
+										reinterpret_cast<const char *>(u8"E\u266d3"), "E3", "F3",
+										reinterpret_cast<const char *>(u8"F\u266f3"), "G3",
+										reinterpret_cast<const char *>(u8"G\u266f3"), "A3",
+										reinterpret_cast<const char *>(u8"A\u266f3"), "B3", "C4",
+										reinterpret_cast<const char *>(u8"C\u266f4"), "D4",
+										reinterpret_cast<const char *>(u8"E\u266d4"), "E4", "F4",
+										reinterpret_cast<const char *>(u8"F\u266f4"), "G4",
+										reinterpret_cast<const char *>(u8"G\u266f4"), "A4",
+										reinterpret_cast<const char *>(u8"A\u266f4"), "B4", "C5",
+										reinterpret_cast<const char *>(u8"C\u266f5"), "D5",
+										reinterpret_cast<const char *>(u8"E\u266d5"), "E5", "F5",
+										reinterpret_cast<const char *>(u8"F\u266f5"), "G5",
+										reinterpret_cast<const char *>(u8"G\u266f5"), "A5",
+										reinterpret_cast<const char *>(u8"A\u266f5"), "B5", "C6",
+										reinterpret_cast<const char *>(u8"C\u266f6"), "D6",
+										reinterpret_cast<const char *>(u8"E\u266d6"), "E6", "F6" };
 };
 
 #endif //WG_TUNER_DOT_H
