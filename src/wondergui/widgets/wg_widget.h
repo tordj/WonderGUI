@@ -32,6 +32,8 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
+#include <wg_base.h>
+
 namespace wg
 {
 	class GfxDevice;
@@ -359,6 +361,7 @@ namespace wg
 
 		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
+		GUIContext *	m_pContextAtConstruction = nullptr;
 
 		Object_p		m_pBaggage;
 

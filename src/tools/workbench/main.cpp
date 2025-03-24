@@ -779,7 +779,7 @@ int main(int argc, char** argv)
 		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-			scrollChartTest(pSlot);
+		//	scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
 		//	packPanelStressTest(pSlot);
 		//	packPanelStressTest2(pSlot);
