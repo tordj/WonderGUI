@@ -362,7 +362,7 @@ namespace wg
 		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
 		GUIContext *	m_pContextAtConstruction = nullptr;
-
+        bool            m_contextSet = false;
 		Object_p		m_pBaggage;
 
 		SkinSlot		m_skin;

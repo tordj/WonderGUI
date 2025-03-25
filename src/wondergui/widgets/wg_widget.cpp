@@ -37,13 +37,16 @@ namespace wg
 	Widget::Widget(): m_skin(this)
 	{
 		m_pContextAtConstruction = Base::context().rawPtr();
+        m_contextSet = true;
 	}
 
-	//____ Destructor _____________________________________________________________
+	//____ Destructor ______________________________________________    _______________
 
 	Widget::~Widget()
 	{
-		assert( m_pContextAtConstruction == Base::context().rawPtr() );
+        auto ptr = Base::context().rawPtr();
+        if(m_contextSet)
+            assert( m_pContextAtConstruction == Base::context().rawPtr());
 
 		if (m_receivingUpdateCounter > 0)
 			Base::_stopReceiveUpdates(this);
