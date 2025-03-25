@@ -265,6 +265,8 @@ namespace wg
 		Widget();
 		template<class BP> Widget( const BP& bp ) : m_skin(this)
 		{
+			m_pContextAtConstruction = Base::context().rawPtr();
+
 			m_pBaggage		= bp.baggage;
 			m_bDropTarget	= bp.dropTarget;
 			m_id			= bp.id;
