@@ -297,7 +297,7 @@ int WgEventHandler::DeleteCallbacksOn( WgEventType type )
 		nDeleted += _deleteCallbacksOnType( type, &it->second );
 
 		if( it->second.size() == 0 )
-			m_widgetCallbacks.erase(it++);
+			it = m_widgetCallbacks.erase(it);
 		else
 			++it;
 	}
@@ -400,7 +400,7 @@ int WgEventHandler::DeleteDeadCallbacks()
 		if( !it->first )
 		{
 			nDeleted += it->second.size();
-			m_widgetCallbacks.erase(it++);		// Sender is dead, delete whole branch of callbacks.
+			it = m_widgetCallbacks.erase(it);		// Sender is dead, delete whole branch of callbacks.
 		}
 		else
 		{
