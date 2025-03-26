@@ -785,10 +785,10 @@ int main(int argc, char** argv)
 		//	packPanelStressTest2(pSlot);
 		//	blockingCapsuleTest(pSlot);
 		//	tablePanelTest(pSlot);
-		//	tablePanelTest2(pSlot);
+			tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
-			reorderCapsuleTest(pSlot);
+		//	reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
 		//	labelCapsuleTest(pSlot);
 		//	elipsisTest(pSlot);

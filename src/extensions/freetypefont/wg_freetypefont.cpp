@@ -87,6 +87,8 @@ namespace wg
 		m_pFontFile = bp.blob;
 		m_pCache 	=  bp.cache ? BitmapCache_p(bp.cache) : GfxBase::defaultBitmapCache();
 		m_size 			= 0;
+		m_xDPI		= bp.xDPI;
+		m_yDPI		= bp.yDPI;
 
 //		_growCachedFontSizes(c_maxFontSize);
 
@@ -172,7 +174,7 @@ namespace wg
 		// Sanity check
 
 
-		FT_Error err = FT_Set_Char_Size( m_ftFace, size, 0, 0,0 );
+		FT_Error err = FT_Set_Char_Size( m_ftFace, size, 0, m_xDPI, m_yDPI );
 //		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
 		if( err )
 		{

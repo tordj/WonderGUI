@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <cassert>
+#include <cstring>
 #include <memory.h>
 #include <wg_softsurface.h>
 #include <wg_gfxutil.h>
