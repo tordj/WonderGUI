@@ -69,6 +69,8 @@ namespace wg
 			Finalizer_p		finalizer = nullptr;
 			RenderMode		renderMode = RenderMode::BestShapes;
 			bool			stemDarkening = GfxBase::defaultToSRGB();
+			int				xDPI = 72;
+			int				yDPI = 72;
 		};
 		
 		
@@ -188,6 +190,9 @@ namespace wg
 		int					m_renderFlags;
 		RenderMode			m_renderMode;
 		spx					m_size;
+
+		int					m_xDPI = 72;
+		int					m_yDPI = 72;
 
 		//____ Static stuff __________________________________________________________
 
