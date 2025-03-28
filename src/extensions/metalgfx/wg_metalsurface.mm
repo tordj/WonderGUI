@@ -293,7 +293,7 @@ namespace wg
 			
 			[blitCommandEncoder endEncoding];
 			blitCommandEncoder = nil;
-
+/*
 			m_bTextureSyncInProgress = true;
 			
 			// Add a completion handler and commit the command buffer.
@@ -302,7 +302,10 @@ namespace wg
 				
 				m_bTextureSyncInProgress = false;
 			}];
+*/
 			[commandBuffer commit];
+			[commandBuffer waitUntilCompleted];
+
 			commandBuffer = nil;
 		}
     }
@@ -551,18 +554,22 @@ namespace wg
         [blitCommandEncoder endEncoding];
         blitCommandEncoder = nil;
         
-        m_bTextureSyncInProgress = true;
-        
+/*
+		 m_bTextureSyncInProgress = true;
+
         // Add a completion handler and commit the command buffer.
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
             // Private texture is populated.
             
             m_bTextureSyncInProgress = false;
         }];
+ */
         [commandBuffer commit];
+		[commandBuffer waitUntilCompleted];
+
         commandBuffer = nil;
         
-        _waitForSyncedTexture();
+//        _waitForSyncedTexture();
     }
 
 
