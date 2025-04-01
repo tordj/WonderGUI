@@ -165,6 +165,10 @@ namespace wg
 
 		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
 
+		//.____ Misc _______________________________________________
+
+		using Link = DynamicSlotVector<FlexPanelSlot>::SlotLink;
+
 	protected:
 
 		FlexPanelSlot(SlotHolder * pHolder) : PanelSlot(pHolder) {}

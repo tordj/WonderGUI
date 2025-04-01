@@ -43,8 +43,9 @@ namespace wg
 		using		const_iterator = const SlotType*;
 
 		DynamicSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
-		~DynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
+		~DynamicSlotVector() { _clearLinks(); _killBlock(_begin(), _end()); free(m_pBuffer); }
 
+		//____ ChildWithBP __________________________________________________________
 
 		class ChildWithBP
 		{
@@ -65,7 +66,147 @@ namespace wg
 			const struct SlotType::Blueprint* m_pBP;
 		};
 
-		
+		//____ SlotLink ______________________________________________________________
+
+		class SlotLink
+		{
+			friend class DynamicSlotVector<SlotType>;
+
+		public:
+
+			SlotLink() = default;
+			SlotLink(const SlotLink& org)
+			{
+				m_pSlot		= org.m_pSlot;
+				m_pVector	= org.m_pVector;
+				m_index		= org.m_index;
+
+				if( m_pSlot )
+					_connect();
+			}
+
+			SlotLink(SlotLink&& org)
+			{
+				m_pSlot		= org.m_pSlot;
+				m_pVector	= org.m_pVector;
+				m_index		= org.m_index;
+
+				m_pNext 	= org.m_pNext;
+				m_pPrev 	= org.m_pPrev;
+
+				org.m_pSlot		= nullptr;
+				org.m_pVector	= nullptr;
+				org.m_index		= -1;
+				org.m_pNext		= nullptr;
+				org.m_pPrev		= nullptr;
+
+				if( m_pSlot )
+				{
+					if( m_pNext )
+						m_pNext->m_pPrev = this;
+					else
+						m_pVector->m_pLastLink = this;
+
+					if( m_pPrev )
+						m_pPrev->m_pNext = this;
+					else
+						m_pVector->m_pFirstLink = this;
+				}
+			}
+
+
+			SlotLink(DynamicSlotVector<SlotType> * pVector, int index) : m_index(index), m_pVector(pVector)
+			{
+				m_pSlot = m_pVector->m_pArray + index;
+				_connect();
+			}
+
+			~SlotLink()
+			{
+				if( m_pSlot )
+					_disconnect();
+			}
+
+
+
+			bool operator==( SlotLink _p ) const
+			{
+				return this->m_pSlot == _p.m_pSlot;
+			}
+
+			bool operator!=( SlotLink _p ) const
+			{
+				return this->m_pSlot != _p.m_pSlot;
+			}
+
+			inline SlotType * operator->() const{ return m_pSlot; }
+
+			SlotLink& operator=(const SlotLink& org)
+			{
+				if( m_pSlot )
+				{
+					_disconnect();
+					m_pPrev = nullptr;
+					m_pNext = nullptr;
+				}
+
+				m_pSlot		= org.m_pSlot;
+				m_pVector	= org.m_pVector;
+				m_index		= org.m_index;
+
+				if( m_pSlot )
+					_connect();
+
+				return *this;
+			}
+
+			operator bool() const { return m_pSlot != nullptr; }
+
+			int			index() const { return m_index; }
+			SlotType *	ptr() const { return m_pSlot; }
+
+			operator iterator() const
+			{
+				return m_pSlot;
+			}
+
+			DynamicSlotVector<SlotType> * vector() { return m_pVector; }
+
+		protected:
+
+			void _connect()
+			{
+				m_pPrev = 0;
+				m_pNext = m_pVector->m_pFirstLink;
+
+				m_pVector->m_pFirstLink = this;
+				if( m_pNext )
+					m_pNext->m_pPrev = this;
+				else
+					m_pVector->m_pLastLink = this;
+			}
+
+			void _disconnect()
+			{
+				if( m_pPrev )
+					m_pPrev->m_pNext = m_pNext;
+				else
+					m_pVector->m_pFirstLink = m_pNext;
+
+				if( m_pNext )
+					m_pNext->m_pPrev = m_pPrev;
+				else
+					m_pVector->m_pLastLink = m_pPrev;
+			}
+
+			DynamicSlotVector<SlotType> * m_pVector = nullptr;
+			int				m_index = -1;						// Keeping index simplifies relocation code when slots move.
+
+			SlotType *		m_pSlot = nullptr;
+			SlotLink *		m_pPrev = nullptr;
+			SlotLink *		m_pNext = nullptr;
+		};
+
 		//.____ Content _______________________________________________________
 
 		inline int		size() const { return m_size; }
@@ -180,7 +321,10 @@ namespace wg
 		inline SlotType&	front() const { return * m_pArray; }
 		inline SlotType&	back() const { return  m_pArray[m_size - 1]; }
 
-		
+		SlotLink		makeLink(int index);
+		SlotLink		makeLink(iterator it);
+
+
 		//.____ Operators __________________________________________
 
 		inline DynamicSlotVector<SlotType>& operator<<(const Widget_p& pWidget) { pushBack(pWidget); return *this; }
@@ -244,7 +388,7 @@ namespace wg
 
 		bool			_contains(const SlotType * pSlot) const { return (pSlot >= m_pArray && pSlot <= _last()); }
 
-		void			_clear() { _killBlock(_begin(), _end()); free(m_pBuffer); m_pBuffer = nullptr;  m_pArray = nullptr; m_capacity = 0; m_size = 0; }
+		void			_clear() { _clearLinks(); _killBlock(_begin(), _end()); free(m_pBuffer); m_pBuffer = nullptr;  m_pArray = nullptr; m_capacity = 0; m_size = 0; }
 
 
 		SlotType*	_slot(int index) const { return &m_pArray[index]; }
@@ -260,6 +404,17 @@ namespace wg
 		SlotType*	_end() const { return m_pArray + m_size; }
 
 	private:
+
+		// All these methods for updating links updates the pointer from the index for ALL links.
+
+		void	_clearLinks();
+		void	_updateLinks();
+		void	_updateLinksAfterInsertion( int insertionPoint, int nbInserted );
+		void	_updateLinksAfterRemoval( int removalPoint, int nbRemoved );
+		void	_moveLink( int oldIndex, int newIndex );
+		void	_reorderLinks(int order[]);
+
+		//
 
 		void	_reallocArray(int capacity, int offset);
 
@@ -290,6 +445,9 @@ namespace wg
 		int			m_size = 0;
 
 		SlotHolder * m_pHolder;
+
+		SlotLink *	m_pFirstLink = nullptr;
+		SlotLink *	m_pLastLink = nullptr;
 	};
 
 

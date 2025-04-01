@@ -467,6 +467,24 @@ namespace wg
 		return iterator(pTo);
 	}
 
+	//____ makeLink() ____________________________________________________________
+
+	template < class SlotType>
+	typename DynamicSlotVector<SlotType>::SlotLink DynamicSlotVector<SlotType>::makeLink(int index)
+	{
+		//TODO: Bounds checks!
+
+		return DynamicSlotVector<SlotType>::SlotLink( this, index);
+	}
+
+	template < class SlotType>
+	typename DynamicSlotVector<SlotType>::SlotLink DynamicSlotVector<SlotType>::makeLink(iterator it)
+	{
+		//TODO: Bounds checks!
+
+		return DynamicSlotVector<SlotType>::SlotLink( this, int(it - _begin()) );
+	}
+
 	//____ _releaseUpdateIndex() _____________________________________________
 
 	template < class SlotType>
@@ -495,6 +513,9 @@ namespace wg
 	template < class SlotType>
 	void DynamicSlotVector<SlotType>::_move(SlotType * pFrom, SlotType * pTo)
 	{
+		int fromIndex = int(pFrom - m_pArray);
+		int toIndex = int(pTo - m_pArray);
+
 		SlotType temp = std::move(*pFrom);
 		if (pFrom < pTo)
 		{
@@ -523,6 +544,8 @@ namespace wg
 			}
 		}
 		*pTo = std::move(temp);
+
+		_moveLink(fromIndex,toIndex);
 	}
 
 	//____ _reorder() _________________________________________________________
@@ -544,6 +567,8 @@ namespace wg
 			new (&m_pArray[i]) SlotType(std::move(pOldArray[ofs]));
 		}
 		free(pOldBuffer);
+
+		_reorderLinks(order);
 	}
 
 	//____ _find() ____________________________________________________________
@@ -556,6 +581,130 @@ namespace wg
 				return p;
 
 		return nullptr;
+	}
+
+	//____ _clearLinks() _________________________________________________________
+
+	template < class SlotType>
+	void DynamicSlotVector<SlotType>::_clearLinks()
+	{
+		SlotLink * pLink = m_pFirstLink;
+
+		while( pLink )
+		{
+			SlotLink * pNextLink = pLink->m_pNext;
+
+			pLink->m_pSlot		= nullptr;
+			pLink->m_pVector	= nullptr;
+			pLink->m_index		= -1;
+			pLink->m_pNext		= nullptr;
+			pLink->m_pPrev		= nullptr;
+
+			pLink = pNextLink;
+		}
+	}
+
+	//____ _updateLinks() __________________________________________
+
+	template < class SlotType>
+	void DynamicSlotVector<SlotType>::_updateLinks()
+	{
+		SlotLink * pLink = m_pFirstLink;
+
+		while( pLink )
+		{
+			pLink->m_pSlot = m_pArray + pLink->m_index;
+			pLink = pLink->m_pNext;
+		}
+	}
+
+	//____ _updateLinksAfterInsertion() __________________________________________
+
+	template < class SlotType>
+	void DynamicSlotVector<SlotType>::_updateLinksAfterInsertion( int insertionPoint, int nbInserted )
+	{
+		SlotLink * pLink = m_pFirstLink;
+
+		while( pLink )
+		{
+			if( pLink->m_index >= insertionPoint )
+				pLink->m_index += nbInserted;
+
+			pLink->m_pSlot = m_pArray + pLink->m_index;
+
+			pLink = pLink->m_pNext;
+		}
+	}
+
+	//____ _updateLinksAfterRemoval() __________________________________________
+
+	template < class SlotType>
+	void DynamicSlotVector<SlotType>::_updateLinksAfterRemoval( int removalPoint, int nbRemoved )
+	{
+		SlotLink * pLink = m_pFirstLink;
+
+		while( pLink )
+		{
+			SlotLink * pNextLink = pLink->m_pNext;
+
+			if( pLink->m_index >= removalPoint )
+			{
+				if( pLink->m_index < removalPoint + nbRemoved )
+				{
+					pLink->_disconnect();
+
+					pLink->m_pSlot		= nullptr;
+					pLink->m_pVector	= nullptr;
+					pLink->m_index		= -1;
+					pLink->m_pNext		= nullptr;
+					pLink->m_pPrev		= nullptr;
+				}
+				else
+				{
+					pLink->m_index -= nbRemoved;
+					pLink->m_pSlot = m_pArray + pLink->m_index;
+				}
+			}
+			else
+				pLink->m_pSlot = m_pArray + pLink->m_index;
+
+			pLink = pNextLink;
+		}
+	}
+
+	//____ _moveLink() ___________________________________________________________
+
+	template < class SlotType>
+	void DynamicSlotVector<SlotType>::_moveLink( int oldIndex, int newIndex )
+	{
+		SlotLink * pLink = m_pFirstLink;
+
+		while( pLink )
+		{
+			if( pLink->m_index == oldIndex )
+				pLink->m_index = newIndex;
+
+			pLink->m_pSlot = m_pArray + pLink->m_index;
+
+			pLink = pLink->m_pNext;
+		}
+	}
+
+	//____ _reorderLinks() _______________________________________________________
+
+	template < class SlotType>
+	void DynamicSlotVector<SlotType>::_reorderLinks(int order[])
+	{
+		SlotLink * pLink = m_pFirstLink;
+
+		while( pLink )
+		{
+			pLink->m_index = order[pLink->m_index];
+			pLink->m_pSlot = m_pArray + pLink->m_index;
+
+			pLink = pLink->m_pNext;
+		}
+
 	}
 
 	//____ _reallocArray() ____________________________________________________
@@ -585,6 +734,8 @@ namespace wg
 			}
 			free(pOldBuffer);
 		}
+
+		_updateLinks();
 	}
 
 	//____ _reallocBlock() ____________________________________________________
@@ -604,6 +755,8 @@ namespace wg
 	template < class SlotType>
 	SlotType* DynamicSlotVector<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
 	{
+		int begIndex = pBeg - m_pArray;
+
 		if (m_pBuffer == m_pArray)
 		{
 			int blocksToMove = int(_end() - pEnd);
@@ -649,8 +802,11 @@ namespace wg
 			m_pArray += pEnd - pBeg;
 		}
 
+
 		m_size -= pEnd - pBeg;
 		assert( m_size >= 0 );
+
+		_updateLinksAfterRemoval(begIndex, pEnd - pBeg);
 		return pBeg;
 	}
 
@@ -659,6 +815,8 @@ namespace wg
 	template < class SlotType>
 	SlotType* DynamicSlotVector<SlotType>::_insertBlock(SlotType * pPos, int entries)
 	{
+		int insertionIndex = pPos - m_pArray;
+
 		if (entries <= m_capacity - m_size)
 		{
 			if (m_pBuffer == m_pArray)
@@ -773,6 +931,8 @@ namespace wg
 
 		m_size += entries;
 		_initBlock(pPos, &pPos[entries]);
+
+		_updateLinksAfterInsertion(insertionIndex, entries);
 		return pPos;
 	}
 

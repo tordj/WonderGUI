@@ -1,6 +1,4 @@
 .vs
-Debug/
-Release/
 log.txt
 *.user
 *.dll
@@ -31,6 +29,7 @@ glew/
 
 build/
 vsbuild/
+68build/
 
 freetype/include
 freetype/lib
