@@ -76,6 +76,10 @@ namespace wg
 
 		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
 
+		//.____ Misc _______________________________________________
+
+		using Link = DynamicSlotVector<StackPanelSlot>::SlotLink;
+
 	protected:
 
 		StackPanelSlot(SlotHolder * pHolder) : PanelSlot(pHolder) {}
