@@ -9,6 +9,8 @@ set( SOURCES
 	tests/gfxstream.h
 	tests/softgfxdevice.cpp
 	tests/softgfxdevice.h
+	tests/slotlinks.cpp
+	tests/slotlinks.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})

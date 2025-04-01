@@ -54,7 +54,6 @@ namespace wg
 			float	weight = 1;
 		};
 		
-
 		//.____ Identification ________________________________________________
 
 		const static TypeInfo	TYPEINFO;
@@ -70,6 +69,10 @@ namespace wg
 		//.____ Operators __________________________________________
 
 		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+		//.____ Misc _______________________________________________
+
+		using Link = DynamicSlotVector<PackPanelSlot>::SlotLink;
 
 	protected:
 
