@@ -64,11 +64,9 @@ public:
 	static WgPluginContext_p	context() { return s_pContext; };
 
 	
-	static bool			isInitialized() { return s_pluginInitCounter > 0; }
-	
+	static bool			isInitialized() { return s_pContext != nullptr; }
+
 private:
-	static	int				s_pluginInitCounter;
-	
 	static WgPluginContext_p	s_pContext;
 	
 };

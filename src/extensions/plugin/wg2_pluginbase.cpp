@@ -28,7 +28,6 @@
 using namespace wg;
 
 
-int					WgPluginBase::s_pluginInitCounter = 0;
 WgPluginContext_p	WgPluginBase::s_pContext;
 
 
@@ -45,13 +44,10 @@ bool WgPluginBase::init(wg_plugin_interface* pCallsCollection, void * pRealHostB
 	if( !PluginCalls::_init(pCallsCollection) )
 		return false;								// Host has too old ABI!
 
-	auto pHostBridge = new PluginHostBridge(pRealHostBridge);
-	
-	if( s_pluginInitCounter == 0 )
-		WgBase::Init(pHostBridge);
-	else
-		WgBase::setContext(nullptr);
+	WgBase::Init(nullptr);
+	WgBase::setContext(nullptr);
 
+	auto pHostBridge = new PluginHostBridge(pRealHostBridge);
 	s_pContext = new WgPluginContext();
 	
 	s_pContext->pBaseContext = WgBase::context();
@@ -59,7 +55,6 @@ bool WgPluginBase::init(wg_plugin_interface* pCallsCollection, void * pRealHostB
 	s_pContext->pHostBridge = pHostBridge;
 	s_pContext->contextSwitchCallback = contextSwitchCallback;
 	
-	s_pluginInitCounter++;
 	return true;
 }
 
@@ -67,23 +62,15 @@ bool WgPluginBase::init(wg_plugin_interface* pCallsCollection, void * pRealHostB
 
 bool WgPluginBase::exit()
 {
-	if( s_pluginInitCounter <= 0 )
+	if( s_pContext == nullptr )
 	{
 		throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to WgPluginBase::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 		return false;
 	}
 	
-	if( s_pluginInitCounter > 1 )
-	{
-		s_pluginInitCounter--;			// This belongs to GfxBase, but we do like this anyway.
-		return true;
-	}
-
 	WgBase::Exit();
 
 	s_pContext = nullptr;
-
-	s_pluginInitCounter = 0;
 	return true;
 }
 
@@ -99,14 +86,16 @@ WgPluginContext_p WgPluginBase::setContext( const WgPluginContext_p& pNewContext
 		s_pContext->pBaseContext = WgBase::context();
 		return pOldContext;
 	}
-	
-	s_pContext = pNewContext;
+
+	if( pNewContext != s_pContext )
+    {
+		s_pContext = pNewContext;
+		PluginCalls::_init(&pNewContext->callsCollection);
+
+		if( pNewContext->contextSwitchCallback )
+		   pNewContext->contextSwitchCallback(pNewContext);
+    }
+
 	WgBase::setContext(pNewContext->pBaseContext);
-	
-	PluginCalls::_init(&pNewContext->callsCollection);
-	
-	if( pNewContext->contextSwitchCallback )
-		pNewContext->contextSwitchCallback(pNewContext);
-	
 	return pOldContext;
 }
