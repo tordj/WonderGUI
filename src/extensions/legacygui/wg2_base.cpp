@@ -64,16 +64,15 @@ void WgBase::Init( wg::HostBridge * pHostBridge)
 	s_pContext->pGfxContext = GfxBase::context();
 	
 	s_pContext->pHostBridge = pHostBridge;
-	
+
+	wg::TextTool::setDefaultBreakRules();
+	wg::TextStyleManager::init();
+
 	wg::TextStyle::Blueprint textStyleBP;
 	textStyleBP.font = wg::DummyFont::create();
 	s_pContext->pDefaultTextStyle = wg::TextStyle::create( textStyleBP );
 
 	wg::TextStyle::s_pDefaultStyle = s_pContext->pDefaultTextStyle;
-
-	wg::TextTool::setDefaultBreakRules();
-	wg::TextStyleManager::init();
-
 }
 
 //____ Exit() __________________________________________________________________
