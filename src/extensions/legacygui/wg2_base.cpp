@@ -65,6 +65,12 @@ void WgBase::Init( wg::HostBridge * pHostBridge)
 	
 	s_pContext->pHostBridge = pHostBridge;
 	
+	wg::TextStyle::Blueprint textStyleBP;
+	textStyleBP.font = wg::DummyFont::create();
+	s_pContext->pDefaultTextStyle = wg::TextStyle::create( textStyleBP );
+
+	wg::TextStyle::s_pDefaultStyle = s_pContext->pDefaultTextStyle;
+
 	wg::TextTool::setDefaultBreakRules();
 	wg::TextStyleManager::init();
 
@@ -99,10 +105,16 @@ WgContext_p WgBase::setContext( const WgContext_p& pNewContext )
 	else
 	{
 		s_pContext = WgContext_p(new WgContext());
-		
+
+		wg::TextStyle::Blueprint textStyleBP;
+		textStyleBP.font = wg::DummyFont::create();
+		s_pContext->pDefaultTextStyle = wg::TextStyle::create( textStyleBP );
+
 		wg::GfxBase::setContext(nullptr);
 		s_pContext->pGfxContext = wg::GfxBase::context();
 	}
+
+	wg::TextStyle::s_pDefaultStyle = s_pContext->pDefaultTextStyle;
 
 	return pOldContext;
 }
@@ -206,6 +218,7 @@ WgKey WgBase::TranslateKey( int native_keycode )
 
 void WgBase::setDefaultStyle( wg::TextStyle* pStyle )
 {
+	s_pContext->pDefaultTextStyle = pStyle;
 	wg::TextStyle::s_pDefaultStyle = pStyle;
 }
 

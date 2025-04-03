@@ -73,7 +73,7 @@ namespace wg
 		TextLayout_p		pDefaultTextLayout;
 		Caret_p				pDefaultCaret;
 		NumberLayout_p		pDefaultNumberLayout;
-//		TextStyle_p			pDefaultStyle;			// Moved to TextStyle itself for WG2 compatibility reasons.
+		TextStyle_p			pDefaultTextStyle;
 		PackLayout_p		pDefaultPackLayout;
 		SkinSlotManager_p	pSkinSlotManager;
 		
@@ -161,7 +161,7 @@ namespace wg
 		static int64_t		_startReceiveUpdates(Receiver* pReceiver);
 		static void			_stopReceiveUpdates(Receiver* pReceiver);
 
-		static TextStyle*	_defaultStyle() { return TextStyle::s_pDefaultStyle.rawPtr(); }
+		static TextStyle*	_defaultStyle() { return s_pGUIContext->pDefaultTextStyle.rawPtr(); }
 
 	protected:
 		static	GUIContext_p	s_pGUIContext;

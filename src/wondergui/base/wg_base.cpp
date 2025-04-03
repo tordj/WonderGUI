@@ -78,6 +78,10 @@ namespace wg
 
 		s_pGUIContext->pDefaultTextLayout = BasicTextLayout::create({});
 
+		TextStyle::Blueprint textStyleBP;
+		textStyleBP.font = DummyFont::create();
+		s_pGUIContext->pDefaultTextStyle = TextStyle::create( textStyleBP );
+
 		s_pGUIContext->pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
 
 		s_pGUIContext->pDefaultPackLayout = PackLayout::create( WGBP(PackLayout,
@@ -90,6 +94,8 @@ namespace wg
 		s_pGUIContext->pSkinSlotManager = SkinSlotManager::create();
 
 		s_pGUIContext->timestamp = 0;
+
+		TextStyle::s_pDefaultStyle = s_pGUIContext->pDefaultTextStyle;
 
 		s_guiInitCounter = 1;
 		return true;
@@ -153,6 +159,10 @@ namespace wg
 			p->pDefaultCaret = Caret::create();
 
 			p->pDefaultTextLayout = BasicTextLayout::create({});
+			
+			TextStyle::Blueprint textStyleBP;
+			textStyleBP.font = DummyFont::create();
+			p->pDefaultTextStyle = TextStyle::create( textStyleBP );
 
 			p->pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
 
@@ -167,8 +177,10 @@ namespace wg
 			p->timestamp = 0;
 
 			s_pGUIContext = p;
+
 		}
 
+		TextStyle::s_pDefaultStyle = s_pGUIContext->pDefaultTextStyle;
 		return pOld;
 	}
 
@@ -253,13 +265,14 @@ namespace wg
 
 	TextStyle_p Base::defaultStyle()
 	{
-		return TextStyle::s_pDefaultStyle;
+		return s_pGUIContext->pDefaultTextStyle;
 	}
 
 	//____ setDefaultStyle() _______________________________________________________
 
 	void Base::setDefaultStyle( TextStyle * pStyle )
 	{
+		s_pGUIContext->pDefaultTextStyle = pStyle;
 		TextStyle::s_pDefaultStyle = pStyle;
 	}
 

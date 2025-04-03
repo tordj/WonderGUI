@@ -91,6 +91,7 @@ class WgContext : public wg::Object
 	
 	wg::HostBridge *	pHostBridge = nullptr;
 	
+	wg::TextStyle_p		pDefaultTextStyle = nullptr;
 	wg::GfxContext_p	pGfxContext;
 };
 
@@ -136,7 +137,7 @@ public:
 	static void		setHostBridge( wg::HostBridge * pHostBridge);
 
 	static void		setDefaultStyle( wg::TextStyle* pStyle );
-	static wg::TextStyle_p	defaultStyle() { return wg::TextStyle::s_pDefaultStyle; }
+	static wg::TextStyle_p	defaultStyle() { return s_pContext->pDefaultTextStyle; }
 
 	static void SetWidgetTracking(bool bTrack);
 	static void PrintWidgetTrees(std::ostream& stream);
