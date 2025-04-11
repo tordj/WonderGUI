@@ -577,12 +577,12 @@ namespace wg
 
 		if (bIsInside)
 		{
-			auto p = MouseClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp, timestamp - m_latestPressTimestamps[(int)button], m_pressOrdinal[int(button)]);
+			auto p = MouseClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp, int(timestamp - m_latestPressTimestamps[(int)button]), m_pressOrdinal[int(button)]);
 			p->setCopyTo(pWidget);
 			Base::msgRouter()->post(p);
 		}
 		else
-			Base::msgRouter()->post(MouseClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp, timestamp - m_latestPressTimestamps[(int)button], m_pressOrdinal[int(button)]));
+			Base::msgRouter()->post(MouseClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp, int(timestamp - m_latestPressTimestamps[(int)button]), m_pressOrdinal[int(button)]));
 	}
 
 
