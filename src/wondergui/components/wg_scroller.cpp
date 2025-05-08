@@ -221,7 +221,13 @@ namespace wg
 		Part markedPart = _getMarkedPart(geo, pointerPos);
 
 		if (m_pressedPart != Part::None && markedPart != m_pressedPart)
-			markedPart = Part::None;										// We can not mark anything else than what we have pressed.
+		{
+			if (m_pressedPart == Part::Bar)
+				markedPart = Part::Bar;
+			else
+				markedPart = Part::None;										// We can not mark anything else than what we have pressed.
+
+		}
 
 		if (markedPart != m_markedPart)
 		{
@@ -444,7 +450,7 @@ namespace wg
 		// We just copy Enabled/Focused/Selected to all our skins.
 		// We ignore Targeted since that won't work without hover anyway.
 
-		bool bDisabled = !state.isDisabled();
+		bool bDisabled = state.isDisabled();
 		bool bFocused = state.isFocused();
 		bool bSelected = state.isSelected();
 
