@@ -1466,7 +1466,7 @@ namespace wg
 			}
 			else
 			{
-				if ( width > maxLineWidth - eolCaretWidth)
+				if ( m_bLineWrap && (width > maxLineWidth - eolCaretWidth) )
 				{
 					// Update totalHeight
 
