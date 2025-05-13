@@ -5,6 +5,7 @@
 #include <wondergui.h>
 #include <wondergfxstream.h>
 #include <wg_freetypefont.h>
+#include <wg_debugoverlay.h>
 
 #include <initializer_list>
 #include <string>
@@ -123,7 +124,9 @@ private:
 	int					m_currentFrame = 0;			// First frame is 0.
 	bool				m_bShowDebugRects = false;
 	bool				m_bRecordSteps = false;
-	
+
+	DebugOverlay_p		m_pDebugOverlay;
+
 	PackPanel_p			m_pDisplayToggles;
 	PackPanel_p			m_pScreenLineup;
 	Capsule_p			m_pLogCapsule;

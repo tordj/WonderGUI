@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_DESIGNOVERLAY_DOT_H
-#define WG_DESIGNOVERLAY_DOT_H
+#ifndef WG_DEBUGOVERLAY_DOT_H
+#define WG_DEBUGOVERLAY_DOT_H
 #pragma once
 
 #include <wg_overlay.h>
@@ -32,13 +32,13 @@ namespace wg
 {
 
 
-	class DesignOverlay;
-	typedef	StrongPtr<DesignOverlay>	DesignOverlay_p;
-	typedef	WeakPtr<DesignOverlay>	DesignOverlay_wp;
+	class DebugOverlay;
+	typedef	StrongPtr<DebugOverlay>	DebugOverlay_p;
+	typedef	WeakPtr<DebugOverlay>	DebugOverlay_wp;
 
-	//____ DesignOverlay __________________________________________________________
+	//____ DebugOverlay __________________________________________________________
 
-	class DesignOverlay : public Overlay
+	class DebugOverlay : public Overlay
 	{
 
 	public:
@@ -47,7 +47,7 @@ namespace wg
 
 		class ToolboxSlot : public Overlay::Slot
 		{
-			friend class DesignOverlay;
+			friend class DebugOverlay;
 			friend class CDesignToolboxSlotVector;
 			template<class S> friend class StaticSlotVector;
 			template<class S> friend class SlotVector;
@@ -76,7 +76,7 @@ namespace wg
 
 		class CToolboxVector : public StaticSlotVector<ToolboxSlot>
 		{
-			friend class DesignOverlay;
+			friend class DebugOverlay;
 
 			CToolboxVector(SlotHolder * pHolder) : StaticSlotVector<ToolboxSlot>(pHolder) {}
 		};
@@ -84,7 +84,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static DesignOverlay_p	create() { return DesignOverlay_p(new DesignOverlay()); }
+		static DebugOverlay_p	create() { return DebugOverlay_p(new DebugOverlay()); }
 
 		//.____ Components _______________________________________
 
@@ -117,8 +117,8 @@ namespace wg
 
 
 	protected:
-		DesignOverlay();
-		virtual ~DesignOverlay();
+		DebugOverlay();
+		virtual ~DebugOverlay();
 
 	private:
 
@@ -150,6 +150,10 @@ namespace wg
 
 		// Toolbox creators
 
+		std::tuple<Widget_p, PackPanel_p> _createToolbox( const char * pTitle );
+
+		Widget_p		_createMainTool();
+
 		Widget_p		_createGenericSlotTool(const StaticSlot& slot);
 		Widget_p		_createGenericWidgetTool(Widget * pWidget);
 
@@ -161,11 +165,13 @@ namespace wg
 		//
 
 		bool		m_bEditMode = false;
+		bool		m_bSelectMode = false;
 
 		Widget_wp	m_pSelectedWidget;
 		Skin_p		m_pSelectionSkin;
 		Skin_p		m_pToolboxSkin;
 
+		PackPanel_p	m_pMainToolbox;
 		PackPanel_p	m_pSlotToolbox;
 		PackPanel_p	m_pWidgetToolbox;
 
@@ -175,25 +181,25 @@ namespace wg
 
 	//____ paletteSkin() ______________________________________________________
 
-	Skin_p DesignOverlay::paletteSkin() const
+	Skin_p DebugOverlay::paletteSkin() const
 	{
 		return m_pToolboxSkin;
 	}
 
 	//____ selectionSkin() ____________________________________________________
 
-	Skin_p DesignOverlay::selectionSkin() const
+	Skin_p DebugOverlay::selectionSkin() const
 	{
 		return m_pSelectionSkin;
 	}
 
 	//____ isEditMode() _______________________________________________________
 
-	bool DesignOverlay::isEditMode() const
+	bool DebugOverlay::isEditMode() const
 	{
 		return m_bEditMode;
 	}
 
 
 } // namespace wg
-#endif //WG_DESIGNOVERLAY_DOT_H
+#endif //WG_DEBUGOVERLAY_DOT_H

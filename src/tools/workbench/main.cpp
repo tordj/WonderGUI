@@ -1661,7 +1661,7 @@ bool splitPanelTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool designLayerTest(ComponentPtr<DynamicSlot> pSlot)
 {
-	auto pDesignOverlay = DesignOverlay::create();
+	auto pDebugOverlay = DebugOverlay::create();
 
 	auto pFlexPanel = FlexPanel::create();
 	pFlexPanel->setSkin( ColorSkin::create(Color::Thistle) );
@@ -1682,10 +1682,10 @@ bool designLayerTest(ComponentPtr<DynamicSlot> pSlot)
 	pFlexPanel->slots.pushFront(pFiller2, { .pos = {20,20}, .size = {50,50} });
 	pFlexPanel->slots.pushFront(pFiller3, { .pos = {30,30}, .size = {50,50} });
 
-	pDesignOverlay->mainSlot = pFlexPanel;
-	*pSlot = pDesignOverlay;
+	pDebugOverlay->mainSlot = pFlexPanel;
+	*pSlot = pDebugOverlay;
 
-	pDesignOverlay->setEditMode(true);
+	pDebugOverlay->setEditMode(true);
 
 //	*pSlot = pFlexPanel;
 

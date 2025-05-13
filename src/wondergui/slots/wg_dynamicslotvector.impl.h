@@ -755,7 +755,7 @@ namespace wg
 	template < class SlotType>
 	SlotType* DynamicSlotVector<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
 	{
-		int begIndex = pBeg - m_pArray;
+		int begIndex = int(pBeg - m_pArray);
 
 		if (m_pBuffer == m_pArray)
 		{
@@ -806,7 +806,7 @@ namespace wg
 		m_size -= pEnd - pBeg;
 		assert( m_size >= 0 );
 
-		_updateLinksAfterRemoval(begIndex, pEnd - pBeg);
+		_updateLinksAfterRemoval(begIndex, int(pEnd - pBeg));
 		return pBeg;
 	}
 
@@ -815,7 +815,7 @@ namespace wg
 	template < class SlotType>
 	SlotType* DynamicSlotVector<SlotType>::_insertBlock(SlotType * pPos, int entries)
 	{
-		int insertionIndex = pPos - m_pArray;
+		int insertionIndex = int(pPos - m_pArray);
 
 		if (entries <= m_capacity - m_size)
 		{

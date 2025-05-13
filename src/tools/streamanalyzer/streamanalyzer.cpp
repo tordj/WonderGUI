@@ -129,9 +129,11 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	m_pLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::Default,
 	.expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Weight });
 
+	m_pDebugOverlay = DebugOverlay::create();
+
 	auto pPopupOverlay = PopupOverlay::create();
-	
-	
+
+
 	
 	auto pBasePanel = PackPanel::create();
 	pBasePanel->setAxis(Axis::Y);
@@ -155,11 +157,13 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	pBasePanel->setSlotWeight(0, 2, {0.f,1.f});
 
 	pPopupOverlay->mainSlot = pBasePanel;
-	
-	pRoot->slot = pPopupOverlay;
+
+	m_pDebugOverlay->mainSlot = pPopupOverlay;
+
+	pRoot->slot = m_pDebugOverlay;
 
 	pSplitPanel->setSplit(0.5f);
-	
+
 	return true;
 }
 

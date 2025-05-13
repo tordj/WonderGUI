@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_designoverlay.h>
+#include <wg_debugoverlay.h>
 #include <wg_util.h>
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
@@ -28,9 +28,13 @@
 #include <wg_inputhandler.h>
 #include <wg_boxskin.h>
 #include <wg_packpanel.h>
+#include <wg_tablepanel.h>
 #include <wg_numberdisplay.h>
 #include <wg_textdisplay.h>
 #include <wg_gfxdevice.h>
+#include <wg_togglebutton.h>
+#include <wg_togglegroup.h>
+#include <wg_scrollpanel.h>
 
 #include <wg_staticslotvector.impl.h>
 
@@ -40,15 +44,15 @@ namespace wg
 {
 	using namespace Util;
 
-	template class StaticSlotVector<DesignOverlay::ToolboxSlot>;
+	template class StaticSlotVector<DebugOverlay::ToolboxSlot>;
 
-	const TypeInfo DesignOverlay::TYPEINFO = { "DesignOverlay", &Overlay::TYPEINFO };
-	const TypeInfo DesignOverlay::ToolboxSlot::TYPEINFO = { "DesignOverlay::ToolboxSlot", &Overlay::Slot::TYPEINFO };
+	const TypeInfo DebugOverlay::TYPEINFO = { "DebugOverlay", &Overlay::TYPEINFO };
+	const TypeInfo DebugOverlay::ToolboxSlot::TYPEINFO = { "DebugOverlay::ToolboxSlot", &Overlay::Slot::TYPEINFO };
 
 
 	//____ constructor ____________________________________________________________
 
-	DesignOverlay::DesignOverlay() : palettes(this)
+	DebugOverlay::DebugOverlay() : palettes(this)
 	{
 		// Create default skins
 
@@ -56,7 +60,19 @@ namespace wg
 
 		m_pToolboxSkin = BoxSkin::create({ 16,2,2,2 }, Color::White, Color::Yellow, { 16,2,2,2 } );
 
-		// Add two default palettes
+		// Add our default palettes
+
+		m_pMainToolbox = PackPanel::create();
+		m_pMainToolbox->setAxis(Axis::Y);
+
+		m_pMainToolbox->slots << _createMainTool();
+
+
+		Widget_p pMainToolbox;
+		PackPanel_p	pMainContent;
+
+		std::tie(pMainToolbox, pMainContent) = _createToolbox("Main Toolbox");
+
 
 		m_pSlotToolbox = PackPanel::create();
 		m_pSlotToolbox->setAxis(Axis::Y);
@@ -64,34 +80,36 @@ namespace wg
 		m_pWidgetToolbox = PackPanel::create();
 		m_pWidgetToolbox->setAxis(Axis::Y);
 
-		palettes._pushBackEmpty(2);
+		pMainContent->slots.pushBack( {m_pSlotToolbox, m_pWidgetToolbox} );
 
-		palettes[0]._setWidget(m_pSlotToolbox);
-		palettes[0].m_bVisible = false;
-		palettes[0].m_placement = Placement::South;
+		palettes._pushBackEmpty(1);
 
-		palettes[1]._setWidget(m_pWidgetToolbox);
-		palettes[1].m_bVisible = false;
-		palettes[1].m_placement = Placement::East;
+		palettes[0]._setWidget(pMainToolbox);
+		palettes[0].m_bVisible = true;
+		palettes[0].m_placement = Placement::East;
+
+		_refreshRealGeo( &palettes[0] );
+
+
 	}
 
 	//____ Destructor _____________________________________________________________
 
-	DesignOverlay::~DesignOverlay()
+	DebugOverlay::~DebugOverlay()
 	{
 	}
 
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& DesignOverlay::typeInfo(void) const
+	const TypeInfo& DebugOverlay::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ setToolboxSkin() ___________________________________________________
 
-	void DesignOverlay::setToolboxSkin(Skin * pSkin)
+	void DebugOverlay::setToolboxSkin(Skin * pSkin)
 	{
 		m_pToolboxSkin = pSkin;
 		_requestRender();
@@ -99,7 +117,7 @@ namespace wg
 
 	//____ setSelectionSkin() _________________________________________________
 
-	void DesignOverlay::setSelectionSkin(Skin * pSkin)
+	void DebugOverlay::setSelectionSkin(Skin * pSkin)
 	{
 		m_pSelectionSkin = pSkin;
 		_requestRender();
@@ -107,7 +125,7 @@ namespace wg
 
 	//____ setEditMode() ______________________________________________________
 
-	void DesignOverlay::setEditMode(bool bEditMode)
+	void DebugOverlay::setEditMode(bool bEditMode)
 	{
 		if (bEditMode != m_bEditMode)
 		{
@@ -118,7 +136,7 @@ namespace wg
 
 	//____ _matchingHeight() _______________________________________________________
 
-	spx DesignOverlay::_matchingHeight(spx width, int scale) const
+	spx DebugOverlay::_matchingHeight(spx width, int scale) const
 	{
 		if (mainSlot._widget())
 			return mainSlot._widget()->_matchingHeight(width, scale);
@@ -128,7 +146,7 @@ namespace wg
 
 	//____ _matchingWidth() _______________________________________________________
 
-	spx DesignOverlay::_matchingWidth(spx height, int scale) const
+	spx DebugOverlay::_matchingWidth(spx height, int scale) const
 	{
 		if (mainSlot._widget())
 			return mainSlot._widget()->_matchingWidth(height,scale);
@@ -138,7 +156,7 @@ namespace wg
 
 	//____ defaultSize() _____________________________________________________________
 
-	SizeSPX DesignOverlay::_defaultSize(int scale) const
+	SizeSPX DebugOverlay::_defaultSize(int scale) const
 	{
 		if (mainSlot._widget())
 			return mainSlot._widget()->_defaultSize(scale);
@@ -148,7 +166,7 @@ namespace wg
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget *  DesignOverlay::_findWidget(const CoordSPX& ofs, SearchMode mode)
+	Widget *  DebugOverlay::_findWidget(const CoordSPX& ofs, SearchMode mode)
 	{
 		if (m_bEditMode)
 		{
@@ -164,7 +182,7 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void DesignOverlay::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)
+	void DebugOverlay::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
 		// Render skin
 
@@ -181,32 +199,34 @@ namespace wg
 		{
 			if (m_pSelectedWidget)
 				m_pSelectionSkin->_render(pDevice, _selectionGeo(), m_scale, State::Default);
-		}
 
-		for (auto& palette : palettes)
-		{
-			if (palette.m_bVisible)
+			for (auto& palette : palettes)
 			{
-				RectSPX geo = palette.m_geo + _canvas.pos();
-
-				if (m_pToolboxSkin)
-					m_pToolboxSkin->_render(pDevice, geo + m_pToolboxSkin->_contentBorder(m_scale, State::Default), m_scale, State::Default);
-
-				RectSPX pxPaletteGeo = palette.m_geo;
-				if (pDevice->clipBounds().isOverlapping(pxPaletteGeo))
+				if (palette.m_bVisible)
 				{
-					ClipPopData popData = limitClipList(pDevice, palette.m_geo);
-					palette._widget()->_render(pDevice, geo, geo);
+					RectSPX geo = palette.m_geo + _canvas.pos();
 
-					popClipList(pDevice, popData);
+					if (m_pToolboxSkin)
+						m_pToolboxSkin->_render(pDevice, geo + m_pToolboxSkin->_contentBorder(m_scale, State::Default), m_scale, State::Default);
+
+					RectSPX pxPaletteGeo = palette.m_geo;
+					if (pDevice->clipBounds().isOverlapping(pxPaletteGeo))
+					{
+						ClipPopData popData = limitClipList(pDevice, palette.m_geo);
+						palette._widget()->_render(pDevice, geo, geo);
+
+						popClipList(pDevice, popData);
+					}
 				}
 			}
+
 		}
+
 	}
 
 	//____ _selectionGeo() ____________________________________________________
 
-	RectSPX DesignOverlay::_selectionGeo() const
+	RectSPX DebugOverlay::_selectionGeo() const
 	{
 		if (!m_pSelectedWidget)
 			return RectSPX();
@@ -222,7 +242,7 @@ namespace wg
 
 	//____ _refreshRealGeo() __________________________________________________
 
-	void DesignOverlay::_refreshRealGeo(ToolboxSlot * pSlot, bool bForceResize)
+	void DebugOverlay::_refreshRealGeo(ToolboxSlot * pSlot, bool bForceResize)
 	{
 		if (m_pSelectedWidget)
 		{
@@ -293,7 +313,7 @@ namespace wg
 
 	//____ _selectWidget() ____________________________________________________
 
-	void DesignOverlay::_selectWidget(Widget * pWidget)
+	void DebugOverlay::_selectWidget(Widget * pWidget)
 	{
 		if (pWidget == m_pSelectedWidget)
 			return;
@@ -328,12 +348,13 @@ namespace wg
 
 			m_pWidgetToolbox->slots.clear();
 			m_pWidgetToolbox->slots << _createGenericWidgetTool(m_pSelectedWidget);
-
+/*
 			for (auto& palette : palettes)
 			{
 				palette.m_bVisible = true;
 				_refreshRealGeo(&palette);
 			}
+ */
 		}
 		else
 		{
@@ -355,7 +376,7 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo&	DesignOverlay::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	DebugOverlay::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &mainSlot)
 			return DynamicSlot::TYPEINFO;
@@ -365,7 +386,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void DesignOverlay::_childRequestResize( StaticSlot * pSlot )
+	void DebugOverlay::_childRequestResize( StaticSlot * pSlot )
 	{
 		if( pSlot == &mainSlot )
 			_requestResize();
@@ -378,7 +399,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void DesignOverlay::_releaseChild(StaticSlot * pSlot)
+	void DebugOverlay::_releaseChild(StaticSlot * pSlot)
 	{
 		if (pSlot == &mainSlot )
 			Overlay::_releaseChild(pSlot);
@@ -394,21 +415,21 @@ namespace wg
 
 	//____ _beginOverlaySlots() __________________________________________________
 
-	const Overlay::Slot * DesignOverlay::_beginOverlaySlots() const
+	const Overlay::Slot * DebugOverlay::_beginOverlaySlots() const
 	{
 		return palettes._begin();
 	}
 
 	//____ _endOverlaySlots() ____________________________________________________
 
-	const Overlay::Slot *  DesignOverlay::_endOverlaySlots() const
+	const Overlay::Slot *  DebugOverlay::_endOverlaySlots() const
 	{
 		return palettes._end();
 	}
 
 	//____ _sizeOfOverlaySlot() __________________________________________________
 
-	int DesignOverlay::_sizeOfOverlaySlot() const
+	int DebugOverlay::_sizeOfOverlaySlot() const
 	{
 		return sizeof(ToolboxSlot);
 	}
@@ -416,7 +437,7 @@ namespace wg
 
 	//____ _resize() ___________________________________________________________
 
-	void DesignOverlay::_resize( const SizeSPX& sz, int scale )
+	void DebugOverlay::_resize( const SizeSPX& sz, int scale )
 	{
 		Overlay::_resize(sz, scale);
 
@@ -428,11 +449,29 @@ namespace wg
 
 	//____ _receive() ______________________________________________________________
 
-	void DesignOverlay::_receive( Msg * _pMsg )
+	void DebugOverlay::_receive( Msg * _pMsg )
 	{
-		if( !m_bEditMode )
-			Overlay::_receive(_pMsg);
+		// Check if it is our enable/disable toggle
 
+		if( _pMsg->isInstanceOf( KeyMsg::TYPEINFO ) && static_cast<KeyMsg*>(_pMsg)->translatedKeyCode() == Key::Escape && (static_cast<KeyMsg*>(_pMsg)->modKeys() == ModKeys::StdCtrl || static_cast<KeyMsg*>(_pMsg)->modKeys() == ModKeys::MacCtrl) )
+		{
+			if( _pMsg->typeInfo() == KeyPressMsg::TYPEINFO )
+				setEditMode(!m_bEditMode);
+
+			_pMsg->swallow();
+			Overlay::_receive(_pMsg);
+			return;
+		}
+
+		//
+
+		if( !m_bEditMode )
+		{
+			Overlay::_receive(_pMsg);
+			return;
+		}
+
+		//
 
 		switch( _pMsg->type() )
 		{
@@ -454,7 +493,7 @@ namespace wg
 
 							for (int i = 0; i < palettes.size(); i++)
 							{
-								if ((palettes[i].m_geo + contentBorder).contains(mousePos) )
+								if (palettes[i].m_bVisible && (palettes[i].m_geo + contentBorder).contains(mousePos) )
 								{
 									m_pressedToolbox = i;
 									m_pressedToolboxStartOfs = palettes[i].m_placementPos;
@@ -504,6 +543,39 @@ namespace wg
 				break;
 			}
 
+			case MsgType::KeyPress:
+			{
+				auto pMsg = static_cast<KeyPressMsg*>(_pMsg);
+
+				Key key = pMsg->translatedKeyCode();
+				switch( key )
+				{
+					case Key::F1:
+					case Key::F2:
+					case Key::F3:
+					case Key::F4:
+					case Key::F5:
+					{
+						int paletteIdx = int(key) - int(Key::F1);
+
+						if( palettes.size() > paletteIdx )
+						{
+							palettes[paletteIdx].m_bVisible = !palettes[paletteIdx].m_bVisible;
+							_requestRender();
+
+							// Make sure we don't keep dragging around an invisible box.
+
+							m_pressedToolbox = -1;
+						}
+					}
+
+
+					default:
+						break;
+				}
+
+				break;
+			}
 
 			default:
 				break;
@@ -511,79 +583,138 @@ namespace wg
 
 		Overlay::_receive(_pMsg);
 	}
-	
+
+	//____ _createToolbox() ________________________________________
+
+	std::tuple<Widget_p, PackPanel_p> DebugOverlay::_createToolbox( const char * pTitle )
+	{
+		auto pPanelSkin = BoxSkin::create( WGBP(BoxSkin,
+												_.color = Color::Grey,
+												_.outlineColor = Color::Black,
+												_.outlineThickness = 1,
+												_.padding = 4 ));
+
+		auto pContentSkin = BoxSkin::create( WGBP(BoxSkin,
+												  _.color = Color::White,
+												  _.outlineColor = Color::Black,
+												  _.outlineThickness = 1,
+												  _.padding = 2));
+
+		auto pMain = PackPanel::create( WGBP(PackPanel, _.axis = Axis::Y, _.skin = pPanelSkin) );
+
+		auto pTitleDisplay = TextDisplay::create( WGBP(TextDisplay, _.display.text = pTitle ));
+
+		auto pContentWindow = ScrollPanel::create( WGBP(ScrollPanel, _.skin = pContentSkin ));
+
+		auto pContent = PackPanel::create( WGBP(PackPanel, _.axis = Axis::Y ));
+
+		pContentWindow->slot = pContent;
+
+		pMain->slots.pushBack( pTitleDisplay, WGBP(PackPanelSlot, _.weight = 0.f ));
+		pMain->slots.pushBack( pContentWindow, WGBP(PackPanelSlot, _.weight = 1.f ));
+
+		return std::make_tuple(pMain,pContent);
+	}
+
+	//____ _createMainTool() ________________________________________
+
+	Widget_p DebugOverlay::_createMainTool()
+	{
+		auto pSection = PackPanel::create( WGBP(PackPanel, _.axis = Axis::X) );
+
+
+		auto pPickButtonSkin = BoxSkin::create( WGBP(BoxSkin,
+													 _.outlineColor = Color::Black,
+													 _.outlineThickness = 1,
+													 _.padding = 2,
+													 _.states = { {State::Default, Color::Red}, {State::Selected, Color::Green}} ));
+
+
+		auto pPickButton = ToggleButton::create( WGBP(ToggleButton, _.skin = pPickButtonSkin));
+
+		pSection->slots << pPickButton;
+
+		return pSection;
+	}
+
 	//____ _createGenericSlotTool() ________________________________________
 
-	Widget_p DesignOverlay::_createGenericSlotTool(const StaticSlot& slot)
+	Widget_p DebugOverlay::_createGenericSlotTool(const StaticSlot& slot)
 	{
-		auto pColumns = PackPanel::create();
-		pColumns->setAxis(Axis::X);
+		auto pTable = TablePanel::create( WGBP(TablePanel,
+											   _.columns = 2,
+											   _.rows = 5) );
 
-		auto pHeaderColumn = PackPanel::create();
-		pHeaderColumn->setAxis(Axis::Y);
+		int row = 0;
 
-		auto pValueColumn = PackPanel::create();
-		pValueColumn->setAxis(Axis::Y);
+		// Type
 
-		pColumns->slots << pHeaderColumn;
-		pColumns->slots << pValueColumn;
+		{
+			pTable->slots[row][0] = TextDisplay::create( WGBP(TextDisplay, _.display.text = "Slot Type:") );
+			pTable->slots[row][0] = TextDisplay::create( WGBP(TextDisplay, _.display.text = slot.typeInfo().className ) );
+			row++;
+		}
+
 
 		// Position
 
 		{
-			auto pLabel = TextDisplay::create();
-			pLabel->display.setText("Position: ");
+			auto pLabelX = TextDisplay::create();
+			pLabelX->display.setText("Relative X: ");
 
-			CoordF pos = slot.pos();
+			auto pLabelY = TextDisplay::create();
+			pLabelY->display.setText("Relative Y: ");
 
-			char buffer[256];
-			snprintf(buffer, 256, "%.2f, %.2f", pos.x, pos.y);
+			auto pLabelW = TextDisplay::create();
+			pLabelW->display.setText("Width: ");
 
-			auto pValue = TextDisplay::create();
-			pValue->display.setText(buffer);
+			auto pLabelH = TextDisplay::create();
+			pLabelH->display.setText("Height: ");
 
-			pHeaderColumn->slots << pLabel;
-			pValueColumn->slots << pValue;
+
+			RectF geo = slot.geo();
+
+			auto pValueX = TextDisplay::create();
+			pValueX->display.setText(std::to_string(geo.x));
+
+			auto pValueY = TextDisplay::create();
+			pValueY->display.setText(std::to_string(geo.y));
+
+			auto pValueW = TextDisplay::create();
+			pValueW->display.setText(std::to_string(geo.w));
+
+			auto pValueH = TextDisplay::create();
+			pValueH->display.setText(std::to_string(geo.h));
+
+
+			pTable->slots[row][0] = pLabelX;
+			pTable->slots[row][1] = pValueX;
+			row++;
+
+			pTable->slots[row][0] = pLabelY;
+			pTable->slots[row][1] = pValueY;
+			row++;
+
+			pTable->slots[row][0] = pLabelW;
+			pTable->slots[row][1] = pValueW;
+			row++;
+
+			pTable->slots[row][0] = pLabelH;
+			pTable->slots[row][1] = pValueH;
+			row++;
+
 		}
 
-		// Size
-
-		{
-			auto pLabel = TextDisplay::create();
-			pLabel->display.setText("Size: ");
-
-			SizeF size = slot.size();
-
-			char buffer[256];
-			snprintf(buffer, 256, "%.2f, %.2f", size.w, size.h);
-
-			auto pValue = TextDisplay::create();
-			pValue->display.setText(buffer);
-
-			pHeaderColumn->slots << pLabel;
-			pValueColumn->slots << pValue;
-		}
-
-
-
-		return pColumns;
+		return pTable;
 	}
 
 	//____ _createGenericWidgetTool() ______________________________________
 
-	Widget_p DesignOverlay::_createGenericWidgetTool( Widget * pWidget )
+	Widget_p DebugOverlay::_createGenericWidgetTool( Widget * pWidget )
 	{
-		auto pColumns = PackPanel::create();
-		pColumns->setAxis(Axis::X);
-
-		auto pHeaderColumn = PackPanel::create();
-		pHeaderColumn->setAxis(Axis::Y);
-
-		auto pValueColumn = PackPanel::create();
-		pValueColumn->setAxis(Axis::Y);
-
-		pColumns->slots << pHeaderColumn;
-		pColumns->slots << pValueColumn;
+		auto pTable = TablePanel::create( WGBP(TablePanel,
+											   _.columns = 2,
+											   _.rows = 2) );
 
 		// ClassName
 
@@ -594,26 +725,24 @@ namespace wg
 			auto pName = TextDisplay::create();
 			pName->display.setText(pWidget->typeInfo().className);
 
-			pHeaderColumn->slots << pNameLabel;
-			pValueColumn->slots << pName;
+			pTable->slots[0][0] = pNameLabel;
+			pTable->slots[0][1] = pName;
 		}
 
 		// Id
 
 		{
-//			char buffer[16];
-
 			auto pIdLabel = TextDisplay::create();
 			pIdLabel->display.setText("id: ");
 
 			auto pId = TextDisplay::create();
 			pId->display.setText(std::to_string(pWidget->id()));
 
-			pHeaderColumn->slots << pIdLabel;
-			pValueColumn->slots << pId;
+			pTable->slots[1][0] = pIdLabel;
+			pTable->slots[1][1] = pId;
 		}
 
-		return pColumns;
+		return pTable;
 	}
 
 
