@@ -515,6 +515,30 @@ int WgScrollChart::StartComplexWave(SamplePair startSample, float topLineThickne
 	return w.id;
 }
 
+//____ ClearWave() _____________________________________________________________
+
+bool WgScrollChart::ClearWave(int waveId, float topSample, float bottomSample)
+{
+	Wave * p = _getWave(waveId);
+	if (!p)
+		return false;
+
+	p->samples.clear();
+	p->samples.push_back({(int)(m_sampleEndTimestamp - m_sampleBeginTimestamp),topSample,bottomSample });
+	p->samples.push_back({(int)(1),topSample,bottomSample });
+
+	p->startTopSample = topSample;
+	p->startBottomSample = bottomSample;
+
+	p->nextTopSample = topSample;
+	p->nextBottomSample = bottomSample;
+
+	m_bRefreshCanvas = true;
+	return true;
+}
+
+
+
 //____ StopWave() _____________________________________________________________
 
 bool WgScrollChart::StopWave(int waveId)

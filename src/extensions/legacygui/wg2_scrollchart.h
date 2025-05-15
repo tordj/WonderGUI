@@ -144,7 +144,9 @@ public:
 	void	SetStaticModeFadeOutLength( int length );
 	void	SetStaticModeGradient( const wg::Gradient& gradient );
 	
-	
+	bool	ClearWave(int waveId, float topSample, float bottomSample);
+
+
 protected:
 
 	enum WaveType

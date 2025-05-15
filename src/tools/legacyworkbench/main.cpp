@@ -562,45 +562,61 @@ bool scrollChartTest(WgRootPanel* pRoot)
 	pChart->SetValueRange(100, -100);
 	pChart->SetPixelType(WgPixelType::BGRA_8);
 	pChart->SetChartColor(WgColor::Transparent);
-
-	pChart->SetStaticMode(true);
-	pChart->SetStaticModeFadeOutLength(16);
-	pChart->SetStaticModeGradient( wg::Gradient( wg::Color::Black, wg::Color::White, wg::Color::White, wg::Color::Black ) );
-	
+	/*
+	 pChart->SetStaticMode(true);
+	 pChart->SetStaticModeFadeOutLength(16);
+	 pChart->SetStaticModeGradient( wg::Gradient( wg::Color::Black, wg::Color::White, wg::Color::White, wg::Color::Black ) );
+	 */
 	pChart->SetGridToForeground(true);
-	
+
 	auto hWave = pChart->StartSimpleWave( 50, 0, 1, WgColor::Red, 1, WgColor::Red, WgColor::Green, WgColor::Green );
 
-		
+
 	WgScrollChart::GridLine	grid[3];
-	
+
 	grid[0].pos = 0.0f;
 	grid[0].thickness = 3;
 	grid[0].color = WgColor::Red;
 	grid[0].label = "0.0";
-	
+
 	grid[1].pos = 0.5f;
 	grid[1].thickness = 3;
 	grid[1].color = WgColor::Red;
 	grid[1].label = "0.5";
 
-	
+
 	grid[2].pos = 1.0f;
 	grid[2].thickness = 3;
 	grid[2].color = WgColor::Red;
 	grid[2].label = "1.0";
-	
+
 	pBaseFlex->AddChild(pChart, WgRect(20, 20, 500, 200));
 
 	m_pScrollChart = pChart;		// So we get updates.
 	m_hWave1 = hWave;
 
 	pChart->Start( 8000 );
-	
-	
+
+
 	pChart->SetSampleGridLines(3, grid);
-	
+
 	pChart->SetSampleLabelStyle(WgOrigo::South, {0,0}, nullptr, nullptr);
+
+	auto pSkin = wg::ColorSkin::create( { .states = {{ wg::State::Default, wg::Color8::White}, { wg::State::Hovered, wg::Color8::Pink }}} );
+
+	auto pRestartButton = new WgButton();
+	pRestartButton->SetSkin(pSkin);
+
+	pBaseFlex->AddChild(pRestartButton, WgRect(20,250,50,30));
+
+	pRoot->EventHandler()->AddCallback( [](const WgEvent::Event * pEvent, WgWidget * pWidget )
+	{
+		if( pEvent->Type() == WgEventType::WG_EVENT_BUTTON_PRESS )
+		{
+			m_pScrollChart->ClearWave(m_hWave1, 10.0f, 1.0f );
+		}
+
+	}, pRestartButton);
 
 	return true;
 }
