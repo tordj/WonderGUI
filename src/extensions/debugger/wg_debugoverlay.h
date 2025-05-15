@@ -27,6 +27,7 @@
 #include <wg_overlay.h>
 #include <wg_staticslotvector.h>
 #include <wg_packpanel.h>
+#include <wg_togglebutton.h>
 
 namespace wg
 {
@@ -68,7 +69,8 @@ namespace wg
 
 			bool		m_bVisible = true;
 			Placement	m_placement = Placement::NorthWest;
-			CoordSPX	m_placementPos;			// Widgets pos relative selected widget and placement.
+			CoordSPX	m_placementPos;			// Widgets pos relative placement.
+			SizeSPX		m_chosenSize;
 		};
 
 
@@ -88,7 +90,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CToolboxVector	palettes;
+		CToolboxVector	toolboxes;
 
 		//.____ Identification __________________________________________
 
@@ -103,10 +105,12 @@ namespace wg
 		void				setSelectionSkin(Skin * pSkin);
 		inline Skin_p		selectionSkin() const;
 
+		PointerStyle 		pointerStyle() const override;
+
 		//.____ Control ____________________________________________________
 
-		void				setEditMode(bool bEditMode);
-		inline bool			isEditMode() const;
+		void				setActivated(bool bActivated);
+		inline bool			isActivated() const;
 
 		//.____ Internal ______________________________________________________
 
@@ -152,31 +156,48 @@ namespace wg
 
 		std::tuple<Widget_p, PackPanel_p> _createToolbox( const char * pTitle );
 
-		Widget_p		_createMainTool();
+		void			_createSlotWidgetToolbox();
+
 
 		Widget_p		_createGenericSlotTool(const StaticSlot& slot);
 		Widget_p		_createGenericWidgetTool(Widget * pWidget);
 
 		//
 
+
+		Placement		_boxSection( CoordSPX pos, int boxIndex );
+
+
 		RectSPX			_selectionGeo() const;
 		void			_refreshRealGeo(ToolboxSlot * pSlot, bool bForceResize = false);
 		void			_selectWidget(Widget * pWidget);
 		//
 
-		bool		m_bEditMode = false;
+		PointerStyle	m_generatedPointerStyle = PointerStyle::Undefined;
+
+		ToggleButton_p	m_pPickWidgetButton;
+
+		bool		m_bActivated = false;
 		bool		m_bSelectMode = false;
 
 		Widget_wp	m_pSelectedWidget;
 		Skin_p		m_pSelectionSkin;
 		Skin_p		m_pToolboxSkin;
 
-		PackPanel_p	m_pMainToolbox;
-		PackPanel_p	m_pSlotToolbox;
-		PackPanel_p	m_pWidgetToolbox;
+		PackPanel_p	m_pSlotTools;
+		PackPanel_p	m_pWidgetTools;
 
-		int			m_pressedToolbox = -1;			// Index for palette that is pressed.
-		CoordSPX	m_pressedToolboxStartOfs;
+		// Variables for toolbox drag
+
+		int			m_movingToolbox = -1;			// Index for toolbox that is being moved.
+		CoordSPX	m_movingToolboxStartOfs;
+
+		// Variables for toolbox resize
+
+		int			m_resizingToolbox = -1;			// Index for toolbox that is being resized.
+		Placement	m_resizingToolboxDirection = Placement::Undefined;
+		RectSPX		m_resizingToolboxStartGeo;
+
 	};
 
 	//____ paletteSkin() ______________________________________________________
@@ -193,11 +214,11 @@ namespace wg
 		return m_pSelectionSkin;
 	}
 
-	//____ isEditMode() _______________________________________________________
+	//____ isActivated() _______________________________________________________
 
-	bool DebugOverlay::isEditMode() const
+	bool DebugOverlay::isActivated() const
 	{
-		return m_bEditMode;
+		return m_bActivated;
 	}
 
 

@@ -26,6 +26,7 @@
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 #include <wg_inputhandler.h>
+#include <wg_colorskin.h>
 #include <wg_boxskin.h>
 #include <wg_packpanel.h>
 #include <wg_tablepanel.h>
@@ -52,44 +53,13 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	DebugOverlay::DebugOverlay() : palettes(this)
+	DebugOverlay::DebugOverlay() : toolboxes(this)
 	{
 		// Create default skins
 
 		m_pSelectionSkin = BoxSkin::create(1, Color::Transparent, Color::Red, 1);
 
-		m_pToolboxSkin = BoxSkin::create({ 16,2,2,2 }, Color::White, Color::Yellow, { 16,2,2,2 } );
-
-		// Add our default palettes
-
-		m_pMainToolbox = PackPanel::create();
-		m_pMainToolbox->setAxis(Axis::Y);
-
-		m_pMainToolbox->slots << _createMainTool();
-
-
-		Widget_p pMainToolbox;
-		PackPanel_p	pMainContent;
-
-		std::tie(pMainToolbox, pMainContent) = _createToolbox("Main Toolbox");
-
-
-		m_pSlotToolbox = PackPanel::create();
-		m_pSlotToolbox->setAxis(Axis::Y);
-
-		m_pWidgetToolbox = PackPanel::create();
-		m_pWidgetToolbox->setAxis(Axis::Y);
-
-		pMainContent->slots.pushBack( {m_pSlotToolbox, m_pWidgetToolbox} );
-
-		palettes._pushBackEmpty(1);
-
-		palettes[0]._setWidget(pMainToolbox);
-		palettes[0].m_bVisible = true;
-		palettes[0].m_placement = Placement::East;
-
-		_refreshRealGeo( &palettes[0] );
-
+		_createSlotWidgetToolbox();
 
 	}
 
@@ -123,13 +93,23 @@ namespace wg
 		_requestRender();
 	}
 
-	//____ setEditMode() ______________________________________________________
+	//____ pointerStyle() ________________________________________________________
 
-	void DebugOverlay::setEditMode(bool bEditMode)
+	PointerStyle DebugOverlay::pointerStyle() const
 	{
-		if (bEditMode != m_bEditMode)
+		if( m_bActivated && m_generatedPointerStyle != PointerStyle::Undefined )
+			return m_generatedPointerStyle;
+		else
+			return Overlay::pointerStyle();
+	}
+
+	//____ setActivated() ______________________________________________________
+
+	void DebugOverlay::setActivated(bool bActivated)
+	{
+		if (bActivated != m_bActivated)
 		{
-			m_bEditMode = bEditMode;
+			m_bActivated = bActivated;
 			_requestRender();
 		}
 	}
@@ -168,13 +148,16 @@ namespace wg
 
 	Widget *  DebugOverlay::_findWidget(const CoordSPX& ofs, SearchMode mode)
 	{
-		if (m_bEditMode)
+		if (m_bActivated)
 		{
-			for (auto& slot : palettes)
-				if (slot.m_geo.contains(ofs))
-					return slot._widget();
+			for (auto& slot : toolboxes)
+				if (slot.m_geo.contains(ofs) )
+				{
+					return static_cast<Container*>(slot._widget())->_findWidget(ofs - slot.m_geo.pos(), mode);
+				}
 
-			return this;
+			if( m_bSelectMode)
+				return this;
 		}
 
 		return Container::_findWidget(ofs, mode);
@@ -195,19 +178,16 @@ namespace wg
 			mainSlot._widget()->_render(pDevice, contentRect, contentRect);
 		}
 
-		if (m_bEditMode)
+		if (m_bActivated)
 		{
 			if (m_pSelectedWidget)
 				m_pSelectionSkin->_render(pDevice, _selectionGeo(), m_scale, State::Default);
 
-			for (auto& palette : palettes)
+			for (auto& palette : toolboxes)
 			{
 				if (palette.m_bVisible)
 				{
 					RectSPX geo = palette.m_geo + _canvas.pos();
-
-					if (m_pToolboxSkin)
-						m_pToolboxSkin->_render(pDevice, geo + m_pToolboxSkin->_contentBorder(m_scale, State::Default), m_scale, State::Default);
 
 					RectSPX pxPaletteGeo = palette.m_geo;
 					if (pDevice->clipBounds().isOverlapping(pxPaletteGeo))
@@ -244,71 +224,22 @@ namespace wg
 
 	void DebugOverlay::_refreshRealGeo(ToolboxSlot * pSlot, bool bForceResize)
 	{
-		if (m_pSelectedWidget)
+		SizeSPX paletteSize = pSlot->m_chosenSize.isEmpty() ? pSlot->_widget()->_defaultSize(pSlot->_widget()->_scale()) : pSlot->m_chosenSize;
+
+		RectSPX childGeo = Util::placementToRect(pSlot->m_placement, _size(), paletteSize);
+
+		childGeo += pSlot->m_placementPos;
+
+		if (childGeo != pSlot->m_geo)
 		{
-			Placement placement = pSlot->m_placement;
-			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_contentBorder(m_scale, State::Default) : BorderSPX();
+			_requestRender(childGeo);
+			_requestRender(pSlot->m_geo);
 
-			SizeSPX wantedSize = pSlot->_widget()->_defaultSize(pSlot->_widget()->_scale()) + palettePadding;
-
-			RectSPX selectedGeo = _toLocal(m_pSelectedWidget->_globalGeo());
-			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->_contentBorder(m_scale, State::Default) : BorderSPX();
-			RectSPX surroundBox = selectedGeo + BorderSPX(wantedSize.h+4, wantedSize.w+4);
-
-			CoordSPX ofs = placementToOfs(placement, surroundBox.size()) - placementToOfs(placement, wantedSize) + surroundBox.pos();
-			ofs += pSlot->m_placementPos;
-
-			RectSPX geo = align(RectSPX(ofs, wantedSize));
-
-			if (geo.x < 0)
-			{
-				if (placement == Placement::West || placement == Placement::NorthWest || placement == Placement::SouthWest)
-					geo.x = selectedGeo.right() + (selectedGeo.x - geo.x);	// Flipping to right side instead.
-				else
-					geo.x = 0;
-			}
-			else if (geo.right() > m_size.w)
-			{
-				if (placement == Placement::East || placement == Placement::NorthEast || placement == Placement::SouthEast)
-					geo.x = selectedGeo.left() - (selectedGeo.right() - geo.right());	// Flipping to right side instead.
-				else
-					geo.x = m_size.w - geo.w;
-			}
-
-			if (geo.y < 0)
-			{
-				if (placement == Placement::North || placement == Placement::NorthWest || placement == Placement::NorthEast)
-					geo.y = selectedGeo.bottom() + (selectedGeo.y - geo.y);	// Flipping to right side instead.
-				else
-					geo.y = 0;
-			}
-			else if (geo.bottom() > m_size.h)
-			{
-				if (placement == Placement::South || placement == Placement::SouthWest || placement == Placement::SouthEast)
-					geo.y = selectedGeo.top() - (selectedGeo.bottom() - geo.bottom());	// Flipping to right side instead.
-				else
-					geo.y = m_size.h - geo.h;
-			}
-
-			if (geo.h > m_size.h)
-				geo.h = m_size.h;
-
-
-			RectSPX childGeo = geo - palettePadding;
-			if (childGeo != pSlot->m_geo)
-			{
-				_requestRender(geo);
-				_requestRender(pSlot->m_geo + palettePadding);
-
-				pSlot->m_geo = childGeo;
-			}
-
-			if (pSlot->_widget()->_size() != childGeo.size() || bForceResize )
-				pSlot->_setSize(childGeo, m_scale);
+			pSlot->m_geo = childGeo;
 		}
-		else
-		{
-		}
+
+		if (pSlot->_widget()->_size() != childGeo.size() || bForceResize )
+			pSlot->_setSize(childGeo, m_scale);
 	}
 
 	//____ _selectWidget() ____________________________________________________
@@ -339,17 +270,17 @@ namespace wg
 			}
 		}
 
-		// Update palettes
+		// Update toolboxes
 
 		if (m_pSelectedWidget)
 		{
-			m_pSlotToolbox->slots.clear();
-			m_pSlotToolbox->slots << _createGenericSlotTool(*m_pSelectedWidget->_slot());
+			m_pSlotTools->slots.clear();
+			m_pSlotTools->slots << _createGenericSlotTool(*m_pSelectedWidget->_slot());
 
-			m_pWidgetToolbox->slots.clear();
-			m_pWidgetToolbox->slots << _createGenericWidgetTool(m_pSelectedWidget);
+			m_pWidgetTools->slots.clear();
+			m_pWidgetTools->slots << _createGenericWidgetTool(m_pSelectedWidget);
 /*
-			for (auto& palette : palettes)
+			for (auto& palette : toolboxes)
 			{
 				palette.m_bVisible = true;
 				_refreshRealGeo(&palette);
@@ -358,12 +289,11 @@ namespace wg
 		}
 		else
 		{
-			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_contentBorder(m_scale, State::Default) : BorderSPX();
-			for (auto& palette : palettes)
+			for (auto& palette : toolboxes)
 			{
 				if (palette.m_bVisible)
 				{
-					_requestRender(palette.m_geo + palettePadding);
+					_requestRender(palette.m_geo);
 					palette.m_bVisible = false;
 				}
 			}
@@ -409,7 +339,7 @@ namespace wg
 
 			if (p->m_bVisible)
 				_requestRender(p->m_geo);
-			palettes._erase(p);
+			toolboxes._erase(p);
 		}
 	}
 
@@ -417,14 +347,14 @@ namespace wg
 
 	const Overlay::Slot * DebugOverlay::_beginOverlaySlots() const
 	{
-		return palettes._begin();
+		return toolboxes._begin();
 	}
 
 	//____ _endOverlaySlots() ____________________________________________________
 
 	const Overlay::Slot *  DebugOverlay::_endOverlaySlots() const
 	{
-		return palettes._end();
+		return toolboxes._end();
 	}
 
 	//____ _sizeOfOverlaySlot() __________________________________________________
@@ -443,7 +373,7 @@ namespace wg
 
 		// Refresh modal widgets geometry, their positions might have changed.
 
-		for( auto pSlot = palettes._begin() ; pSlot != palettes._end() ; pSlot++ )
+		for( auto pSlot = toolboxes._begin() ; pSlot != toolboxes._end() ; pSlot++ )
 			_refreshRealGeo( pSlot, true );
 	}
 
@@ -456,7 +386,7 @@ namespace wg
 		if( _pMsg->isInstanceOf( KeyMsg::TYPEINFO ) && static_cast<KeyMsg*>(_pMsg)->translatedKeyCode() == Key::Escape && (static_cast<KeyMsg*>(_pMsg)->modKeys() == ModKeys::StdCtrl || static_cast<KeyMsg*>(_pMsg)->modKeys() == ModKeys::MacCtrl) )
 		{
 			if( _pMsg->typeInfo() == KeyPressMsg::TYPEINFO )
-				setEditMode(!m_bEditMode);
+				setActivated(!m_bActivated);
 
 			_pMsg->swallow();
 			Overlay::_receive(_pMsg);
@@ -465,7 +395,7 @@ namespace wg
 
 		//
 
-		if( !m_bEditMode )
+		if( !m_bActivated )
 		{
 			Overlay::_receive(_pMsg);
 			return;
@@ -475,60 +405,211 @@ namespace wg
 
 		switch( _pMsg->type() )
 		{
+
+			case MsgType::MouseMove:
+			{
+				auto pMsg = static_cast<MouseMoveMsg*>(_pMsg);
+
+				auto pWidget = static_cast<Widget*>(_pMsg->originalSourceRawPtr());
+
+				if( !mainSlot.isEmpty() && pWidget->isDescendantOf(mainSlot._widget() ))
+				{
+					m_generatedPointerStyle = PointerStyle::Undefined;
+					break;																	// Not from our palettes.
+				}
+
+				if( pWidget == this )
+				{
+					m_generatedPointerStyle = m_bSelectMode ? PointerStyle::Crosshair : PointerStyle::Undefined;
+					break;
+				}
+
+				int id = pWidget->id();
+
+				if( id < 10000 )
+				{
+					m_generatedPointerStyle = PointerStyle::Undefined;
+					break;
+				}
+
+				int	boxIndex = (id - 10000) / 1000;
+				int meaning = id % 1000;
+
+				if( meaning == 1 )
+				{
+					CoordSPX mousePos = _toLocal(pMsg->pointerSpxPos());
+
+					auto section = _boxSection( mousePos, boxIndex );
+					switch( section )
+					{
+						case Placement::North:
+						case Placement::South:
+							m_generatedPointerStyle = PointerStyle::ResizeNS;
+							break;
+
+						case Placement::East:
+						case Placement::West:
+							m_generatedPointerStyle = PointerStyle::ResizeWE;
+							break;
+
+						case Placement::SouthEast:
+						case Placement::NorthWest:
+							m_generatedPointerStyle = PointerStyle::ResizeNwSe;
+							break;
+
+						case Placement::NorthEast:
+						case Placement::SouthWest:
+							m_generatedPointerStyle = PointerStyle::ResizeNeSw;
+							break;
+
+						default:
+							m_generatedPointerStyle = PointerStyle::Undefined;
+							break;
+					}
+				}
+				else if( meaning == 2 )
+				{
+					m_generatedPointerStyle = m_movingToolbox >= 0 ? PointerStyle::ClosedHand : PointerStyle::OpenHand;
+				}
+
+				break;
+			}
+
+
 			case MsgType::MousePress:
 			{
-				if (_pMsg->originalSourceRawPtr() == this)			// Make sure it wasn't a propagated press on widget in palette.
+				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+
+
+				auto pWidget = static_cast<Widget*>(_pMsg->originalSourceRawPtr());
+
+				if( !mainSlot.isEmpty() && pWidget->isDescendantOf(mainSlot._widget() ))
+					break;																	// Not from our palettes.
+
+				if (pMsg->button() == MouseButton::Left)
 				{
-					auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+					CoordSPX mousePos = _toLocal(pMsg->pointerSpxPos());
 
-					if (pMsg->button() == MouseButton::Left)
+					if( pWidget == this )
 					{
-						CoordSPX mousePos = _toLocal(pMsg->pointerSpxPos());
-
-						// Check for press on palette edge
-
-						if (m_pToolboxSkin)
+						auto pContainer = wg_dynamic_cast<Container_p>(mainSlot._widget());
+						if (pContainer)
 						{
-							BorderSPX	contentBorder = m_pToolboxSkin->_contentBorder(m_scale, State::Default);
-
-							for (int i = 0; i < palettes.size(); i++)
-							{
-								if (palettes[i].m_bVisible && (palettes[i].m_geo + contentBorder).contains(mousePos) )
-								{
-									m_pressedToolbox = i;
-									m_pressedToolboxStartOfs = palettes[i].m_placementPos;
-									break;
-								}
-							}
+							Widget * pWidget = pContainer->_findWidget(mousePos, SearchMode::MarkPolicy);
+							if (pWidget)
+								_selectWidget(pWidget);
 						}
-
-						// Check for selection of Widget if we didn't select a palette
-
-						if (m_pressedToolbox == -1)
-						{
-							auto pContainer = wg_dynamic_cast<Container_p>(mainSlot._widget());
-							if (pContainer)
-							{
-								Widget * pWidget = pContainer->_findWidget(mousePos, SearchMode::MarkPolicy);
-								if (pWidget)
-									_selectWidget(pWidget);
-							}
-						}
-						pMsg->swallow();
+						break;									// Press on us is ignored
 					}
+					else
+					{
+						// Check for press on toolbox
+
+						int id = pWidget->id();
+
+						if( id < 10000 )
+							break;								// Not any press to bother about.
+
+						int	boxIndex = (id - 10000) / 1000;
+						int meaning = id % 1000;
+
+						switch( meaning )
+						{
+							case 1:					// Resize
+							{
+								m_resizingToolbox = boxIndex;
+								m_resizingToolboxDirection = _boxSection( mousePos, boxIndex );
+								m_resizingToolboxStartGeo = toolboxes[boxIndex].m_geo;
+								break;
+							}
+							case 2:					// Move
+								m_movingToolbox = boxIndex;
+								m_movingToolboxStartOfs = toolboxes[boxIndex].m_placementPos;
+								break;
+
+						}
+					}
+
+//					pMsg->swallow();
 				}
 				break;
 			}
 
 			case MsgType::MouseDrag:
 			{
-				if (m_pressedToolbox >= 0)
-				{
-					auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
+				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 
-					palettes[m_pressedToolbox].m_placementPos = m_pressedToolboxStartOfs + pMsg->_draggedTotal();
-					_refreshRealGeo(&palettes[m_pressedToolbox]);
+				if (m_movingToolbox >= 0)
+				{
+					CoordSPX pos = m_movingToolboxStartOfs + pMsg->_draggedTotal();
+					SizeSPX size = toolboxes[m_movingToolbox]._size();
+
+					if( pos.x < 0 )
+						pos.x = 0;
+
+					if( pos.y < 0 )
+						pos.y = 0;
+
+					if( pos.x + size.w > m_size.w )
+						pos.x = m_size.w - size.w;
+
+					if( pos.y + size.h > m_size.h )
+						pos.y = m_size.h - size.h;
+
+					toolboxes[m_movingToolbox].m_placementPos = pos;
+					_refreshRealGeo(&toolboxes[m_movingToolbox]);
 				}
+				else if( m_resizingToolbox >= 0)
+				{
+
+					const static CoordI	mulMtx[Placement_size] = { {0,0}, {-1,-1}, {0,-1}, {1,-1},
+						{1,0}, {1,1}, {0,1}, {-1,1}, {-1,0}, {0,0} };
+
+					CoordI mul = mulMtx[int(m_resizingToolboxDirection)];
+
+					auto pBox = &toolboxes[m_resizingToolbox];
+
+					CoordSPX dragged = pMsg->_draggedTotal();
+
+					SizeSPX	sizeModif = { dragged.x * mul.x, dragged.y * mul.y };
+
+					SizeSPX newSize = m_resizingToolboxStartGeo.size() + sizeModif;
+					newSize.limit( pBox->_widget()->_minSize(m_scale), newSize );
+
+					SizeSPX diff = newSize - m_resizingToolboxStartGeo.size();
+
+					RectSPX geo = m_resizingToolboxStartGeo + diff;
+
+					if( mul.x < 0 )
+						geo.x -= diff.w;
+
+					if( mul.y < 0 )
+						geo.y -= diff.h;
+
+					if( geo.x < 0 )
+					{
+						geo.w += geo.x;
+						geo.x = 0;
+					}
+
+					if( geo.y < 0 )
+					{
+						geo.h += geo.y;
+						geo.y = 0;
+					}
+
+					if( geo.x + geo.w > m_size.w )
+						geo.w = m_size.w - geo.x;
+
+					if( geo.y + geo.h > m_size.h )
+						geo.h = m_size.h - geo.y;
+
+					pBox->m_placementPos = geo.pos();
+					pBox->m_chosenSize = geo.size();
+
+					_refreshRealGeo(pBox);
+				}
+
 
 				break;
 			}
@@ -538,7 +619,10 @@ namespace wg
 				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
 
 				if (pMsg->button() == MouseButton::Left)
-					m_pressedToolbox = -1;
+				{
+					m_movingToolbox = -1;
+					m_resizingToolbox = -1;
+				}
 
 				break;
 			}
@@ -550,6 +634,17 @@ namespace wg
 				Key key = pMsg->translatedKeyCode();
 				switch( key )
 				{
+					case Key::Escape:
+
+						if( m_bSelectMode )
+						{
+							m_bSelectMode = false;
+							m_pPickWidgetButton->setSelected(false);
+							if( m_generatedPointerStyle == PointerStyle::Crosshair )
+								m_generatedPointerStyle = PointerStyle::Undefined;
+						}
+						break;
+
 					case Key::F1:
 					case Key::F2:
 					case Key::F3:
@@ -558,14 +653,15 @@ namespace wg
 					{
 						int paletteIdx = int(key) - int(Key::F1);
 
-						if( palettes.size() > paletteIdx )
+						if( toolboxes.size() > paletteIdx )
 						{
-							palettes[paletteIdx].m_bVisible = !palettes[paletteIdx].m_bVisible;
+							toolboxes[paletteIdx].m_bVisible = !toolboxes[paletteIdx].m_bVisible;
 							_requestRender();
 
 							// Make sure we don't keep dragging around an invisible box.
 
-							m_pressedToolbox = -1;
+							m_movingToolbox = -1;
+							m_resizingToolbox = -1;
 						}
 					}
 
@@ -584,6 +680,49 @@ namespace wg
 		Overlay::_receive(_pMsg);
 	}
 
+	//____ _boxSection() _________________________________________________________
+
+	Placement DebugOverlay::_boxSection( CoordSPX pos, int boxIndex )
+	{
+		CoordSPX relPos = pos - toolboxes[boxIndex].m_geo.pos();
+		SizeSPX boxSize = toolboxes[boxIndex].m_geo.size();
+
+		int margin = m_scale * 6;
+
+		Placement	section = Placement::Undefined;
+
+		if( relPos.y < margin )
+		{
+			if( relPos.x < margin )
+				section = Placement::NorthWest;
+			else if( relPos.x >= boxSize.w - margin )
+				section = Placement::NorthEast;
+			else
+				section = Placement::North;
+		}
+		else if( relPos.y >= boxSize.h - margin )
+		{
+			if( relPos.x < margin )
+				section = Placement::SouthWest;
+			else if( relPos.x >= boxSize.w - margin )
+				section = Placement::SouthEast;
+			else
+				section = Placement::South;
+		}
+		else
+		{
+			if( relPos.x < margin )
+				section = Placement::West;
+			else if( relPos.x >= boxSize.w - margin )
+				section = Placement::East;
+			else
+				section = Placement::Center;
+		}
+
+		return section;
+	}
+
+
 	//____ _createToolbox() ________________________________________
 
 	std::tuple<Widget_p, PackPanel_p> DebugOverlay::_createToolbox( const char * pTitle )
@@ -594,48 +733,102 @@ namespace wg
 												_.outlineThickness = 1,
 												_.padding = 4 ));
 
+		int idOfs = 10000 + 1000 * toolboxes.size();
+
+		auto pMain = PackPanel::create( WGBP(PackPanel, _.id = idOfs + 1, _.axis = Axis::Y, _.skin = pPanelSkin) );
+
+		auto pTitleDisplay = TextDisplay::create( WGBP(TextDisplay,
+													   _.id = idOfs + 2,
+													   _.display.text = pTitle,
+													   _.markPolicy = MarkPolicy::Geometry ));
+
+		auto pContent = PackPanel::create( WGBP(PackPanel, _.axis = Axis::Y ));
+
+
+		pMain->slots.pushBack( pTitleDisplay, WGBP(PackPanelSlot, _.weight = 0.f ));
+		pMain->slots.pushBack( pContent, WGBP(PackPanelSlot, _.weight = 1.f ));
+
+
+		auto it = toolboxes._pushBackEmpty(1);
+
+
+
+		it->_setWidget(pMain);
+		it->m_bVisible = true;
+		it->m_placement = Placement::NorthWest;
+
+		return std::make_tuple(pMain,pContent);
+	}
+
+	//____ _createSlotWidgetToolbox() ____________________________________________
+
+	void DebugOverlay::_createSlotWidgetToolbox()
+	{
+		// Add our toolboxes
+
+		Widget_p	pToolbox;
+		PackPanel_p	pContent;
+
+		std::tie(pToolbox, pContent) = _createToolbox("Slot/Widget Tools");
+
+		// Create our button palette
+
+		auto pButtonPalette = PackPanel::create( WGBP(PackPanel, _.axis = Axis::X) );
+
+		auto pPickButtonSkin = BoxSkin::create( WGBP(BoxSkin,
+													 _.outlineColor = Color::Black,
+													 _.outlineThickness = 1,
+													 _.padding = 6,
+													 _.states = { {State::Default, Color::Red}, {State::Selected, Color::Green}} ));
+
+
+		auto pPickButton = ToggleButton::create( WGBP(ToggleButton, _.skin = pPickButtonSkin));
+
+		m_pPickWidgetButton = pPickButton;
+
+		Base::msgRouter()->addRoute(pPickButton, MsgType::Toggle, [this](Msg * pMsg) {
+
+			auto pButton = wg_static_cast<ToggleButton_p>(pMsg->source());
+
+			this->m_bSelectMode = pButton->isSelected();
+
+		});
+
+
+		pButtonPalette->slots << pPickButton;
+
+		pContent->slots.pushBack(pButtonPalette, WGBP(PackPanelSlot, _.weight = 0.f) );
+
+		// Create scrollable content
+
 		auto pContentSkin = BoxSkin::create( WGBP(BoxSkin,
 												  _.color = Color::White,
 												  _.outlineColor = Color::Black,
 												  _.outlineThickness = 1,
 												  _.padding = 2));
 
-		auto pMain = PackPanel::create( WGBP(PackPanel, _.axis = Axis::Y, _.skin = pPanelSkin) );
+		auto pContentWindow = ScrollPanel::create( WGBP(ScrollPanel,
+														_.childConstraintX = SizeConstraint::Equal,
+														_.childConstraintY = SizeConstraint::None ));
 
-		auto pTitleDisplay = TextDisplay::create( WGBP(TextDisplay, _.display.text = pTitle ));
+		auto pScrollableContent = PackPanel::create( WGBP(PackPanel, _.skin = pContentSkin, _.axis = Axis::Y ) );
 
-		auto pContentWindow = ScrollPanel::create( WGBP(ScrollPanel, _.skin = pContentSkin ));
 
-		auto pContent = PackPanel::create( WGBP(PackPanel, _.axis = Axis::Y ));
+		m_pSlotTools = PackPanel::create();
+		m_pSlotTools->setAxis(Axis::Y);
 
-		pContentWindow->slot = pContent;
+		m_pWidgetTools = PackPanel::create();
+		m_pWidgetTools->setAxis(Axis::Y);
 
-		pMain->slots.pushBack( pTitleDisplay, WGBP(PackPanelSlot, _.weight = 0.f ));
-		pMain->slots.pushBack( pContentWindow, WGBP(PackPanelSlot, _.weight = 1.f ));
+		pScrollableContent->slots.pushBack( {m_pSlotTools, m_pWidgetTools} );
 
-		return std::make_tuple(pMain,pContent);
+		pContentWindow->slot = pScrollableContent;
+
+		pContent->slots << pContentWindow;
+
+		_refreshRealGeo( toolboxes._first() + toolboxes.size() -1 );
 	}
 
-	//____ _createMainTool() ________________________________________
-
-	Widget_p DebugOverlay::_createMainTool()
-	{
-		auto pSection = PackPanel::create( WGBP(PackPanel, _.axis = Axis::X) );
-
-
-		auto pPickButtonSkin = BoxSkin::create( WGBP(BoxSkin,
-													 _.outlineColor = Color::Black,
-													 _.outlineThickness = 1,
-													 _.padding = 2,
-													 _.states = { {State::Default, Color::Red}, {State::Selected, Color::Green}} ));
-
-
-		auto pPickButton = ToggleButton::create( WGBP(ToggleButton, _.skin = pPickButtonSkin));
-
-		pSection->slots << pPickButton;
-
-		return pSection;
-	}
 
 	//____ _createGenericSlotTool() ________________________________________
 
@@ -643,7 +836,8 @@ namespace wg
 	{
 		auto pTable = TablePanel::create( WGBP(TablePanel,
 											   _.columns = 2,
-											   _.rows = 5) );
+											   _.rows = 5,
+											   _.columnLayout = Base::defaultPackLayout() ) );
 
 		int row = 0;
 
@@ -651,7 +845,7 @@ namespace wg
 
 		{
 			pTable->slots[row][0] = TextDisplay::create( WGBP(TextDisplay, _.display.text = "Slot Type:") );
-			pTable->slots[row][0] = TextDisplay::create( WGBP(TextDisplay, _.display.text = slot.typeInfo().className ) );
+			pTable->slots[row][1] = TextDisplay::create( WGBP(TextDisplay, _.display.text = slot.typeInfo().className ) );
 			row++;
 		}
 
@@ -714,7 +908,8 @@ namespace wg
 	{
 		auto pTable = TablePanel::create( WGBP(TablePanel,
 											   _.columns = 2,
-											   _.rows = 2) );
+											   _.rows = 2,
+											   _.columnLayout = Base::defaultPackLayout()) );
 
 		// ClassName
 
