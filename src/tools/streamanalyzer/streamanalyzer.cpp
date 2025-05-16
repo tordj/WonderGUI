@@ -2,11 +2,8 @@
 #include "streamanalyzer.h"
 
 #include <wg_softbackend.h>
-#include <wg_softbackend_kernels.h>
+#include <wg_softkernels_rgb555be_base.h>
 #include <wg_softkernels_rgb555be_extras.h>
-
-#include <wg_softkernels_rgb565be_base.h>
-#include <wg_softkernels_rgb565be_extras.h>
 
 #include <wg_softkernels_default.h>
 
@@ -54,11 +51,12 @@ bool MyApp::init(Visitor* pVisitor)
 	}
 */
 
-	auto pSoftGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::defaultGfxDevice());
-	if( pSoftGfxDevice )
+	auto pDeviceGen2 = wg_dynamic_cast<GfxDeviceGen2_p>(Base::defaultGfxDevice());
+
+	auto pSoftBackend = wg_dynamic_cast<SoftBackend_p>(pDeviceGen2->backend());
+	if( pSoftBackend )
 	{
-		addExtraSoftKernelsForRGB555BECanvas(pSoftGfxDevice);
-		addExtraSoftKernelsForRGB565BECanvas(pSoftGfxDevice);
+		addExtraSoftKernelsForRGB555BECanvas(pSoftBackend);
 	}
 	
 	return true;
