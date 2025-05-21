@@ -293,6 +293,9 @@ namespace wg
 	{
 		//TODO: Optimize. If size is same then we only need to update those that have requested resize.
 
+		if( scale != m_scale )
+			m_defaultSize = _calcDefaultSize(scale);
+
 		Panel::_resize(size,scale);
 		_updateChildGeo(slots.begin(),slots.end(), false);
 	}

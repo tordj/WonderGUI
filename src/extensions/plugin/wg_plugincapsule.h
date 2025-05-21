@@ -39,15 +39,6 @@ namespace wg
 
 	//____ PluginCapsule ________________________________________________________
 	/**
-	* @brief	A widget that controls the size of a single child.
-	*
-	* The PluginCapsule is used to change the size of a widget. This is done either by imposing
-	* limits on its minimum and maximum size or by setting a specific default size.
-	*
-	* Width and height can be controlled separately
-	* The PluginCapsule overrides the min, max and default size reported by its child, thus
-	* affecting its geometry. Exactly how the geometry is affected depends on the parent widget.
-	*
 	*/
 
 	class PluginCapsule : public Widget
