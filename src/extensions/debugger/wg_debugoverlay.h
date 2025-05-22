@@ -28,6 +28,9 @@
 #include <wg_staticslotvector.h>
 #include <wg_packpanel.h>
 #include <wg_togglebutton.h>
+#include <wg_debugger.h>
+
+#include <wg_scrollpanel.h>
 
 namespace wg
 {
@@ -83,10 +86,34 @@ namespace wg
 			CToolboxVector(SlotHolder * pHolder) : StaticSlotVector<ToolboxSlot>(pHolder) {}
 		};
 
+		//.____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			Debugger_p		debugger;									// Mandatory!!!
+			bool			disabled = false;
+			bool			dropTarget = false;
+			Finalizer_p		finalizer = nullptr;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::Undefined;
+			bool			pickable = false;
+			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
+			PointerStyle	pointer = PointerStyle::Undefined;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			stickyFocus = false;
+			bool			tabLock = false;
+			String			tooltip;
+			bool			usePickHandles = false;
+
+
+		};
 
 		//.____ Creation __________________________________________
 
-		static DebugOverlay_p	create() { return DebugOverlay_p(new DebugOverlay()); }
+		static DebugOverlay_p	create( const Blueprint& blueprint ) { return DebugOverlay_p(new DebugOverlay(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -121,7 +148,7 @@ namespace wg
 
 
 	protected:
-		DebugOverlay();
+		DebugOverlay(const Blueprint& blueprint);
 		virtual ~DebugOverlay();
 
 	private:
@@ -159,11 +186,12 @@ namespace wg
 		void			_createSlotWidgetToolbox();
 
 
-		Widget_p		_createGenericSlotTool(const StaticSlot& slot);
+		Widget_p		_createGenericSlotTool(StaticSlot * pSlot);
 		Widget_p		_createGenericWidgetTool(Widget * pWidget);
 
 		//
 
+		void			_createResources();
 
 		Placement		_boxSection( CoordSPX pos, int boxIndex );
 
@@ -173,30 +201,43 @@ namespace wg
 		void			_selectWidget(Widget * pWidget);
 		//
 
+		Debugger_p		m_pDebugger;
+
 		PointerStyle	m_generatedPointerStyle = PointerStyle::Undefined;
 
 		ToggleButton_p	m_pPickWidgetButton;
 
-		bool		m_bActivated = false;
-		bool		m_bSelectMode = false;
+		bool			m_bActivated = false;
+		bool			m_bSelectMode = false;
 
-		Widget_wp	m_pSelectedWidget;
-		Skin_p		m_pSelectionSkin;
-		Skin_p		m_pToolboxSkin;
+		Widget_wp		m_pSelectedWidget;
+		Skin_p			m_pSelectionSkin;
+		Skin_p			m_pToolboxSkin;
 
-		PackPanel_p	m_pSlotTools;
-		PackPanel_p	m_pWidgetTools;
+		PackPanel_p		m_pSlotTools;
+		PackPanel_p		m_pWidgetTools;
 
 		// Variables for toolbox drag
 
-		int			m_movingToolbox = -1;			// Index for toolbox that is being moved.
-		CoordSPX	m_movingToolboxStartOfs;
+		int				m_movingToolbox = -1;			// Index for toolbox that is being moved.
+		CoordSPX		m_movingToolboxStartOfs;
 
 		// Variables for toolbox resize
 
-		int			m_resizingToolbox = -1;			// Index for toolbox that is being resized.
-		Placement	m_resizingToolboxDirection = Placement::Undefined;
-		RectSPX		m_resizingToolboxStartGeo;
+		int				m_resizingToolbox = -1;			// Index for toolbox that is being resized.
+		Placement		m_resizingToolboxDirection = Placement::Undefined;
+		RectSPX			m_resizingToolboxStartGeo;
+
+		// Resources
+
+		TextStyle_p		m_pWindowLabelTextStyle;
+		TextStyle_p		m_pInfoPanelLabelTextStyle;
+
+		ScrollPanel::Blueprint	m_scrollPanelBP;
+
+		Skin_p			m_pButtonSkin;
+		
+
 
 	};
 

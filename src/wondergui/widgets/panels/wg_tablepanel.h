@@ -36,6 +36,7 @@
 
 #include <wg_container.h>
 #include <wg_slottable.h>
+#include <wg_packlayout.h>
 #include <wg_dynamicvector.h>
 
 namespace wg

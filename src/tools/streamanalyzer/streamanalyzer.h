@@ -5,6 +5,8 @@
 #include <wondergui.h>
 #include <wondergfxstream.h>
 #include <wg_freetypefont.h>
+
+#include <wg_debugger.h>
 #include <wg_debugoverlay.h>
 
 #include <initializer_list>
@@ -125,6 +127,7 @@ private:
 	bool				m_bShowDebugRects = false;
 	bool				m_bRecordSteps = false;
 
+	Debugger_p			m_pDebugger;
 	DebugOverlay_p		m_pDebugOverlay;
 
 	PackPanel_p			m_pDisplayToggles;

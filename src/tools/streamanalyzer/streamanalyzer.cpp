@@ -129,7 +129,9 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	m_pLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::Default,
 	.expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Weight });
 
-	m_pDebugOverlay = DebugOverlay::create();
+	m_pDebugger = Debugger::create();
+
+	m_pDebugOverlay = DebugOverlay::create( { .debugger = m_pDebugger } );
 
 	auto pPopupOverlay = PopupOverlay::create();
 

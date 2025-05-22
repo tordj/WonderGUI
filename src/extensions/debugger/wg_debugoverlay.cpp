@@ -53,8 +53,12 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	DebugOverlay::DebugOverlay() : toolboxes(this)
+	DebugOverlay::DebugOverlay(const Blueprint& bp) : Overlay(bp), toolboxes(this)
 	{
+		m_pDebugger = bp.debugger;
+
+		_createResources();
+
 		// Create default skins
 
 		m_pSelectionSkin = BoxSkin::create(1, Color::Transparent, Color::Red, 1);
@@ -275,7 +279,7 @@ namespace wg
 		if (m_pSelectedWidget)
 		{
 			m_pSlotTools->slots.clear();
-			m_pSlotTools->slots << _createGenericSlotTool(*m_pSelectedWidget->_slot());
+			m_pSlotTools->slots << _createGenericSlotTool(m_pSelectedWidget->_slot());
 
 			m_pWidgetTools->slots.clear();
 			m_pWidgetTools->slots << _createGenericWidgetTool(m_pSelectedWidget);
@@ -687,7 +691,7 @@ namespace wg
 		CoordSPX relPos = pos - toolboxes[boxIndex].m_geo.pos();
 		SizeSPX boxSize = toolboxes[boxIndex].m_geo.size();
 
-		int margin = m_scale * 6;
+		int margin = m_scale * 8;
 
 		Placement	section = Placement::Undefined;
 
@@ -731,7 +735,13 @@ namespace wg
 												_.color = Color::Grey,
 												_.outlineColor = Color::Black,
 												_.outlineThickness = 1,
-												_.padding = 4 ));
+												_.padding = 5 ));
+
+		auto pTitleBarSkin = BoxSkin::create( WGBP(BoxSkin,
+												_.color = Color::LightGrey,
+												_.outlineColor = Color::Black,
+												_.outlineThickness = 1,
+												_.padding = 2 ));
 
 		int idOfs = 10000 + 1000 * toolboxes.size();
 
@@ -740,7 +750,8 @@ namespace wg
 		auto pTitleDisplay = TextDisplay::create( WGBP(TextDisplay,
 													   _.id = idOfs + 2,
 													   _.display.text = pTitle,
-													   _.markPolicy = MarkPolicy::Geometry ));
+													   _.markPolicy = MarkPolicy::Geometry,
+													   _.skin = pTitleBarSkin ));
 
 		auto pContent = PackPanel::create( WGBP(PackPanel, _.axis = Axis::Y ));
 
@@ -782,7 +793,7 @@ namespace wg
 													 _.states = { {State::Default, Color::Red}, {State::Selected, Color::Green}} ));
 
 
-		auto pPickButton = ToggleButton::create( WGBP(ToggleButton, _.skin = pPickButtonSkin));
+		auto pPickButton = ToggleButton::create( WGBP(ToggleButton, _.skin = pPickButtonSkin, _.label.text = "+" ));
 
 		m_pPickWidgetButton = pPickButton;
 
@@ -807,9 +818,7 @@ namespace wg
 												  _.outlineThickness = 1,
 												  _.padding = 2));
 
-		auto pContentWindow = ScrollPanel::create( WGBP(ScrollPanel,
-														_.childConstraintX = SizeConstraint::Equal,
-														_.childConstraintY = SizeConstraint::None ));
+		auto pContentWindow = ScrollPanel::create( m_scrollPanelBP );
 
 		auto pScrollableContent = PackPanel::create( WGBP(PackPanel, _.skin = pContentSkin, _.axis = Axis::Y ) );
 
@@ -832,114 +841,107 @@ namespace wg
 
 	//____ _createGenericSlotTool() ________________________________________
 
-	Widget_p DebugOverlay::_createGenericSlotTool(const StaticSlot& slot)
+	Widget_p DebugOverlay::_createGenericSlotTool(StaticSlot * pSlot)
 	{
-		auto pTable = TablePanel::create( WGBP(TablePanel,
-											   _.columns = 2,
-											   _.rows = 5,
-											   _.columnLayout = Base::defaultPackLayout() ) );
+		auto pPanel = PackPanel::create( WGBP(PackPanel,
+											  _.axis = Axis::Y ));
 
-		int row = 0;
+		auto pTypeInfo = &pSlot->typeInfo();
 
-		// Type
+		DebugPanel::Blueprint bp;
+		bp.skin = ColorSkin::create( WGBP(ColorSkin,
+										  _.color = Color::Transparent,
+										  _.padding = { 16, 0,2,8},
+										  _.spacing = { 2,0,2,0} ));
 
+		bp.label.style = m_pInfoPanelLabelTextStyle;
+
+		while( pTypeInfo != nullptr )
 		{
-			pTable->slots[row][0] = TextDisplay::create( WGBP(TextDisplay, _.display.text = "Slot Type:") );
-			pTable->slots[row][1] = TextDisplay::create( WGBP(TextDisplay, _.display.text = slot.typeInfo().className ) );
-			row++;
+			bp.label.text = pTypeInfo->className;
+
+			auto pInfoPanel = m_pDebugger->createDebugPanel(bp, pTypeInfo, pSlot);
+
+			if( pInfoPanel )
+				pPanel->slots << pInfoPanel;
+
+			pTypeInfo = pTypeInfo->pSuperClass;
 		}
 
-
-		// Position
-
-		{
-			auto pLabelX = TextDisplay::create();
-			pLabelX->display.setText("Relative X: ");
-
-			auto pLabelY = TextDisplay::create();
-			pLabelY->display.setText("Relative Y: ");
-
-			auto pLabelW = TextDisplay::create();
-			pLabelW->display.setText("Width: ");
-
-			auto pLabelH = TextDisplay::create();
-			pLabelH->display.setText("Height: ");
-
-
-			RectF geo = slot.geo();
-
-			auto pValueX = TextDisplay::create();
-			pValueX->display.setText(std::to_string(geo.x));
-
-			auto pValueY = TextDisplay::create();
-			pValueY->display.setText(std::to_string(geo.y));
-
-			auto pValueW = TextDisplay::create();
-			pValueW->display.setText(std::to_string(geo.w));
-
-			auto pValueH = TextDisplay::create();
-			pValueH->display.setText(std::to_string(geo.h));
-
-
-			pTable->slots[row][0] = pLabelX;
-			pTable->slots[row][1] = pValueX;
-			row++;
-
-			pTable->slots[row][0] = pLabelY;
-			pTable->slots[row][1] = pValueY;
-			row++;
-
-			pTable->slots[row][0] = pLabelW;
-			pTable->slots[row][1] = pValueW;
-			row++;
-
-			pTable->slots[row][0] = pLabelH;
-			pTable->slots[row][1] = pValueH;
-			row++;
-
-		}
-
-		return pTable;
+		return pPanel;
 	}
 
 	//____ _createGenericWidgetTool() ______________________________________
 
 	Widget_p DebugOverlay::_createGenericWidgetTool( Widget * pWidget )
 	{
-		auto pTable = TablePanel::create( WGBP(TablePanel,
-											   _.columns = 2,
-											   _.rows = 2,
-											   _.columnLayout = Base::defaultPackLayout()) );
 
-		// ClassName
+		auto pPanel = PackPanel::create( WGBP(PackPanel,
+											  _.axis = Axis::Y ));
 
+		auto pTypeInfo = &pWidget->typeInfo();
+
+		DebugPanel::Blueprint bp;
+		bp.skin = ColorSkin::create( WGBP(ColorSkin,
+										  _.color = Color::Transparent,
+										  _.padding = { 16, 0,2,8},
+										  _.spacing = { 2,0,2,0} ));
+
+		bp.label.style = m_pInfoPanelLabelTextStyle;
+
+		while( pTypeInfo != nullptr )
 		{
-			auto pNameLabel = TextDisplay::create();
-			pNameLabel->display.setText("className: ");
+			bp.label.text = pTypeInfo->className;
 
-			auto pName = TextDisplay::create();
-			pName->display.setText(pWidget->typeInfo().className);
+			auto pInfoPanel = m_pDebugger->createDebugPanel(bp, pTypeInfo, pWidget);
 
-			pTable->slots[0][0] = pNameLabel;
-			pTable->slots[0][1] = pName;
+			if( pInfoPanel )
+				pPanel->slots << pInfoPanel;
+
+			pTypeInfo = pTypeInfo->pSuperClass;
 		}
 
-		// Id
+		return pPanel;
 
-		{
-			auto pIdLabel = TextDisplay::create();
-			pIdLabel->display.setText("id: ");
-
-			auto pId = TextDisplay::create();
-			pId->display.setText(std::to_string(pWidget->id()));
-
-			pTable->slots[1][0] = pIdLabel;
-			pTable->slots[1][1] = pId;
-		}
-
-		return pTable;
 	}
 
+	//____ _createResources() ____________________________________________________
+
+	void DebugOverlay::_createResources()
+	{
+		m_pWindowLabelTextStyle = TextStyle::create( WGBP(TextStyle,
+														  _.size = 16 ));
+
+		m_pInfoPanelLabelTextStyle = TextStyle::create( WGBP(TextStyle,
+														  _.size = 12 ));
+
+
+		auto pContentSkin = BoxSkin::create( WGBP(BoxSkin,
+												  _.color = Color::White,
+												  _.outlineColor = Color::Black,
+												  _.outlineThickness = 1,
+												  _.padding = 2));
+
+		auto pScrollbarBgSkin = BoxSkin::create( WGBP(BoxSkin,
+												_.color = Color::DarkGray,
+												  _.outlineColor = Color::Black,
+												  _.outlineThickness = 1,
+												  _.padding = 2));
+
+		auto pScrollbarSkin = BoxSkin::create( WGBP(BoxSkin,
+												_.color = Color::LightGray,
+												  _.outlineColor = Color::Black,
+												  _.outlineThickness = 1,
+												  _.padding = 6));
+
+		m_scrollPanelBP = WGBP(ScrollPanel,
+							   _.childConstraintX = SizeConstraint::Equal,
+							   _.childConstraintY = SizeConstraint::GreaterOrEqual,
+							   _.scrollbarY.background = pScrollbarBgSkin,
+							   _.scrollbarY.bar = pScrollbarSkin
+							   );
+
+	}
 
 
 } // namespace wg

@@ -72,6 +72,7 @@ namespace wg
 		friend class DynamicSlot;
 		friend class Base;
 		friend class InputHandler;
+		friend class WidgetInfoPanel;
 
 		template<class S> friend class StaticSlotVector;
 		template<class S> friend class DynamicSlotVector;
@@ -265,7 +266,7 @@ namespace wg
 		Widget();
 		template<class BP> Widget( const BP& bp ) : m_skin(this)
 		{
-			m_pContextAtConstruction = Base::context().rawPtr();
+//			m_pContextAtConstruction = Base::context().rawPtr();
 
 			m_pBaggage		= bp.baggage;
 			m_bDropTarget	= bp.dropTarget;
@@ -363,8 +364,8 @@ namespace wg
 
 		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
-		GUIContext *	m_pContextAtConstruction = nullptr;
-        bool            m_contextSet = false;
+//		GUIContext *	m_pContextAtConstruction = nullptr;
+
 		Object_p		m_pBaggage;
 
 		SkinSlot		m_skin;
