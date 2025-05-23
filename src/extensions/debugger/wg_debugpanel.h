@@ -26,6 +26,8 @@
 #pragma once
 
 #include <wg_labelcapsule.h>
+#include <wg_textdisplay.h>
+#include <wg_tablepanel.h>
 
 namespace wg
 {
@@ -43,27 +45,11 @@ namespace wg
 
 		struct Blueprint
 		{
-			Object_p		baggage;
-			Widget_p		child;
-			bool			disabled = false;
-			bool			dropTarget = true;
-			Finalizer_p		finalizer = nullptr;
-			int				id = 0;
-			Text::Blueprint	label;
-			Placement		labelPlacement = Placement::NorthWest;
-			Skin_p			labelSkin;
-			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
-			bool			pickable = true;
-			uint8_t			pickCategory = 0;
-			bool			pickHandle = false;
-			PointerStyle	pointer = PointerStyle::Undefined;
-			bool			selectable = true;
-			Skin_p			skin;
-			bool			stickyFocus = false;
-			bool			tabLock = false;
-			String			tooltip;
-			bool			usePickHandles = false;
-
+			LabelCapsule::Blueprint	mainCapsule;
+			TextDisplay::Blueprint	listEntryLabel;
+			TextDisplay::Blueprint	listEntryValue;
+			TextDisplay::Blueprint	infoDisplay;
+			TablePanel::Blueprint	table;
 		};
 
 		//.____ Identification __________________________________________

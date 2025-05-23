@@ -29,6 +29,7 @@
 #include <wg_packpanel.h>
 #include <wg_togglebutton.h>
 #include <wg_debugger.h>
+#include <wg_theme.h>
 
 #include <wg_scrollpanel.h>
 
@@ -105,10 +106,9 @@ namespace wg
 			Skin_p			skin;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
+			Theme_p			theme;										// Mandatory!!!
 			String			tooltip;
 			bool			usePickHandles = false;
-
-
 		};
 
 		//.____ Creation __________________________________________
@@ -230,14 +230,9 @@ namespace wg
 
 		// Resources
 
-		TextStyle_p		m_pWindowLabelTextStyle;
-		TextStyle_p		m_pInfoPanelLabelTextStyle;
+		Theme_p			m_pTheme;
 
-		ScrollPanel::Blueprint	m_scrollPanelBP;
-
-		Skin_p			m_pButtonSkin;
-		
-
+		DebugPanel::Blueprint	m_debugPanelBP;
 
 	};
 

@@ -32,19 +32,13 @@ namespace wg
 
 	ObjectInfoPanel::ObjectInfoPanel(const Blueprint& blueprint, Object * pObject) : DebugPanel( blueprint )
 	{
-		label.setText( Object::TYPEINFO.className );
-
-		auto pTable = TablePanel::create( WGBP(TablePanel,
-											   _.columns = 2,
-											   _.rows = 2,
-											   _.columnLayout = Base::defaultPackLayout()) );
-
+		auto pTable = TablePanel::create( WGOVR(blueprint.table, _.columns = 2, _.rows = 2 ));
 
 		{
-			auto pIdLabel = TextDisplay::create();
+			auto pIdLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pIdLabel->display.setText("refcount: ");
 
-			auto pId = TextDisplay::create();
+			auto pId = TextDisplay::create(blueprint.listEntryValue);
 			pId->display.setText(std::to_string(pObject->refcount()));
 
 			pTable->slots[0][0] = pIdLabel;
@@ -52,10 +46,10 @@ namespace wg
 		}
 
 		{
-			auto pIdLabel = TextDisplay::create();
+			auto pIdLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pIdLabel->display.setText("finalizer: ");
 
-			auto pId = TextDisplay::create();
+			auto pId = TextDisplay::create(blueprint.listEntryValue);
 			pId->display.setText(std::to_string(pObject->finalizer()));
 
 			pTable->slots[1][0] = pIdLabel;

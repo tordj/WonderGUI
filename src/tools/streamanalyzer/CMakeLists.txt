@@ -41,6 +41,7 @@ target_link_libraries(streamanalyzer PRIVATE
 	wggfxstream
 	wgsoftgfx
 	wgdebugger
+	wg_theme_simplistic
 )
 
 SET_SOURCE_FILES_PROPERTIES(${RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)

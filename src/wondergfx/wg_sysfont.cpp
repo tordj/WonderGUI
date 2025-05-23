@@ -160,7 +160,7 @@ namespace wg
 			glyph.rect.x = ((chr - 32) % 32) * 16 * 64;
 			glyph.rect.y = ((chr - 32) / 32) * 16 * 64;
 			glyph.rect.w = 14 * 64;
-			glyph.rect.h = 14 * 64;
+			glyph.rect.h = 16 * 64;
 		}
 		else
 		{

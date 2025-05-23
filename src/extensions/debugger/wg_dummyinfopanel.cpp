@@ -33,7 +33,7 @@ namespace wg
 	DummyInfoPanel::DummyInfoPanel(const Blueprint& blueprint, void * pDummy) : DebugPanel( blueprint )
 	{
 
-		auto pDisplay = TextDisplay::create( WGBP( TextDisplay, _.display.text = "No debug info for this class" ));
+		auto pDisplay = TextDisplay::create( WGOVR( blueprint.infoDisplay, _.display.text = "No debug info for this class" ));
 		this->slot = pDisplay;
 
 	}

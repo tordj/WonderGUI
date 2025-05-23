@@ -6,7 +6,8 @@
 #include <string>
 #include <fstream>
 
-#include <themes/steel_n_red/wg_steel_n_red.h>
+#include <themes/simplistic/wg_simplistic.h>
+//#include <themes/steel_n_red/wg_steel_n_red.h>
 
 
 
@@ -84,9 +85,9 @@ bool MyApp::_setupGUI(Visitor* pVisitor )
 
 	//
 
-	auto pSteelNRedSurf = pVisitor->loadSurface("resources/newskin/radiobutton-32.png");
+//	auto pSteelNRedSurf = pVisitor->loadSurface("resources/newskin/radiobutton-32.png");
 
-	auto pTheme = SteelNRed::create(pSteelNRedSurf);
+	auto pTheme = Simplistic::create(pFont, pFont, pFont, pFont);
 
 
 
