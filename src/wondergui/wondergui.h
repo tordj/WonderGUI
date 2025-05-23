@@ -40,6 +40,7 @@
 #include <wg_blockskin.h>
 #include <wg_blockslideskin.h>
 #include <wg_boxskin.h>
+#include <wg_bracketskin.h>
 #include <wg_button.h>
 #include <wg_canvascapsule.h>
 #include <wg_canvasdisplay.h>
@@ -61,7 +62,6 @@
 #include <wg_container.h>
 #include <wg_lambdaskin.h>
 #include <wg_dataset.h>
-#include <wg_designoverlay.h>
 #include <wg_doubleskin.h>
 #include <wg_dragndropoverlay.h>
 #include <wg_dummyfont.h>

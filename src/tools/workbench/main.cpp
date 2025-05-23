@@ -166,6 +166,8 @@ bool reorderCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 bool widgetMoveTest(ComponentPtr<DynamicSlot> pEntry);
 bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 bool elipsisTest(ComponentPtr<DynamicSlot> pEntry);
+bool packPanelSpacingBugTest(ComponentPtr<DynamicSlot> pEntry);
+bool bracketSkinTest(ComponentPtr<DynamicSlot> pEntry);
 
 
 void nisBlendTest();
@@ -785,13 +787,15 @@ int main(int argc, char** argv)
 		//	packPanelStressTest2(pSlot);
 		//	blockingCapsuleTest(pSlot);
 		//	tablePanelTest(pSlot);
-			tablePanelTest2(pSlot);
+		//	tablePanelTest2(pSlot);
 		//	dragndropTest(pSlot);
 		//	fillerTransitionTest(pSlot);
 		//	reorderCapsuleTest(pSlot);
 		//	widgetMoveTest(pSlot);
 		//	labelCapsuleTest(pSlot);
 		//	elipsisTest(pSlot);
+		//	packPanelSpacingBugTest(pSlot);
+		bracketSkinTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -1661,7 +1665,7 @@ bool splitPanelTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool designLayerTest(ComponentPtr<DynamicSlot> pSlot)
 {
-	auto pDesignOverlay = DesignOverlay::create();
+//	auto pDebugOverlay = DebugOverlay::create();
 
 	auto pFlexPanel = FlexPanel::create();
 	pFlexPanel->setSkin( ColorSkin::create(Color::Thistle) );
@@ -1682,10 +1686,10 @@ bool designLayerTest(ComponentPtr<DynamicSlot> pSlot)
 	pFlexPanel->slots.pushFront(pFiller2, { .pos = {20,20}, .size = {50,50} });
 	pFlexPanel->slots.pushFront(pFiller3, { .pos = {30,30}, .size = {50,50} });
 
-	pDesignOverlay->mainSlot = pFlexPanel;
-	*pSlot = pDesignOverlay;
+//	pDebugOverlay->mainSlot = pFlexPanel;
+	*pSlot = pFlexPanel;
 
-	pDesignOverlay->setEditMode(true);
+//	pDebugOverlay->setEditMode(true);
 
 //	*pSlot = pFlexPanel;
 
@@ -4631,16 +4635,78 @@ bool elipsisTest(ComponentPtr<DynamicSlot> pEntry)
 
 	auto pEditorSkin = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Black, .padding = 2 });
 
-	auto pLineEditor = LineEditor::create( { .skin = pEditorSkin, .editor = { .layout = pTextLayout } });
+	auto pLineEditor = LineEditor::create( { .editor = {.layout = pTextLayout }, .skin = pEditorSkin  });
 
-	auto pTextEditor = TextEditor::create( { .skin = pEditorSkin, .editor = { .layout = pTextLayout } });
+	auto pTextEditor = TextEditor::create( { .editor = {.layout = pTextLayout }, .skin = pEditorSkin });
 
-	auto pTextEditor2 = TextEditor::create( { .skin = pEditorSkin, .editor = { .layout = pTextLayout2 } });
+	auto pTextEditor2 = TextEditor::create( { .editor = {.layout = pTextLayout2 }, .skin = pEditorSkin });
 
 
 	pBaseLayer->slots.pushBack(pLineEditor);
 	pBaseLayer->slots.pushBack(pTextEditor, { .pos = {10,50}, .size = {200,50}});
 	pBaseLayer->slots.pushBack(pTextEditor2, { .pos = {10,300}, .size = {200,60}});
+	*pEntry = pBaseLayer;
+	return true;
+
+}
+
+
+
+bool packPanelSpacingBugTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::Honeydew));
+
+	auto pPackPanel = PackPanel::create( { .axis = Axis::Y, .skin = ColorSkin::create(Color::ForestGreen)});
+
+
+
+	auto pTextLayout = BasicTextLayout::create({ .autoEllipsis = true, .wrap = false });
+
+	auto pEntrySkin = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Black, .padding = 2 });
+
+	auto pEntry1 = TextDisplay::create({ .display = {.layout = pTextLayout }, .skin = pEntrySkin });
+//	auto pEntry2 = TextDisplay::create({ .display = {.layout = pTextLayout }, .skin = pEntrySkin });
+//	auto pEntry3 = TextDisplay::create({ .display = {.layout = pTextLayout }, .skin = pEntrySkin });
+//	auto pEntry4 = TextDisplay::create({ .display = {.layout = pTextLayout }, .skin = pEntrySkin });
+
+	pEntry1->display.setText("This is a long text entry that should want to wrap");
+//	pEntry2->display.setText("This is a long text entry that should want to wrap");
+//	pEntry3->display.setText("This is a long text entry that should want to wrap");
+//	pEntry4->display.setText("This is a long text entry that should want to wrap");
+
+
+	pPackPanel->slots.pushBack(pEntry1);
+//	pPackPanel->slots.pushBack(pEntry2);
+//	pPackPanel->slots.pushBack(pEntry3);
+//	pPackPanel->slots.pushBack(pEntry4);
+
+	auto pSizeCap = SizeCapsule::create({ .child = pPackPanel, .maxSize = {200,-1} });
+
+	pBaseLayer->slots.pushBack(pSizeCap, { .pos = {10,50} });
+	*pEntry = pBaseLayer;
+	return true;
+
+}
+
+bool bracketSkinTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pSkin = BracketSkin::create({ .color = HiColor(4096,0,0,2048), .size = {15,30}, .thickness = 5 });
+
+	auto pFiller1 = Filler::create({ .defaultSize = {100,100}, .skin = pSkin });
+	auto pFiller2 = Filler::create({ .defaultSize = {50,100}, .skin = pSkin });
+	auto pFiller3 = Filler::create({ .defaultSize = {100,40}, .skin = pSkin });
+
+
+
+	pBaseLayer->slots.pushBack(pFiller1, { .pos = {10,10} } );
+	pBaseLayer->slots.pushBack(pFiller2, { .pos = {120,10} });
+	pBaseLayer->slots.pushBack(pFiller3, { .pos = {10,120} });
+
+
 	*pEntry = pBaseLayer;
 	return true;
 

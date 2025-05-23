@@ -36,7 +36,7 @@ namespace wg
 
 	Widget::Widget(): m_skin(this)
 	{
-		m_pContextAtConstruction = Base::context().rawPtr();
+//		m_pContextAtConstruction = Base::context().rawPtr();
 	}
 
 	//____ Destructor ______________________________________________    _______________

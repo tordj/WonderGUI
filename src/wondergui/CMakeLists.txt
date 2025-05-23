@@ -122,6 +122,8 @@ set( SOURCES
 	skins/state/wg_blockslideskin.h
 	skins/state/wg_boxskin.cpp
 	skins/state/wg_boxskin.h
+	skins/state/wg_bracketskin.cpp
+	skins/state/wg_bracketskin.h
 	skins/state/wg_circleskin.cpp
 	skins/state/wg_circleskin.h
 	skins/state/wg_colorskin.cpp
@@ -223,8 +225,7 @@ set( SOURCES
 	widgets/capsules/wg_scalecapsule.h
 	widgets/capsules/wg_sizecapsule.cpp
 	widgets/capsules/wg_sizecapsule.h
-	widgets/overlays/wg_designoverlay.cpp
-	widgets/overlays/wg_designoverlay.h
+
 	widgets/overlays/wg_dragndropoverlay.cpp
 	widgets/overlays/wg_dragndropoverlay.h
 	widgets/overlays/wg_overlay.cpp
@@ -235,10 +236,12 @@ set( SOURCES
 	widgets/overlays/wg_popupoverlay.h
 	widgets/overlays/wg_tooltipoverlay.cpp
 	widgets/overlays/wg_tooltipoverlay.h
+
 	widgets/lists/wg_list.cpp
 	widgets/lists/wg_list.h
 	widgets/lists/wg_packlist.cpp
 	widgets/lists/wg_packlist.h
+
 	widgets/panels/wg_flexpanel.cpp
 	widgets/panels/wg_flexpanel.h
 	widgets/panels/wg_lambdapanel.cpp

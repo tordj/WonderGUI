@@ -125,6 +125,8 @@ add_subdirectory(wondergear)
 add_subdirectory(wondergfx)
 add_subdirectory(wondergui)
 
+add_subdirectory(extensions/debugger)
+
 if(APPLE)
 	add_subdirectory(extensions/metalgfx)
 endif()

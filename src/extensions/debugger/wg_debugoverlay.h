@@ -20,25 +20,29 @@
 
 =========================================================================*/
 
-#ifndef WG_DESIGNOVERLAY_DOT_H
-#define WG_DESIGNOVERLAY_DOT_H
+#ifndef WG_DEBUGOVERLAY_DOT_H
+#define WG_DEBUGOVERLAY_DOT_H
 #pragma once
 
 #include <wg_overlay.h>
 #include <wg_staticslotvector.h>
 #include <wg_packpanel.h>
+#include <wg_togglebutton.h>
+#include <wg_debugger.h>
+
+#include <wg_scrollpanel.h>
 
 namespace wg
 {
 
 
-	class DesignOverlay;
-	typedef	StrongPtr<DesignOverlay>	DesignOverlay_p;
-	typedef	WeakPtr<DesignOverlay>	DesignOverlay_wp;
+	class DebugOverlay;
+	typedef	StrongPtr<DebugOverlay>	DebugOverlay_p;
+	typedef	WeakPtr<DebugOverlay>	DebugOverlay_wp;
 
-	//____ DesignOverlay __________________________________________________________
+	//____ DebugOverlay __________________________________________________________
 
-	class DesignOverlay : public Overlay
+	class DebugOverlay : public Overlay
 	{
 
 	public:
@@ -47,7 +51,7 @@ namespace wg
 
 		class ToolboxSlot : public Overlay::Slot
 		{
-			friend class DesignOverlay;
+			friend class DebugOverlay;
 			friend class CDesignToolboxSlotVector;
 			template<class S> friend class StaticSlotVector;
 			template<class S> friend class SlotVector;
@@ -68,7 +72,8 @@ namespace wg
 
 			bool		m_bVisible = true;
 			Placement	m_placement = Placement::NorthWest;
-			CoordSPX	m_placementPos;			// Widgets pos relative selected widget and placement.
+			CoordSPX	m_placementPos;			// Widgets pos relative placement.
+			SizeSPX		m_chosenSize;
 		};
 
 
@@ -76,19 +81,43 @@ namespace wg
 
 		class CToolboxVector : public StaticSlotVector<ToolboxSlot>
 		{
-			friend class DesignOverlay;
+			friend class DebugOverlay;
 
 			CToolboxVector(SlotHolder * pHolder) : StaticSlotVector<ToolboxSlot>(pHolder) {}
 		};
 
+		//.____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			Debugger_p		debugger;									// Mandatory!!!
+			bool			disabled = false;
+			bool			dropTarget = false;
+			Finalizer_p		finalizer = nullptr;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::Undefined;
+			bool			pickable = false;
+			uint8_t			pickCategory = 0;
+			bool			pickHandle = false;
+			PointerStyle	pointer = PointerStyle::Undefined;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			stickyFocus = false;
+			bool			tabLock = false;
+			String			tooltip;
+			bool			usePickHandles = false;
+
+
+		};
 
 		//.____ Creation __________________________________________
 
-		static DesignOverlay_p	create() { return DesignOverlay_p(new DesignOverlay()); }
+		static DebugOverlay_p	create( const Blueprint& blueprint ) { return DebugOverlay_p(new DebugOverlay(blueprint)); }
 
 		//.____ Components _______________________________________
 
-		CToolboxVector	palettes;
+		CToolboxVector	toolboxes;
 
 		//.____ Identification __________________________________________
 
@@ -103,10 +132,12 @@ namespace wg
 		void				setSelectionSkin(Skin * pSkin);
 		inline Skin_p		selectionSkin() const;
 
+		PointerStyle 		pointerStyle() const override;
+
 		//.____ Control ____________________________________________________
 
-		void				setEditMode(bool bEditMode);
-		inline bool			isEditMode() const;
+		void				setActivated(bool bActivated);
+		inline bool			isActivated() const;
 
 		//.____ Internal ______________________________________________________
 
@@ -117,8 +148,8 @@ namespace wg
 
 
 	protected:
-		DesignOverlay();
-		virtual ~DesignOverlay();
+		DebugOverlay(const Blueprint& blueprint);
+		virtual ~DebugOverlay();
 
 	private:
 
@@ -150,50 +181,87 @@ namespace wg
 
 		// Toolbox creators
 
-		Widget_p		_createGenericSlotTool(const StaticSlot& slot);
+		std::tuple<Widget_p, PackPanel_p> _createToolbox( const char * pTitle );
+
+		void			_createSlotWidgetToolbox();
+
+
+		Widget_p		_createGenericSlotTool(StaticSlot * pSlot);
 		Widget_p		_createGenericWidgetTool(Widget * pWidget);
 
 		//
+
+		void			_createResources();
+
+		Placement		_boxSection( CoordSPX pos, int boxIndex );
+
 
 		RectSPX			_selectionGeo() const;
 		void			_refreshRealGeo(ToolboxSlot * pSlot, bool bForceResize = false);
 		void			_selectWidget(Widget * pWidget);
 		//
 
-		bool		m_bEditMode = false;
+		Debugger_p		m_pDebugger;
 
-		Widget_wp	m_pSelectedWidget;
-		Skin_p		m_pSelectionSkin;
-		Skin_p		m_pToolboxSkin;
+		PointerStyle	m_generatedPointerStyle = PointerStyle::Undefined;
 
-		PackPanel_p	m_pSlotToolbox;
-		PackPanel_p	m_pWidgetToolbox;
+		ToggleButton_p	m_pPickWidgetButton;
 
-		int			m_pressedToolbox = -1;			// Index for palette that is pressed.
-		CoordSPX	m_pressedToolboxStartOfs;
+		bool			m_bActivated = false;
+		bool			m_bSelectMode = false;
+
+		Widget_wp		m_pSelectedWidget;
+		Skin_p			m_pSelectionSkin;
+		Skin_p			m_pToolboxSkin;
+
+		PackPanel_p		m_pSlotTools;
+		PackPanel_p		m_pWidgetTools;
+
+		// Variables for toolbox drag
+
+		int				m_movingToolbox = -1;			// Index for toolbox that is being moved.
+		CoordSPX		m_movingToolboxStartOfs;
+
+		// Variables for toolbox resize
+
+		int				m_resizingToolbox = -1;			// Index for toolbox that is being resized.
+		Placement		m_resizingToolboxDirection = Placement::Undefined;
+		RectSPX			m_resizingToolboxStartGeo;
+
+		// Resources
+
+		TextStyle_p		m_pWindowLabelTextStyle;
+		TextStyle_p		m_pInfoPanelLabelTextStyle;
+
+		ScrollPanel::Blueprint	m_scrollPanelBP;
+
+		Skin_p			m_pButtonSkin;
+		
+
+
 	};
 
 	//____ paletteSkin() ______________________________________________________
 
-	Skin_p DesignOverlay::paletteSkin() const
+	Skin_p DebugOverlay::paletteSkin() const
 	{
 		return m_pToolboxSkin;
 	}
 
 	//____ selectionSkin() ____________________________________________________
 
-	Skin_p DesignOverlay::selectionSkin() const
+	Skin_p DebugOverlay::selectionSkin() const
 	{
 		return m_pSelectionSkin;
 	}
 
-	//____ isEditMode() _______________________________________________________
+	//____ isActivated() _______________________________________________________
 
-	bool DesignOverlay::isEditMode() const
+	bool DebugOverlay::isActivated() const
 	{
-		return m_bEditMode;
+		return m_bActivated;
 	}
 
 
 } // namespace wg
-#endif //WG_DESIGNOVERLAY_DOT_H
+#endif //WG_DEBUGOVERLAY_DOT_H

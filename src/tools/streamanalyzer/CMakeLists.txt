@@ -31,6 +31,7 @@ target_include_directories(streamanalyzer PRIVATE
 	${WAPP_INCDIRS}
 	${GFXSTREAM_INCDIRS}
 	${WGSOFTGFX_INCDIRS}
+	${WGDEBUGGER_INCDIRS}
 )
 
 target_working_directory(streamanalyzer ${WG_ROOT} )
@@ -39,6 +40,7 @@ target_link_libraries(streamanalyzer PRIVATE
 	${WAPPLIB}
 	wggfxstream
 	wgsoftgfx
+	wgdebugger
 )
 
 SET_SOURCE_FILES_PROPERTIES(${RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
