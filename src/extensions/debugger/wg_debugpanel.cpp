@@ -29,7 +29,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	DebugPanel::DebugPanel(const Blueprint& blueprint) : LabelCapsule( blueprint )
+	DebugPanel::DebugPanel(const Blueprint& blueprint) : LabelCapsule( blueprint.mainCapsule )
 	{
 	}
 

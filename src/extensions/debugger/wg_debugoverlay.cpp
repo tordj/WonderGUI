@@ -36,6 +36,7 @@
 #include <wg_togglebutton.h>
 #include <wg_togglegroup.h>
 #include <wg_scrollpanel.h>
+#include <wg_basictextlayout.h>
 
 #include <wg_staticslotvector.impl.h>
 
@@ -56,6 +57,7 @@ namespace wg
 	DebugOverlay::DebugOverlay(const Blueprint& bp) : Overlay(bp), toolboxes(this)
 	{
 		m_pDebugger = bp.debugger;
+		m_pTheme 	= bp.theme;
 
 		_createResources();
 
@@ -737,22 +739,19 @@ namespace wg
 												_.outlineThickness = 1,
 												_.padding = 5 ));
 
-		auto pTitleBarSkin = BoxSkin::create( WGBP(BoxSkin,
-												_.color = Color::LightGrey,
-												_.outlineColor = Color::Black,
-												_.outlineThickness = 1,
-												_.padding = 2 ));
 
 		int idOfs = 10000 + 1000 * toolboxes.size();
 
 		auto pMain = PackPanel::create( WGBP(PackPanel, _.id = idOfs + 1, _.axis = Axis::Y, _.skin = pPanelSkin) );
 
+		auto pTitleDisplay = TextDisplay::create( WGOVR( m_pTheme->windowTitleBar(), _.id = idOfs + 2, _.display.text = pTitle ));
+/*
 		auto pTitleDisplay = TextDisplay::create( WGBP(TextDisplay,
 													   _.id = idOfs + 2,
 													   _.display.text = pTitle,
 													   _.markPolicy = MarkPolicy::Geometry,
 													   _.skin = pTitleBarSkin ));
-
+*/
 		auto pContent = PackPanel::create( WGBP(PackPanel, _.axis = Axis::Y ));
 
 
@@ -818,7 +817,7 @@ namespace wg
 												  _.outlineThickness = 1,
 												  _.padding = 2));
 
-		auto pContentWindow = ScrollPanel::create( m_scrollPanelBP );
+		auto pContentWindow = ScrollPanel::create( m_pTheme->scrollPanelY() );
 
 		auto pScrollableContent = PackPanel::create( WGBP(PackPanel, _.skin = pContentSkin, _.axis = Axis::Y ) );
 
@@ -848,17 +847,11 @@ namespace wg
 
 		auto pTypeInfo = &pSlot->typeInfo();
 
-		DebugPanel::Blueprint bp;
-		bp.skin = ColorSkin::create( WGBP(ColorSkin,
-										  _.color = Color::Transparent,
-										  _.padding = { 16, 0,2,8},
-										  _.spacing = { 2,0,2,0} ));
-
-		bp.label.style = m_pInfoPanelLabelTextStyle;
+		DebugPanel::Blueprint bp = m_debugPanelBP;
 
 		while( pTypeInfo != nullptr )
 		{
-			bp.label.text = pTypeInfo->className;
+			bp.mainCapsule.label.text = pTypeInfo->className;
 
 			auto pInfoPanel = m_pDebugger->createDebugPanel(bp, pTypeInfo, pSlot);
 
@@ -881,17 +874,11 @@ namespace wg
 
 		auto pTypeInfo = &pWidget->typeInfo();
 
-		DebugPanel::Blueprint bp;
-		bp.skin = ColorSkin::create( WGBP(ColorSkin,
-										  _.color = Color::Transparent,
-										  _.padding = { 16, 0,2,8},
-										  _.spacing = { 2,0,2,0} ));
-
-		bp.label.style = m_pInfoPanelLabelTextStyle;
+		DebugPanel::Blueprint bp = m_debugPanelBP;
 
 		while( pTypeInfo != nullptr )
 		{
-			bp.label.text = pTypeInfo->className;
+			bp.mainCapsule.label.text = pTypeInfo->className;
 
 			auto pInfoPanel = m_pDebugger->createDebugPanel(bp, pTypeInfo, pWidget);
 
@@ -909,38 +896,30 @@ namespace wg
 
 	void DebugOverlay::_createResources()
 	{
-		m_pWindowLabelTextStyle = TextStyle::create( WGBP(TextStyle,
-														  _.size = 16 ));
+		auto& bp = m_pTheme->labeledSection();
 
-		m_pInfoPanelLabelTextStyle = TextStyle::create( WGBP(TextStyle,
-														  _.size = 12 ));
+		auto pValueLayout = BasicTextLayout::create( WGBP(BasicTextLayout,
+														  _.placement = Placement::East ));
 
+		auto pInfoLayout = BasicTextLayout::create( WGBP(BasicTextLayout,
+														  _.wrap = true,
+														  _.placement = Placement::Center ));
 
-		auto pContentSkin = BoxSkin::create( WGBP(BoxSkin,
-												  _.color = Color::White,
-												  _.outlineColor = Color::Black,
-												  _.outlineThickness = 1,
-												  _.padding = 2));
+		m_debugPanelBP.mainCapsule = m_pTheme->labeledSection();
 
-		auto pScrollbarBgSkin = BoxSkin::create( WGBP(BoxSkin,
-												_.color = Color::DarkGray,
-												  _.outlineColor = Color::Black,
-												  _.outlineThickness = 1,
-												  _.padding = 2));
+		m_debugPanelBP.listEntryLabel = WGBP(TextDisplay,
+											 _.display.style = m_pTheme->strongStyle() );
 
-		auto pScrollbarSkin = BoxSkin::create( WGBP(BoxSkin,
-												_.color = Color::LightGray,
-												  _.outlineColor = Color::Black,
-												  _.outlineThickness = 1,
-												  _.padding = 6));
+		m_debugPanelBP.listEntryValue = WGBP(TextDisplay,
+											 _.display.style = m_pTheme->defaultStyle(),
+											 _.display.layout = pValueLayout );
 
-		m_scrollPanelBP = WGBP(ScrollPanel,
-							   _.childConstraintX = SizeConstraint::Equal,
-							   _.childConstraintY = SizeConstraint::GreaterOrEqual,
-							   _.scrollbarY.background = pScrollbarBgSkin,
-							   _.scrollbarY.bar = pScrollbarSkin
-							   );
+		m_debugPanelBP.infoDisplay = WGBP(TextDisplay,
+											 _.display.style = m_pTheme->defaultStyle(),
+											 _.display.layout = pInfoLayout );
 
+		m_debugPanelBP.table = WGBP(TablePanel,
+									_.columnLayout = Base::defaultPackLayout());
 	}
 
 

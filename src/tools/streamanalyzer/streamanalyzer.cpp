@@ -13,6 +13,8 @@
 
 #include <wg_lineargfxdevice.h>
 
+#include <themes/simplistic/wg_simplistic.h>
+
 #include <string>
 #include <fstream>
 
@@ -131,7 +133,13 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	m_pDebugger = Debugger::create();
 
-	m_pDebugOverlay = DebugOverlay::create( { .debugger = m_pDebugger } );
+	auto pDbgFontBlob = pVisitor->loadBlob("resources/DroidSans.ttf");
+
+	auto pDbgFont = FreeTypeFont::create(pDbgFontBlob);
+
+	auto pTheme = Simplistic::create(pDbgFont, pDbgFont, pDbgFont, pDbgFont);
+
+	m_pDebugOverlay = DebugOverlay::create( { .debugger = m_pDebugger, .theme = pTheme } );
 
 	auto pPopupOverlay = PopupOverlay::create();
 

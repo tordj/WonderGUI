@@ -20,7 +20,7 @@ target_working_directory(widgetgallery ${WG_ROOT} )
 
 target_link_libraries(widgetgallery PRIVATE
 	${WAPPLIB}
-	wg_theme_steel_n_red
+	wg_theme_simplistic
 )
 
 
