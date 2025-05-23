@@ -122,6 +122,8 @@ set( SOURCES
 	skins/state/wg_blockslideskin.h
 	skins/state/wg_boxskin.cpp
 	skins/state/wg_boxskin.h
+	skins/state/wg_bracketskin.cpp
+	skins/state/wg_bracketskin.h
 	skins/state/wg_circleskin.cpp
 	skins/state/wg_circleskin.h
 	skins/state/wg_colorskin.cpp
