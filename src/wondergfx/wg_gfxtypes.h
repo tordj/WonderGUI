@@ -62,7 +62,7 @@ namespace wg
 	typedef int		spx;		// Measurement in 1/64th of a pixel, e.g. pixels with 6 binals.
 
 
-	static const int spx_max = 0x7FFFFFC0;	// On pixel boundary with margin for rounding operation.
+	static const int spx_max = 0x70FFFFC0;	// On pixel boundary with margin for rounding operation.
 
 	//____ TintMode ___________________________________________________________
 

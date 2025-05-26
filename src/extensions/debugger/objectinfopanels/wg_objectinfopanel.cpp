@@ -21,6 +21,9 @@
 =========================================================================*/
 #include "wg_objectinfopanel.h"
 #include <wg_textdisplay.h>
+#include <wg_numberdisplay.h>
+#include <wg_basicnumberlayout.h>
+
 
 namespace wg
 {
@@ -34,27 +37,11 @@ namespace wg
 	{
 		auto pTable = TablePanel::create( WGOVR(blueprint.table, _.columns = 2, _.rows = 2 ));
 
-		{
-			auto pIdLabel = TextDisplay::create(blueprint.listEntryLabel);
-			pIdLabel->display.setText("refcount: ");
+		pTable->slots[0][0] = TextDisplay::create( WGOVR( blueprint.listEntryLabel, _.display.text = "Refcount: " ));
+		pTable->slots[0][1] = NumberDisplay::create( WGOVR( blueprint.listEntryInteger, _.display.value = pObject->refcount() ));
 
-			auto pId = TextDisplay::create(blueprint.listEntryValue);
-			pId->display.setText(std::to_string(pObject->refcount()));
-
-			pTable->slots[0][0] = pIdLabel;
-			pTable->slots[0][1] = pId;
-		}
-
-		{
-			auto pIdLabel = TextDisplay::create(blueprint.listEntryLabel);
-			pIdLabel->display.setText("finalizer: ");
-
-			auto pId = TextDisplay::create(blueprint.listEntryValue);
-			pId->display.setText(std::to_string(pObject->finalizer()));
-
-			pTable->slots[1][0] = pIdLabel;
-			pTable->slots[1][1] = pId;
-		}
+		pTable->slots[1][0] = TextDisplay::create(WGOVR(blueprint.listEntryLabel, _.display.text = "Finalizer: "));
+		pTable->slots[1][1] = NumberDisplay::create( WGOVR( blueprint.listEntryPointer, _.display.value = pObject->finalizer()));
 
 		this->slot = pTable;
 	}

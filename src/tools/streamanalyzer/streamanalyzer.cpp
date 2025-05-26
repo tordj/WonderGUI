@@ -133,13 +133,21 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	m_pDebugger = Debugger::create();
 
-	auto pDbgFontBlob = pVisitor->loadBlob("resources/DroidSans.ttf");
+	auto pDbgFont1Blob = pVisitor->loadBlob("resources/NotoSans-Regular.ttf");
+	auto pDbgFont2Blob = pVisitor->loadBlob("resources/NotoSans-Bold.ttf");
+	auto pDbgFont3Blob = pVisitor->loadBlob("resources/NotoSans-Italic.ttf");
+	auto pDbgFont4Blob = pVisitor->loadBlob("resources/DroidSansMono.ttf");
 
-	auto pDbgFont = FreeTypeFont::create(pDbgFontBlob);
+	auto pDbgFont1 = FreeTypeFont::create(pDbgFont1Blob);
+	auto pDbgFont2 = FreeTypeFont::create(pDbgFont2Blob);
+	auto pDbgFont3 = FreeTypeFont::create(pDbgFont3Blob);
+	auto pDbgFont4 = FreeTypeFont::create(pDbgFont4Blob);
 
-	auto pTheme = Simplistic::create(pDbgFont, pDbgFont, pDbgFont, pDbgFont);
+	auto pTheme = Simplistic::create(pDbgFont1, pDbgFont2, pDbgFont3, pDbgFont4);
 
 	m_pDebugOverlay = DebugOverlay::create( { .debugger = m_pDebugger, .theme = pTheme } );
+
+	m_pDebugOverlay->setActivated(true);
 
 	auto pPopupOverlay = PopupOverlay::create();
 

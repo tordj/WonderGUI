@@ -27,6 +27,7 @@
 
 #include <wg_labelcapsule.h>
 #include <wg_textdisplay.h>
+#include <wg_numberdisplay.h>
 #include <wg_tablepanel.h>
 
 namespace wg
@@ -45,11 +46,16 @@ namespace wg
 
 		struct Blueprint
 		{
-			LabelCapsule::Blueprint	mainCapsule;
-			TextDisplay::Blueprint	listEntryLabel;
-			TextDisplay::Blueprint	listEntryValue;
-			TextDisplay::Blueprint	infoDisplay;
-			TablePanel::Blueprint	table;
+			LabelCapsule::Blueprint		mainCapsule;
+			TextDisplay::Blueprint		listEntryLabel;
+			TextDisplay::Blueprint		listEntryText;
+			NumberDisplay::Blueprint	listEntryInteger;
+			NumberDisplay::Blueprint	listEntrySPX;
+			NumberDisplay::Blueprint	listEntryPts;
+			NumberDisplay::Blueprint	listEntryDecimal;
+			NumberDisplay::Blueprint	listEntryPointer;
+			TextDisplay::Blueprint		infoDisplay;
+			TablePanel::Blueprint		table;
 		};
 
 		//.____ Identification __________________________________________

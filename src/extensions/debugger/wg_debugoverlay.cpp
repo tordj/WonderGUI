@@ -37,6 +37,7 @@
 #include <wg_togglegroup.h>
 #include <wg_scrollpanel.h>
 #include <wg_basictextlayout.h>
+#include <wg_basicnumberlayout.h>
 
 #include <wg_staticslotvector.impl.h>
 
@@ -852,6 +853,7 @@ namespace wg
 		while( pTypeInfo != nullptr )
 		{
 			bp.mainCapsule.label.text = pTypeInfo->className;
+			bp.mainCapsule.label.style = m_pTheme->strongStyle();
 
 			auto pInfoPanel = m_pDebugger->createDebugPanel(bp, pTypeInfo, pSlot);
 
@@ -879,6 +881,7 @@ namespace wg
 		while( pTypeInfo != nullptr )
 		{
 			bp.mainCapsule.label.text = pTypeInfo->className;
+			bp.mainCapsule.label.style = m_pTheme->strongStyle();
 
 			auto pInfoPanel = m_pDebugger->createDebugPanel(bp, pTypeInfo, pWidget);
 
@@ -898,24 +901,61 @@ namespace wg
 	{
 		auto& bp = m_pTheme->labeledSection();
 
-		auto pValueLayout = BasicTextLayout::create( WGBP(BasicTextLayout,
+		auto pListTextLayout = BasicTextLayout::create( WGBP(BasicTextLayout,
 														  _.placement = Placement::East ));
 
 		auto pInfoLayout = BasicTextLayout::create( WGBP(BasicTextLayout,
 														  _.wrap = true,
 														  _.placement = Placement::Center ));
 
+		auto pValueLayout = BasicNumberLayout::create( WGBP(BasicNumberLayout,
+			_.style = m_pTheme->defaultStyle() ));
+
+
+		CharBuffer chrBuff;
+		chrBuff.pushBack("0x");
+		chrBuff.setStyle(m_pTheme->defaultStyle());
+
+		auto pPointerLayout = BasicNumberLayout::create(WGBP(BasicNumberLayout,
+			_.style = m_pTheme->defaultStyle(),
+			_.base = 16,
+			_.integerGrouping = 0,
+			_.prefix = String(&chrBuff)
+			));
+
+		auto pPtsLayout = BasicNumberLayout::create(WGBP(BasicNumberLayout,
+			_.style = m_pTheme->defaultStyle(),
+			_.decimalMin = 2
+		));
+
+
+
 		m_debugPanelBP.mainCapsule = m_pTheme->labeledSection();
 
 		m_debugPanelBP.listEntryLabel = WGBP(TextDisplay,
 											 _.display.style = m_pTheme->strongStyle() );
 
-		m_debugPanelBP.listEntryValue = WGBP(TextDisplay,
+		m_debugPanelBP.listEntryText = WGBP(TextDisplay,
 											 _.display.style = m_pTheme->defaultStyle(),
+											 _.display.layout = pListTextLayout );
+
+		m_debugPanelBP.listEntryInteger = WGBP(NumberDisplay,
 											 _.display.layout = pValueLayout );
 
+		m_debugPanelBP.listEntrySPX = WGBP(NumberDisplay,
+											 _.display.layout = pValueLayout );
+
+		m_debugPanelBP.listEntryPts = WGBP(NumberDisplay,
+											 _.display.layout = pPtsLayout );
+
+		m_debugPanelBP.listEntryDecimal = WGBP(NumberDisplay,
+											 _.display.layout = pValueLayout );
+
+		m_debugPanelBP.listEntryPointer = WGBP(NumberDisplay,
+											 _.display.layout = pPointerLayout );
+
 		m_debugPanelBP.infoDisplay = WGBP(TextDisplay,
-											 _.display.style = m_pTheme->defaultStyle(),
+											 _.display.style = m_pTheme->emphasisStyle(),
 											 _.display.layout = pInfoLayout );
 
 		m_debugPanelBP.table = WGBP(TablePanel,
