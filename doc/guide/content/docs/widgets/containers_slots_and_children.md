@@ -23,7 +23,7 @@ There is a Slot base class containing a pointer to the widget and methods for re
 
 One way to think about this is that the container is a wodden panel that you can hang on a wall. This panel has several rectangular holes (slots) into which you can put various objects (widgets). It is the size and position of the slot that determines the size and position of the widget you put into it. Slots are added, removed, resized and moved around and the widget follows it around and is resized to fit nicely.
 
-Some containers have a fixed amount of slots while others can add and remove slots dynamically. Some containers have slots that can overlap each other while others enforce a flat layout. A widget in a slot can never be drawn outside its container, but some containers (like ScrollPanel) allows its slots to be moved outside its boundaries in which case the widget is clipped.
+Some containers have a fixed amount of slots while others can add and remove slots dynamically. Some containers have slots that can overlap each other while others enforce a flat layout. Widgets are allowed to "overflow" which means that they can draw graphics outside their slots, which is useful for effects such as glows and shadows, but the interactive part of a widget, where it accepts mouse clicks and such, is restricted to the slot. Some containers though (such as Scrollpanel and FlexPanel) have slots that can extend or be moved outside its own boundaries in which case the child is clipped.
 
 
 
@@ -170,7 +170,7 @@ pPackPanel->slots.pushBack( pMyWidget );
 
 pPackPanel->slots.pushBack( pMyWidget, { .padding = {0,5,0,5}, .weight = 2.5f } );
 
-// Same as above, but using the WGBP macro (for C++17 and below)
+// Same as above, but using the WGBP macro (for C++17 and older)
 
 pPackPanel->slots.pushBack( pMyWidget, WGBP(PackPanel::Slot, _.padding = {0,5,0,5}, _.weight = 2.5f) );
 
@@ -206,7 +206,7 @@ A better way to add multiple widgets is therefore to add all at once using an in
 pPackPanel->slots.pushBack( { pWidget1, pWidget2, pWidget3 });
 ```
 
-You can also include slot Blueprints by creating and intializer_list with tuples of pointers and Blueprints, like this:
+You can also include slot Blueprints by creating an intializer_list with tuples of pointers and Blueprints, like this:
 
 ```c++
 pPackPanel->slots.pushBack( { {pWidget1, { .weight = 0.f }},

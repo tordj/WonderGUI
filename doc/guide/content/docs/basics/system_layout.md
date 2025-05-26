@@ -21,12 +21,11 @@ The base system is built as four layers that can be compiled into separate libra
 
 The layers, from bottom to top are the following:
 
-1. **WonderGear** - This contains the fundamental object model with smartpointers and reference counted objects. It also contains some classes for memory management. It's a tiny library for any project that wants to use the object model.
-2. **WonderGfx** - This layer deals with all the low-level aspects of drawing and buffer graphics, as well as classes for loading and saving images (in the few formats supported directly by WonderGfx).  If you are not interested in a GUI, but wants a cross-platform, efficient library for drawing simple 2D-graphics and manipulating images, you can skip the rest or build it yourself ontop of WonderGfx.
-3. **WonderGlyphs** - A tiny library for loading and using fonts. It has built-in support for simple bitmap fonts and an extension for vector fonts using FreeType. It also has a class for printing text, which is straight forward and easy to use, but somewhat limited. The more advanced text features of WonderGUI, such as the rich text capabilities and advanced layout mechanisms are not part of this library, but part of the GUI library.
+1. **WonderGear** - This contains the fundamental object model with smart pointers and reference counted objects. It also contains some classes for memory management. It's a tiny library for any project that wants to use the object model.
+2. **WonderGfx** - This layer deals with all the low-level aspects of drawing and buffer graphics, as well as classes for loading and saving images (in the few formats supported directly by WonderGfx), the font system and a simple system for printing text.  If you are not interested in a GUI, but wants a cross-platform, efficient library for drawing simple 2D-graphics and manipulating images, you can skip the rest or build it yourself on top of WonderGfx.
 4. **WonderGUI** - The GUI library itself, providing all the rest such as widgets, skins, advanced text handling, event handling and user input.
 
-All layers use the same namespace 'wg' (hence the naming of them), so you won't notice this layered approach in your code even when you use the full stack. Initializing one layer will automatically initialize the layers below so you can remain oblivious to this layout in your code. You will only notice it when you look at the file structure of WonderGUI since each layer is compartmentalised into its own folder.
+All layers use the same namespace 'wg' (hence the naming of them), so you won't notice this layered approach in your code even when you use the full stack. Initializing one layer will automatically initialize the layers below so you can remain oblivious to this layout in your code. You will only notice it when you look at the file structure of WonderGUI since each layer is compartmentalized into its own folder.
 
 ## Extensions
 
@@ -38,6 +37,6 @@ Here is a short description of some of the extensions:
 - **OpenGLGfx** - A WonderGfx extension that provides hardware accelerated rendering through the OpenGL API.
 - **GfxStream** - A WonderGfx extension that enables you to encode drawing commands into a binary stream that can be stored and transmitted to another device for rendering.
 - **SoftGfx** - A WonderGfx extension for CPU-based software rendering. Slow and can be quite memory hungry (depending on configuration) but highly portable and reliable and works almost anywhere.
-- **FreetypeFont** - A WonderGlyphs extension for using vector fonts through the FreeType library.
-- **LegacyGUI** - A WonderGUI extension that provides support for bulding legacy software written for an earlier, deprecated version of WonderGUI. Should only be used where necessary.
+- **FreetypeFont** - A WonderGfx extension for using vector fonts through the FreeType library.
+- **LegacyGUI** - A WonderGUI extension that provides support for building legacy software written for an earlier, deprecated version of WonderGUI. Should only be used where necessary.
 

@@ -214,7 +214,7 @@ pMySurface->freePixelBuffer(bufferInfo);
 
 Some additional things to point out:
 
-* It is perfectly fine to allocate several small PixelBuffers for the same surface at the same time, but they should not access the same pixels.
+* It is perfectly fine to allocate several small PixelBuffers for the same surface at the same time, but they should not overlap.
 * Even though you only write pixels to the PixelBuffer you need to pullPixels() first if you don't change ALL pixels in the buffer. Otherwise you might pull dirt into the buffer alongside your written pixels.
 * It is absolutely forbidden to write pixels outside the buffer.
 * A PixelBuffer should only be alive for a short amount of time. Depending on graphics backend it's existence can hamper or even prevent rendering operations.

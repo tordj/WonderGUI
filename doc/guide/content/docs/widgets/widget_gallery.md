@@ -18,15 +18,15 @@ RootPanel is not technically a panel, but reminiscent of one. It accepts exactly
 
 ### PackPanel
 
-Children are lined up horizontally or vertically, depending of the setting of the Panel. The size of each child is determined by some simple rules provided by a PackLayout-object. Most complex layouts can easily be achieved by simply putting PackPanels inside PackPanels and carefully selecting the rules.
+Children are lined up horizontally or vertically, depending on the setting of the Panel. The size of each child is determined by some simple rules provided by a PackLayout-object. Most complex layouts can easily be achieved by simply putting PackPanels inside PackPanels and carefully selecting the rules.
 
 ### FlexPanel
 
-Children can be either have their corners pinned to locations of the panel (such as topleft corner or bottom center) and stretch with the panel, or be placed and moved freely. Children can overlap and their overlap-order can be changed. FlexPanel's are very flexible in the layout of their children but should mainly be used at the very top of a hierarchy since they don't propagate the need to resize from their children to their parent.
+Children can either have their corners pinned to locations of the panel (such as topleft corner or bottom center) and stretch with the panel, or be placed and moved freely. Children can overlap and their overlap-order can be changed. FlexPanel's are very flexible in the layout of their children but should mainly be used at the very top of a hierarchy since they don't propagate the need to resize from their children to their parent.
 
 ### LambaPanel
 
-The geometry of each child is decided through a callback that is called whenever the parent is resized or the requests a resize. This allows for very flexible rule-based layouts. Has the same downside as FlexPanel in that childrens need to resize isn't propagated to parents.
+The geometry of each child is decided through a callback that is called whenever the parent is resized or requests a resize. This allows for very flexible rule-based layouts. It has the same downside as FlexPanel in that childrens need to resize isn't propagated to parents.
 
 ### StackPanel
 
@@ -39,6 +39,10 @@ Allows for content that is bigger than the panel itself by having one child that
 ### SplitPanel
 
 The area is split, either horizontally or vertically, between two children. A handle is placed between the two areas through which the user can adjust the size of the children.
+
+### TablePanel
+
+Arranges children in rows and columns. Rows and columns can be resized using PackLayout-objects, just like PackPanels.
 
 ### TwoSlotPanel
 
@@ -86,13 +90,25 @@ A work in progress. Intended to become a simple GUI-designer in an overlay. Allo
 
 *A Capsule only has one child and is placed in the widget hierarchy to modify the characteristics of it, thus affect the branch below it in various ways.*
 
+### BlockingCapsule
+
+Allows for fine control of which widgets or rectangular areas accepts mouse interaction. Can be used for interactive guides where user is only allowed to manipulate some widgets.
+
 ### CanvasCapsule
 
-The child and the rest of the branch is rendered into a separate canvas Surface, from which graphics is copied when widgets need to be redrawn. This can significantly speed up rendering of complex and detailed (parts of) GUI when these widgets needs to be redrawn more often than they change, e.g. when there are above animated backgrounds or moved around a lot.
+The child and the rest of the branch is rendered into a separate canvas Surface, from which graphics is copied when widgets need to be redrawn. This can significantly speed up rendering of complex and detailed (parts of) GUI when these widgets needs to be redrawn more often than they change, e.g. when they are above animated backgrounds or moved around a lot.
+
+### LabelCapsule
+
+Used to display a frame with a label around a group of widgets.
 
 ### RenderLayerCapsule
 
 Allows for switching the renderlayer so that the rest of the branch is rendered into a different layer.
+
+### ReorderCapsule
+
+A special capsule that allows for easy rearranging of children in a PackPanel or moving children between PackPanels through drag-n-drop. It takes a single PackPanel as its child and handles movement of children within the PackPanel through drag-n-drop and transitions. The PackPanel's children can also be moved to another PackPanel inside a ReorderCapsule.
 
 ### ScaleCapsule
 
@@ -100,7 +116,7 @@ Allows for setting a different scale for the widgets in the rest of the branch, 
 
 ### SizeCapsule
 
-Overrides the canvas default, min and max size with specific values. Can be used to force or limit the widget to certain sizes, depending on its parent.
+Overrides the widgets default, min and max size with specific values. Can be used to force or limit the widget to certain sizes, depending on its parent.
 
 
 
@@ -172,9 +188,9 @@ Displays a text-entry with a drop-down menu from which to select entries.
 
 ## Displays
 
-### GraphDisplay
+### CanvasDisplay
 
-Generates and displays a linegraph or areagraph from values. Can display multiple lines/areas with a background grid. Can also be used as an oscilloscope or equalizer.
+Similar to SurfaceDisplay but displays the content of a CanvasCapsule instead. Useful for live thumbnails and such.
 
 ### SurfaceDisplay
 
@@ -195,6 +211,24 @@ Simple display of an image. Useful for icons and such.
 ### Timer
 
 A widget that simply keeps track of time. Combine with Animation-skins to create animations.
+
+
+
+## Chart widgets
+
+*There are two kinds of charts in WonderGUI normal charts and scrolling charts. Scrolling charts move constantly from right to left and you fill in new values on the right.* 
+
+### PlotChart
+
+Displays data from samples as a series of plotted circles.
+
+### AreaChart 
+
+Displays data from samples as one or two lines from left to right where the samples are the height of the lines along the chart and the are between them is filled.
+
+### AreaScrollChart
+
+Similar to AreaChart, but the content is scrolled and new samples are added on the right side.
 
 
 
