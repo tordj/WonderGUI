@@ -65,7 +65,12 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Misc ____________________________________________________
+		//.____ Content _______________________________________________________
+
+		Skin_p			frontSkin() const { return m_pFrontSkin; }
+		Skin_p			backSkin() const { return m_pBackSkin; }
+
+		//.____ Internal ____________________________________________________
 
 		SizeSPX			_minSize(int scale) const override;
 		SizeSPX			_defaultSize(int scale) const override;
@@ -97,7 +102,7 @@ namespace wg
 		Bitmask<uint8_t>_transitioningStates() const override;
 		const int*		_transitionTimes() const override;
 
-	private:
+	protected:
 		DoubleSkin( const Blueprint& blueprint );
 		DoubleSkin(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true);
 		~DoubleSkin();

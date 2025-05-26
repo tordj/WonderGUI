@@ -87,7 +87,7 @@ namespace wg
 
 		RectSPX		_coverage(const RectSPX& geo, int scale, State state) const override;
 
-	private:
+	protected:
 		LambdaSkin( const Blueprint& blueprint );
 		~LambdaSkin() {};
 
