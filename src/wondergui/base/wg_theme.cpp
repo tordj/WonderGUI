@@ -19,29 +19,18 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include "wg_debugpanel.h"
+
+#include <wg_theme.h>
+
 
 namespace wg
 {
 
-	const TypeInfo DebugPanel::TYPEINFO = { "DebugPanel", &LabelCapsule::TYPEINFO };
+	const TypeInfo Theme::TYPEINFO = { "Theme", &Object::TYPEINFO };
 
 
-	//____ constructor _____________________________________________________________
-
-	DebugPanel::DebugPanel(const Blueprint& blueprint) : LabelCapsule( blueprint.mainCapsule )
-	{
-	}
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& DebugPanel::typeInfo(void) const
+	const TypeInfo& Theme::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
-
-
-} // namespace wg
-
-
-
+}

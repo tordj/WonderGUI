@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_togglegroup.h>
+#include <wg_togglebutton.h>
 #include <wg_msgrouter.h>
 
 namespace wg

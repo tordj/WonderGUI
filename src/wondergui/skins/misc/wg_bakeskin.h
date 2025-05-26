@@ -96,7 +96,7 @@ namespace wg
 		const int*		_transitionTimes() const override;
 
 
-	private:
+	protected:
 		BakeSkin(const Blueprint& blueprint);
 		BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skins);
 		~BakeSkin();

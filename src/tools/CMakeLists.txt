@@ -21,6 +21,7 @@ add_subdirectory(lineargfxworkbench)
 add_subdirectory(embeddedworkbench)
 add_subdirectory(legacyrunner)
 add_subdirectory(layerworkbench)
+add_subdirectory(widgetgallery)
 
 
 set_target_properties(
@@ -47,4 +48,5 @@ set_target_properties(
 	workbench
 	legacyrunner
 	layerworkbench
+	widgetgallery
 	PROPERTIES FOLDER "Tools" )

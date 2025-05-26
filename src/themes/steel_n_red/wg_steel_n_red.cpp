@@ -19,29 +19,52 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include "wg_debugpanel.h"
+
+#include <wg_steel_n_red.h>
+
+#include <wg_blockskin.h>
+
+#include <wg_togglegroup.h>
 
 namespace wg
 {
 
-	const TypeInfo DebugPanel::TYPEINFO = { "DebugPanel", &LabelCapsule::TYPEINFO };
+const TypeInfo SteelNRed::TYPEINFO = { "SteelNRed", &Theme::TYPEINFO };
 
 
-	//____ constructor _____________________________________________________________
+SteelNRed_p SteelNRed::create(Surface* pSurface )
+{
+	return SteelNRed_p(new SteelNRed(pSurface));
+}
 
-	DebugPanel::DebugPanel(const Blueprint& blueprint) : LabelCapsule( blueprint.mainCapsule )
-	{
-	}
+const TypeInfo& SteelNRed::typeInfo(void) const
+{
+	return TYPEINFO;
+}
 
-	//____ typeInfo() _________________________________________________________
+const ToggleButton::Blueprint& SteelNRed::radioButton() const
+{
+	return m_radioButton;
+}
 
-	const TypeInfo& DebugPanel::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
+SteelNRed::SteelNRed( Surface * pSurface ) :m_pSurface(pSurface)
+{
+
+	m_pRadioButtonSkin = BlockSkin::create(WGBP(BlockSkin,
+		_.axis = Axis::X,
+		_.blockSpacing = 1,
+		_.firstBlock = { 0,0,34,34 },
+		_.frame = { 33,0,0,33 },
+		_.padding = { 1,0,0,33 },
+		_.states = { State::Default, State::Hovered, State::Selected, State::SelectedHovered },
+		_.surface = pSurface,
+		_.spacing = 1
+	));
+
+	m_radioButton.skin = m_pRadioButtonSkin;
+
+}
 
 
-} // namespace wg
 
-
-
+}

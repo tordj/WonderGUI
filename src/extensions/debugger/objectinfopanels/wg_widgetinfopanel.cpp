@@ -33,21 +33,15 @@ namespace wg
 
 	WidgetInfoPanel::WidgetInfoPanel(const Blueprint& blueprint, Widget * pWidget) : DebugPanel( blueprint )
 	{
-		label.setText( Widget::TYPEINFO.className );
-
-		auto pTable = TablePanel::create( WGBP(TablePanel,
-											   _.columns = 2,
-											   _.rows = 22,
-											   _.columnLayout = Base::defaultPackLayout()) );
-
+		auto pTable = TablePanel::create( WGOVR(blueprint.table, _.columns = 2, _.rows = 22 ));
 
 		int row = 0;
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("id: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->id()));
 
 			pTable->slots[row][0] = pLabel;
@@ -57,10 +51,10 @@ namespace wg
 
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("size W: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->size().w));
 
 			pTable->slots[row][0] = pLabel;
@@ -69,10 +63,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("size H: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->size().h));
 
 			pTable->slots[row][0] = pLabel;
@@ -81,10 +75,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("scale: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->scale()));
 
 			pTable->slots[row][0] = pLabel;
@@ -93,10 +87,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("baggage: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->baggage()));
 
 			pTable->slots[row][0] = pLabel;
@@ -105,10 +99,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("skin: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(int64_t(pWidget->skin().rawPtr())));
 
 			pTable->slots[row][0] = pLabel;
@@ -117,10 +111,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("tooltip: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(pWidget->tooltip());
 
 			pTable->slots[row][0] = pLabel;
@@ -129,10 +123,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("pointer style: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(toString(pWidget->pointerStyle()));
 
 			pTable->slots[row][0] = pLabel;
@@ -141,10 +135,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("mark policy: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(toString(pWidget->markPolicy()));
 
 			pTable->slots[row][0] = pLabel;
@@ -153,10 +147,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("is pickable: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->isPickable()));
 
 			pTable->slots[row][0] = pLabel;
@@ -165,10 +159,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("is pickhandle: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->isPickHandle()));
 
 			pTable->slots[row][0] = pLabel;
@@ -177,10 +171,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("pick category: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->pickCategory()));
 
 			pTable->slots[row][0] = pLabel;
@@ -189,10 +183,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("is drop target: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->isDropTarget()));
 
 			pTable->slots[row][0] = pLabel;
@@ -201,10 +195,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("is tab locked: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->isTabLocked()));
 
 			pTable->slots[row][0] = pLabel;
@@ -213,10 +207,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("is selectable: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->isSelectable()));
 
 			pTable->slots[row][0] = pLabel;
@@ -225,10 +219,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("receiving updates: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->m_receivingUpdateCounter));
 
 			pTable->slots[row][0] = pLabel;
@@ -237,10 +231,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("has sticky focus: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->hasStickyFocus()));
 
 			pTable->slots[row][0] = pLabel;
@@ -249,10 +243,10 @@ namespace wg
 		}
 
 		{
-			auto pLabel = TextDisplay::create();
+			auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 			pLabel->display.setText("has overflow: ");
 
-			auto pValue = TextDisplay::create();
+			auto pValue = TextDisplay::create(blueprint.listEntryValue);
 			pValue->display.setText(std::to_string(pWidget->m_bOverflow));
 
 			pTable->slots[row][0] = pLabel;
@@ -264,10 +258,10 @@ namespace wg
 				BorderSPX overflow = pWidget->_overflow();
 
 				{
-					auto pLabel = TextDisplay::create();
+					auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 					pLabel->display.setText("overflow top: ");
 
-					auto pValue = TextDisplay::create();
+					auto pValue = TextDisplay::create(blueprint.listEntryValue);
 					pValue->display.setText(std::to_string(overflow.top));
 
 					pTable->slots[row][0] = pLabel;
@@ -276,10 +270,10 @@ namespace wg
 				}
 
 				{
-					auto pLabel = TextDisplay::create();
+					auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 					pLabel->display.setText("overflow right: ");
 
-					auto pValue = TextDisplay::create();
+					auto pValue = TextDisplay::create(blueprint.listEntryValue);
 					pValue->display.setText(std::to_string(overflow.right));
 
 					pTable->slots[row][0] = pLabel;
@@ -288,10 +282,10 @@ namespace wg
 				}
 
 				{
-					auto pLabel = TextDisplay::create();
+					auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 					pLabel->display.setText("overflow bottom: ");
 
-					auto pValue = TextDisplay::create();
+					auto pValue = TextDisplay::create(blueprint.listEntryValue);
 					pValue->display.setText(std::to_string(overflow.bottom));
 
 					pTable->slots[row][0] = pLabel;
@@ -300,10 +294,10 @@ namespace wg
 				}
 
 				{
-					auto pLabel = TextDisplay::create();
+					auto pLabel = TextDisplay::create(blueprint.listEntryLabel);
 					pLabel->display.setText("overflow left: ");
 
-					auto pValue = TextDisplay::create();
+					auto pValue = TextDisplay::create(blueprint.listEntryValue);
 					pValue->display.setText(std::to_string(overflow.left));
 
 					pTable->slots[row][0] = pLabel;

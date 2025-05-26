@@ -1,4 +1,3 @@
-
 /*=========================================================================
 
 						 >>> WonderGUI <<<
@@ -21,48 +20,53 @@
 
 =========================================================================*/
 
-#ifndef	WG_DEBUGPANEL_DOT_H
-#define WG_DEBUGPANEL_DOT_H
+#ifndef	WG_THEME_STEEL_N_RED_DOT_H
+#define WG_THEME_STEEL_N_RED_DOT_H
 #pragma once
 
-#include <wg_labelcapsule.h>
-#include <wg_textdisplay.h>
-#include <wg_tablepanel.h>
+#include <wg_theme.h>
+
+#include <wg_skin.h>
+
 
 namespace wg
 {
-	class DebugPanel;
-	typedef	StrongPtr<DebugPanel>	DebugPanel_p;
-	typedef	WeakPtr<DebugPanel>		DebugPanel_wp;
+
+	class SteelNRed;
+	typedef	StrongPtr<SteelNRed>	SteelNRed_p;
+	typedef	WeakPtr<SteelNRed>		SteelNRed_wp;
 
 
-
-	class DebugPanel : public LabelCapsule
+	class SteelNRed : public Theme
 	{
 	public:
 
-		//____ Blueprint __________________________________________
+		//.____ Creation __________________________________________
 
-		struct Blueprint
-		{
-			LabelCapsule::Blueprint	mainCapsule;
-			TextDisplay::Blueprint	listEntryLabel;
-			TextDisplay::Blueprint	listEntryValue;
-			TextDisplay::Blueprint	infoDisplay;
-			TablePanel::Blueprint	table;
-		};
+		static SteelNRed_p	create(Surface * pSurface);
 
 		//.____ Identification __________________________________________
 
-		const TypeInfo&			typeInfo(void) const override;
+		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
+
+		//.____ Content _______________________________________________________
+
+		const ToggleButton::Blueprint& radioButton() const override;
 
 
 	protected:
-		DebugPanel(const Blueprint& blueprint );
-		~DebugPanel() {}
+		SteelNRed( Surface * pSurface );
+		~SteelNRed() {}
+
+		Surface_p	m_pSurface;
+
+		Skin_p		m_pRadioButtonSkin;
+
+		ToggleButton::Blueprint	m_radioButton;
+
 	};
 
-} // namespace wg
-#endif //WG_OBJECTINFOPANEL_DOT_H
 
+} // namespace wg
+#endif //WG_THEME_STEEL_N_RED_DOT_H

@@ -95,7 +95,7 @@ namespace wg
 
 		int		_animationLength(State state) const override;
 
-	private:
+	protected:
 		SpinAnimSkin( const Blueprint& blueprint );
 		~SpinAnimSkin();
 

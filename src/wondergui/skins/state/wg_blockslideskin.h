@@ -122,7 +122,7 @@ namespace wg
 		Bitmask<uint8_t>	_transitioningStates() const override;
 		const int*			_transitionTimes() const override;
 
-	private:
+	protected:
 
 		BlockSlideSkin();
 		BlockSlideSkin( const Blueprint& blueprint);
