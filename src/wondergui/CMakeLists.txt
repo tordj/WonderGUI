@@ -244,6 +244,8 @@ set( SOURCES
 	widgets/lists/wg_packlist.cpp
 	widgets/lists/wg_packlist.h
 
+	widgets/panels/wg_drawerpanel.cpp
+	widgets/panels/wg_drawerpanel.h
 	widgets/panels/wg_flexpanel.cpp
 	widgets/panels/wg_flexpanel.h
 	widgets/panels/wg_lambdapanel.cpp

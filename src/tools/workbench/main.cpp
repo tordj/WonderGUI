@@ -168,6 +168,7 @@ bool labelCapsuleTest(ComponentPtr<DynamicSlot> pEntry);
 bool elipsisTest(ComponentPtr<DynamicSlot> pEntry);
 bool packPanelSpacingBugTest(ComponentPtr<DynamicSlot> pEntry);
 bool bracketSkinTest(ComponentPtr<DynamicSlot> pEntry);
+bool drawerPanelTest(ComponentPtr<DynamicSlot> pEntry);
 
 
 void nisBlendTest();
@@ -795,7 +796,8 @@ int main(int argc, char** argv)
 		//	labelCapsuleTest(pSlot);
 		//	elipsisTest(pSlot);
 		//	packPanelSpacingBugTest(pSlot);
-		bracketSkinTest(pSlot);
+		//	bracketSkinTest(pSlot);
+		drawerPanelTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -4732,3 +4734,18 @@ bool bracketSkinTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 
 }
+
+bool drawerPanelTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	
+
+
+
+	*pEntry = pBaseLayer;
+	return true;
+
+}
+
