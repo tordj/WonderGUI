@@ -617,7 +617,7 @@ namespace wg
 			_onRequestRender(newRenderArea, pSlot);
 		}
 
-		if (bForceResize || pSlot->_widget()->_size() != newGeo.size())
+		if (bForceResize || pSlot->_widget()->_size() != newGeo.size() || pSlot->_widget()->_scale() != m_scale )
 			pSlot->_setSize(newGeo, m_scale);
 	}
 
