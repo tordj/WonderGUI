@@ -101,6 +101,9 @@ namespace wg
 		TextStyle_p pressableStyle() const override;	// Default text style for buttons etc.
 
 
+
+		//
+
 		const LabelCapsule::Blueprint&		labeledBox() const override;		// Section with label and a box around it
 		const LabelCapsule::Blueprint&		labeledSection() const override;	// Section with label and possibly a horizontal divider
 
@@ -115,6 +118,7 @@ namespace wg
 		const ScrollPanel::Blueprint& 		scrollPanelXY() const override;
 
 		const TextDisplay::Blueprint& 		windowTitleBar() const override;
+
 
 
 	protected:
@@ -141,6 +145,10 @@ namespace wg
 		TextStyle_p	m_heading5Style;
 		TextStyle_p	m_heading6Style;
 
+		TextStyle_p m_pStrongStyle;
+		TextStyle_p m_pEmphasisStyle;
+		TextStyle_p m_pCodeStyle;
+		TextStyle_p m_pMonospaceStyle;
 
 
 		TextStyle_p	m_pBlackStyle;

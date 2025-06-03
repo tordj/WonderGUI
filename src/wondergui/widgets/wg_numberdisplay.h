@@ -46,22 +46,22 @@ namespace wg
 
 		struct Blueprint
 		{
-			Object_p		baggage;
-			bool			disabled = false;
+			Object_p			baggage;
+			bool				disabled = false;
 			Number::Blueprint	display;
-			bool			dropTarget = false;
-			Finalizer_p		finalizer = nullptr;
-			int				id = 0;
-			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
-			bool			pickable = false;
-			uint8_t			pickCategory = 0;
-			bool			pickHandle = false;
-			PointerStyle	pointer = PointerStyle::Undefined;
-			bool			selectable = true;
-			Skin_p			skin;
-			bool			stickyFocus = false;
-			bool			tabLock = false;
-			String			tooltip;
+			bool				dropTarget = false;
+			Finalizer_p			finalizer = nullptr;
+			int					id = 0;
+			MarkPolicy			markPolicy = MarkPolicy::AlphaTest;
+			bool				pickable = false;
+			uint8_t				pickCategory = 0;
+			bool				pickHandle = false;
+			PointerStyle		pointer = PointerStyle::Undefined;
+			bool				selectable = true;
+			Skin_p				skin;
+			bool				stickyFocus = false;
+			bool				tabLock = false;
+			String				tooltip;
 		};
 
 		//.____ Creation __________________________________________

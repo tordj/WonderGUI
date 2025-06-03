@@ -27,7 +27,7 @@ char * pMyData = new char[1024];
 auto pMyBlob = create( pMyData, 1024, [pMyData](){delete [] pMyData;} );
 ```
 
-The size parameter is not necessary for the blob and can be omitted, it is just what is returned by the size() method. If size is not specified the size() method will return 0.
+The size parameter is not necessary for the blob and can be omitted, it is just what will be returned by the size() method. If size is not specified the size() method will return 0.
 
 The destructor is run when the Blob is destroyed and is responsible for cleaning up. It doesn't necessarily have to delete anything. In some cases you might just want to make the data available in a reference counted way and be noted when it is not used anymore.
 
@@ -35,7 +35,7 @@ The destructor is run when the Blob is destroyed and is responsible for cleaning
 
 ## Accessing the data
 
-To access the memory of the blob you just call the data() or begin() methods, they are identical. The methods size() and end() can be used to get size and a end-pointer respectively, but be aware that the size might be unknown in which case size() returns 0 and end() will be identical to begin().
+To access the memory of the blob you just call the data() or begin() methods, they are identical. The methods size() and end() can be used to get size and a end-pointer respectively, but be aware that in cases where the size is unknown size() returns 0 and end() will be identical to begin().
 
 
 

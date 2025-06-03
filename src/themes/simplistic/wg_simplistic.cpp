@@ -68,17 +68,21 @@ Simplistic::Simplistic( Font * pNormal, Font * pBold, Font * pItalic, Font * pMo
 	HiColor titlebarColor = Color::LightGreen;
 	HiColor titlebarBorderColor = Color::DarkGreen;
 
+	m_pStrongStyle = TextStyle::create(WGBP(TextStyle, _.font = m_pFontBold, _.color = HiColor::Black, _.size = c_textSizeNormal));
+	m_pEmphasisStyle = TextStyle::create(WGBP(TextStyle, _.font = m_pFontItalic, _.color = HiColor::Black, _.size = c_textSizeNormal));
+	m_pCodeStyle = TextStyle::create(WGBP(TextStyle, _.font = m_pFontMonospace, _.color = HiColor::Black, _.size = c_textSizeNormal));
+	m_pMonospaceStyle = TextStyle::create(WGBP(TextStyle, _.font = m_pFontMonospace, _.color = HiColor::Black, _.size = c_textSizeNormal));
 
 
 	m_pBlackStyle = TextStyle::create( WGBP(TextStyle, _.font = m_pFontNormal, _.color = HiColor::Black, _.size = 12 ));
-	m_pWhiteStyle = TextStyle::create( WGBP(TextStyle, _.font = m_pFontNormal, _.color = HiColor::White ));
+	m_pWhiteStyle = TextStyle::create( WGBP(TextStyle, _.font = m_pFontNormal, _.color = HiColor::White, _.size = 12 ));
 
-	m_heading1Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontNormal, _.color = HiColor::Black, _.size = 24));
-	m_heading2Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontBold, _.color = HiColor::Black, _.size = 24));
-	m_heading3Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontNormal, _.color = HiColor::Black, _.size = 20));
-	m_heading4Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontBold, _.color = HiColor::Black, _.size = 20));
-	m_heading5Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontBold, _.color = HiColor::Black, _.size = 16));
-	m_heading6Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontNormal, _.color = HiColor::Black, _.size = 16));
+	m_heading1Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontNormal, _.color = HiColor::Black, _.size = 20));
+	m_heading2Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontBold, _.color = HiColor::Black, _.size = 20));
+	m_heading3Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontNormal, _.color = HiColor::Black, _.size = 16));
+	m_heading4Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontBold, _.color = HiColor::Black, _.size = 16));
+	m_heading5Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontBold, _.color = HiColor::Black, _.size = 14));
+	m_heading6Style = TextStyle::create( WGBP(TextStyle, _.font = m_pFontNormal, _.color = HiColor::Black, _.size = 14));
 
 	auto pLayoutCenteredNoWrap = BasicTextLayout::create( WGBP(BasicTextLayout,
 															   _.autoEllipsis = true,
@@ -228,32 +232,32 @@ Font_p Simplistic::italicFont() const
 
 TextStyle_p Simplistic::heading1Style() const
 {
-	return m_pBlackStyle;
+	return m_heading1Style;
 }
 
 TextStyle_p Simplistic::heading2Style() const
 {
-	return m_pBlackStyle;
+	return m_heading2Style;
 }
 
 TextStyle_p Simplistic::heading3Style() const
 {
-	return m_pBlackStyle;
+	return m_heading3Style;
 }
 
 TextStyle_p Simplistic::heading4Style() const
 {
-	return m_pBlackStyle;
+	return m_heading4Style;
 }
 
 TextStyle_p Simplistic::heading5Style() const
 {
-	return m_pBlackStyle;
+	return m_heading5Style;
 }
 
 TextStyle_p Simplistic::heading6Style() const
 {
-	return m_pBlackStyle;
+	return m_heading6Style;
 }
 
 TextStyle_p Simplistic::subheadStyle1() const
@@ -293,17 +297,17 @@ TextStyle_p Simplistic::paragraphStyle() const
 
 TextStyle_p Simplistic::strongStyle() const
 {
-	return m_pBlackStyle;
+	return m_pStrongStyle;
 }
 
 TextStyle_p Simplistic::emphasisStyle() const
 {
-	return m_pBlackStyle;
+	return m_pEmphasisStyle;
 }
 
 TextStyle_p Simplistic::codeStyle() const
 {
-	return m_pBlackStyle;
+	return m_pCodeStyle;
 }
 
 TextStyle_p Simplistic::linkStyle() const
@@ -313,12 +317,12 @@ TextStyle_p Simplistic::linkStyle() const
 
 TextStyle_p Simplistic::monospaceStyle() const
 {
-	return m_pBlackStyle;
+	return m_pMonospaceStyle;
 }
 
 TextStyle_p Simplistic::quoteStyle() const
 {
-	return m_pBlackStyle;
+	return m_pEmphasisStyle;
 }
 
 TextStyle_p Simplistic::captionStyle() const
