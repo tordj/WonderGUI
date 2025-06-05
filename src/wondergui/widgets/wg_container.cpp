@@ -396,15 +396,22 @@ namespace wg
 			{
 				WidgetRenderContext * p = &renderList[i];
 
-//				RectSPX	clipBounds = RectSPX::overlap(p->influence,_canvas);
-				
-				p->clipPop = patchesToClipList(pDevice, p->renderArea, patches);
-				p->pWidget->_maskPatches( patches, p->geo, p->renderArea );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				PatchesSPX childPatches(patches, p->renderArea);						// Limit patches to childs geo
 
-				if( patches.isEmpty() )
+				if( childPatches.isEmpty() )
 				{
-					lastWithDirt = int(i);	// Prevent poping clipLists that have not been set.
-					break;
+					p->pWidget = nullptr;
+				}
+				else
+				{
+					p->clipPop = patchesToClipList(pDevice, p->renderArea, childPatches);
+					p->pWidget->_maskPatches( patches, p->geo, p->renderArea );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+
+					if( patches.isEmpty() )
+					{
+						lastWithDirt = int(i);	// Prevent poping clipLists that have not been set.
+						break;
+					}
 				}
 			}
 
@@ -413,8 +420,11 @@ namespace wg
 			for (int i = lastWithDirt; i >= 0; i--)
 			{
 				WidgetRenderContext * p = &renderList[i];
-				p->pWidget->_render( pDevice, p->geo, p->geo );
-				popClipList(pDevice,p->clipPop);
+				if( p->pWidget )
+				{
+					p->pWidget->_render( pDevice, p->geo, p->geo );
+					popClipList(pDevice,p->clipPop);
+				}
 			}
 		}
 		else
@@ -429,8 +439,6 @@ namespace wg
 
 				if (renderArea.isOverlapping(dirtBounds))
 				{
-//					RectSPX	clipBounds = RectSPX::overlap(influence,_canvas);
-
 					ClipPopData popData = limitClipList(pDevice, renderArea );
 
 					if( pDevice->clipListSize() > 0 )
