@@ -586,10 +586,14 @@ namespace wg
 		// Update cached preferred size of child
 
 		auto pSlot = static_cast<PackPanelSlot*>(_pSlot);
-		pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(m_scale);
-		pSlot->m_bResizeRequired = true;
 
-		_refreshGeometries();
+		if( pSlot->m_bVisible )
+		{
+			pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(m_scale);
+			pSlot->m_bResizeRequired = true;
+			_refreshGeometries();
+		}
+
 	}
 
 	//____ _releaseChild() ____________________________________________________
