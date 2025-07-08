@@ -387,22 +387,22 @@ static void updateFixedBlendCache( HiColor bgCol, HiColor fgCol )
 	s_fixedBlendCacheBgColor = bgCol;
 	s_fixedBlendCacheFgColor = bgCol;
 
-	int backB = HiColor::unpackSRGBTab[bgCol.b];
-	int backG = HiColor::unpackSRGBTab[bgCol.g];
-	int backR = HiColor::unpackSRGBTab[bgCol.r];
+	int backB = bgCol.b;
+	int backG = bgCol.g;
+	int backR = bgCol.r;
 
-	int frontB = HiColor::unpackSRGBTab[fgCol.b];
-	int frontG = HiColor::unpackSRGBTab[fgCol.g];
-	int frontR = HiColor::unpackSRGBTab[fgCol.r];
+	int frontB = fgCol.b;
+	int frontG = fgCol.g;
+	int frontR = fgCol.r;
 
 	for( int i = 0 ; i < 256 ; i++ )
 	{
 		int alpha = (fgCol.a * i) / 255;
 		int invAlpha = 4096 - alpha;
 
-		int outB = HiColor::packSRGBTab[(backB * invAlpha + frontB * alpha)] >> 3;
-		int outG = HiColor::packSRGBTab[(backG * invAlpha + frontG * alpha)] >> 2;
-		int outR = HiColor::packSRGBTab[(backR * invAlpha + frontR * alpha)] >> 3;
+		int outB = HiColor::packSRGBTab[(backB * invAlpha + frontB * alpha)/4096] >> 3;
+		int outG = HiColor::packSRGBTab[(backG * invAlpha + frontG * alpha)/4096] >> 2;
+		int outR = HiColor::packSRGBTab[(backR * invAlpha + frontR * alpha)/4096] >> 3;
 
 		uint16_t out = outB | (outG << 5) | (outR << 11 );
 		s_fixedBlendCache[i] = out;
@@ -435,6 +435,190 @@ static void _straight_blit_alpha8_to_bgr565srgb_no_or_flat_tint_fixedblend(const
 		pDst += pitches.dstY;
 	}
 }
+
+
+//____ _draw_segment_strip() _______________________________________________
+
+void _draw_segment_strip_blend_to_bgr565srgb(int colBeg, int colEnd, uint8_t* pStripStart, int pixelPitch, int nEdges, SegmentEdge* pEdges, const int16_t* pSegmentColors, const SoftGfxDevice::SegmentGradient* pSegmentGradients, const bool* pTransparentSegments, const bool* pOpaqueSegments, const SoftGfxDevice::ColTrans& tint)
+{
+
+	// Render the column
+
+	int offset = colBeg;				// 24.8 format, but binals cleared (always pointing at beginning of full pixel).
+	uint8_t* pDst = pStripStart + (offset >> 8) * pixelPitch;
+
+	while (offset < colEnd)
+	{
+		if (nEdges == 0 || offset + 255 < pEdges[0].begin)
+		{
+			// We are fully inside a segment, no need to take any edge into account.
+
+			int end = nEdges == 0 ? colEnd : pEdges[0].begin;
+
+			if (*pTransparentSegments)									// This test is still valid in GRADIENT mode.
+			{
+				pDst = pStripStart + (end >> 8) * pixelPitch;
+				offset = end & 0xFFFFFF00;												// Just skip segment since it is transparent
+			}
+			else
+			{
+				int16_t inB, inG, inR, inA;
+
+				inR = pSegmentColors[0];
+				inG = pSegmentColors[1];
+				inB = pSegmentColors[2];
+				inA = pSegmentColors[3];
+
+				if (*pOpaqueSegments)
+				{
+					uint16_t	out = (HiColor::packSRGBTab[inB] >> 3) | ((HiColor::packSRGBTab[inG] & 0xFC) << 3) |
+									  (((HiColor::packSRGBTab[inG] >> 5) | (HiColor::packSRGBTab[inR] & 0xF8)) << 8) ;
+
+					while (offset + 255 < end)
+					{
+						*((uint16_t*)pDst) = out;
+						pDst += pixelPitch;
+						offset += 256;
+					}
+				}
+				else
+				{
+					int alpha = inA;
+					int invAlpha = 4096 - alpha;
+
+					int modB = inB * alpha;
+					int modG = inG * alpha;
+					int modR = inR * alpha;
+
+					int			in = -1;
+					uint16_t	out;
+
+
+					while (offset + 255 < end)
+					{
+						int16_t backB, backG, backR;
+						int16_t outB, outG, outR;
+
+						int pixel = *(uint16_t*)pDst;
+						if (pixel != in)
+						{
+							in = pixel;
+#if WG_IS_BIG_ENDIAN
+							pixel = Util::endianSwap(pixel);
+#endif
+							backB = SoftGfxDevice::s_channel_5_sRGB[pixel & 0x1F];
+							backG = SoftGfxDevice::s_channel_6_sRGB[(pixel >> 5) & 0x3F];
+							backR = SoftGfxDevice::s_channel_5_sRGB[pixel >> 11];
+
+							outB = (backB * invAlpha + modB) >> 12;
+							outG = (backG * invAlpha + modG) >> 12;
+							outR = (backR * invAlpha + modR) >> 12;
+
+							out = (HiColor::packSRGBTab[outB] >> 3) | ((HiColor::packSRGBTab[outG] & 0xFC) << 3) |
+								(((HiColor::packSRGBTab[outG] >> 5) | (HiColor::packSRGBTab[outR] & 0xF8)) << 8);
+						}
+
+						*((uint16_t*)pDst) = out;
+						pDst += pixelPitch;
+						offset += 256;
+					}
+				}
+			}
+		}
+		else
+		{
+			{
+				int edge = 0;
+
+				int	segmentFractions[SoftGfxDevice::maxSegments()];
+				int remainingFractions = 65536;
+
+				while (edge < nEdges && offset + 255 >= pEdges[edge].begin)
+				{
+					int frac;				// Fractions of pixel below edge.
+
+					if (offset + 255 < pEdges[edge].end)
+					{
+						int beginHeight = 256 - (pEdges[edge].begin & 0xFF);
+						int coverageInc = (pEdges[edge].coverageInc * beginHeight) >> 8;
+
+						frac = ((pEdges[edge].coverage + coverageInc / 2) * beginHeight) >> 8;
+
+						pEdges[edge].coverage += coverageInc;
+						pEdges[edge].begin = offset + 256;
+					}
+					else
+					{
+						frac = ((((pEdges[edge].coverage + 65536) / 2) * (pEdges[edge].end - pEdges[edge].begin)) >> 8)
+							+ (256 - (pEdges[edge].end & 0xFF)) * (65536 / 256);
+					}
+
+					frac = std::min(frac, remainingFractions);
+
+					segmentFractions[edge] = remainingFractions - frac;
+
+					int oldRemaining = remainingFractions;
+
+					remainingFractions = frac;
+					edge++;
+				}
+
+				segmentFractions[edge] = remainingFractions;
+
+				int16_t backB, backG, backR;
+
+				uint16_t pixel = *(uint16_t*)pDst;
+#if WG_IS_BIG_ENDIAN
+				pixel = Util::endianSwap(pixel);
+#endif
+				backB = SoftGfxDevice::s_channel_5_sRGB[pixel & 0x1F];
+				backG = SoftGfxDevice::s_channel_6_sRGB[(pixel >> 5) & 0x3F];
+				backR = SoftGfxDevice::s_channel_5_sRGB[pixel >> 11];
+
+				int16_t outB = 0, outG = 0, outR = 0;
+
+				int accB = 0;
+				int accG = 0;
+				int accR = 0;
+				int accA = 0;
+
+				int backFraction = 65536;
+
+				for (int i = 0; i <= edge; i++)
+				{
+					int alpha = pSegmentColors[i * 4 + 3];
+					int blendFraction = ((segmentFractions[i] * alpha) / 4096);
+					backFraction -= blendFraction;
+
+					accR += blendFraction * pSegmentColors[i*4+0];
+					accG += blendFraction * pSegmentColors[i*4+1];
+					accB += blendFraction * pSegmentColors[i*4+2];
+				}
+
+				outB = (accB + (backB * backFraction)) >> 16;
+				outG = (accG + (backG * backFraction)) >> 16;
+				outR = (accR + (backR * backFraction)) >> 16;
+
+				pDst[0] = (HiColor::packSRGBTab[outB] >> 3) | ((HiColor::packSRGBTab[outG] & 0xFC) << 3);
+				pDst[1] = (HiColor::packSRGBTab[outG] >> 5) | (HiColor::packSRGBTab[outR] & 0xF8);
+			}
+			pDst += pixelPitch;
+			offset += 256;
+		}
+
+		while (nEdges > 0 && offset >= pEdges[0].end)
+		{
+			pEdges++;
+			nEdges--;
+
+			pTransparentSegments++;
+			pOpaqueSegments++;
+			pSegmentColors += 4;
+
+		}
+	}
+}
+
 
 
 //____ wg_addExtraSoftKernelsForBGR565sRGBCanvas() __________________________________
@@ -483,6 +667,9 @@ bool wg::addExtraSoftKernelsForBGR565sRGBCanvas( SoftGfxDevice * pDevice )
 
 	pDevice->setStraightBlitKernel( PixelFormat::BGRA_8_sRGB, SoftGfxDevice::ReadOp::Normal, TintMode::None, BlendMode::Blend, PixelFormat::BGR_565_sRGB, _straight_blit_bgra8srgb_to_bgr565srgb_notint_blend );
 */
+
+	pDevice->setSegmentStripKernel(false, BlendMode::Blend, PixelFormat::BGR_565_sRGB, _draw_segment_strip_blend_to_bgr565srgb);
+
 	return true;
 };
 

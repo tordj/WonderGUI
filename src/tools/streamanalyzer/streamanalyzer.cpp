@@ -8,6 +8,10 @@
 #include <wg_softkernels_rgb565be_base.h>
 #include <wg_softkernels_rgb565be_extras.h>
 
+#include <wg_softkernels_bgr565srgb_base.h>
+#include <wg_softkernels_bgr565srgb_extras.h>
+
+
 #include <wg_softkernels_default.h>
 
 
@@ -56,8 +60,10 @@ bool MyApp::init(Visitor* pVisitor)
 	auto pSoftGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::defaultGfxDevice());
 	if( pSoftGfxDevice )
 	{
-		addExtraSoftKernelsForRGB555BECanvas(pSoftGfxDevice);
-		addExtraSoftKernelsForRGB565BECanvas(pSoftGfxDevice);
+//		addExtraSoftKernelsForRGB555BECanvas(pSoftGfxDevice);
+//		addExtraSoftKernelsForRGB565BECanvas(pSoftGfxDevice);
+
+//		addExtraSoftKernelsForBGR565sRGBCanvas(pSoftGfxDevice);
 	}
 	
 	return true;
@@ -922,7 +928,10 @@ bool MyApp::loadStream(std::string path)
 	addBaseSoftKernelsForRGB565BECanvas(pStreamGfxDevice);
 	addExtraSoftKernelsForRGB565BECanvas(pStreamGfxDevice);
 
-	
+	addBaseSoftKernelsForBGR565sRGBCanvas(pStreamGfxDevice);
+	addExtraSoftKernelsForBGR565sRGBCanvas(pStreamGfxDevice);
+
+
 	m_pStreamSurfaceFactory = pStreamGfxDevice->surfaceFactory();
 	m_pStreamGfxDevice = pStreamGfxDevice;
 	
