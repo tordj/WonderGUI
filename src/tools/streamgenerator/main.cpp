@@ -27,7 +27,7 @@
 #include <wg_softedgemapfactory.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softbackend.h>
-#include <wg_softbackend_kernels.h>
+#include <wg_softkernels_default.h>
 #include <wg_gfxdevice_gen2.h>
 
 using namespace wg;
@@ -195,7 +195,7 @@ int main ( int argc, char** argv )
 	// 
 	
 	MsgLogger_p pLogger = MsgLogger::create( std::cout );
-	pLogger->logAllMsgs();
+	pLogger->logAllMsgs(true);
 	
 //	Base::msgRouter()->broadcastTo( pLogger );
 
