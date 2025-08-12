@@ -360,10 +360,11 @@ namespace wg
 	void CanvasDisplay::_canvasReset(SizeSPX canvasSize)
 	{
 		_requestRender();
-		if (m_defaultSize.w < 0 && m_defaultSize.h < 0 && canvasSize != m_canvasSize)
+		if (canvasSize != m_canvasSize)
 		{
 			m_canvasSize = canvasSize;
-			_requestResize();
+			if( m_defaultSize.w < 0 || m_defaultSize.h < 0 )
+				_requestResize();
 		}
 	}
 
