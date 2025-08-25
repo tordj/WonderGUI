@@ -48,12 +48,12 @@ namespace wg
 			//.____ Properties ___________________________________________________________
 
 			Font_p			pFont;
-			spx				size;
+			spx				size = 0;
 			HiColor			color;
-			BlendMode		blendMode;
+			BlendMode		blendMode = BlendMode::Blend;
 			HiColor			backColor;
-			BlendMode		backBlendMode;
-			TextDecoration	decoration;
+			BlendMode		backBlendMode = BlendMode::Blend;
+			TextDecoration	decoration = TextDecoration::None;
 			TextLink_p		pLink;
 
 
