@@ -27,6 +27,7 @@
 #include <wg_plugincanvaslayers.h>
 
 #include <wg_base.h>
+#include <wg_gfxbase.h>
 #include <assert.h>
 
 using namespace std;
@@ -54,8 +55,6 @@ namespace wg
 		m_cDevice = object;
         m_pSurfaceFactory = pSurfaceFactory;
         m_pEdgemapFactory = pEdgemapFactory;
-        m_bRendering = false;
-		m_bIsProxyDevice = true;
 		
 		// Incomplete initialization of m_canvas.
 		
@@ -112,12 +111,7 @@ namespace wg
 
     bool PluginGfxDevice::setClipList(int nRectangles, const RectSPX * pRectangles)
     {
-        int retVal = PluginCalls::gfxDevice->setClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
-
-        if (retVal)
-            GfxDeviceGen1::setClipList(nRectangles, pRectangles);
-
-        return retVal;
+        return PluginCalls::gfxDevice->setClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
     }
 
     //____ resetClipList() _______________________________________________________
@@ -125,30 +119,20 @@ namespace wg
     void PluginGfxDevice::resetClipList()
     {
         PluginCalls::gfxDevice->resetClipList(m_cDevice);
-        GfxDeviceGen1::resetClipList();
     }
 
     //____ pushClipList() ________________________________________________________
 
     bool PluginGfxDevice::pushClipList(int nRectangles, const RectSPX* pRectangles)
     {
-        int retVal = PluginCalls::gfxDevice->pushClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
-
-        if( retVal )
-            GfxDeviceGen1::pushClipList(nRectangles, pRectangles);
-
-        return retVal;
+        return PluginCalls::gfxDevice->pushClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
     }
 
     //____ popClipList() ______________________________________________________
 
     bool PluginGfxDevice::popClipList()
     {
-        int retVal = PluginCalls::gfxDevice->popClipList(m_cDevice);
-        if( retVal )
-            GfxDeviceGen1::popClipList();
-        
-        return retVal;
+        return PluginCalls::gfxDevice->popClipList(m_cDevice);
     }
 
     //____ clipList() _________________________________________________________
@@ -176,8 +160,6 @@ namespace wg
 
     void PluginGfxDevice::setTintColor( HiColor color )
     {
-        GfxDeviceGen1::setTintColor(color);
-
         PluginCalls::gfxDevice->setTintColor(m_cDevice, *(wg_color*)&color);
     }
 
@@ -194,8 +176,6 @@ namespace wg
 
     void PluginGfxDevice::clearTintColor()
     {
-        GfxDeviceGen1::clearTintColor();
-
         PluginCalls::gfxDevice->clearTintColor(m_cDevice);
     }
 
@@ -263,12 +243,7 @@ namespace wg
         if( blendMode < BlendMode_min || blendMode > BlendMode_max )
             return false;
 
-        int retVal = PluginCalls::gfxDevice->setBlendMode(m_cDevice, (wg_blendMode)blendMode);
-
-        if( retVal )
-            GfxDeviceGen1::setBlendMode(blendMode);
-
-        return retVal;
+        return PluginCalls::gfxDevice->setBlendMode(m_cDevice, (wg_blendMode)blendMode);
     }
 
     //____ blendMode() ________________________________________________________
@@ -289,7 +264,7 @@ namespace wg
         int retVal = PluginCalls::gfxDevice->setBlitSource(m_cDevice, static_cast<PluginSurface*>(pSource)->cObject());
 
         if( retVal )
-            GfxDeviceGen1::setBlitSource(pSource);
+            m_pBlitSource = pSource;
 
         return retVal;
     }
@@ -301,16 +276,16 @@ namespace wg
         // This method can not be correctly implemented without huge performance loss,
 		// so we just assume that blitSource also was set through plugin.
 
-        return GfxDeviceGen1::blitSource();
+        return m_pBlitSource;
     }
 
     //____ setMorphFactor() ______________________________________________________
 
     void PluginGfxDevice::setMorphFactor(float factor)
     {
-        GfxDeviceGen1::setMorphFactor(factor);
+        limit(factor, 0.f, 1.f);
 
-        PluginCalls::gfxDevice->setMorphFactor(m_cDevice, m_morphFactor);
+        PluginCalls::gfxDevice->setMorphFactor(m_cDevice, factor);
     }
 
     //____ morphFactor() ______________________________________________________
@@ -333,7 +308,7 @@ namespace wg
 			return;
 		}
 
-		GfxDeviceGen1::setBlurbrush(pBrush);
+		m_pBlurbrush = pBrush;
 
 		if( m_hostBlurbrush )
 		{
@@ -355,12 +330,17 @@ namespace wg
 		return PluginCalls::gfxDevice->setBlurbrush(m_cDevice, m_hostBlurbrush);
 	}
 
+	//____ blurbrush() ________________________________________________________
+
+	Blurbrush_p PluginGfxDevice::blurbrush() const
+	{
+		return m_pBlurbrush;
+	}
+
 	//____ setFixedBlendColor() __________________________________________________
 
 	void PluginGfxDevice::setFixedBlendColor( HiColor color )
 	{
-		GfxDeviceGen1::setFixedBlendColor(color);
-
 		PluginCalls::gfxDevice->setFixedBlendColor(m_cDevice, *(wg_color*)&color);
 	}
 
@@ -377,9 +357,7 @@ namespace wg
 
     void PluginGfxDevice::setRenderLayer(int layer)
     {
-        GfxDeviceGen1::setRenderLayer(layer);
-       
-        PluginCalls::gfxDevice->setRenderLayer(m_cDevice, m_renderLayer);
+        PluginCalls::gfxDevice->setRenderLayer(m_cDevice, layer);
     }
 
     //____ renderLayer() ______________________________________________________
@@ -393,37 +371,73 @@ namespace wg
 
 	bool PluginGfxDevice::beginRender()
 	{
-        int bOk = PluginCalls::gfxDevice->beginRender(m_cDevice);
-
-        if (bOk)
-            GfxDeviceGen1::beginRender();
-        return bOk;
+        return PluginCalls::gfxDevice->beginRender(m_cDevice);
 	}
 
 	//____ endRender() _____________________________________________________________
 
 	bool PluginGfxDevice::endRender()
 	{
-        int bOk = PluginCalls::gfxDevice->endRender(m_cDevice);
-
-        if (bOk)
-            GfxDeviceGen1::endRender();
-        return bOk;
+        return PluginCalls::gfxDevice->endRender(m_cDevice);
     }
+
+	//____ isRendering() ___________________________________________________________
+
+	bool PluginGfxDevice::isRendering()
+	{
+		return PluginCalls::gfxDevice->isDeviceRendering(m_cDevice) != 0;
+	}
+
+	//____ isIdle() ________________________________________________________________
+
+	bool PluginGfxDevice::isIdle()
+	{
+		return PluginCalls::gfxDevice->isDeviceIdle(m_cDevice) != 0;
+	}
 
     //____ flush() ___________________________________________________________________
 
     void PluginGfxDevice::flush()
     {
         PluginCalls::gfxDevice->flushDevice(m_cDevice);
-        GfxDeviceGen1::flush();
     }
+
+	//____ beginCanvasUpdate() _______________________________________________________
+
+	bool PluginGfxDevice::beginCanvasUpdate(CanvasRef ref, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+	{
+		return _beginCanvasUpdate(ref, nullptr, nUpdateRects, pUpdateRects, pLayers, startLayer);
+	}
+
+	bool PluginGfxDevice::beginCanvasUpdate(Surface * pCanvas, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+	{
+		return _beginCanvasUpdate(CanvasRef::None, pCanvas, nUpdateRects, pUpdateRects, pLayers, startLayer);
+	}
 
     //____ endCanvasUpdate() _________________________________________________________
 
     void PluginGfxDevice::endCanvasUpdate()
     {
-		GfxDeviceGen1::endCanvasUpdate();
+		// Unwind the stack, retrieve saved values
+
+		if( !m_canvasStack.empty() )
+		{
+			auto& back = m_canvasStack.back();
+
+			m_canvas = back.canvas;
+			m_pCanvasLayers = back.pCanvasLayers;
+
+			m_canvasStack.pop_back();
+		}
+		else
+		{
+			m_canvas.ref = CanvasRef::None;
+			m_canvas.pSurface = nullptr;
+			m_canvas.size.clear();
+
+			m_pCanvasLayers = nullptr;
+		}
+
         PluginCalls::gfxDevice->endCanvasUpdate(m_cDevice);
     }
 
@@ -651,67 +665,73 @@ namespace wg
     //.____ _beginCanvasUpdate() ______________________________________________
 
     bool PluginGfxDevice::_beginCanvasUpdate(CanvasRef canvasRef, Surface * pCanvasSurface, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer)
-    {     
-		if( GfxDeviceGen1::_beginCanvasUpdate(canvasRef, pCanvasSurface, nUpdateRects, pUpdateRects, pLayers, startLayer) )
-		{
-			auto pCABILayers = wg_dynamic_cast<PluginCanvasLayers_p>(pLayers);
-			wg_obj cAPILayers = pCABILayers ? pCABILayers->cObject() : 0;
+    {
+		SizeSPX sz;
+		PixelFormat format;
 
-			if (canvasRef != CanvasRef::None)
-			{
-                PluginCalls::gfxDevice->beginCanvasUpdateWithRef(m_cDevice, (wg_canvasRef)canvasRef, nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
-			}
-			else
-			{
-                PluginCalls::gfxDevice->beginCanvasUpdateWithSurface(m_cDevice, static_cast<PluginSurface*>(pCanvasSurface)->cObject(), nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
-			}
-			return true;
+		if( canvasRef != CanvasRef::None )
+		{
+			auto info = canvas(canvasRef);
+			sz = info.size;
+			format = info.format;
+		}
+		else if( pCanvasSurface )
+		{
+			sz = pCanvasSurface->pixelSize()*64;
+			format = pCanvasSurface->pixelFormat();
 		}
 		else
+		{
+			//TODO: Error handling!
 			return false;
+		}
+
+		if( sz.isEmpty() )
+		{
+			//TODO: Error handling!
+			return false;
+		}
+
+		if (nUpdateRects > 0)
+		{
+			RectSPX bounds = *pUpdateRects;
+			for (int i = 1; i < nUpdateRects; i++)
+				bounds.growToContain(pUpdateRects[i]);
+
+			if (bounds.x < 0 || bounds.y < 0 || bounds.w > sz.w || bounds.h > sz.h)
+			{
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "UpdateRects contains rectangels outside canvas.",
+					this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				return false;
+			}
+		}
+
+		// Push old values onto stack and set new ones.
+
+		m_canvasStack.push_back({ m_canvas, m_pCanvasLayers });
+
+		m_canvas.ref = canvasRef;
+		m_canvas.pSurface = pCanvasSurface;
+		m_canvas.size = sz;
+		m_canvas.format = format;
+
+		m_pCanvasLayers = pLayers;
+
+		// Begin canvas update on host side.
+
+		auto pCABILayers = wg_dynamic_cast<PluginCanvasLayers_p>(pLayers);
+		wg_obj cAPILayers = pCABILayers ? pCABILayers->cObject() : 0;
+
+		if (canvasRef != CanvasRef::None)
+		{
+			PluginCalls::gfxDevice->beginCanvasUpdateWithRef(m_cDevice, (wg_canvasRef)canvasRef, nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
+		}
+		else
+		{
+			PluginCalls::gfxDevice->beginCanvasUpdateWithSurface(m_cDevice, static_cast<PluginSurface*>(pCanvasSurface)->cObject(), nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
+		}
+		return true;
     }
-
-    //____ _canvasWasChanged() ________________________________________________
-
-    void PluginGfxDevice::_canvasWasChanged()
-    {
-        // Do nothing
-    }
-
-    //____ _renderLayerWasChanged() ___________________________________________
-
-    void PluginGfxDevice::_renderLayerWasChanged()
-    {
-        // Do nothing.
-    }
-
-    //____ _transformBlitSimple() ___________________________________________________
-
-    void PluginGfxDevice::_transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2], OpType type)
-    {
-        //This method should never be called, but is pure virtual in super class.
-        
-        assert(false);
-    }
-
-    //____ _transformBlitComplex() ___________________________________________________
-
-    void PluginGfxDevice::_transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type)
-    {
-        //This method should never be called, but is pure virtual in super class.
-        
-        assert(false);
-    }
-
-	//____ _transformDrawSegments() ___________________________________________
-
-	void PluginGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
-	{
-        //This method should never be called, but is pure virtual in super class.
-        
-        assert(false);
-	}
-
 
 } // namespace wg
 

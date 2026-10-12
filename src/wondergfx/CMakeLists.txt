@@ -35,8 +35,6 @@ set( SOURCES
 	wg_gfxdevicefactory.cpp
 	wg_gfxdevice_gen2.cpp
 	wg_gfxdevice_gen2.h
-	wg_gfxdevice_gen1.cpp
-	wg_gfxdevice_gen1.h
 	wg_gfxbackend.cpp
 	wg_gfxbackend.h
 	wg_gfxenumextras.cpp

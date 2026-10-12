@@ -25,9 +25,11 @@
 
 #include <wg_geo.h>
 
-#include <wg_gfxdevice_gen1.h>
+#include <wg_gfxdevice.h>
 #include <wg_pluginsurfacefactory.h>
 #include <wg_pluginedgemapfactory.h>
+
+#include <vector>
 
 typedef void* wg_obj;
 
@@ -38,7 +40,7 @@ namespace wg
 	typedef	StrongPtr<PluginGfxDevice> PluginGfxDevice_p;
 	typedef	WeakPtr<PluginGfxDevice>	PluginGfxDevice_wp;
 
-	class PluginGfxDevice : public GfxDeviceGen1
+	class PluginGfxDevice : public GfxDevice
 	{
 	public:
 
@@ -51,13 +53,19 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-        using GfxDevice::canvas;
-        const CanvasInfo canvas(CanvasRef ref) const override;
-
 		//.____ Misc _______________________________________________________
+
+		const CanvasInfo&	canvas() const override { return m_canvas; }
+		const CanvasInfo	canvas(CanvasRef ref) const override;
+
+		CanvasLayers_p		canvasLayers() const override { return m_pCanvasLayers; }
 
 		SurfaceFactory_p surfaceFactory() override;
         EdgemapFactory_p edgemapFactory() override;
+
+		//.____ Geometry _________________________________________________
+
+		SizeSPX		canvasSize() const override { return m_canvas.size; }
 
 		//.____ State _________________________________________________
         
@@ -92,6 +100,7 @@ namespace wg
         float		morphFactor() const override;
 
 		void		setBlurbrush( Blurbrush * pBrush) override;
+		Blurbrush_p	blurbrush() const override;
 		
 		void		setFixedBlendColor( HiColor color ) override;
 		HiColor		fixedBlendColor() const override;
@@ -105,9 +114,13 @@ namespace wg
 
 		bool	beginRender() override;
 		bool	endRender() override;
+		bool	isRendering() override;
+		bool	isIdle() override;
 
         void    flush() override;
-        
+
+		bool	beginCanvasUpdate( CanvasRef canvas, int nUpdateRects = 0, const RectSPX* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 ) override;
+		bool	beginCanvasUpdate( Surface * pCanvas, int nUpdateRects = 0, const RectSPX* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 ) override;
         void    endCanvasUpdate() override;
 
         
@@ -175,15 +188,13 @@ namespace wg
 		PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginEdgemapFactory * pEdgemapFactory );
 		~PluginGfxDevice();
 
-        bool    _beginCanvasUpdate( CanvasRef canvasRef, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
-        
-        void    _canvasWasChanged() override;
-        void    _renderLayerWasChanged() override;
+        bool    _beginCanvasUpdate( CanvasRef canvasRef, Surface * pCanvas, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer);
 
-        void    _transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2], OpType type) override;
-        void    _transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type) override;
-
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		struct StashedCanvas
+		{
+			CanvasInfo		canvas;
+			CanvasLayers_p	pCanvasLayers;
+		};
 
         wg_obj  m_cDevice;
 		
@@ -191,7 +202,14 @@ namespace wg
 		PluginSurfaceFactory_p	m_pSurfaceFactory;
         PluginEdgemapFactory_p	m_pEdgemapFactory;
 
-        bool	m_bRendering;
+		// Plugin side copies of state that can't be retrieved from the host.
+
+		CanvasInfo		m_canvas;
+		CanvasLayers_p	m_pCanvasLayers;
+		std::vector<StashedCanvas>	m_canvasStack;
+
+		Surface_p		m_pBlitSource;
+		Blurbrush_p		m_pBlurbrush;
 	};
 } // namespace wg
 #endif //WG_PLUGINGFXDEVICE_DOT_H
