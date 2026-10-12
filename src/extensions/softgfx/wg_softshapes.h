@@ -224,7 +224,6 @@ namespace wg
 		struct Boundary
 		{
 			uint32_t	angle;				// Clockwise from 12 o'clock, 2^32 is a full turn.
-			uint32_t	pseudoAngle;		// Monotonic with angle, see _pseudoAngle().
 			int32_t		sx, sy;				// Direction from center, 2.30 fixed point, y pointing down.
 			bool		bFlat;				// Too close to horizontal to cross any row but those around the center.
 			int64_t		slopeInt;			// sx / sy, integer part (rounded down)...
@@ -237,9 +236,16 @@ namespace wg
 		struct ActiveBoundary
 		{
 			int			boundary;
-			int64_t		x;					// Crossing of row, spx.
+			int64_t		x;					// Crossing of row, spx (rounded down)...
+			uint32_t	xFrac;				// ...and 32 binals.
 			int			bandBeg;			// Columns of partly covered pixels.
 			int			bandEnd;
+		};
+
+		struct BandGroup					// Overlapping bands of crossings.
+		{
+			int			beg, end;
+			int			first, last;
 		};
 
 		struct AngularPiece
@@ -258,23 +264,27 @@ namespace wg
 		};
 
 		void	_setupRingAngles(const Ring& ring);
-		int		_elementAt(uint32_t pseudoAngle) const;
+		int		_elementAt(int64_t x, int64_t y) const;
 		int		_angularRow(int64_t rowCenterY, int clipBeg, int clipEnd);
 		int		_pixelBoundaries(int32_t dx, int32_t dy, int& first) const;
 		void	_samplePixel(int32_t dx, int32_t dy, int* pElements, int* pFractions, int& nElements) const;
 
 		static inline int	_pastShare(const Boundary& b, int32_t dx, int32_t dy);
 
-		static uint32_t	_pseudoAngle(int64_t x, int64_t y);
+		static inline bool	_isBefore(int64_t ax, int64_t ay, int64_t bx, int64_t by);
 		static int32_t	_sin30(uint32_t angle);
 
 		int64_t						m_cx, m_cy;			// Center of ring, spx.
 		std::vector<Boundary>		m_boundaries;		// Sorted by angle.
 		std::vector<int>			m_elementSegments;	// Segment of each element.
-		std::vector<int>			m_upperOrder;		// Boundaries crossing rows above center, in order along x.
-		std::vector<int>			m_lowerOrder;		// Boundaries crossing rows below center, in order along x.
-		std::vector<ActiveBoundary>	m_active;
+		std::vector<ActiveBoundary>	m_crossings[2];		// Boundaries crossing rows above and below center, in order along x.
+		int64_t						m_crossingsRowY[2];	// Row center the crossings are for, or INT64_MIN.
+		const ActiveBoundary*		m_pActive = nullptr;	// Crossings of the row of the angular pieces.
 		std::vector<AngularPiece>	m_angularPieces;
+		int							m_nAngularPieces = 0;
+		std::vector<BandGroup>		m_groups;
+		std::vector<int>			m_pixelLayers;		// Layers of one pixel around the center.
+		std::vector<uint16_t>		m_pixelCoverage;
 		std::vector<int>			m_layerBuffer;
 		std::vector<uint16_t>		m_ringOutput;
 		std::vector<int>			m_spanLayerOfs;

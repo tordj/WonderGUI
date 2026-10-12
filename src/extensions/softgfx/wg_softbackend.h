@@ -325,6 +325,13 @@ namespace wg
 			bool		bFlat;					// Same color everywhere, including device tint.
 			HiColor		flatColor;				// Linear color with tints, if bFlat.
 			SoftTint	tint;					// Color and tint of segment, without device tint.
+
+			// Prepared for drawing.
+
+			FillOp_p	pFillOp;				// Fully covered runs, if tint is flat. Device tint applied by kernel.
+			bool		bFillRuns;				// pFillOp draws runs of device tint colors.
+			HiColor		fillColor;				// Color for pFillOp.
+			int16_t		mixB, mixG, mixR, mixA;	// flatColor, premultiplied for alpha weighted blend modes. If bFlat.
 		};
 
 		class ShapeSink : public SoftShapes::RowSink
@@ -411,6 +418,8 @@ namespace wg
 		std::vector<HiColor>		m_shapeBuffers[3];
 		std::vector<CoveragePixel>	m_coveragePixels;
 		std::vector<CoveragePixel>	m_coverageColumn;
+		CoverageOp_p				m_pShapeCoverageOp = nullptr;
+		bool						m_bShapeAllFlat = true;		// All drawn segments of shape are flat.
 
 
 //		PixelBuffer		m_canvasPixelBuffer;
