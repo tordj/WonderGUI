@@ -2331,7 +2331,6 @@ namespace wg
 
 		m_shapeKind = kind;
 		m_pShapeCoverageOp = pKernels->pCoverageKernels[(int)m_blendMode];
-		m_bShapeAllFlat = true;
 
 		if (kind == ShapeKind::RoundedBox)
 		{
@@ -2464,13 +2463,11 @@ namespace wg
 			seg.flatColor = c;
 
 			bool bAlphaWeighted = isCoverageAlphaWeighted(m_blendMode);
-			seg.mixB = int16_t(bAlphaWeighted ? (c.b * c.a) >> 12 : c.b);
-			seg.mixG = int16_t(bAlphaWeighted ? (c.g * c.a) >> 12 : c.g);
-			seg.mixR = int16_t(bAlphaWeighted ? (c.r * c.a) >> 12 : c.r);
-			seg.mixA = c.a;
+			seg.mix[0] = int16_t(bAlphaWeighted ? (c.b * c.a) >> 12 : c.b);
+			seg.mix[1] = int16_t(bAlphaWeighted ? (c.g * c.a) >> 12 : c.g);
+			seg.mix[2] = int16_t(bAlphaWeighted ? (c.r * c.a) >> 12 : c.r);
+			seg.mix[3] = c.a;
 		}
-		else
-			m_bShapeAllFlat = false;
 
 		// Kernel for fully covered runs, device tint applied by the kernel as for fills.
 
@@ -2498,42 +2495,86 @@ namespace wg
 		}
 	}
 
+	//____ ShapeSink::segmentColors() ___________________________________________
+	// Colors of a segment for coverage pixels, the same everywhere if flat, otherwise
+	// for each pixel of the row.
+
+	const int16_t* SoftBackend::ShapeSink::segmentColors(int segment, int y, int begin, int end, bool& bFlat)
+	{
+		SoftBackend* pB = pBackend;
+		ShapeSegment& seg = pB->m_shapeSegments[segment];
+
+		if (!seg.bActive)
+			return nullptr;
+
+		bFlat = seg.bFlat;
+		if (seg.bFlat)
+			return seg.mix;
+
+		const int length = end - begin;
+		HiColor* pColors = pB->_shapeBuffer(0, length);
+		pB->_shapeSegmentColors(segment, begin, y, length, pColors);
+
+		if ((int)pB->m_shapeMixBuffers.size() <= segment)
+			pB->m_shapeMixBuffers.resize(segment + 1);
+
+		auto& buffer = pB->m_shapeMixBuffers[segment];
+		if ((int)buffer.size() < length * 4)
+			buffer.resize(length * 4);
+
+		const bool bAlphaWeighted = isCoverageAlphaWeighted(pB->m_blendMode);
+		int16_t* p = buffer.data();
+
+		for (int i = 0; i < length; i++)
+		{
+			const HiColor& c = pColors[i];
+			p[0] = int16_t(bAlphaWeighted ? (c.b * c.a) >> 12 : c.b);
+			p[1] = int16_t(bAlphaWeighted ? (c.g * c.a) >> 12 : c.g);
+			p[2] = int16_t(bAlphaWeighted ? (c.r * c.a) >> 12 : c.r);
+			p[3] = c.a;
+			p += 4;
+		}
+
+		return buffer.data();
+	}
+
 	//____ ShapeSink::row() ____________________________________________________
 
-	void SoftBackend::ShapeSink::row(int y, int nSpans, const SoftShapes::Span* pSpans)
+	void SoftBackend::ShapeSink::row(int y, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels)
 	{
-		pBackend->_drawShapeRows(pOrigin, pitch, y, y + 1, nSpans, pSpans);
+		pBackend->_drawShapeRuns(pOrigin, pitch, y, y + 1, nRuns, pRuns, pPixels);
 	}
 
 	//____ ShapeSink::rows() ___________________________________________________
 
-	void SoftBackend::ShapeSink::rows(int yBeg, int yEnd, int nSpans, const SoftShapes::Span* pSpans)
+	void SoftBackend::ShapeSink::rows(int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels)
 	{
-		pBackend->_drawShapeRows(pOrigin, pitch, yBeg, yEnd, nSpans, pSpans);
+		pBackend->_drawShapeRuns(pOrigin, pitch, yBeg, yEnd, nRuns, pRuns, pPixels);
 	}
 
-	//____ _drawShapeRows() ____________________________________________________
+	//____ _drawShapeRuns() ____________________________________________________
 	/*
-		Draws the same spans on rows yBeg up to yEnd. Fully covered runs are drawn with
-		the fill kernels, tinted like fills. Partly covered pixels get their colors mixed
-		from the segments covering them and are drawn with the coverage kernels.
+		Draws the same runs on rows yBeg up to yEnd. Fully covered runs are drawn with
+		the fill kernels, tinted like fills. Partly covered pixels, with colors already
+		mixed, are drawn with the coverage kernels.
 	*/
 
-	void SoftBackend::_drawShapeRows(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nSpans, const SoftShapes::Span* pSpans)
+	void SoftBackend::_drawShapeRuns(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels)
 	{
 		auto pKernels = m_pKernels[(int)m_canvasSoftFormat];
 		const int pixelBytes = m_canvasPixelBytes;
+		const int nRows = yEnd - yBeg;
 
-		for (int i = 0; i < nSpans; i++)
+		for (int i = 0; i < nRuns; i++)
 		{
-			const SoftShapes::Span& span = pSpans[i];
-			const int length = span.end - span.begin;
+			const SoftShapes::Run& run = pRuns[i];
+			const int length = run.end - run.begin;
 
-			if (span.segment >= 0)
+			if (run.segment >= 0)
 			{
 				// Run of fully covered pixels.
 
-				ShapeSegment& seg = m_shapeSegments[span.segment];
+				ShapeSegment& seg = m_shapeSegments[run.segment];
 				if (!seg.bActive)
 					continue;
 
@@ -2548,12 +2589,12 @@ namespace wg
 
 					if (m_tintLayout == TintLayout::None)
 					{
-						uint8_t* pDst = pOrigin + yBeg * pitch + span.begin * pixelBytes;
-						pOp(pDst, pixelBytes, pitch - length * pixelBytes, yEnd - yBeg, length, seg.fillColor, m_colTrans, { span.begin, yBeg });
+						uint8_t* pDst = pOrigin + yBeg * pitch + run.begin * pixelBytes;
+						pOp(pDst, pixelBytes, pitch - length * pixelBytes, yEnd - yBeg, length, seg.fillColor, m_colTrans, { run.begin, yBeg });
 					}
 					else
 					{
-						_forTintSpans(RectI(span.begin, yBeg, length, yEnd - yBeg), seg.bFillRuns, [&](const RectI& sub)
+						_forTintSpans(RectI(run.begin, yBeg, length, yEnd - yBeg), seg.bFillRuns, [&](const RectI& sub)
 						{
 							uint8_t* pDst = pOrigin + sub.y * pitch + sub.x * pixelBytes;
 							pOp(pDst, pixelBytes, pitch - sub.w * pixelBytes, sub.h, sub.w, seg.fillColor, m_colTrans, sub.pos());
@@ -2567,9 +2608,9 @@ namespace wg
 					for (int y = yBeg; y < yEnd; y++)
 					{
 						HiColor* pColors = _shapeBuffer(0, length);
-						_shapeSegmentColors(span.segment, span.begin, y, length, pColors);
+						_shapeSegmentColors(run.segment, run.begin, y, length, pColors);
 
-						uint8_t* pDst = pOrigin + y * pitch + span.begin * pixelBytes;
+						uint8_t* pDst = pOrigin + y * pitch + run.begin * pixelBytes;
 
 						TintMode	savedMode = m_colTrans.mode;
 						const HiColor* pSavedAxisX = m_colTrans.pTintAxisX;
@@ -2582,9 +2623,9 @@ namespace wg
 						{
 							m_colTrans.mode = TintMode::GradientX;
 							m_colTrans.pTintAxisX = pColors;
-							m_colTrans.tintRect.x = span.begin;
+							m_colTrans.tintRect.x = run.begin;
 
-							pOp(pDst, pixelBytes, 0, 1, length, HiColor::White, m_colTrans, { span.begin, y });
+							pOp(pDst, pixelBytes, 0, 1, length, HiColor::White, m_colTrans, { run.begin, y });
 						}
 						else
 						{
@@ -2601,7 +2642,7 @@ namespace wg
 									end++;
 
 								m_colTrans.flatTintColor = pColors[beg];
-								pOp(pDst + beg * pixelBytes, pixelBytes, 0, 1, end - beg, HiColor::White, m_colTrans, { span.begin + beg, y });
+								pOp(pDst + beg * pixelBytes, pixelBytes, 0, 1, end - beg, HiColor::White, m_colTrans, { run.begin + beg, y });
 								beg = end;
 							}
 						}
@@ -2615,131 +2656,32 @@ namespace wg
 			}
 			else
 			{
-				// Partly covered pixels. Mix colors of segments, weighted by coverage.
+				// Partly covered pixels. A few pixels repeated on many rows, like the sides
+				// of a box, are drawn column by column.
 
-				if ((int)m_coveragePixels.size() < length)
-					m_coveragePixels.resize(length);
+				const CoveragePixel* pMixed = pPixels;
+				pPixels += length;
 
-				CoveragePixel* pPixels = m_coveragePixels.data();
-
-				const int covStride = span.bUniform ? 0 : span.nLayers;
-
-				// Same coverage for all pixels: flat segments mix the same for all of them, so
-				// only the first is mixed and then copied.
-
-				bool bAllFlat = m_bShapeAllFlat;
-				if (!bAllFlat)
+				if (nRows > 1 && length <= 4)
 				{
-					bAllFlat = true;
-					for (int layer = 0; layer < span.nLayers; layer++)
+					if ((int)m_coverageColumn.size() < nRows)
+						m_coverageColumn.resize(nRows);
+
+					for (int x = 0; x < length; x++)
 					{
-						const ShapeSegment& seg = m_shapeSegments[span.pLayerSegments[layer]];
-						if (seg.bActive && !seg.bFlat)
-							bAllFlat = false;
+						std::fill(m_coverageColumn.begin(), m_coverageColumn.begin() + nRows, pMixed[x]);
+
+						uint8_t* pDst = pOrigin + yBeg * pitch + (run.begin + x) * pixelBytes;
+						m_pShapeCoverageOp(pDst, pitch, nRows, m_coverageColumn.data(), m_colTrans);
 					}
 				}
-
-				const bool bCopyFirst = span.bUniform && bAllFlat && length > 1;
-				const int mixLength = bCopyFirst ? 1 : length;
-
-				// A few pixels repeated on many rows, like the sides of a box, are drawn
-				// column by column.
-
-				const int nRows = yEnd - yBeg;
-				const bool bColumns = bAllFlat && nRows > 1 && length <= 4;
-
-				for (int y = yBeg; y < yEnd; y++)
+				else
 				{
-					// Flat segments mix the same on every row.
-
-					if (y == yBeg || !bAllFlat)
+					for (int y = yBeg; y < yEnd; y++)
 					{
-						if (mixLength == 1)
-							pPixels[0] = CoveragePixel();
-						else
-							std::memset(pPixels, 0, sizeof(CoveragePixel) * mixLength);
-
-						for (int layer = 0; layer < span.nLayers; layer++)
-						{
-							int segment = span.pLayerSegments[layer];
-							ShapeSegment& seg = m_shapeSegments[segment];
-
-							if (!seg.bActive)
-								continue;
-
-							const uint16_t* pCov = span.pCoverage + layer;
-
-							if (seg.bFlat)
-							{
-								const int b = seg.mixB;
-								const int g = seg.mixG;
-								const int r = seg.mixR;
-								const int a = seg.mixA;
-
-								for (int x = 0; x < mixLength; x++)
-								{
-									int cov = pCov[x * covStride];
-									if (cov == 0)
-										continue;
-
-									CoveragePixel& px = pPixels[x];
-									px.b += int16_t((b * cov) >> 12);
-									px.g += int16_t((g * cov) >> 12);
-									px.r += int16_t((r * cov) >> 12);
-									px.a += int16_t((a * cov) >> 12);
-									px.coverage += int16_t(cov);
-								}
-							}
-							else
-							{
-								HiColor* pColors = _shapeBuffer(0, length);
-								_shapeSegmentColors(segment, span.begin, y, length, pColors);
-
-								const bool bAlphaWeighted = isCoverageAlphaWeighted(m_blendMode);
-
-								for (int x = 0; x < length; x++)
-								{
-									int cov = pCov[x * covStride];
-									if (cov == 0)
-										continue;
-
-									const HiColor& c = pColors[x];
-
-									int b = bAlphaWeighted ? (c.b * c.a) >> 12 : c.b;
-									int g = bAlphaWeighted ? (c.g * c.a) >> 12 : c.g;
-									int r = bAlphaWeighted ? (c.r * c.a) >> 12 : c.r;
-
-									CoveragePixel& px = pPixels[x];
-									px.b += int16_t((b * cov) >> 12);
-									px.g += int16_t((g * cov) >> 12);
-									px.r += int16_t((r * cov) >> 12);
-									px.a += int16_t((c.a * cov) >> 12);
-									px.coverage += int16_t(cov);
-								}
-							}
-						}
-
-						if (bCopyFirst)
-							std::fill(pPixels + 1, pPixels + length, pPixels[0]);
+						uint8_t* pDst = pOrigin + y * pitch + run.begin * pixelBytes;
+						m_pShapeCoverageOp(pDst, pixelBytes, length, pMixed, m_colTrans);
 					}
-
-					if (bColumns)
-					{
-						if ((int)m_coverageColumn.size() < nRows)
-							m_coverageColumn.resize(nRows);
-
-						for (int x = 0; x < length; x++)
-						{
-							std::fill(m_coverageColumn.begin(), m_coverageColumn.begin() + nRows, pPixels[x]);
-
-							uint8_t* pDst = pOrigin + yBeg * pitch + (span.begin + x) * pixelBytes;
-							m_pShapeCoverageOp(pDst, pitch, nRows, m_coverageColumn.data(), m_colTrans);
-						}
-						break;
-					}
-
-					uint8_t* pDst = pOrigin + y * pitch + span.begin * pixelBytes;
-					m_pShapeCoverageOp(pDst, pixelBytes, length, pPixels, m_colTrans);
 				}
 			}
 		}

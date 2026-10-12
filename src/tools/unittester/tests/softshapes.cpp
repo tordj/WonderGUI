@@ -1,4 +1,5 @@
 #include "softshapes.h"
+#include "shapecoverage.h"
 
 #include <wg_gfxutil.h>
 
@@ -13,63 +14,26 @@ using namespace wg;
 namespace
 {
 	//____ CoverageGrid _______________________________________________________
-	// Collects the output of a rasterizer, checking that spans are well formed.
+	// Fill and outline coverage of a rounded box.
 
-	class CoverageGrid : public SoftShapes::RowSink
+	class CoverageGrid
 	{
 	public:
-		CoverageGrid(const RectI& area) : m_area(area), m_fill(area.w * area.h, 0), m_outline(area.w * area.h, 0), m_hits(area.w * area.h, 0) {}
+		CoverageGrid(const RectI& area) : m_coverage(area, 2) {}
 
-		void row(int y, int nSpans, const SoftShapes::Span* pSpans) override
+		void rasterize(SoftShapes& shapes, const SoftShapes::RoundedBox& box, const RectI& clip)
 		{
-			int prevEnd = INT_MIN;
-
-			for (int i = 0; i < nSpans; i++)
-			{
-				const SoftShapes::Span& span = pSpans[i];
-
-				if (span.begin >= span.end || span.begin < prevEnd || span.begin < m_area.x || span.end > m_area.x + m_area.w || y < m_area.y || y >= m_area.y + m_area.h)
-				{
-					_error("Bad span " + std::to_string(span.begin) + "-" + std::to_string(span.end) + " on row " + std::to_string(y));
-					return;
-				}
-
-				prevEnd = span.end;
-
-				for (int x = span.begin; x < span.end; x++)
-				{
-					int idx = (y - m_area.y) * m_area.w + (x - m_area.x);
-
-					if (++m_hits[idx] > 1)
-						_error("Pixel " + std::to_string(x) + "," + std::to_string(y) + " given twice.");
-
-					if (span.segment >= 0)
-						(span.segment == 0 ? m_fill : m_outline)[idx] = SoftShapes::c_fullCoverage;
-					else
-					{
-						const uint16_t* pCov = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * span.nLayers);
-
-						for (int l = 0; l < span.nLayers; l++)
-							(span.pLayerSegments[l] == 0 ? m_fill : m_outline)[idx] += pCov[l];
-					}
-				}
-			}
+			m_coverage.collect([&](SoftShapes::RowSink* pSink) { shapes.rasterizeRoundedBox(box, clip, pSink); });
 		}
 
-		int		fill(int x, int y) const { return m_fill[(y - m_area.y) * m_area.w + (x - m_area.x)]; }
-		int		outline(int x, int y) const { return m_outline[(y - m_area.y) * m_area.w + (x - m_area.x)]; }
+		int		fill(int x, int y) const { return m_coverage.coverage(0, x, y); }
+		int		outline(int x, int y) const { return m_coverage.coverage(1, x, y); }
 
-		bool			hasError() const { return !m_error.empty(); }
-		std::string		error() const { return m_error; }
+		bool			hasError() const { return m_coverage.hasError(); }
+		std::string		error() const { return m_coverage.error(); }
 
 	private:
-		void _error(const std::string& msg) { if (m_error.empty()) m_error = msg; }
-
-		RectI				m_area;
-		std::vector<int>	m_fill;
-		std::vector<int>	m_outline;
-		std::vector<int>	m_hits;
-		std::string			m_error;
+		ShapeCoverage	m_coverage;
 	};
 
 	//____ Reference geometry _________________________________________________
@@ -206,31 +170,31 @@ namespace
 		cases.push_back({ "tiny box", makeBox({ 64 * 4 + 10, 64 * 4 + 20, 30, 20 }, 0, 0, 0, 0), 0.02 });
 		cases.push_back({ "thin horizontal box", makeBox({ 64 * 4 + 10, 64 * 4 + 20, 64 * 12 + 3, 20 }, 0, 0, 0, 0), 0.02 });
 
-		cases.push_back({ "rounded, aligned", makeBox({ 64 * 2, 64 * 2, 64 * 40, 64 * 30 }, 64 * 8, 64 * 8, 64 * 8, 64 * 8), 0.1 });
-		cases.push_back({ "rounded, subpixel", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40 + 13, 64 * 30 + 7 }, 64 * 8 + 11, 64 * 8 + 11, 64 * 8 + 11, 64 * 8 + 11), 0.1 });
-		cases.push_back({ "mixed radii", makeBox({ 64 * 2 + 5, 64 * 2 + 33, 64 * 50 + 13, 64 * 30 + 7 }, 64 * 3 + 20, 64 * 12, 0, 64 * 25), 0.1 });
-		cases.push_back({ "small radii", makeBox({ 64 * 2 + 5, 64 * 2 + 33, 64 * 20 + 13, 64 * 10 + 7 }, 40, 64, 100, 140), 0.2 });
-		cases.push_back({ "pill", makeBox({ 64 * 3 + 10, 64 * 3 + 30, 64 * 60, 64 * 16 + 30 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100), 0.1 });
-		cases.push_back({ "circle", makeBox({ 64 * 3 + 10, 64 * 3 + 30, 64 * 31 + 20, 64 * 31 + 20 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100), 0.1 });
-		cases.push_back({ "tall pill, outline", makeBox({ 64 * 3 + 10, 64 * 3 + 30, 64 * 12 + 30, 64 * 40 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100, { 64 * 2 + 10, 64 * 2 + 10, 64 * 2 + 10, 64 * 2 + 10 }), 0.1 });
+		cases.push_back({ "rounded, aligned", makeBox({ 64 * 2, 64 * 2, 64 * 40, 64 * 30 }, 64 * 8, 64 * 8, 64 * 8, 64 * 8), 0.04 });
+		cases.push_back({ "rounded, subpixel", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40 + 13, 64 * 30 + 7 }, 64 * 8 + 11, 64 * 8 + 11, 64 * 8 + 11, 64 * 8 + 11), 0.04 });
+		cases.push_back({ "mixed radii", makeBox({ 64 * 2 + 5, 64 * 2 + 33, 64 * 50 + 13, 64 * 30 + 7 }, 64 * 3 + 20, 64 * 12, 0, 64 * 25), 0.04 });
+		cases.push_back({ "small radii", makeBox({ 64 * 2 + 5, 64 * 2 + 33, 64 * 20 + 13, 64 * 10 + 7 }, 40, 64, 100, 140), 0.04 });
+		cases.push_back({ "pill", makeBox({ 64 * 3 + 10, 64 * 3 + 30, 64 * 60, 64 * 16 + 30 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100), 0.04 });
+		cases.push_back({ "circle", makeBox({ 64 * 3 + 10, 64 * 3 + 30, 64 * 31 + 20, 64 * 31 + 20 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100), 0.04 });
+		cases.push_back({ "tall pill, outline", makeBox({ 64 * 3 + 10, 64 * 3 + 30, 64 * 12 + 30, 64 * 40 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100, { 64 * 2 + 10, 64 * 2 + 10, 64 * 2 + 10, 64 * 2 + 10 }), 0.04 });
 
-		cases.push_back({ "rounded, 1px outline", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 120, 64 * 32 }, 64 * 6, 64 * 6, 64 * 6, 64 * 6, { 64, 64, 64, 64 }), 0.1 });
-		cases.push_back({ "rounded, subpixel outline", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40, 64 * 32 }, 64 * 6, 64 * 6, 64 * 6, 64 * 6, { 23, 23, 23, 23 }), 0.1 });
-		cases.push_back({ "rounded, per-side outline", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40, 64 * 32 }, 64 * 8, 64 * 8, 64 * 8, 64 * 8, { 64, 64 * 3 + 20, 64 * 4, 32 }), 0.1 });
-		cases.push_back({ "outline thicker than radius", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40, 64 * 32 }, 64 * 4, 64 * 4, 64 * 4, 64 * 4, { 64 * 6, 64 * 6, 64 * 6, 64 * 6 }), 0.1 });
-		cases.push_back({ "outline fills box", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 20, 64 * 12 }, 64 * 4, 64 * 4, 64 * 4, 64 * 4, { 64 * 7, 64 * 7, 64 * 7, 64 * 7 }), 0.1 });
-		cases.push_back({ "large radius", makeBox({ 64 * 1 + 21, 64 * 1 + 50, 64 * 700, 64 * 500 }, 64 * 240, 64 * 240, 64 * 240, 64 * 240, { 64 * 3, 64 * 3, 64 * 3, 64 * 3 }), 0.1 });
-		cases.push_back({ "negative position", makeBox({ -64 * 10 - 21, -64 * 5 - 13, 64 * 40, 64 * 30 }, 64 * 12, 64 * 12, 64 * 12, 64 * 12, { 64 * 2, 64 * 2, 64 * 2, 64 * 2 }), 0.1 });
+		cases.push_back({ "rounded, 1px outline", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 120, 64 * 32 }, 64 * 6, 64 * 6, 64 * 6, 64 * 6, { 64, 64, 64, 64 }), 0.04 });
+		cases.push_back({ "rounded, subpixel outline", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40, 64 * 32 }, 64 * 6, 64 * 6, 64 * 6, 64 * 6, { 23, 23, 23, 23 }), 0.04 });
+		cases.push_back({ "rounded, per-side outline", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40, 64 * 32 }, 64 * 8, 64 * 8, 64 * 8, 64 * 8, { 64, 64 * 3 + 20, 64 * 4, 32 }), 0.04 });
+		cases.push_back({ "outline thicker than radius", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40, 64 * 32 }, 64 * 4, 64 * 4, 64 * 4, 64 * 4, { 64 * 6, 64 * 6, 64 * 6, 64 * 6 }), 0.04 });
+		cases.push_back({ "outline fills box", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 20, 64 * 12 }, 64 * 4, 64 * 4, 64 * 4, 64 * 4, { 64 * 7, 64 * 7, 64 * 7, 64 * 7 }), 0.04 });
+		cases.push_back({ "large radius", makeBox({ 64 * 1 + 21, 64 * 1 + 50, 64 * 700, 64 * 500 }, 64 * 240, 64 * 240, 64 * 240, 64 * 240, { 64 * 3, 64 * 3, 64 * 3, 64 * 3 }), 0.04 });
+		cases.push_back({ "negative position", makeBox({ -64 * 10 - 21, -64 * 5 - 13, 64 * 40, 64 * 30 }, 64 * 12, 64 * 12, 64 * 12, 64 * 12, { 64 * 2, 64 * 2, 64 * 2, 64 * 2 }), 0.04 });
 
 		// Diagonal corners reaching past each other.
 
-		cases.push_back({ "leaf", makeBox({ 64 * 3 + 13, 64 * 2 + 40, 64 * 24, 64 * 24 }, 0, 64 * 24, 0, 64 * 24), 0.1 });
-		cases.push_back({ "other leaf, outline", makeBox({ 64 * 3 + 13, 64 * 2 + 40, 64 * 40 + 20, 64 * 40 + 20 }, 64 * 40, 0, 64 * 40, 0, { 64 * 3, 64 * 3, 64 * 3, 64 * 3 }), 0.1 });
-		cases.push_back({ "large diagonal radii", makeBox({ 64 * 2 + 5, 64 * 2 + 33, 64 * 60, 64 * 50 }, 64 * 10, 64 * 45, 64 * 5, 64 * 40), 0.1 });
+		cases.push_back({ "leaf", makeBox({ 64 * 3 + 13, 64 * 2 + 40, 64 * 24, 64 * 24 }, 0, 64 * 24, 0, 64 * 24), 0.04 });
+		cases.push_back({ "other leaf, outline", makeBox({ 64 * 3 + 13, 64 * 2 + 40, 64 * 40 + 20, 64 * 40 + 20 }, 64 * 40, 0, 64 * 40, 0, { 64 * 3, 64 * 3, 64 * 3, 64 * 3 }), 0.04 });
+		cases.push_back({ "large diagonal radii", makeBox({ 64 * 2 + 5, 64 * 2 + 33, 64 * 60, 64 * 50 }, 64 * 10, 64 * 45, 64 * 5, 64 * 40), 0.04 });
 
 		// Inner corner that would reach past the inside of a thick outline.
 
-		cases.push_back({ "thick outline on one side", makeBox({ 64 * 2, 64 * 2, 64 * 30, 64 * 100 }, 0, 0, 64 * 30, 0, { 64, 64, 64, 64 * 10 + 32 }), 0.1 });
+		cases.push_back({ "thick outline on one side", makeBox({ 64 * 2, 64 * 2, 64 * 30, 64 * 100 }, 0, 0, 64 * 30, 0, { 64, 64, 64, 64 * 10 + 32 }), 0.04 });
 
 		return cases;
 	}
@@ -265,7 +229,7 @@ bool SoftShapesTest::roundedBoxCoverageTest(std::ostream& output)
 	{
 		RectI area = pixelBounds(c.box.rect, 1);
 		CoverageGrid grid(area);
-		shapes.rasterizeRoundedBox(c.box, area, &grid);
+		grid.rasterize(shapes, c.box, area);
 
 		if (grid.hasError())
 		{
@@ -331,7 +295,7 @@ bool SoftShapesTest::roundedBoxSeamTest(std::ostream& output)
 	{
 		RectI area = pixelBounds(c.box.rect, 1);
 		CoverageGrid grid(area);
-		shapes.rasterizeRoundedBox(c.box, area, &grid);
+		grid.rasterize(shapes, c.box, area);
 
 		RefBox ref = makeReference(c.box);
 
@@ -374,7 +338,7 @@ bool SoftShapesTest::roundedBoxSymmetryTest(std::ostream& output)
 	{
 		RectI area(0, 0, 64, 48);
 		CoverageGrid grid(area);
-		shapes.rasterizeRoundedBox(box, area, &grid);
+		grid.rasterize(shapes, box, area);
 
 		for (int y = 0; y < 48; y++)
 		{
@@ -411,7 +375,7 @@ bool SoftShapesTest::roundedBoxClipTest(std::ostream& output)
 		RectI area = pixelBounds(c.box.rect, 1);
 
 		CoverageGrid whole(area);
-		shapes.rasterizeRoundedBox(c.box, area, &whole);
+		whole.rasterize(shapes, c.box, area);
 
 		CoverageGrid tiled(area);
 
@@ -421,7 +385,7 @@ bool SoftShapesTest::roundedBoxClipTest(std::ostream& output)
 			for (int tx = area.x; tx < area.x + area.w; tx += tileW)
 			{
 				RectI tile = RectI::overlap(RectI(tx, ty, tileW, tileH), area);
-				shapes.rasterizeRoundedBox(c.box, tile, &tiled);
+				tiled.rasterize(shapes, c.box, tile);
 			}
 
 		if (tiled.hasError())
@@ -484,51 +448,26 @@ bool SoftShapesTest::clampCornerRadiiTest(std::ostream& output)
 
 namespace
 {
-	// Collects coverage per segment.
+	// Coverage of each segment of a ring.
 
-	class SegmentGrid : public SoftShapes::RowSink
+	class SegmentGrid
 	{
 	public:
-		SegmentGrid(const RectI& area, int nSegments) : m_area(area), m_coverage(nSegments, std::vector<int>(area.w * area.h, 0)) {}
+		SegmentGrid(const RectI& area, int nSegments) : m_coverage(area, nSegments) {}
 
-		void row(int y, int nSpans, const SoftShapes::Span* pSpans) override
+		void rasterize(SoftShapes& shapes, const SoftShapes::Ring& ring, const RectI& clip)
 		{
-			int prevEnd = INT_MIN;
-			for (int i = 0; i < nSpans; i++)
-			{
-				const SoftShapes::Span& span = pSpans[i];
-
-				if (span.begin >= span.end || span.begin < prevEnd || span.begin < m_area.x || span.end > m_area.x + m_area.w)
-				{
-					if (m_error.empty())
-						m_error = "Bad span " + std::to_string(span.begin) + "-" + std::to_string(span.end) + " on row " + std::to_string(y);
-					return;
-				}
-				prevEnd = span.end;
-
-				for (int x = span.begin; x < span.end; x++)
-				{
-					int idx = (y - m_area.y) * m_area.w + (x - m_area.x);
-
-					if (span.segment >= 0)
-						m_coverage[span.segment][idx] += SoftShapes::c_fullCoverage;
-					else
-					{
-						const uint16_t* pCov = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * span.nLayers);
-						for (int l = 0; l < span.nLayers; l++)
-							m_coverage[span.pLayerSegments[l]][idx] += pCov[l];
-					}
-				}
-			}
+			m_coverage.collect([&](SoftShapes::RowSink* pSink) { shapes.rasterizeRing(ring, clip, pSink); });
+			if (m_coverage.hasError())
+				m_error = m_coverage.error();
 		}
 
-		int coverage(int segment, int x, int y) const { return m_coverage[segment][(y - m_area.y) * m_area.w + (x - m_area.x)]; }
+		int coverage(int segment, int x, int y) const { return m_coverage.coverage(segment, x, y); }
 
 		std::string		m_error;
 
 	private:
-		RectI			m_area;
-		std::vector<std::vector<int>>	m_coverage;
+		ShapeCoverage	m_coverage;
 	};
 
 	struct RingCase
@@ -655,16 +594,13 @@ bool SoftShapesTest::ringCoverageTest(std::ostream& output)
 		int nSegments = SoftShapes::c_ringFirstSliceSegment + (int)c.slices.size();
 
 		SegmentGrid grid(area, nSegments);
-		shapes.rasterizeRing(makeRing(c, sizes), area, &grid);
+		grid.rasterize(shapes, makeRing(c, sizes), area);
 
 		if (!grid.m_error.empty())
 		{
 			output << c.name << ": " << grid.m_error << std::endl;
 			return false;
 		}
-
-		double cx = (c.rect.x + c.rect.w / 2) / 64.0;
-		double cy = (c.rect.y + c.rect.h / 2) / 64.0;
 
 		double worst = 0;
 		int worstX = 0, worstY = 0, worstSegment = 0;
@@ -704,13 +640,9 @@ bool SoftShapesTest::ringCoverageTest(std::ostream& output)
 							counts[seg]++;
 					}
 
-				bool bNearCenter = std::abs(x + 0.5 - cx) < 2.5 && std::abs(y + 0.5 - cy) < 2.5;
-
 				for (int s = 0; s < nSegments; s++)
 				{
 					double diff = std::abs(grid.coverage(s, x, y) / 4096.0 - counts[s] / double(samples * samples));
-					if (bNearCenter)
-						diff /= 2;									// Sampled 4x4, twice the tolerance.
 
 					if (diff > worst)
 					{
@@ -726,7 +658,7 @@ bool SoftShapesTest::ringCoverageTest(std::ostream& output)
 		if (std::getenv("WG_VERBOSE_TESTS"))
 			std::cout << "      " << c.name << ": worst difference " << worst << " (segment " << worstSegment << " of pixel " << worstX << "," << worstY << ")" << std::endl;
 
-		if (worst > 0.12)
+		if (worst > 0.08)
 		{
 			output << c.name << ": segment " << worstSegment << " of pixel " << worstX << "," << worstY << " is " << grid.coverage(worstSegment, worstX, worstY) / 4096.0
 				   << ", differs by " << worst << " from reference." << std::endl;
@@ -750,13 +682,13 @@ bool SoftShapesTest::ringClipTest(std::ostream& output)
 		int nSegments = SoftShapes::c_ringFirstSliceSegment + (int)c.slices.size();
 
 		SegmentGrid whole(area, nSegments);
-		shapes.rasterizeRing(makeRing(c, sizes), area, &whole);
+		whole.rasterize(shapes, makeRing(c, sizes), area);
 
 		SegmentGrid tiled(area, nSegments);
 
 		for (int ty = area.y; ty < area.y + area.h; ty += 5)
 			for (int tx = area.x; tx < area.x + area.w; tx += 7)
-				shapes.rasterizeRing(makeRing(c, sizes), RectI::overlap(RectI(tx, ty, 7, 5), area), &tiled);
+				tiled.rasterize(shapes, makeRing(c, sizes), RectI::overlap(RectI(tx, ty, 7, 5), area));
 
 		for (int y = area.y; y < area.y + area.h; y++)
 			for (int x = area.x; x < area.x + area.w; x++)
@@ -788,13 +720,13 @@ bool SoftShapesTest::ringWithoutBackTest(std::ostream& output)
 		int nSegments = SoftShapes::c_ringFirstSliceSegment + (int)c.slices.size();
 
 		SegmentGrid withBack(area, nSegments);
-		shapes.rasterizeRing(makeRing(c, sizes), area, &withBack);
+		withBack.rasterize(shapes, makeRing(c, sizes), area);
 
 		SoftShapes::Ring ring = makeRing(c, sizes);
 		ring.bBack = false;
 
 		SegmentGrid withoutBack(area, nSegments);
-		shapes.rasterizeRing(ring, area, &withoutBack);
+		withoutBack.rasterize(shapes, ring, area);
 
 		double sliceSum = 0;
 		for (double size : c.slices)

@@ -1,4 +1,5 @@
 #include "shaperender.h"
+#include "shapecoverage.h"
 
 #include <wondergui.h>
 #include <wg_gfxdevice_gen2.h>
@@ -90,33 +91,10 @@ namespace
 		return GfxDeviceGen2::create(pBackend);
 	}
 
-	//____ Coverage ___________________________________________________________
+	//____ Coverage _________________________________________________________
 
-	class Coverage : public SoftShapes::RowSink
+	struct Coverage
 	{
-	public:
-		Coverage() : fill(c_canvasSize.w * c_canvasSize.h, 0), outline(c_canvasSize.w * c_canvasSize.h, 0) {}
-
-		void row(int y, int nSpans, const SoftShapes::Span* pSpans) override
-		{
-			for (int i = 0; i < nSpans; i++)
-			{
-				auto& span = pSpans[i];
-				for (int x = span.begin; x < span.end; x++)
-				{
-					int idx = y * c_canvasSize.w + x;
-					if (span.segment >= 0)
-						(span.segment == 0 ? fill : outline)[idx] = 4096;
-					else
-					{
-						const uint16_t* p = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * span.nLayers);
-						for (int l = 0; l < span.nLayers; l++)
-							(span.pLayerSegments[l] == 0 ? fill : outline)[idx] += p[l];
-					}
-				}
-			}
-		}
-
 		std::vector<int>	fill;
 		std::vector<int>	outline;
 	};
@@ -129,9 +107,23 @@ namespace
 			box.radius[i] = spec.radius[i];
 		box.outline = spec.outline;
 
-		Coverage cov;
+		RectI area(0, 0, c_canvasSize.w, c_canvasSize.h);
+
+		ShapeCoverage grid(area, 2);
 		SoftShapes shapes;
-		shapes.rasterizeRoundedBox(box, RectI(0, 0, c_canvasSize.w, c_canvasSize.h), &cov);
+		grid.collect([&](SoftShapes::RowSink* pSink) { shapes.rasterizeRoundedBox(box, area, pSink); });
+
+		Coverage cov;
+		cov.fill.resize(area.w * area.h);
+		cov.outline.resize(area.w * area.h);
+
+		for (int y = 0; y < area.h; y++)
+			for (int x = 0; x < area.w; x++)
+			{
+				cov.fill[y * area.w + x] = grid.coverage(0, x, y);
+				cov.outline[y * area.w + x] = grid.coverage(1, x, y);
+			}
+
 		return cov;
 	}
 
@@ -779,37 +771,6 @@ bool ShapeRenderTest::boxSkinTest(std::ostream& output)
 //____ ringTest() _____________________________________________________________
 // Ring with slices, outline, hub and back, against coverage from SoftShapes.
 
-namespace
-{
-	class SegmentCoverage : public SoftShapes::RowSink
-	{
-	public:
-		SegmentCoverage(int nSegments) : coverage(nSegments, std::vector<int>(c_canvasSize.w * c_canvasSize.h, 0)) {}
-
-		void row(int y, int nSpans, const SoftShapes::Span* pSpans) override
-		{
-			for (int i = 0; i < nSpans; i++)
-			{
-				auto& span = pSpans[i];
-				for (int x = span.begin; x < span.end; x++)
-				{
-					int idx = y * c_canvasSize.w + x;
-					if (span.segment >= 0)
-						coverage[span.segment][idx] += 4096;
-					else
-					{
-						const uint16_t* p = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * span.nLayers);
-						for (int l = 0; l < span.nLayers; l++)
-							coverage[span.pLayerSegments[l]][idx] += p[l];
-					}
-				}
-			}
-		}
-
-		std::vector<std::vector<int>>	coverage;
-	};
-}
-
 bool ShapeRenderTest::ringTest(std::ostream& output)
 {
 	RingSlice slices[5] = { { 0.1f, HiColor(4096, 0, 0, 4096) }, { 0.25f, HiColor(0, 4096, 0, 4096) },
@@ -840,9 +801,11 @@ bool ShapeRenderTest::ringTest(std::ostream& output)
 	shape.nSlices = 5;
 	shape.pSliceSizes = sizes;
 
-	SegmentCoverage cov(SoftShapes::c_ringFirstSliceSegment + 5);
+	RectI area(0, 0, c_canvasSize.w, c_canvasSize.h);
+
+	ShapeCoverage cov(area, SoftShapes::c_ringFirstSliceSegment + 5);
 	SoftShapes shapes;
-	shapes.rasterizeRing(shape, RectI(0, 0, c_canvasSize.w, c_canvasSize.h), &cov);
+	cov.collect([&](SoftShapes::RowSink* pSink) { shapes.rasterizeRing(shape, area, pSink); });
 
 	// Render
 
@@ -875,7 +838,7 @@ bool ShapeRenderTest::ringTest(std::ostream& output)
 
 		for (int s = 0; s < 8; s++)
 		{
-			int c = cov.coverage[s][idx];
+			int c = cov.coverage(s, x, y);
 			total += c;
 			sum.b += colors[s].b * c;
 			sum.g += colors[s].g * c;
@@ -974,7 +937,7 @@ bool ShapeRenderTest::elipseTest(std::ostream& output)
 	const HiColor fill = HiColor(0, 0, 4096, 4096);
 	const HiColor outline = HiColor(4096, 0, 0, 4096);
 
-	struct Case { const char* name; spx thickness; spx outline; HiColor center; HiColor at9; HiColor at17; };
+	struct Case { const char* name; spx thickness; spx outline; HiColor center; HiColor at9; HiColor at16; };
 
 	const Case cases[] = {
 		{ "ring", 64 * 4, 64 * 2, c_background, c_background, fill },			// Edges at 20, 18, 14, 12.
@@ -1000,7 +963,7 @@ bool ShapeRenderTest::elipseTest(std::ostream& output)
 		auto pixels = canvas.read();
 
 		struct Probe { int x, y; HiColor color; const char* where; };
-		const Probe probes[] = { { 24, 24, c.center, "center" }, { 24 + 9, 24, c.at9, "9 pixels from center" }, { 24, 24 - 17 - 1, c.at17, "17 pixels from center" } };
+		const Probe probes[] = { { 24, 24, c.center, "center" }, { 24 + 9, 24, c.at9, "9 pixels from center" }, { 24, 24 - 16 - 1, c.at16, "16 pixels from center" } };
 
 		for (auto& p : probes)
 		{

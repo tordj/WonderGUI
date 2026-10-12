@@ -38,31 +38,31 @@ namespace wg
 	 * Shapes are made of segments (fill, outline, slices...) that are drawn in one
 	 * go, so that segments sharing an edge never let the background shine through.
 	 *
-	 * Each row is delivered to a RowSink as spans of pixels:
-	 *
-	 *	- Runs of pixels fully covered by one segment. Most of a shape, drawn with
-	 *	  the fill kernels.
-	 *	- Spans of partly covered pixels, with coverage per layer for each pixel. Only
-	 *	  along edges, drawn with the coverage kernels. Layers map to segments.
+	 * Each pixel row is delivered to a RowSink as runs of pixels fully covered by one
+	 * segment, drawn with the fill kernels, and runs of partly covered pixels along the
+	 * edges, with the colors of the segments covering them already mixed, drawn with the
+	 * coverage kernels.
 	 *
 	 * Coverage is 0 -> 4096. Shapes are placed with subpixel (spx) precision.
 	 *
 	 * Coverage model:
 	 *
-	 *	- Straight, axis-aligned edges give the exact area of the pixel covered.
-	 *	- Circular edges use the signed distance d from the pixel center to the edge,
-	 *	  coverage = clamp(0.5 + d, 0, 1). The distance is approximated without square
-	 *	  roots, from d' = (r^2 - |p - c|^2) / 2r, which is stepped from pixel to pixel
-	 *	  with additions only, and refined as d = d' + d'^2 / 2r for radii of 2 pixels
-	 *	  and more, which is within 1/64 pixel of the true distance at a radius of
-	 *	  2 pixels and better for larger radii.
-	 *	- Nested shapes split their coverage between segments, e.g. fill = inner and
-	 *	  outline = outer - inner, so coverage of neighboring segments always adds up
-	 *	  to exactly the coverage of the shape.
+	 *	- A pixel row is split into sub-rows where edges begin or end, like the top of
+	 *	  a circle or the end of a slice boundary at the ring.
+	 *	- Within a sub-row, edges cross it from top to bottom in order along the row,
+	 *	  without crossing each other. Each is a polyline, split where it bends more
+	 *	  than 1/64 pixel from a straight line or kinks. Circles become chords between
+	 *	  points on the circle.
+	 *	- The coverage of a pixel by what lies right of an edge is the exact area of
+	 *	  the pixel on that side, so axis-aligned edges and slice boundaries are exact
+	 *	  and circles are within 1/64 pixel.
+	 *	- The segment between two edges gets the coverage right of the first minus that
+	 *	  right of the second, so segments always add up to exactly the coverage of the
+	 *	  shape. Sub-rows are weighted by their height and rounded cumulatively.
 	 *
-	 * Everything is integer math, so that it runs well on CPUs without FPU, and without
-	 * divisions per pixel or row except for the pixels of the three rows through the
-	 * center of a ring with slices, which need the angles of their corners.
+	 * Everything is integer math, so that it runs well on CPUs without FPU. Divisions
+	 * are few: one for each piece of an edge spanning more than 16 pixels along a row,
+	 * none per pixel.
 	 */
 
 	class SoftShapes
@@ -71,17 +71,45 @@ namespace wg
 
 		static constexpr int c_fullCoverage = 4096;
 
-		//____ Span ___________________________________________________________
+		//____ CoveragePixel ___________________________________________________
+		/**
+		 * A pixel only partly covered by a shape, for coverage kernels.
+		 *
+		 * Partly covered pixels are blended with the blend mode as if fully covered and
+		 * the result is then mixed with the original pixel by the coverage, so that edges
+		 * are blended against the background whatever the blend mode:
+		 *
+		 *   out = dst * (1 - coverage) + blend(src, dst) * coverage
+		 *
+		 * Several segments of a shape can share a pixel, so the color is a sum of the
+		 * colors of the segments, each weighted by its coverage. That is exact, except
+		 * for blend modes that saturate or select (Add, Subtract, Min, Max) when segments
+		 * share a pixel. The colors of the segments are given by RowSink::segmentColors(),
+		 * which decides how they are weighted, for example premultiplied by alpha:
+		 *
+		 *   b,g,r,a = sum( coverage * color )
+		 *   coverage = sum( coverage )
+		 *
+		 * All values are linear, 0 -> 4096.
+		 */
 
-		struct Span
+		struct CoveragePixel
 		{
-			int				begin;			// First pixel column.
-			int				end;			// Column after the last pixel.
-			int				segment;		// Pixels fully covered by this segment, or -1 for partly covered pixels.
-			bool			bUniform;		// Partly covered pixels that all have the coverage of the first pixel.
-			const uint16_t*	pCoverage;		// Partly covered pixels: coverage of each layer, for each pixel (just one if bUniform).
-			int				nLayers;		// Partly covered pixels: number of coverage values per pixel.
-			const int*		pLayerSegments;	// Partly covered pixels: segment of each layer.
+			int16_t		b;
+			int16_t		g;
+			int16_t		r;
+			int16_t		a;
+			int16_t		coverage;
+			int16_t		padding;
+		};
+
+		//____ Run ____________________________________________________________
+
+		struct Run
+		{
+			int			begin;			// First pixel column.
+			int			end;			// Column after the last pixel.
+			int			segment;		// Segment fully covering the pixels, or -1 for partly covered pixels.
 		};
 
 		//____ RowSink ________________________________________________________
@@ -90,21 +118,30 @@ namespace wg
 		{
 		public:
 			/**
-			 * Receives the spans of one row, in increasing order, not overlapping and
-			 * within the clip rectangle. Pixels in no span are not covered at all.
-			 * Partly covered pixels have nLayers coverage values each, layer i belonging
-			 * to segment pLayerSegments[i]. Several layers can belong to the same segment.
+			 * Colors of a segment for mixing partly covered pixels, see CoveragePixel: b, g, r
+			 * and a for each pixel of row y from column begin to end, or the same for all pixels
+			 * and rows if bFlat is set, in which case only the first four values are read.
+			 * Returns null if the segment isn't drawn, which must not change from row to row.
+			 * The colors are only read before the next call for the same segment.
 			 */
-			virtual void	row(int y, int nSpans, const Span* pSpans) = 0;
+			virtual const int16_t*	segmentColors(int segment, int y, int begin, int end, bool& bFlat) = 0;
 
 			/**
-			 * Receives spans that are the same for rows yBeg up to yEnd, like the straight
-			 * sides of a box. Handled one row at a time unless overridden.
+			 * Receives the runs of one row, in increasing order, not overlapping and within
+			 * the clip rectangle. Pixels in no run are not covered by any drawn segment.
+			 * Partly covered pixels are in pPixels, one after another for all runs of them.
 			 */
-			virtual void	rows(int yBeg, int yEnd, int nSpans, const Span* pSpans)
+			virtual void	row(int y, int nRuns, const Run* pRuns, const CoveragePixel* pPixels) = 0;
+
+			/**
+			 * Receives runs that are the same for rows yBeg up to yEnd, like the straight
+			 * sides of a box. Only given when all segments are flat. Handled one row at a
+			 * time unless overridden.
+			 */
+			virtual void	rows(int yBeg, int yEnd, int nRuns, const Run* pRuns, const CoveragePixel* pPixels)
 			{
 				for (int y = yBeg; y < yEnd; y++)
-					row(y, nSpans, pSpans);
+					row(y, nRuns, pRuns, pPixels);
 			}
 		};
 
@@ -155,69 +192,89 @@ namespace wg
 		 *
 		 * The circle is the largest centered in rect, or rect itself if bSquare. Slices are
 		 * split along straight lines from the center, so neighboring slices always add up
-		 * to the coverage of the ring. Pixels around the center, where many slices may meet,
-		 * are supersampled.
+		 * to the coverage of the ring.
 		 */
 
 		void	rasterizeRing(const Ring& ring, const RectI& clip, RowSink* pSink);
 
+		static constexpr int	c_maxSagitta = 1;		// Most a chord may stray from its circle, spx.
+		static constexpr int	c_maxVertices = 64;		// Most vertices of an edge in a sub-row, below 64 spx high.
+
 	protected:
 
-		// Coverage of a pixel row by one shape, as pieces in increasing order. Gaps have no coverage.
+		// Edge of a shape crossing a sub-row, as given by the shape.
+
+		struct EdgeDef
+		{
+			int			id;					// Which of the edges of the shape, see EdgeShape.
+			int			segment;			// Segment right of the edge, -1 for none.
+			bool		bClamped;			// Straight edge kept between its neighbors where rounding makes them cross.
+			bool		bShapeSplit;		// Shape decides where to split edge, otherwise junction and limit do.
+			int64_t		junction[2];		// Where the edge changes, as from a corner to a side, INT64_MIN or INT64_MAX if not.
+			int64_t		limit[3];			// Most squared length of chord before, between and after junctions, 0 for straight.
+		};
+
+		// Straight piece of an edge, part of a polyline from the top to the bottom of a sub-row.
 
 		struct Piece
 		{
-			int				begin;
-			int				end;
-			int				value;			// Coverage of all pixels, if pValues is null.
-			const uint16_t*	pValues;		// Coverage of each pixel, starting with pixel 'begin'.
+			int64_t		lo, hi;				// Range of x, spx.
+			int64_t		inv;				// 2^37 / (hi - lo), if hi > lo and the piece is within the clip rectangle.
+			int			h;					// Height, spx.
+			int			bandBeg, bandEnd;	// Pixels partly right of the piece, clamped to the clip rectangle +/- 1.
 		};
 
-		static const int	c_maxPieces = 8;
-
-		// Steps along a quarter circle, keeping the approximated distance d' of the pixel center
-		// from the edge. 32.32 fixed point pixels.
-
-		struct Arc
+		struct Edge
 		{
-			bool		bActive = false;
-			bool		bLeft;				// On the left side of the shape, coverage increases with x.
-			bool		bInitialized;
-			bool		bRefine;			// Refine d' to d.
-
-			spx			cx, cy, r;			// Center and radius of the circle.
-
-			int			colBeg, colEnd;		// Columns and rows of pixels whose coverage this corner gives.
-			int			rowBeg, rowEnd;
-
-			int			col, row;			// Pixel at which d is kept.
-			int64_t		d;					// d' of pixel.
-			int64_t		dx;					// d' of pixel to the right minus d'.
-			int64_t		dy;					// d' of pixel below minus d'.
-			int64_t		step;				// Change of dx (and dy) from one pixel to the next.
-			int64_t		lo;					// Pixels with d' at or below lo are not covered.
-			int64_t		hi;					// Pixels with d' at or above hi are fully covered.
-			int			invRadius;			// 1/r, 12 binals.
+			int			segment;
+			int			first, n;			// Pieces.
+			int			bandBeg, bandEnd;	// Pixels partly right of the edge.
 		};
 
-		struct Shape
+		struct SubRow
 		{
-			bool		bEmpty;
-			spx			left, top, right, bottom;
-			int			topRow, bottomRow;		// First and last row touched.
-			int			plainBeg, plainEnd;		// Rows fully covered top to bottom and not reached by corners.
-			Arc			arcs[4];				// Top-left, top-right, bottom-right, bottom-left.
+			int			h;					// Height, spx.
+			int			first, n;			// Edges.
+			int			next;				// Next edge not passed while sweeping...
+			int			segment;			// ...and the segment before it.
 		};
 
-		void	_setupShape(Shape& shape, const RectSPX& rect, const spx radius[4]);
-		static inline int	_rowKind(const Shape& shape, int row);
-		void	_initArc(Arc& arc, int row);
-		int		_arcRow(Arc& arc, int row, int clipBeg, int clipEnd, int& bandBeg, int& bandEnd, uint16_t* pOutput);
-		int		_shapeRow(Shape& shape, int row, int clipBeg, int clipEnd, Piece* pPieces, uint16_t*& pBuffer);
-		int		_crossedShapeRow(Shape& shape, int row, int oy, int leftArc, int rightArc, int clipBeg, int clipEnd, Piece* pPieces, uint16_t*& pBuffer);
-		static int	_sampleShapePixel(const Shape& shape, int col, int row);
+		struct MixSource
+		{
+			const int16_t*	p;				// Colors of segment from RowSink::segmentColors(), null if not drawn.
+			int				stride;			// 0 if flat, otherwise 4, refetched each row.
+			int				row;
+		};
 
-		static inline int	_arcCoverage(const Arc& arc, int64_t d);
+		class EdgeShape;
+		class RingShape;
+		class BoxShape;
+
+		template<class Shape>
+		void	_rasterize(Shape& shape, int nSegments, int rowBeg, int rowEnd, int clipBeg, int clipEnd, RowSink* pSink);
+
+		template<class Shape>
+		int		_subRowEdges(Shape& shape, int64_t ya, int64_t yb, Edge* pEdges);
+		void	_simpleRow(const Edge* pEdges, int nEdges, int h);
+		void	_generalRow(int nSubRows);
+		void	_emitAccumulated(int beg, int end);
+
+		template<class Shape>
+		inline int64_t			_edgeX(Shape& shape, const EdgeDef& edge, int64_t y);
+
+		template<class Shape>
+		inline bool				_split(Shape& shape, const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y);
+		inline int				_edgeArea(const Edge& edge, int pixel) const;
+		inline int				_rightOfEdge(const Edge& edge, int pixel, int h) const;
+
+		static inline int64_t	_area(const Piece& piece, int64_t x);
+		static inline int		_rightOf(const Piece& piece, int pixel);
+
+		inline const int16_t*	_mixColor(int segment, int x);
+		inline void				_fillRun(int beg, int end, int segment);
+		inline CoveragePixel&	_mixedPixel(int x);
+		inline void				_mixedRun(int beg, int end, const CoveragePixel& pixel);
+		inline void				_accumulate(int segment, int value);
 
 		// Ring
 
@@ -225,77 +282,62 @@ namespace wg
 		{
 			uint32_t	angle;				// Clockwise from 12 o'clock, 2^32 is a full turn.
 			int32_t		sx, sy;				// Direction from center, 2.30 fixed point, y pointing down.
-			bool		bFlat;				// Too close to horizontal to cross any row but those around the center.
+			bool		bFlat;				// Too close to horizontal to cross any row but the ones at the center.
 			int64_t		slopeInt;			// sx / sy, integer part (rounded down)...
 			uint32_t	slopeFrac;			// ...and 32 binals.
-			int64_t		halfBand;			// Half width (spx) of partly covered pixels along a row.
 			int			element;			// Element (slice or gap) starting here.
 			int			prevElement;		// Element ending here.
 		};
 
-		struct ActiveBoundary
+		struct Ray							// Boundary between elements, as crossing rows above or below the center.
 		{
-			int			boundary;
-			int64_t		x;					// Crossing of row, spx (rounded down)...
-			uint32_t	xFrac;				// ...and 32 binals.
-			int			bandBeg;			// Columns of partly covered pixels.
-			int			bandEnd;
-		};
-
-		struct BandGroup					// Overlapping bands of crossings.
-		{
-			int			beg, end;
-			int			first, last;
-		};
-
-		struct AngularPiece
-		{
-			int			begin;
-			int			end;
-			int			element;			// Element of all pixels, or -1 if per pixel.
-			int			firstActive;		// Per pixel: first of the active boundaries (in order along x)...
-			int			nActive;			// ...and their number.
-			bool		bSampled;			// Per pixel: sample each pixel (around center).
-		};
-
-		struct RadialValues
-		{
-			int			back, outline, hub, ring;
+			int64_t		yOuter;				// Where the ray leaves the area of the slices...
+			int64_t		yInner;				// ...and enters the hole, or the center.
+			int64_t		slopeInt;
+			uint32_t	slopeFrac;
+			int			segment;			// Segment right of the ray along a row.
+			bool		bLeft;				// Left of the center.
 		};
 
 		void	_setupRingAngles(const Ring& ring);
 		int		_elementAt(int64_t x, int64_t y) const;
-		int		_angularRow(int64_t rowCenterY, int clipBeg, int clipEnd);
-		int		_pixelBoundaries(int32_t dx, int32_t dy, int& first) const;
-		void	_samplePixel(int32_t dx, int32_t dy, int* pElements, int* pFractions, int& nElements) const;
-
-		static inline int	_pastShare(const Boundary& b, int32_t dx, int32_t dy);
 
 		static inline bool	_isBefore(int64_t ax, int64_t ay, int64_t bx, int64_t by);
 		static int32_t	_sin30(uint32_t angle);
 
-		int64_t						m_cx, m_cy;			// Center of ring, spx.
 		std::vector<Boundary>		m_boundaries;		// Sorted by angle.
 		std::vector<int>			m_elementSegments;	// Segment of each element.
-		std::vector<ActiveBoundary>	m_crossings[2];		// Boundaries crossing rows above and below center, in order along x.
-		int64_t						m_crossingsRowY[2];	// Row center the crossings are for, or INT64_MIN.
-		const ActiveBoundary*		m_pActive = nullptr;	// Crossings of the row of the angular pieces.
-		std::vector<AngularPiece>	m_angularPieces;
-		int							m_nAngularPieces = 0;
-		std::vector<BandGroup>		m_groups;
-		std::vector<int64_t>		m_bandDistances;	// Distances of a pixel from boundaries crossing its row.
-		std::vector<int64_t>		m_bandSteps;		// Change of distance from one pixel to the next.
-		std::vector<int>			m_pixelLayers;		// Layers of one pixel around the center.
-		std::vector<uint16_t>		m_pixelCoverage;
-		std::vector<int>			m_layerBuffer;
-		std::vector<uint16_t>		m_ringOutput;
-		std::vector<int>			m_spanLayerOfs;
-		std::vector<int>			m_spanCoverageOfs;
 		std::vector<uint64_t>		m_elementStarts;
+		std::vector<int>			m_crossings[2];		// Boundaries crossing rows above and below center, in order along x.
+		std::vector<Ray>			m_rays[2];			// The same as rays.
 
-		std::vector<uint16_t>	m_coverageBuffer;
-		std::vector<uint16_t>	m_outputBuffer;
-		std::vector<Span>		m_spans;
+		// Rasterization
+
+		std::vector<int64_t>		m_splits;			// Where sub-rows begin and end, sorted.
+		std::vector<SubRow>			m_subRows;
+		std::vector<EdgeDef>		m_edgeDefs;
+		std::vector<Edge>			m_edges;
+		std::vector<Piece>			m_pieces;
+		std::vector<int64_t>		m_edgeTop;			// x of each edge of a sub-row at top and bottom.
+		std::vector<int64_t>		m_edgeBottom;
+		std::vector<int64_t>		m_cacheY;			// Last x computed for the bottom of a sub-row, for each edge id.
+		std::vector<int64_t>		m_cacheX;
+		std::vector<MixSource>		m_mix;
+		std::vector<int>			m_accumulated;		// Coverage of each segment in a pixel, weighted by height of sub-rows.
+		std::vector<int>			m_touched;			// Segments with coverage accumulated.
+		std::vector<int>			m_layerSegments;
+		std::vector<int>			m_layerCoverage;
+		std::vector<Run>			m_runs;
+		std::vector<CoveragePixel>	m_pixels;
+
+		RowSink*		m_pSink = nullptr;
+		int				m_clipBeg = 0;
+		int				m_clipEnd = 0;
+		int				m_row = 0;
+		int				m_nRuns = 0;
+		int				m_nPixels = 0;
+		int				m_nTouched = 0;
+		int				m_nPieces = 0;
 	};
 
 }

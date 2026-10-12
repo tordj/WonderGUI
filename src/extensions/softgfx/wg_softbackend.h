@@ -166,39 +166,13 @@ namespace wg
 			ColorsAndTintmaps,
 		};
 
-		/**
-		 * A pixel only partly covered by what is drawn, e.g. along the edge of a shape,
-		 * for coverage kernels.
-		 *
-		 * Partly covered pixels are blended with the blend mode as if fully covered and
-		 * the result is then mixed with the original pixel by the coverage, so that edges
-		 * are blended against the background whatever the blend mode:
-		 *
-		 *   out = dst * (1 - coverage) + blend(src, dst) * coverage
-		 *
-		 * Several segments of a shape can share a pixel, so the color is a sum of the
-		 * colors of the segments, each weighted by its coverage. That is exact, except
-		 * for blend modes that saturate or select (Add, Subtract, Min, Max) when segments
-		 * share a pixel. How colors are weighted depends on the blend mode, see
-		 * isCoverageAlphaWeighted():
-		 *
-		 *   Alpha weighted:  b,g,r = sum( coverage * alpha * color ), a = sum( coverage * alpha )
-		 *   Otherwise:       b,g,r,a = sum( coverage * color )			(color with straight alpha)
-		 *
-		 *   coverage = sum( coverage )
-		 *
-		 * All values are linear, 0 -> 4096.
-		 */
+		// A pixel only partly covered by a shape, for coverage kernels, see SoftShapes::CoveragePixel.
+		// Colors are weighted by alpha for the blend modes of isCoverageAlphaWeighted():
+		//
+		//   Alpha weighted:  b,g,r = sum( coverage * alpha * color ), a = sum( coverage * alpha )
+		//   Otherwise:       b,g,r,a = sum( coverage * color )			(color with straight alpha)
 
-		struct CoveragePixel
-		{
-			int16_t		b;
-			int16_t		g;
-			int16_t		r;
-			int16_t		a;
-			int16_t		coverage;
-			int16_t		padding;
-		};
+		using CoveragePixel = SoftShapes::CoveragePixel;
 
 		// Blend modes where the colors of coverage pixels are weighted by alpha.
 
@@ -331,14 +305,15 @@ namespace wg
 			FillOp_p	pFillOp;				// Fully covered runs, if tint is flat. Device tint applied by kernel.
 			bool		bFillRuns;				// pFillOp draws runs of device tint colors.
 			HiColor		fillColor;				// Color for pFillOp.
-			int16_t		mixB, mixG, mixR, mixA;	// flatColor, premultiplied for alpha weighted blend modes. If bFlat.
+			int16_t		mix[4];					// flatColor as b, g, r, a for coverage pixels, premultiplied for alpha weighted blend modes. If bFlat.
 		};
 
 		class ShapeSink : public SoftShapes::RowSink
 		{
 		public:
-			void	row(int y, int nSpans, const SoftShapes::Span* pSpans) override;
-			void	rows(int yBeg, int yEnd, int nSpans, const SoftShapes::Span* pSpans) override;
+			const int16_t*	segmentColors(int segment, int y, int begin, int end, bool& bFlat) override;
+			void	row(int y, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels) override;
+			void	rows(int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels) override;
 
 			SoftBackend*	pBackend;
 			uint8_t*		pOrigin;
@@ -348,7 +323,7 @@ namespace wg
 		bool	_beginShape(GfxBackend::ShapeKind kind, const uint16_t* pPayload, const HiColor* pColors);
 		void	_setupShapeSegment(ShapeSegment& seg, bool bActive, HiColor color, bool bTint, const uint16_t*& pTintWords, const HiColor*& pTintColors);
 		void	_drawShape(const RectI& clip, uint8_t* pOrigin, int pitch);
-		void	_drawShapeRows(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nSpans, const SoftShapes::Span* pSpans);
+		void	_drawShapeRuns(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels);
 		void	_shapeSegmentColors(int segment, int x, int y, int length, HiColor* pOutput);
 		HiColor* _shapeBuffer(int index, int length);
 
@@ -416,10 +391,9 @@ namespace wg
 		std::vector<ShapeSegment>	m_shapeSegments;
 		BlendMode					m_shapeBlendMode;				// Blend mode for runs of opaque segments.
 		std::vector<HiColor>		m_shapeBuffers[3];
-		std::vector<CoveragePixel>	m_coveragePixels;
+		std::vector<std::vector<int16_t>>	m_shapeMixBuffers;		// Colors of segments that aren't flat, for coverage pixels.
 		std::vector<CoveragePixel>	m_coverageColumn;
 		CoverageOp_p				m_pShapeCoverageOp = nullptr;
-		bool						m_bShapeAllFlat = true;		// All drawn segments of shape are flat.
 
 
 //		PixelBuffer		m_canvasPixelBuffer;

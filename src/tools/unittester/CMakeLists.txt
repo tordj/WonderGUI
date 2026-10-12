@@ -19,6 +19,7 @@ set( SOURCES
 	tests/softshapes.h
 	tests/shaperender.cpp
 	tests/shaperender.h
+	tests/shapecoverage.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})

@@ -28,26 +28,23 @@
 
 namespace wg
 {
-	// Pixel index of spx value, rounded down or up.
+	// Pixel index of spx value, rounded down or up, for values that can be far outside any canvas.
 
-	static inline int floorPixel(int64_t value) { return int(value >> 6); }
-	static inline int ceilPixel(int64_t value) { return int((value + 63) >> 6); }
-
-	// As floorPixel(), for values that can be far outside any canvas.
-
-	static inline int floorPixelClamped(int64_t value)
+	static inline int floorPixel(int64_t value)
 	{
 		int64_t pixel = value >> 6;
 		return int(pixel < -0x40000000 ? -0x40000000 : pixel > 0x40000000 ? 0x40000000 : pixel);
 	}
 
-	static const int64_t c_one = int64_t(1) << 32;			// 1.0 in 32.32 fixed point.
+	static inline int ceilPixel(int64_t value) { return floorPixel(value + 63); }
 
-	//____ Sine table _________________________________________________________
-	// sin(i/1024 * pi/2) in 2.30 fixed point, generated at compile time.
+	static const int64_t c_one = int64_t(1) << 32;			// 1.0 in 32.32 fixed point.
 
 	namespace
 	{
+		//____ Sine table _____________________________________________________
+		// sin(i/1024 * pi/2) in 2.30 fixed point, generated at compile time.
+
 		constexpr double constexprSin(double x)
 		{
 			double term = x, sum = x;
@@ -74,7 +71,1361 @@ namespace wg
 		};
 
 		constexpr SinTable c_sinTable;
+
+		//____ Reciprocal table _______________________________________________
+		// 2^37 / n for edges spanning up to 16 pixels along a row, to avoid divisions.
+
+		struct RecipTable
+		{
+			int64_t v[1024];
+
+			constexpr RecipTable() : v{}
+			{
+				for (int i = 1; i < 1024; i++)
+					v[i] = (int64_t(1) << 37) / i;
+			}
+		};
+
+		constexpr RecipTable c_recipTable;
+
+		inline int64_t recip37(int64_t n)
+		{
+			return n < 1024 ? c_recipTable.v[n] : (int64_t(1) << 37) / n;
+		}
+
+		//____ isqrt() ________________________________________________________
+		// Square root rounded to nearest, digit by digit.
+
+		inline int64_t isqrt(uint64_t value)
+		{
+			if (value == 0)
+				return 0;
+
+#if defined(__GNUC__) || defined(__clang__)
+			int topBit = 63 - __builtin_clzll(value);
+#else
+			int topBit = 0;
+			for (int step = 32; step > 0; step >>= 1)
+				if ((value >> (topBit + step)) != 0)
+					topBit += step;
+#endif
+
+			uint64_t root = 0;
+			uint64_t bit = uint64_t(1) << (topBit & ~1);
+
+			while (bit != 0)
+			{
+				if (value >= root + bit)
+				{
+					value -= root + bit;
+					root = (root >> 1) + bit;
+				}
+				else
+					root >>= 1;
+
+				bit >>= 2;
+			}
+
+			return int64_t(root + (value > root ? 1 : 0));
+		}
+
+		//____ mulFrac() ______________________________________________________
+		// value * frac / 2^32, without overflow for values up to 2^47.
+
+		inline int64_t mulFrac(int64_t value, uint32_t frac)
+		{
+			return ((value * int64_t(frac >> 16)) >> 16) + ((value * int64_t(frac & 0xFFFF)) >> 32);
+		}
+
+		const int16_t c_noColor[4] = { 0, 0, 0, 0 };
 	}
+
+	//____ EdgeShape __________________________________________________________
+	/*
+		A shape as edges crossing sub-rows, given by the shape to the rasterizer. Shapes
+		derive from it and provide:
+
+		int		edges(int64_t ya, int64_t yb, EdgeDef* pEdges) const
+
+			Edges crossing the sub-row from ya to yb, in order along x. Returns their number.
+
+		int64_t	x(const EdgeDef& edge, int64_t y)
+
+			x of an edge at y. Edges must not cross, except clamped edges by rounding. Each
+			edge has an id, the same wherever it is, so x can be reused from the bottom of
+			one sub-row for the top of the next.
+
+		bool	split(const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y)
+
+			Tells if the edge from (ya, xa) to (yb, xb) needs to be split into a polyline,
+			where it bends or kinks, and at which y strictly between ya and yb.
+
+		int		uniformEnd(int row) const
+
+			Row after the rows from row on that are the same as row.
+	*/
+
+	class SoftShapes::EdgeShape
+	{
+	public:
+		const int64_t*	pSplits = nullptr;		// Where sub-rows must begin and end, sorted.
+		int				nSplits = 0;
+		int				maxEdges = 0;			// Most edges in a sub-row.
+		int				nIds = 0;				// Ids of edges are 0 up to nIds.
+	};
+
+	//____ splitPoint() _______________________________________________________
+	/*
+		Point strictly between a and b, which are at least 2 apart, where the most low
+		bits are zero. It is near the middle and, unlike the middle rounded down, where
+		the mirror image of the interval would be split, so that symmetric shapes stay
+		symmetric.
+	*/
+
+	static inline int64_t splitPoint(int64_t a, int64_t b)
+	{
+		int bits = 0;
+		while ((int64_t(2) << bits) <= b - a)
+			bits++;
+
+		int64_t mid = ((a >> bits) + 1) << bits;
+		while (mid >= b)
+		{
+			bits--;
+			mid = ((a >> bits) + 1) << bits;
+		}
+
+		return mid;
+	}
+
+	//____ _area() ____________________________________________________________
+	/*
+		Area right of a piece in a sub-row as high as the piece, left of x, 64 for each
+		spx along x right of the piece. A pixel gets _area(right side) - _area(left side),
+		which is 4096 if fully right of the piece.
+
+		The part of a vertical line at x right of the piece grows linearly from lo to hi,
+		so the area is quadratic between them.
+	*/
+
+	inline int64_t SoftShapes::_area(const Piece& piece, int64_t x)
+	{
+		if (x <= piece.lo)
+			return 0;
+
+		if (x >= piece.hi)
+			return (piece.hi - piece.lo) * 32 + (x - piece.hi) * 64;
+
+		int64_t d = x - piece.lo;
+		return (d * ((d * piece.inv) >> 5)) >> 27;			// d^2 * 32 / (hi - lo)
+	}
+
+	inline int SoftShapes::_rightOf(const Piece& piece, int pixel)
+	{
+		if (pixel < piece.bandBeg)
+			return 0;
+
+		if (pixel >= piece.bandEnd)
+			return c_fullCoverage;
+
+		int64_t x = int64_t(pixel) * 64;
+		return int(_area(piece, x + 64) - _area(piece, x));
+	}
+
+	//____ _edgeArea() ________________________________________________________
+	// Area of pixel right of edge, 4096 for each spx of height of the sub-row.
+
+	inline int SoftShapes::_edgeArea(const Edge& edge, int pixel) const
+	{
+		const Piece* pPiece = m_pieces.data() + edge.first;
+
+		int area = 0;
+		for (int i = 0; i < edge.n; i++)
+			area += pPiece[i].h * _rightOf(pPiece[i], pixel);
+
+		return area;
+	}
+
+	//____ _edgeX() ___________________________________________________________
+
+	template<class Shape>
+	inline int64_t SoftShapes::_edgeX(Shape& shape, const EdgeDef& edge, int64_t y)
+	{
+		if (m_cacheY[edge.id] == y)
+			return m_cacheX[edge.id];
+
+		return shape.x(edge, y);
+	}
+
+	//____ _mixColor() ________________________________________________________
+	// Colors of a drawn segment at x on current row, null if not drawn.
+
+	inline const int16_t* SoftShapes::_mixColor(int segment, int x)
+	{
+		MixSource& mix = m_mix[segment];
+
+		if (mix.stride == 0)
+			return mix.p;
+
+		if (mix.row != m_row)
+		{
+			bool bFlat;
+			mix.p = m_pSink->segmentColors(segment, m_row, m_clipBeg, m_clipEnd, bFlat);
+			mix.row = m_row;
+		}
+
+		return mix.p + (x - m_clipBeg) * 4;
+	}
+
+	//____ _fillRun() _________________________________________________________
+
+	inline void SoftShapes::_fillRun(int beg, int end, int segment)
+	{
+		if (!m_mix[segment].p)
+			return;
+
+		if (m_nRuns > 0)
+		{
+			Run& last = m_runs[m_nRuns - 1];
+			if (last.segment == segment && last.end == beg)
+			{
+				last.end = end;
+				return;
+			}
+		}
+
+		m_runs[m_nRuns++] = { beg, end, segment };
+	}
+
+	//____ _mixedPixel() ______________________________________________________
+
+	inline SoftShapes::CoveragePixel& SoftShapes::_mixedPixel(int x)
+	{
+		if (m_nRuns > 0)
+		{
+			Run& last = m_runs[m_nRuns - 1];
+			if (last.segment < 0 && last.end == x)
+			{
+				last.end = x + 1;
+				return m_pixels[m_nPixels++];
+			}
+		}
+
+		m_runs[m_nRuns++] = { x, x + 1, -1 };
+		return m_pixels[m_nPixels++];
+	}
+
+	//____ _mixedRun() ________________________________________________________
+
+	inline void SoftShapes::_mixedRun(int beg, int end, const CoveragePixel& pixel)
+	{
+		Run* pLast = m_nRuns > 0 ? &m_runs[m_nRuns - 1] : nullptr;
+
+		if (pLast && pLast->segment < 0 && pLast->end == beg)
+			pLast->end = end;
+		else
+			m_runs[m_nRuns++] = { beg, end, -1 };
+
+		CoveragePixel* pPixels = m_pixels.data() + m_nPixels;
+		for (int i = 0; i < end - beg; i++)
+			pPixels[i] = pixel;
+
+		m_nPixels += end - beg;
+	}
+
+	//____ _accumulate() ______________________________________________________
+
+	inline void SoftShapes::_accumulate(int segment, int value)
+	{
+		if (segment < 0 || value <= 0)
+			return;
+
+		if (m_accumulated[segment] == 0)
+			m_touched[m_nTouched++] = segment;
+
+		m_accumulated[segment] += value;
+	}
+
+	//____ _rasterize() _______________________________________________________
+	/*
+		Rasterizes a shape into rows rowBeg up to rowEnd, columns clipBeg up to clipEnd.
+	*/
+
+	template<class Shape>
+	void SoftShapes::_rasterize(Shape& shape, int nSegments, int rowBeg, int rowEnd, int clipBeg, int clipEnd, RowSink* pSink)
+	{
+		if (rowBeg >= rowEnd || clipBeg >= clipEnd)
+			return;
+
+		m_pSink = pSink;
+		m_clipBeg = clipBeg;
+		m_clipEnd = clipEnd;
+
+		// Colors of segments. Rows can only be done together if all are flat.
+
+		if ((int)m_mix.size() < nSegments)
+			m_mix.resize(nSegments);
+
+		bool bAnyDrawn = false;
+		bool bAllFlat = true;
+
+		for (int i = 0; i < nSegments; i++)
+		{
+			bool bFlat = true;
+			const int16_t* p = pSink->segmentColors(i, rowBeg, clipBeg, clipEnd, bFlat);
+
+			m_mix[i] = { p, (p && !bFlat) ? 4 : 0, rowBeg };
+
+			if (p)
+			{
+				bAnyDrawn = true;
+				if (!bFlat)
+					bAllFlat = false;
+			}
+		}
+
+		if (!bAnyDrawn)
+			return;
+
+		const int width = clipEnd - clipBeg;
+
+		if ((int)m_runs.size() < width + 1)
+		{
+			m_runs.resize(width + 1);
+			m_pixels.resize(width + 1);
+		}
+
+		if ((int)m_accumulated.size() < nSegments)
+		{
+			m_accumulated.resize(nSegments, 0);
+			m_touched.resize(nSegments);
+			m_layerSegments.resize(nSegments);
+			m_layerCoverage.resize(nSegments);
+		}
+
+		if ((int)m_edgeDefs.size() < shape.maxEdges)
+		{
+			m_edgeDefs.resize(shape.maxEdges);
+			m_edgeTop.resize(shape.maxEdges);
+			m_edgeBottom.resize(shape.maxEdges);
+		}
+
+		m_cacheY.assign(shape.nIds, INT64_MIN);
+		m_cacheX.resize(shape.nIds);
+
+		if (m_pieces.size() < 64)
+			m_pieces.resize(64);
+
+		const int64_t* pSplits = shape.pSplits;
+		const int nSplits = shape.nSplits;
+		int splitIdx = 0;
+
+		for (int row = rowBeg; row < rowEnd; )
+		{
+			const int64_t y0 = int64_t(row) * 64;
+			const int64_t y1 = y0 + 64;
+
+			int rowsEnd = row + 1;
+			if (bAllFlat)
+				rowsEnd = std::max(row + 1, std::min(shape.uniformEnd(row), rowEnd));
+
+			m_row = row;
+
+			// Sub-rows, split where edges begin and end.
+
+			while (splitIdx < nSplits && pSplits[splitIdx] <= y0)
+				splitIdx++;
+
+			int splitEnd = splitIdx;
+			while (splitEnd < nSplits && pSplits[splitEnd] < y1)
+				splitEnd++;
+
+			const int nSubRows = splitEnd - splitIdx + 1;
+
+			if ((int)m_subRows.size() < nSubRows)
+				m_subRows.resize(nSubRows);
+
+			if ((int)m_edges.size() < nSubRows * shape.maxEdges)
+				m_edges.resize(nSubRows * shape.maxEdges);
+
+			m_nPieces = 0;
+			int nEdges = 0;
+
+			for (int k = 0; k < nSubRows; k++)
+			{
+				const int64_t ya = k == 0 ? y0 : pSplits[splitIdx + k - 1];
+				const int64_t yb = k == nSubRows - 1 ? y1 : pSplits[splitIdx + k];
+
+				SubRow& subRow = m_subRows[k];
+				subRow.h = int(yb - ya);
+				subRow.first = nEdges;
+				subRow.n = _subRowEdges(shape, ya, yb, m_edges.data() + nEdges);
+				nEdges += subRow.n;
+			}
+
+			splitIdx = splitEnd;
+
+			// Runs
+
+			m_nRuns = 0;
+			m_nPixels = 0;
+
+			int nFilled = 0;
+			int filled = 0;
+
+			for (int k = 0; k < nSubRows; k++)
+				if (m_subRows[k].n > 0)
+				{
+					nFilled++;
+					filled = k;
+				}
+
+			if (nFilled == 1)
+				_simpleRow(m_edges.data() + m_subRows[filled].first, m_subRows[filled].n, m_subRows[filled].h);
+			else if (nFilled > 0)
+				_generalRow(nSubRows);
+
+			if (m_nRuns > 0)
+			{
+				if (rowsEnd > row + 1)
+					pSink->rows(row, rowsEnd, m_nRuns, m_runs.data(), m_pixels.data());
+				else
+					pSink->row(row, m_nRuns, m_runs.data(), m_pixels.data());
+			}
+
+			row = rowsEnd;
+		}
+	}
+
+	//____ _split() ___________________________________________________________
+	// Tells if an edge must be split between (ya, xa) and (yb, xb), and where.
+
+	template<class Shape>
+	inline bool SoftShapes::_split(Shape& shape, const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y)
+	{
+		if (edge.bShapeSplit)
+			return shape.split(edge, ya, xa, yb, xb, y);
+
+		for (int i = 0; i < 2; i++)
+		{
+			if (edge.junction[i] > ya && edge.junction[i] < yb)
+			{
+				y = edge.junction[i];
+				return true;
+			}
+		}
+
+		const int region = ya >= edge.junction[1] ? 2 : ya >= edge.junction[0] ? 1 : 0;
+		const int64_t limit = edge.limit[region];
+		const int64_t h = yb - ya;
+
+		if (limit == 0 || h <= 4 || (xa - xb) * (xa - xb) + h * h <= limit)
+			return false;
+
+		y = splitPoint(ya, yb);
+		return true;
+	}
+
+	//____ _subRowEdges() _____________________________________________________
+	/*
+		Edges of a sub-row as polylines, from the top to the bottom of the sub-row, split
+		where the shape needs it. Pieces are added to m_pieces.
+	*/
+
+	template<class Shape>
+	int SoftShapes::_subRowEdges(Shape& shape, int64_t ya, int64_t yb, Edge* pEdges)
+	{
+		EdgeDef* pDefs = m_edgeDefs.data();
+		const int nEdges = shape.edges(ya, yb, pDefs);
+
+		int64_t* pTop = m_edgeTop.data();
+		int64_t* pBottom = m_edgeBottom.data();
+
+		for (int i = 0; i < nEdges; i++)
+		{
+			const int id = pDefs[i].id;
+
+			pTop[i] = _edgeX(shape, pDefs[i], ya);
+			pBottom[i] = _edgeX(shape, pDefs[i], yb);
+
+			m_cacheY[id] = yb;
+			m_cacheX[id] = pBottom[i];
+		}
+
+		// Clamped edges between their neighbors.
+
+		for (int i = 1; i < nEdges; i++)
+			if (pDefs[i].bClamped)
+			{
+				pTop[i] = std::max(pTop[i], pTop[i - 1]);
+				pBottom[i] = std::max(pBottom[i], pBottom[i - 1]);
+			}
+
+		for (int i = nEdges - 2; i >= 0; i--)
+			if (pDefs[i].bClamped)
+			{
+				pTop[i] = std::min(pTop[i], pTop[i + 1]);
+				pBottom[i] = std::min(pBottom[i], pBottom[i + 1]);
+			}
+
+		// Polylines
+
+		const int64_t clipBeg64 = int64_t(m_clipBeg) * 64;
+		const int64_t clipEnd64 = int64_t(m_clipEnd) * 64;
+
+		if ((int)m_pieces.size() < m_nPieces + nEdges * c_maxVertices)
+			m_pieces.resize(m_nPieces + nEdges * c_maxVertices + 64);
+
+		Piece* pPieces = m_pieces.data();
+
+		for (int i = 0; i < nEdges; i++)
+		{
+			Edge& edge = pEdges[i];
+			edge.segment = pDefs[i].segment;
+			edge.first = m_nPieces;
+			edge.bandBeg = INT_MAX;
+			edge.bandEnd = INT_MIN;
+
+			// Vertices still to reach, last one first.
+
+			int64_t stackY[c_maxVertices], stackX[c_maxVertices];
+			int nStack = 1;
+			stackY[0] = yb;
+			stackX[0] = pBottom[i];
+
+			int64_t y = ya;
+			int64_t x = pTop[i];
+
+			while (nStack > 0)
+			{
+				const int64_t y2 = stackY[nStack - 1];
+				const int64_t x2 = stackX[nStack - 1];
+
+				int64_t ySplit;
+				if (!pDefs[i].bClamped && nStack < c_maxVertices && y2 - y > 1 && _split(shape, pDefs[i], y, x, y2, x2, ySplit))
+				{
+					stackY[nStack] = ySplit;
+					stackX[nStack++] = shape.x(pDefs[i], ySplit);
+					continue;
+				}
+
+				Piece& piece = pPieces[m_nPieces++];
+
+				const int64_t lo = std::min(x, x2);
+				const int64_t hi = std::max(x, x2);
+
+				piece.lo = lo;
+				piece.hi = hi;
+				piece.h = int(y2 - y);
+				piece.bandBeg = lo < clipBeg64 ? m_clipBeg - 1 : lo >= clipEnd64 ? m_clipEnd + 1 : int(lo >> 6);
+				piece.bandEnd = hi < clipBeg64 ? m_clipBeg - 1 : hi >= clipEnd64 ? m_clipEnd + 1 : int((hi + 63) >> 6);
+				piece.inv = (hi > lo && piece.bandEnd > m_clipBeg && piece.bandBeg < m_clipEnd) ? recip37(hi - lo) : 0;
+
+				edge.bandBeg = std::min(edge.bandBeg, piece.bandBeg);
+				edge.bandEnd = std::max(edge.bandEnd, piece.bandEnd);
+
+				y = y2;
+				x = x2;
+				nStack--;
+
+				if (m_nPieces == (int)m_pieces.size())
+				{
+					m_pieces.resize(m_pieces.size() * 2);
+					pPieces = m_pieces.data();
+				}
+			}
+
+			edge.n = m_nPieces - edge.first;
+		}
+
+		return nEdges;
+	}
+
+	//____ _rightOfEdge() _____________________________________________________
+	// Coverage of pixel right of edge in a sub-row of height h, 64 * h if fully right.
+
+	inline int SoftShapes::_rightOfEdge(const Edge& edge, int pixel, int h) const
+	{
+		if (edge.n == 1)
+		{
+			int right = _rightOf(m_pieces[edge.first], pixel);
+			return h == 64 ? right : (right * h + 32) >> 6;
+		}
+
+		return (_edgeArea(edge, pixel) + 32) >> 6;
+	}
+
+	//____ _simpleRow() _______________________________________________________
+	/*
+		A row where only one sub-row has edges, the common case. Pixels between bands of
+		partly covered pixels are covered by one segment. In a band of one edge, pixels are
+		split between the segments on either side of it, where bands overlap between the
+		segments of all edges reaching the pixel.
+	*/
+
+	void SoftShapes::_simpleRow(const Edge* pEdges, int nEdges, int h)
+	{
+		const int clipBeg = m_clipBeg;
+		const int clipEnd = m_clipEnd;
+		const int full = h * 64;					// Coverage of pixel by the sub-row.
+
+		// Pixels between bands, fully covered if the sub-row is the whole row.
+
+		auto between = [&](int beg, int end, int segment)
+		{
+			if (full == c_fullCoverage)
+				_fillRun(beg, end, segment);
+			else
+			{
+				const int16_t* pColor = _mixColor(segment, beg);
+				if (!pColor)
+					return;
+
+				auto mixed = [&](const int16_t* pColor) -> CoveragePixel
+				{
+					return { int16_t((pColor[0] * full) >> 12), int16_t((pColor[1] * full) >> 12), int16_t((pColor[2] * full) >> 12),
+							 int16_t((pColor[3] * full) >> 12), int16_t(full), 0 };
+				};
+
+				if (m_mix[segment].stride == 0)
+					_mixedRun(beg, end, mixed(pColor));
+				else
+				{
+					for (int p = beg; p < end; p++)
+						_mixedPixel(p) = mixed(_mixColor(segment, p));
+				}
+			}
+		};
+
+		int x = clipBeg;
+		int segLeft = -1;
+
+		for (int k = 0; k < nEdges; )
+		{
+			// Edges with overlapping bands.
+
+			int groupEnd = pEdges[k].bandEnd;
+			int j = k + 1;
+
+			while (j < nEdges && pEdges[j].bandBeg < groupEnd)
+			{
+				groupEnd = std::max(groupEnd, pEdges[j].bandEnd);
+				j++;
+			}
+
+			const int bandBeg = std::max(pEdges[k].bandBeg, clipBeg);
+			const int bandEnd = std::min(groupEnd, clipEnd);
+
+			if (bandBeg > x && x < clipEnd && segLeft >= 0)
+				between(x, std::min(bandBeg, clipEnd), segLeft);
+
+			if (j == k + 1)
+			{
+				// One edge, pixels split between the segments on either side.
+
+				const Edge& edge = pEdges[k];
+				const int segRight = edge.segment;
+				const Piece& piece = m_pieces[edge.first];
+				const bool bStraight = edge.n == 1;
+
+				int64_t prevArea = bStraight ? _area(piece, int64_t(bandBeg) * 64) : 0;
+
+				for (int p = bandBeg; p < bandEnd; p++)
+				{
+					int right;
+
+					if (bStraight)
+					{
+						int64_t area = _area(piece, int64_t(p + 1) * 64);
+						right = int(area - prevArea);
+						prevArea = area;
+
+						if (h != 64)
+							right = (right * h + 32) >> 6;
+					}
+					else
+						right = (_edgeArea(edge, p) + 32) >> 6;
+
+					if (right <= 0)
+					{
+						if (segLeft >= 0)
+							between(p, p + 1, segLeft);
+						continue;
+					}
+
+					if (right >= full)
+					{
+						if (segRight >= 0)
+							between(p, p + 1, segRight);
+						continue;
+					}
+
+					const int16_t* pLeft = segLeft >= 0 ? _mixColor(segLeft, p) : nullptr;
+					const int16_t* pRight = segRight >= 0 ? _mixColor(segRight, p) : nullptr;
+
+					int left = full - right;
+
+					if (!pLeft)
+					{
+						if (!pRight)
+							continue;
+
+						pLeft = c_noColor;
+						left = 0;
+					}
+					else if (!pRight)
+					{
+						pRight = c_noColor;
+						right = 0;
+					}
+
+					CoveragePixel& px = _mixedPixel(p);
+					px.b = int16_t((pLeft[0] * left + pRight[0] * right) >> 12);
+					px.g = int16_t((pLeft[1] * left + pRight[1] * right) >> 12);
+					px.r = int16_t((pLeft[2] * left + pRight[2] * right) >> 12);
+					px.a = int16_t((pLeft[3] * left + pRight[3] * right) >> 12);
+					px.coverage = int16_t(left + right);
+				}
+			}
+			else
+			{
+				// Several edges. Each segment gets the coverage right of the edge before it
+				// minus that right of the edge after it.
+
+				for (int p = bandBeg; p < bandEnd; p++)
+				{
+					int b = 0, g = 0, r = 0, a = 0, c = 0;
+					int whole = -2;							// Segment covering all of pixel, -1 if none.
+
+					int prevRight = full;
+					int segment = segLeft;
+
+					for (int i = k; i <= j; i++)
+					{
+						int right = i < j ? std::min(std::max(_rightOfEdge(pEdges[i], p, h), 0), prevRight) : 0;
+						int coverage = prevRight - right;
+
+						if (coverage > 0 && segment >= 0)
+						{
+							if (coverage == full)
+								whole = segment;
+							else if (const int16_t* pColor = _mixColor(segment, p))
+							{
+								b += pColor[0] * coverage;
+								g += pColor[1] * coverage;
+								r += pColor[2] * coverage;
+								a += pColor[3] * coverage;
+								c += coverage;
+							}
+						}
+						else if (coverage == full)
+							whole = -1;
+
+						prevRight = right;
+						if (i < j)
+							segment = pEdges[i].segment;
+					}
+
+					if (whole >= 0)
+						between(p, p + 1, whole);
+					else if (c > 0)
+						_mixedPixel(p) = { int16_t(b >> 12), int16_t(g >> 12), int16_t(r >> 12), int16_t(a >> 12), int16_t(c), 0 };
+				}
+			}
+
+			x = std::max(x, bandEnd);
+			segLeft = pEdges[j - 1].segment;
+			k = j;
+		}
+
+		if (x < clipEnd && segLeft >= 0)
+			between(x, clipEnd, segLeft);
+	}
+
+	//____ _generalRow() ______________________________________________________
+	/*
+		A row of several sub-rows, or with overlapping bands. Coverage of each pixel is
+		accumulated per segment over the sub-rows, weighted by their height. Stretches of
+		pixels outside all bands have the same coverage throughout.
+	*/
+
+	void SoftShapes::_generalRow(int nSubRows)
+	{
+		SubRow* pSubRows = m_subRows.data();
+		const Edge* pEdges = m_edges.data();
+
+		for (int k = 0; k < nSubRows; k++)
+		{
+			pSubRows[k].next = pSubRows[k].first;
+			pSubRows[k].segment = -1;
+		}
+
+		int x = m_clipBeg;
+
+		while (x < m_clipEnd)
+		{
+			bool bPartial = false;
+			int nextX = m_clipEnd;
+
+			for (int k = 0; k < nSubRows; k++)
+			{
+				SubRow& subRow = pSubRows[k];
+				const int end = subRow.first + subRow.n;
+
+				while (subRow.next < end && pEdges[subRow.next].bandEnd <= x)
+					subRow.segment = pEdges[subRow.next++].segment;
+
+				if (subRow.next < end)
+				{
+					if (pEdges[subRow.next].bandBeg <= x)
+						bPartial = true;
+					else
+						nextX = std::min(nextX, pEdges[subRow.next].bandBeg);
+				}
+			}
+
+			if (!bPartial)
+			{
+				for (int k = 0; k < nSubRows; k++)
+					_accumulate(pSubRows[k].segment, pSubRows[k].h * c_fullCoverage);
+
+				_emitAccumulated(x, nextX);
+				x = nextX;
+				continue;
+			}
+
+			for (int k = 0; k < nSubRows; k++)
+			{
+				const SubRow& subRow = pSubRows[k];
+				const int end = subRow.first + subRow.n;
+
+				int prevArea = subRow.h * c_fullCoverage;
+				int segment = subRow.segment;
+
+				for (int i = subRow.next; i < end && pEdges[i].bandBeg <= x; i++)
+				{
+					int area = std::min(std::max(_edgeArea(pEdges[i], x), 0), prevArea);
+					_accumulate(segment, prevArea - area);
+					prevArea = area;
+					segment = pEdges[i].segment;
+				}
+
+				_accumulate(segment, prevArea);
+			}
+
+			_emitAccumulated(x, x + 1);
+			x++;
+		}
+	}
+
+	//____ _emitAccumulated() _________________________________________________
+	/*
+		Turns coverage accumulated over sub-rows into pixels beg up to end, rounded
+		cumulatively so that segments add up to the rounded total.
+	*/
+
+	void SoftShapes::_emitAccumulated(int beg, int end)
+	{
+		int* pSegments = m_layerSegments.data();
+		int* pCoverage = m_layerCoverage.data();
+
+		int nLayers = 0;
+		int full = -1;
+		int total = 0;
+		int prev = 0;
+
+		for (int i = 0; i < m_nTouched; i++)
+		{
+			int segment = m_touched[i];
+			total += m_accumulated[segment];
+			m_accumulated[segment] = 0;
+
+			int rounded = (total + 32) >> 6;
+			int coverage = rounded - prev;
+			prev = rounded;
+
+			if (coverage == c_fullCoverage)
+				full = segment;
+
+			if (coverage > 0)
+			{
+				pSegments[nLayers] = segment;
+				pCoverage[nLayers++] = coverage;
+			}
+		}
+
+		m_nTouched = 0;
+
+		if (full >= 0)
+		{
+			_fillRun(beg, end, full);
+			return;
+		}
+
+		bool bFlat = true;
+		for (int i = 0; i < nLayers; i++)
+			if (m_mix[pSegments[i]].stride != 0)
+				bFlat = false;
+
+		for (int x = beg; x < end; x++)
+		{
+			int b = 0, g = 0, r = 0, a = 0, c = 0;
+
+			for (int i = 0; i < nLayers; i++)
+			{
+				const int16_t* pColor = _mixColor(pSegments[i], x);
+				if (!pColor)
+					continue;
+
+				int coverage = pCoverage[i];
+				b += pColor[0] * coverage;
+				g += pColor[1] * coverage;
+				r += pColor[2] * coverage;
+				a += pColor[3] * coverage;
+				c += coverage;
+			}
+
+			if (c == 0)
+				return;
+
+			CoveragePixel px = { int16_t(b >> 12), int16_t(g >> 12), int16_t(r >> 12), int16_t(a >> 12), int16_t(c), 0 };
+
+			if (bFlat)
+			{
+				_mixedRun(x, end, px);
+				return;
+			}
+
+			_mixedPixel(x) = px;
+		}
+	}
+
+	//____ BoxShape ___________________________________________________________
+	/*
+		Box with rounded corners and an outline inside it, as two contours: the outer edge
+		and the inner edge of the outline.
+
+		Along a row, a contour reaches from its left edge, the rightmost of its left side and
+		the left corners whose quarter the row is in, to its right edge, the leftmost of its
+		right side and right corners. The fill reaches from the rightmost of the left edges
+		of both contours to the leftmost of their right edges, so where an inner corner
+		reaches past the outer edge, as with uneven outlines, the outline just gets thin.
+		Where left and right edge of a contour pass each other it is closed.
+
+		Edges are split where corners begin and end, and bisected where they bend too much
+		or kink, where another side or corner takes over or the contour closes.
+
+		Edge ids: 0 outer left, 1 outer right, 2 inner left, 3 inner right.
+	*/
+
+	class SoftShapes::BoxShape : public SoftShapes::EdgeShape
+	{
+	public:
+
+		struct Contour
+		{
+			bool		bExists;
+			int64_t		left, top, right, bottom;
+			int64_t		r[4];					// Top-left, top-right, bottom-right, bottom-left. 0 for square corner.
+			int64_t		cx[4], cy[4];			// Center of circle.
+			uint64_t	r2[4];
+			int64_t		limit[4];				// Most squared length of a chord.
+		};
+
+		// Edges of both contours at y, with the candidates they are the max (left) or min
+		// (right) of: side, top corner and bottom corner.
+
+		struct Eval
+		{
+			int64_t		y;
+			int64_t		cand[2][2][3];			// Contour, left/right, candidate.
+			bool		bValid[2][2][3];
+			int64_t		x[4];					// Edges, see ids.
+			bool		bClosed[2];				// Contour closed, left and right edge put between them.
+		};
+
+		Contour		outer;
+		Contour		inner;
+		bool		bOutline;
+		bool		bRegular;					// Inner contour stays inside outer and doesn't close, as with even outlines.
+
+		int			nEvents = 0;
+		int64_t		eventBeg[12], eventEnd[12];	// Where rows aren't all the same, see uniformEnd().
+
+		Eval		cache[4];
+		int			nextCache = 0;
+
+		struct Root
+		{
+			int64_t		y, cy, r;
+			int64_t		dx;						// Half width of circle at y.
+		};
+
+		static constexpr int	c_roots = 32;
+		Root		roots[c_roots];
+
+		BoxShape()
+		{
+			for (auto& eval : cache)
+				eval.y = INT64_MIN;
+
+			for (auto& root : roots)
+				root.y = INT64_MIN;
+		}
+
+		//____ setupContour() _________________________________________________
+
+		static void setupContour(Contour& c, const RectSPX& rect, const spx radius[4])
+		{
+			c.bExists = rect.w > 0 && rect.h > 0;
+			c.left = rect.x;
+			c.top = rect.y;
+			c.right = int64_t(rect.x) + rect.w;
+			c.bottom = int64_t(rect.y) + rect.h;
+
+			for (int i = 0; i < 4; i++)
+			{
+				int64_t r = radius[i] >= 4 ? radius[i] : 0;			// Smaller corners are square, within 1/256 pixel.
+				c.r[i] = r;
+				c.r2[i] = uint64_t(r) * uint64_t(r);
+				c.limit[i] = 8 * r * c_maxSagitta;
+				c.cx[i] = (i == 0 || i == 3) ? c.left + r : c.right - r;
+				c.cy[i] = (i == 0 || i == 1) ? c.top + r : c.bottom - r;
+			}
+		}
+
+		//____ addEvents() ____________________________________________________
+		// Splits where contours begin and end, events for uniformEnd().
+
+		void addEvent(int64_t beg, int64_t end)
+		{
+			eventBeg[nEvents] = beg;
+			eventEnd[nEvents++] = end;
+		}
+
+		void addEvents(const Contour& c, std::vector<int64_t>& splits)
+		{
+			if (!c.bExists)
+				return;
+
+			splits.push_back(c.top);
+			splits.push_back(c.bottom);
+			addEvent(c.top, c.top);
+			addEvent(c.bottom, c.bottom);
+
+			for (int i = 0; i < 4; i++)
+			{
+				if (c.r[i] == 0)
+					continue;
+
+				if (i == 0 || i == 1)
+					addEvent(c.top, std::min(c.cy[i], c.bottom));
+				else
+					addEvent(std::max(c.cy[i], c.top), c.bottom);
+			}
+		}
+
+		//____ eval() _________________________________________________________
+
+		const Eval& eval(int64_t y)
+		{
+			for (auto& e : cache)
+				if (e.y == y)
+					return e;
+
+			Eval& e = cache[nextCache];
+			nextCache = (nextCache + 1) & 3;
+
+			e.y = y;
+			evalContour(outer, 0, y, e);
+
+			int64_t& left = e.x[0];
+			int64_t& right = e.x[1];
+			e.bClosed[0] = closeContour(left, right, INT64_MIN, INT64_MAX);
+
+			if (bOutline && inner.bExists && y >= inner.top && y <= inner.bottom)
+			{
+				evalContour(inner, 1, y, e);
+
+				int64_t& innerLeft = e.x[2];
+				int64_t& innerRight = e.x[3];
+				innerLeft = std::max(innerLeft, left);
+				innerRight = std::min(innerRight, right);
+				e.bClosed[1] = closeContour(innerLeft, innerRight, left, right);
+			}
+			else
+				e.bClosed[1] = false;
+
+			return e;
+		}
+
+		static void evalContour(const Contour& c, int k, int64_t y, Eval& e)
+		{
+			for (int side = 0; side < 2; side++)
+			{
+				const bool bLeft = side == 0;
+				const int corners[2] = { bLeft ? 0 : 1, bLeft ? 3 : 2 };
+
+				int64_t* pCand = e.cand[k][side];
+				bool* pValid = e.bValid[k][side];
+
+				pCand[0] = bLeft ? c.left : c.right;
+				pValid[0] = true;
+
+				int64_t x = pCand[0];
+
+				for (int j = 0; j < 2; j++)
+				{
+					const int i = corners[j];
+					const bool bInQuarter = c.r[i] > 0 && (j == 0 ? y <= c.cy[i] : y >= c.cy[i]) && y >= c.top && y <= c.bottom;
+
+					pValid[1 + j] = bInQuarter;
+
+					if (bInQuarter)
+					{
+						int64_t dy = y - c.cy[i];
+						int64_t dx = isqrt(c.r2[i] - uint64_t(dy * dy));
+						int64_t cand = bLeft ? c.cx[i] - dx : c.cx[i] + dx;
+
+						pCand[1 + j] = cand;
+						x = bLeft ? std::max(x, cand) : std::min(x, cand);
+					}
+				}
+
+				e.x[k * 2 + side] = x;
+			}
+		}
+
+		// Where left and right edge have passed each other the contour is closed, both are
+		// put between them, within outer left and right.
+
+		static bool closeContour(int64_t& left, int64_t& right, int64_t outerLeft, int64_t outerRight)
+		{
+			if (left <= right)
+				return false;
+
+			left = right = std::min(std::max((left + right) >> 1, outerLeft), outerRight);
+			return true;
+		}
+
+		bool within(const Contour& c, int64_t ya, int64_t yb) const
+		{
+			return c.bExists && ya >= c.top && yb <= c.bottom;
+		}
+
+		//____ edges() ________________________________________________________
+
+		int edges(int64_t ya, int64_t yb, EdgeDef* pEdges) const
+		{
+			if (!within(outer, ya, yb))
+				return 0;
+
+			int n = 0;
+			edge(pEdges[n++], 0, bOutline ? 1 : 0);
+
+			if (bOutline && within(inner, ya, yb))
+			{
+				edge(pEdges[n++], 2, 0);
+				edge(pEdges[n++], 3, 1);
+			}
+
+			edge(pEdges[n++], 1, -1);
+			return n;
+		}
+
+		// Edge with where it goes from top corner to side and from side to bottom corner,
+		// unless the shape needs to split it.
+
+		void edge(EdgeDef& def, int id, int segment) const
+		{
+			def.id = id;
+			def.segment = segment;
+			def.bClamped = false;
+			def.bShapeSplit = !bRegular;
+
+			if (bRegular)
+			{
+				const Contour& c = id < 2 ? outer : inner;
+				const bool bLeft = (id & 1) == 0;
+				const int top = bLeft ? 0 : 1;
+				const int bottom = bLeft ? 3 : 2;
+
+				def.junction[0] = c.r[top] > 0 ? c.cy[top] : INT64_MIN;
+				def.junction[1] = c.r[bottom] > 0 ? c.cy[bottom] : INT64_MAX;
+				def.limit[0] = c.limit[top];
+				def.limit[1] = 0;
+				def.limit[2] = c.limit[bottom];
+			}
+		}
+
+		//____ x() ____________________________________________________________
+
+		int64_t x(const EdgeDef& edge, int64_t y)
+		{
+			if (!bRegular)
+				return eval(y).x[edge.id];
+
+			// Side, or the corner whose quarter y is in.
+
+			const Contour& c = edge.id < 2 ? outer : inner;
+			const bool bLeft = (edge.id & 1) == 0;
+			const int top = bLeft ? 0 : 1;
+			const int bottom = bLeft ? 3 : 2;
+
+			int i;
+			if (c.r[top] > 0 && y < c.cy[top])
+				i = top;
+			else if (c.r[bottom] > 0 && y > c.cy[bottom])
+				i = bottom;
+			else
+				return bLeft ? c.left : c.right;
+
+			// Corners on either side are usually the same, so half width is kept for reuse.
+
+			const int64_t cy = c.cy[i];
+			const int64_t r = c.r[i];
+
+			Root& root = roots[(y + cy * 5) & (c_roots - 1)];
+			if (root.y != y || root.cy != cy || root.r != r)
+			{
+				int64_t dy = y - cy;
+				root = { y, cy, r, isqrt(c.r2[i] - uint64_t(dy * dy)) };
+			}
+
+			return bLeft ? c.cx[i] - root.dx : c.cx[i] + root.dx;
+		}
+
+		//____ split() ________________________________________________________
+
+		bool split(const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y)
+		{
+			if (bRegular)
+			{
+				// Where corners begin and end, and where they bend too much.
+
+				const Contour& c = edge.id < 2 ? outer : inner;
+				const bool bLeft = (edge.id & 1) == 0;
+				const int top = bLeft ? 0 : 1;
+				const int bottom = bLeft ? 3 : 2;
+
+				int i = -1;
+
+				if (c.r[top] > 0)
+				{
+					if (c.cy[top] > ya && c.cy[top] < yb)
+					{
+						y = c.cy[top];
+						return true;
+					}
+
+					if (yb <= c.cy[top])
+						i = top;
+				}
+
+				if (c.r[bottom] > 0)
+				{
+					if (c.cy[bottom] > ya && c.cy[bottom] < yb)
+					{
+						y = c.cy[bottom];
+						return true;
+					}
+
+					if (ya >= c.cy[bottom])
+						i = bottom;
+				}
+
+				if (i < 0 || yb - ya <= 4 || (xa - xb) * (xa - xb) + (yb - ya) * (yb - ya) <= c.limit[i])
+					return false;
+
+				y = splitPoint(ya, yb);
+				return true;
+			}
+
+			const int k = edge.id >> 1;				// Contour
+			const int side = edge.id & 1;
+			const bool bLeft = side == 0;
+
+			// Corners begin and end.
+
+			const int corners[2] = { bLeft ? 0 : 1, bLeft ? 3 : 2 };
+
+			for (int c = 0; c <= k; c++)
+			{
+				const Contour& contour = c == 0 ? outer : inner;
+
+				for (int i : corners)
+				{
+					if (contour.r[i] > 0 && contour.cy[i] > ya && contour.cy[i] < yb)
+					{
+						y = contour.cy[i];
+						return true;
+					}
+				}
+			}
+
+			const Eval a = eval(ya);
+			const Eval& b = eval(yb);
+
+			// Contour closes or opens.
+
+			if (a.bClosed[0] != b.bClosed[0] || (k == 1 && a.bClosed[1] != b.bClosed[1]))
+			{
+				y = splitPoint(ya, yb);
+				return true;
+			}
+
+			// The same candidate must be the edge at both ends, otherwise the edge kinks.
+			// The max (or min) of the candidates before closing is the edge, unless closed.
+
+			if ((k == 0 && a.bClosed[0]) || (k == 1 && (a.bClosed[0] || a.bClosed[1])))
+				return false;
+
+			int64_t limit = -1;
+
+			for (int c = 0; c <= k && limit < 0; c++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					if (a.bValid[c][side][j] && b.bValid[c][side][j] && a.cand[c][side][j] == xa && b.cand[c][side][j] == xb)
+					{
+						limit = j == 0 ? 0 : (c == 0 ? outer : inner).limit[corners[j - 1]];
+						if (limit == 0)
+							break;
+					}
+				}
+			}
+
+			if (limit < 0 || (limit > 0 && yb - ya > 4 && (xa - xb) * (xa - xb) + (yb - ya) * (yb - ya) > limit))
+			{
+				y = splitPoint(ya, yb);
+				return true;
+			}
+
+			return false;
+		}
+
+		//____ uniformEnd() ___________________________________________________
+		// Rows not reached by corners and not cut by the top or bottom of a contour are the same.
+
+		int uniformEnd(int row) const
+		{
+			const int64_t y0 = int64_t(row) * 64;
+			const int64_t y1 = y0 + 64;
+
+			int end = INT_MAX;
+
+			for (int i = 0; i < nEvents; i++)
+			{
+				if (eventBeg[i] < y1 && eventEnd[i] > y0)
+					return row + 1;
+
+				if (eventBeg[i] >= y1)
+					end = std::min(end, floorPixel(eventBeg[i]));
+			}
+
+			return end;
+		}
+	};
 
 	//____ rasterizeRoundedBox() ______________________________________________
 
@@ -91,15 +1442,12 @@ namespace wg
 		BorderSPX outline = { std::max(box.outline.top, 0), std::max(box.outline.right, 0),
 							  std::max(box.outline.bottom, 0), std::max(box.outline.left, 0) };
 
-		bool bOutline = (outline.top | outline.right | outline.bottom | outline.left) != 0;
+		BoxShape shape;
+		shape.bOutline = (outline.top | outline.right | outline.bottom | outline.left) != 0;
 
-		// Setup outer and inner shape.
+		BoxShape::setupContour(shape.outer, rect, radius);
 
-		Shape outer, inner;
-
-		_setupShape(outer, rect, radius);
-
-		if (bOutline)
+		if (shape.bOutline)
 		{
 			RectSPX innerRect(rect.x + outline.left, rect.y + outline.top,
 							  rect.w - outline.left - outline.right, rect.h - outline.top - outline.bottom);
@@ -107,714 +1455,41 @@ namespace wg
 			spx innerRadius[4];
 			Util::innerCornerRadii(radius, outline, innerRadius);
 
-			_setupShape(inner, innerRect, innerRadius);
+			BoxShape::setupContour(shape.inner, innerRect, innerRadius);
+
+			// With an even outline, the inner contour stays inside the outer one. It doesn't
+			// close either, unless its corners reach past each other.
+
+			const int64_t* r = shape.inner.r;
+			const int64_t w = innerRect.w, h = innerRect.h;
+
+			shape.bRegular = outline.top == outline.right && outline.top == outline.bottom && outline.top == outline.left &&
+							 r[0] + r[1] <= w && r[3] + r[2] <= w && r[0] + r[3] <= h && r[1] + r[2] <= h;
+		}
+		else
+		{
+			shape.inner.bExists = false;
+			shape.bRegular = true;
 		}
 
-		// Rows and columns to rasterize
+		m_splits.clear();
+		shape.addEvents(shape.outer, m_splits);
+		shape.addEvents(shape.inner, m_splits);
+
+		std::sort(m_splits.begin(), m_splits.end());
+		m_splits.erase(std::unique(m_splits.begin(), m_splits.end()), m_splits.end());
+
+		shape.pSplits = m_splits.data();
+		shape.nSplits = (int)m_splits.size();
+		shape.maxEdges = 4;
+		shape.nIds = 4;
 
 		int clipBeg = std::max(clip.x, floorPixel(rect.x));
 		int clipEnd = std::min(clip.x + clip.w, ceilPixel(int64_t(rect.x) + rect.w));
-
 		int rowBeg = std::max(clip.y, floorPixel(rect.y));
 		int rowEnd = std::min(clip.y + clip.h, ceilPixel(int64_t(rect.y) + rect.h));
 
-		if (clipBeg >= clipEnd || rowBeg >= rowEnd)
-			return;
-
-		int width = clipEnd - clipBeg;
-
-		if ((int)m_coverageBuffer.size() < width * 6 + 16)
-			m_coverageBuffer.resize(width * 6 + 16);
-
-		if ((int)m_outputBuffer.size() < width * 2 + c_maxPieces * 8)
-			m_outputBuffer.resize(width * 2 + c_maxPieces * 8);
-
-		if ((int)m_spans.size() < c_maxPieces * 4)
-			m_spans.resize(c_maxPieces * 4);
-
-		static const int layerSegments[2] = { 0, 1 };
-
-		Piece	outerPieces[c_maxPieces];
-		Piece	innerPieces[c_maxPieces];
-
-		for (int y = rowBeg, yEnd; y < rowEnd; y = yEnd)
-		{
-			// Rows that give the same spans are done together.
-
-			yEnd = y + 1;
-
-			int outerKind = _rowKind(outer, y);
-			int innerKind = bOutline ? _rowKind(inner, y) : 0;
-
-			if (outerKind >= 0 && innerKind >= 0)
-			{
-				while (yEnd < rowEnd && _rowKind(outer, yEnd) == outerKind && (!bOutline || _rowKind(inner, yEnd) == innerKind))
-					yEnd++;
-			}
-
-			uint16_t* pBuffer = m_coverageBuffer.data();
-
-			int nOuter = _shapeRow(outer, y, clipBeg, clipEnd, outerPieces, pBuffer);
-			if (nOuter == 0)
-				continue;
-
-			const Piece* pInnerPieces = outerPieces;
-			int nInner = nOuter;
-
-			if (bOutline)
-			{
-				nInner = _shapeRow(inner, y, clipBeg, clipEnd, innerPieces, pBuffer);
-				pInnerPieces = innerPieces;
-			}
-
-			// Split into spans, fill = inner coverage and outline = outer - inner. Steps through
-			// stretches of pixels where no piece begins or ends.
-
-			Span*		pSpans = m_spans.data();
-			int			nSpans = 0;
-			uint16_t*	pOut = m_outputBuffer.data();
-
-			int io = 0, ii = 0;
-			int next = outerPieces[0].begin;
-
-			while (true)
-			{
-				const int beg = next;
-
-				while (io < nOuter && outerPieces[io].end <= beg)
-					io++;
-
-				if (io == nOuter)
-					break;
-
-				const Piece* po = &outerPieces[io];
-
-				if (po->begin > beg)
-				{
-					next = po->begin;
-					continue;
-				}
-
-				next = po->end;
-
-				while (ii < nInner && pInnerPieces[ii].end <= beg)
-					ii++;
-
-				const Piece* pi = nullptr;
-
-				if (ii < nInner)
-				{
-					if (pInnerPieces[ii].begin <= beg)
-					{
-						pi = &pInnerPieces[ii];
-						next = std::min(next, pi->end);
-					}
-					else
-						next = std::min(next, pInnerPieces[ii].begin);
-				}
-
-				const int end = next;
-
-				Span* pPrev = nSpans > 0 ? &pSpans[nSpans - 1] : nullptr;
-
-				if (!po->pValues && (!pi || !pi->pValues))
-				{
-					int outerCov = po->value;
-					int innerCov = pi ? std::min(pi->value, outerCov) : 0;
-
-					int segment = -1;
-					if (innerCov == c_fullCoverage)
-						segment = 0;
-					else if (outerCov == c_fullCoverage && innerCov == 0)
-						segment = 1;
-
-					if (segment >= 0)
-					{
-						if (pPrev && pPrev->segment == segment && pPrev->end == beg)
-							pPrev->end = end;
-						else
-							pSpans[nSpans++] = { beg, end, segment, false, nullptr, 0, nullptr };
-					}
-					else
-					{
-						pSpans[nSpans++] = { beg, end, -1, true, pOut, 2, layerSegments };
-						*pOut++ = uint16_t(innerCov);
-						*pOut++ = uint16_t(outerCov - innerCov);
-					}
-				}
-				else
-				{
-					if (pPrev && pPrev->segment == -1 && !pPrev->bUniform && pPrev->end == beg)
-						pPrev->end = end;
-					else
-						pSpans[nSpans++] = { beg, end, -1, false, pOut, 2, layerSegments };
-
-					for (int x = beg; x < end; x++)
-					{
-						int outerCov = po->pValues ? po->pValues[x - po->begin] : po->value;
-						int innerCov = pi ? (pi->pValues ? pi->pValues[x - pi->begin] : pi->value) : 0;
-
-						if (innerCov > outerCov)
-							innerCov = outerCov;
-
-						*pOut++ = uint16_t(innerCov);
-						*pOut++ = uint16_t(outerCov - innerCov);
-					}
-				}
-			}
-
-			if (nSpans > 0)
-			{
-				if (yEnd == y + 1)
-					pSink->row(y, nSpans, pSpans);
-				else
-					pSink->rows(y, yEnd, nSpans, pSpans);
-			}
-		}
-	}
-
-	//____ _setupShape() ______________________________________________________
-
-	void SoftShapes::_setupShape(Shape& shape, const RectSPX& rect, const spx radius[4])
-	{
-		shape.bEmpty = (rect.w <= 0 || rect.h <= 0);
-		if (shape.bEmpty)
-		{
-			shape.topRow = 0;
-			shape.bottomRow = -1;
-			shape.plainBeg = shape.plainEnd = 0;
-			return;
-		}
-
-		shape.left = rect.x;
-		shape.top = rect.y;
-		shape.right = rect.x + rect.w;
-		shape.bottom = rect.y + rect.h;
-
-		// Columns and rows touched by the shape, and those that aren't cut by a straight edge.
-		// Corners never reach into pixels cut by the opposite edge. Their arcs meet that edge
-		// at a tangent there, so the straight edge alone gives the coverage.
-
-		int leftCol = floorPixel(shape.left);
-		int rightCol = ceilPixel(shape.right) - 1;
-		int topRow = floorPixel(shape.top);
-		int bottomRow = ceilPixel(shape.bottom) - 1;
-
-		int firstUncutCol = (shape.left & 63) ? leftCol + 1 : leftCol;
-		int lastUncutCol = (shape.right & 63) ? rightCol - 1 : rightCol;
-		int firstUncutRow = (shape.top & 63) ? topRow + 1 : topRow;
-		int lastUncutRow = (shape.bottom & 63) ? bottomRow - 1 : bottomRow;
-
-		shape.topRow = topRow;
-		shape.bottomRow = bottomRow;
-		shape.plainBeg = firstUncutRow;
-		shape.plainEnd = lastUncutRow + 1;
-
-		for (int i = 0; i < 4; i++)
-		{
-			Arc& arc = shape.arcs[i];
-
-			spx r = radius[i];
-
-			// Radii below half a pixel are drawn as square corners.
-
-			arc.bActive = (r >= 32);
-			if (!arc.bActive)
-				continue;
-
-			bool bTop = (i == 0 || i == 1);
-
-			arc.bLeft = (i == 0 || i == 3);
-			arc.bInitialized = false;
-			arc.r = r;
-			arc.cx = arc.bLeft ? shape.left + r : shape.right - r;
-			arc.cy = bTop ? shape.top + r : shape.bottom - r;
-
-			// Pixels with their center inside the square spanned by the corner. Only the
-			// inner corners of uneven outlines can be larger than the side, and then reach
-			// into the pixels cut by the opposite edge.
-
-			bool bPastWidth = r > rect.w;
-			bool bPastHeight = r > rect.h;
-
-			if (arc.bLeft)
-			{
-				arc.colBeg = leftCol;
-				arc.colEnd = std::min(ceilPixel(int64_t(shape.left) + r - 32), (bPastWidth ? rightCol : lastUncutCol) + 1);
-			}
-			else
-			{
-				arc.colBeg = std::max(ceilPixel(int64_t(shape.right) - r - 32), bPastWidth ? leftCol : firstUncutCol);
-				arc.colEnd = rightCol + 1;
-			}
-
-			if (bTop)
-			{
-				arc.rowBeg = topRow;
-				arc.rowEnd = std::min(ceilPixel(int64_t(shape.top) + r - 32), (bPastHeight ? bottomRow : lastUncutRow) + 1);
-				shape.plainBeg = std::max(shape.plainBeg, arc.rowEnd);
-			}
-			else
-			{
-				arc.rowBeg = std::max(ceilPixel(int64_t(shape.bottom) - r - 32), bPastHeight ? topRow : firstUncutRow);
-				arc.rowEnd = bottomRow + 1;
-				shape.plainEnd = std::min(shape.plainEnd, arc.rowBeg);
-			}
-
-			// d' changes by -1/r for each step, as does the change itself.
-
-			arc.step = -(int64_t(64) * c_one / r);
-
-			// Refining d' to the distance pays off from 2 pixels radius. Then the edge of the band
-			// of partly covered pixels is where the refined distance is -0.5 and 0.5, which is
-			// d' = d - d^2/2r = +/-0.5 - 0.125/r.
-
-			arc.bRefine = (r >= 128);
-			arc.invRadius = int((64 << 12) / r);
-
-			int64_t half = c_one / 2;
-			int64_t adjust = arc.bRefine ? (int64_t(1) << 35) / r : 0;
-
-			arc.lo = -half - adjust;
-			arc.hi = half - adjust;
-		}
-	}
-
-	//____ _rowKind() _________________________________________________________
-	// 0 for rows outside the shape, 1 for plain rows (see Shape), otherwise -1. Rows of
-	// kind 0 or 1 give the same pieces as other rows of the same kind.
-
-	inline int SoftShapes::_rowKind(const Shape& shape, int row)
-	{
-		if (shape.bEmpty || row < shape.topRow || row > shape.bottomRow)
-			return 0;
-
-		return (row >= shape.plainBeg && row < shape.plainEnd) ? 1 : -1;
-	}
-
-	//____ _initArc() _________________________________________________________
-
-	void SoftShapes::_initArc(Arc& arc, int row)
-	{
-		// d' = (r^2 - dx^2 - dy^2) / 2r for center of first pixel of row, in pixels.
-
-		int64_t r = arc.r;
-		int64_t dX = int64_t(arc.colBeg) * 64 + 32 - arc.cx;
-		int64_t dY = int64_t(row) * 64 + 32 - arc.cy;
-
-		int64_t q = r * r - dX * dX - dY * dY;			// spx^2
-
-		arc.d = (q / r) * (int64_t(1) << 25) + (q % r) * (int64_t(1) << 25) / r;		// q / 128r in 32.32 pixels.
-		arc.dx = -((dX + 32) * c_one / r);
-		arc.dy = -((dY + 32) * c_one / r);
-
-		arc.col = arc.colBeg;
-		arc.row = row;
-		arc.bInitialized = true;
-	}
-
-	//____ _arcCoverage() _____________________________________________________
-
-	inline int SoftShapes::_arcCoverage(const Arc& arc, int64_t d)
-	{
-		int dist = int(d >> 20);					// 12 binals.
-
-		if (arc.bRefine)
-			dist += (((dist * dist) >> 12) * arc.invRadius) >> 13;	// d = d' + d'^2 / 2r
-
-		int coverage = 2048 + dist;
-		return coverage < 0 ? 0 : coverage > c_fullCoverage ? c_fullCoverage : coverage;
-	}
-
-	//____ _arcRow() __________________________________________________________
-	/*
-		Finds the band of partly covered pixels of the corner on given row and writes
-		coverage for the part of it within clipBeg -> clipEnd to pOutput. Pixels of the
-		corner before the band are uncovered (left corners) or fully covered (right corners),
-		pixels after it the opposite.
-
-		Returns number of coverage values written, which are for the pixels starting at
-		max(bandBeg, clipBeg).
-	*/
-
-	int SoftShapes::_arcRow(Arc& arc, int row, int clipBeg, int clipEnd, int& bandBeg, int& bandEnd, uint16_t* pOutput)
-	{
-		if (!arc.bInitialized || row < arc.row)
-			_initArc(arc, row);
-
-		while (arc.row < row)
-		{
-			arc.d += arc.dy;
-			arc.dy += arc.step;
-			arc.row++;
-		}
-
-		// Move to the first pixel of the band.
-
-		if (arc.bLeft)
-		{
-			while (arc.col > arc.colBeg && arc.d - (arc.dx - arc.step) > arc.lo)
-			{
-				arc.dx -= arc.step;
-				arc.d -= arc.dx;
-				arc.col--;
-			}
-
-			while (arc.col < arc.colEnd && arc.d <= arc.lo)
-			{
-				arc.d += arc.dx;
-				arc.dx += arc.step;
-				arc.col++;
-			}
-		}
-		else
-		{
-			while (arc.col > arc.colBeg && arc.d - (arc.dx - arc.step) < arc.hi)
-			{
-				arc.dx -= arc.step;
-				arc.d -= arc.dx;
-				arc.col--;
-			}
-
-			while (arc.col < arc.colEnd && arc.d >= arc.hi)
-			{
-				arc.d += arc.dx;
-				arc.dx += arc.step;
-				arc.col++;
-			}
-		}
-
-		bandBeg = arc.col;
-
-		// Step through the band.
-
-		int64_t d = arc.d;
-		int64_t dx = arc.dx;
-		int col = arc.col;
-		int colEnd = std::min(arc.colEnd, clipEnd);
-		int n = 0;
-
-		if (arc.bLeft)
-		{
-			while (col < colEnd && d < arc.hi)
-			{
-				if (col >= clipBeg)
-					pOutput[n++] = uint16_t(_arcCoverage(arc, d));
-
-				d += dx;
-				dx += arc.step;
-				col++;
-			}
-		}
-		else
-		{
-			while (col < colEnd && d > arc.lo)
-			{
-				if (col >= clipBeg)
-					pOutput[n++] = uint16_t(_arcCoverage(arc, d));
-
-				d += dx;
-				dx += arc.step;
-				col++;
-			}
-		}
-
-		bandEnd = col;
-		return n;
-	}
-
-	//____ _shapeRow() ________________________________________________________
-	/*
-		Coverage of one pixel row by a shape, as pieces clipped to clipBeg -> clipEnd.
-		Coverage per pixel is written to pBuffer, which is advanced.
-	*/
-
-	int SoftShapes::_shapeRow(Shape& shape, int row, int clipBeg, int clipEnd, Piece* pPieces, uint16_t*& pBuffer)
-	{
-		if (shape.bEmpty)
-			return 0;
-
-		int64_t rowTop = int64_t(row) * 64;
-		int oy = int(std::min(int64_t(shape.bottom), rowTop + 64) - std::max(int64_t(shape.top), rowTop));
-		if (oy <= 0)
-			return 0;
-
-		int nPieces = 0;
-
-		auto add = [&](int beg, int end, int value)
-		{
-			beg = std::max(beg, clipBeg);
-			end = std::min(end, clipEnd);
-
-			if (beg < end && value > 0)
-				pPieces[nPieces++] = { beg, end, value, nullptr };
-		};
-
-		auto addBand = [&](int bandBeg, int nValues)
-		{
-			if (nValues > 0)
-			{
-				pPieces[nPieces++] = { std::max(bandBeg, clipBeg), std::max(bandBeg, clipBeg) + nValues, 0, pBuffer };
-				pBuffer += nValues;
-			}
-		};
-
-		int leftCol = floorPixel(shape.left);
-		int rightCol = ceilPixel(shape.right) - 1;
-
-		if (leftCol == rightCol)
-		{
-			add(leftCol, leftCol + 1, (shape.right - shape.left) * oy);
-			return nPieces;
-		}
-
-		int rowCoverage = oy * 64;
-
-		const Arc& tl = shape.arcs[0];
-		const Arc& tr = shape.arcs[1];
-		const Arc& br = shape.arcs[2];
-		const Arc& bl = shape.arcs[3];
-
-		int leftArc = -1, rightArc = -1;
-
-		if (tl.bActive && row >= tl.rowBeg && row < tl.rowEnd)
-			leftArc = 0;
-		else if (bl.bActive && row >= bl.rowBeg && row < bl.rowEnd)
-			leftArc = 3;
-
-		if (tr.bActive && row >= tr.rowBeg && row < tr.rowEnd)
-			rightArc = 1;
-		else if (br.bActive && row >= br.rowBeg && row < br.rowEnd)
-			rightArc = 2;
-
-		int midBeg, midEnd;
-
-		// Corners can reach past each other (large diagonal radii, as in a leaf shape) or
-		// into pixels cut by the opposite edge (inner corners of uneven outlines). Then each
-		// pixel gets the least coverage of the edges and corners reaching it.
-
-		const int oxLeft = (leftCol + 1) * 64 - shape.left;			// Part of left column inside shape.
-		const int oxRight = shape.right - rightCol * 64;
-
-		int leftReach = leftArc >= 0 ? shape.arcs[leftArc].colEnd : (oxLeft < 64 ? leftCol + 1 : leftCol);
-		int rightReach = rightArc >= 0 ? shape.arcs[rightArc].colBeg : (oxRight < 64 ? rightCol : rightCol + 1);
-
-		bool bTopCut = (row == shape.topRow && (shape.top & 63) != 0);
-		bool bBottomCut = (row == shape.bottomRow && (shape.bottom & 63) != 0);
-
-		if (leftReach > rightReach || (bBottomCut && (leftArc == 0 || rightArc == 1)) || (bTopCut && (leftArc == 3 || rightArc == 2)))
-			return _crossedShapeRow(shape, row, oy, leftArc, rightArc, clipBeg, clipEnd, pPieces, pBuffer);
-
-		// Left side
-
-		if (leftArc >= 0)
-		{
-			Arc& arc = shape.arcs[leftArc];
-
-			int bandBeg, bandEnd;
-			int nValues = _arcRow(arc, row, clipBeg, clipEnd, bandBeg, bandEnd, pBuffer);
-
-			addBand(bandBeg, nValues);
-			add(bandEnd, arc.colEnd, c_fullCoverage);
-			midBeg = arc.colEnd;
-		}
-		else
-		{
-			if (oxLeft < 64)
-			{
-				add(leftCol, leftCol + 1, oxLeft * oy);
-				midBeg = leftCol + 1;
-			}
-			else
-				midBeg = leftCol;
-		}
-
-		// Middle
-
-		if (rightArc >= 0)
-			midEnd = shape.arcs[rightArc].colBeg;
-		else
-			midEnd = oxRight < 64 ? rightCol : rightCol + 1;
-
-		add(midBeg, midEnd, rowCoverage);
-
-		// Right side
-
-		if (rightArc >= 0)
-		{
-			Arc& arc = shape.arcs[rightArc];
-
-			int bandBeg, bandEnd;
-			int nValues = _arcRow(arc, row, clipBeg, clipEnd, bandBeg, bandEnd, pBuffer);
-
-			add(arc.colBeg, bandBeg, c_fullCoverage);
-			addBand(bandBeg, nValues);
-		}
-		else if (oxRight < 64)
-			add(rightCol, rightCol + 1, oxRight * oy);
-
-		return nPieces;
-	}
-
-
-	//____ _crossedShapeRow() _________________________________________________
-	/*
-		Row of a shape where corners reach past each other or into pixels cut by the
-		opposite edge, see _shapeRow(). Coverage of each pixel is the least of the edges
-		and corners reaching it.
-	*/
-
-	int SoftShapes::_crossedShapeRow(Shape& shape, int row, int oy, int leftArc, int rightArc, int clipBeg, int clipEnd, Piece* pPieces, uint16_t*& pBuffer)
-	{
-		const int leftCol = floorPixel(shape.left);
-		const int rightCol = ceilPixel(shape.right) - 1;
-
-		const int oxLeft = (leftCol + 1) * 64 - shape.left;
-		const int oxRight = shape.right - rightCol * 64;
-
-		// Bands of the arcs.
-
-		int leftBeg = 0, leftEnd = 0, leftValues = 0;
-		int rightBeg = 0, rightEnd = 0, rightValues = 0;
-		const uint16_t* pLeft = pBuffer;
-		const uint16_t* pRight = pBuffer;
-
-		if (leftArc >= 0)
-		{
-			pLeft = pBuffer;
-			pBuffer += _arcRow(shape.arcs[leftArc], row, clipBeg, clipEnd, leftBeg, leftEnd, pBuffer);
-			leftValues = std::max(leftBeg, clipBeg);
-		}
-
-		if (rightArc >= 0)
-		{
-			pRight = pBuffer;
-			pBuffer += _arcRow(shape.arcs[rightArc], row, clipBeg, clipEnd, rightBeg, rightEnd, pBuffer);
-			rightValues = std::max(rightBeg, clipBeg);
-		}
-
-		// Coverage of each pixel.
-
-		const int beg = std::max(leftCol, clipBeg);
-		const int end = std::min(rightCol + 1, clipEnd);
-
-		if (beg >= end)
-			return 0;
-
-		uint16_t* pOut = pBuffer;
-		const int n = end - beg;
-		pBuffer += n;
-
-		for (int x = beg; x < end; x++)
-		{
-			int straight = (x == leftCol ? oxLeft : x == rightCol ? oxRight : 64) * oy;
-			int left = c_fullCoverage;
-			int right = c_fullCoverage;
-
-			if (leftArc >= 0 && x < shape.arcs[leftArc].colEnd)
-				left = x < leftBeg ? 0 : x < leftEnd ? int(pLeft[x - leftValues]) : c_fullCoverage;
-
-			if (rightArc >= 0 && x >= shape.arcs[rightArc].colBeg)
-				right = x >= rightEnd ? 0 : x >= rightBeg ? int(pRight[x - rightValues]) : c_fullCoverage;
-
-			int v = std::min(straight, std::min(left, right));
-
-			// Pixels cut by more than one edge are sampled.
-
-			int nCuts = (straight < c_fullCoverage) + (left < c_fullCoverage) + (right < c_fullCoverage);
-
-			if (v > 0 && nCuts > 1)
-				v = _sampleShapePixel(shape, x, row);
-
-			pOut[x - beg] = uint16_t(v);
-		}
-
-		// Pieces: runs of the same coverage, partly covered pixels in between per pixel.
-
-		int nPieces = 0;
-		int i = 0;
-
-		while (i < n)
-		{
-			if (pOut[i] == 0)
-			{
-				i++;
-				continue;
-			}
-
-			int j = i + 1;
-			while (j < n && pOut[j] == pOut[i])
-				j++;
-
-			if (j - i >= 2 && nPieces < c_maxPieces - 1)
-			{
-				pPieces[nPieces++] = { beg + i, beg + j, pOut[i], nullptr };
-				i = j;
-				continue;
-			}
-
-			// Per pixel until the next run or uncovered pixel, or to the end if out of pieces.
-
-			j = i + 1;
-			if (nPieces < c_maxPieces - 1)
-			{
-				while (j < n && pOut[j] != 0 && !(j + 1 < n && pOut[j + 1] == pOut[j]))
-					j++;
-			}
-			else
-			{
-				j = n;
-				while (pOut[j - 1] == 0)
-					j--;
-			}
-
-			pPieces[nPieces++] = { beg + i, beg + j, 0, pOut + i };
-			i = j;
-		}
-
-		return nPieces;
-	}
-
-	//____ _sampleShapePixel() ________________________________________________
-	// Coverage of a pixel by a shape, sampled 8x8.
-
-	int SoftShapes::_sampleShapePixel(const Shape& shape, int col, int row)
-	{
-		int inside = 0;
-
-		for (int j = 0; j < 8; j++)
-		{
-			int64_t py = int64_t(row) * 64 + 4 + j * 8;
-			if (py < shape.top || py >= shape.bottom)
-				continue;
-
-			for (int i = 0; i < 8; i++)
-			{
-				int64_t px = int64_t(col) * 64 + 4 + i * 8;
-				if (px < shape.left || px >= shape.right)
-					continue;
-
-				bool bInside = true;
-
-				for (int a = 0; a < 4 && bInside; a++)
-				{
-					const Arc& arc = shape.arcs[a];
-					bool bTop = (a < 2);
-
-					if (arc.bActive && (arc.bLeft ? px < arc.cx : px >= arc.cx) && (bTop ? py < arc.cy : py >= arc.cy))
-					{
-						int64_t dx = px - arc.cx;
-						int64_t dy = py - arc.cy;
-						bInside = dx * dx + dy * dy <= int64_t(arc.r) * arc.r;
-					}
-				}
-
-				if (bInside)
-					inside++;
-			}
-		}
-
-		return inside * (c_fullCoverage / 64);
+		_rasterize(shape, 2, rowBeg, rowEnd, clipBeg, clipEnd, pSink);
 	}
 
 	//____ _sin30() ___________________________________________________________
@@ -866,12 +1541,8 @@ namespace wg
 	{
 		m_boundaries.clear();
 		m_elementSegments.clear();
-
-		for (int half = 0; half < 2; half++)
-		{
-			m_crossings[half].clear();
-			m_crossingsRowY[half] = INT64_MIN;
-		}
+		m_crossings[0].clear();
+		m_crossings[1].clear();
 
 		const uint64_t fullTurn = uint64_t(1) << 32;
 
@@ -919,8 +1590,8 @@ namespace wg
 			b.sx = _sin30(b.angle);
 			b.sy = -_sin30(b.angle + 0x40000000);
 
-			// Rays too close to horizontal cross rows only far outside any canvas, except
-			// for the rows around the center, which are sampled.
+			// Rays too close to horizontal to cross rows within any canvas, except at the center,
+			// are taken as horizontal.
 
 			b.bFlat = std::abs(b.sy) < 1024;
 
@@ -929,7 +1600,6 @@ namespace wg
 				int64_t slope = (int64_t(b.sx) * c_one) / b.sy;		// 32.32
 				b.slopeInt = slope >> 32;
 				b.slopeFrac = uint32_t(slope & 0xFFFFFFFF);
-				b.halfBand = (int64_t(32) << 30) / std::abs(b.sy);
 			}
 		}
 
@@ -944,14 +1614,14 @@ namespace wg
 			{
 				const Boundary& b = m_boundaries[i];
 				if (!b.bFlat && b.sy < 0 && (b.angle >= 0xC0000000) == (pass == 0))
-					m_crossings[0].push_back({ i, 0, 0, 0, 0 });
+					m_crossings[0].push_back(i);
 			}
 
 		for (int i = nBoundaries - 1; i >= 0; i--)
 		{
 			const Boundary& b = m_boundaries[i];
 			if (!b.bFlat && b.sy > 0)
-				m_crossings[1].push_back({ i, 0, 0, 0, 0 });
+				m_crossings[1].push_back(i);
 		}
 	}
 
@@ -987,231 +1657,228 @@ namespace wg
 		return m_boundaries[idx].element;
 	}
 
-	//____ _angularRow() ______________________________________________________
+	//____ RingShape __________________________________________________________
 	/*
-		Splits a row into pieces by slice. Between slice boundaries a piece belongs to one
-		element. Where boundaries cross the row, pixels are split between elements, worked
-		out per pixel. Rows touching the center are done per pixel.
+		Ring as up to four circles, with slices between the middle two and rays between the
+		slices. Circle 0 is the outer edge, 1 the inside of the outer outline, 2 the outside
+		of the inner outline and 3 the inner edge. Without outline, 1 and 2 are left out and
+		0 and 3 limit the slices. In a square ring 0 and 1 are rectangles.
+
+		A ray crosses rows where it is between the circles limiting the slices. Along a row
+		in the upper half they come clockwise, in the lower half counter-clockwise, and the
+		slice right of each is known. Rows are split where rays end and at the center, so
+		within a sub-row each ray is either left of the slices, between them, in the hole
+		or right of them.
+
+		Edge ids: 0-3 left side of circle, 4-7 right side, 8 and 9 left and right side of
+		rect, then the rays above the center followed by those below.
 	*/
 
-	int SoftShapes::_angularRow(int64_t rowY, int clipBeg, int clipEnd)
+	class SoftShapes::RingShape : public SoftShapes::EdgeShape
 	{
-		AngularPiece* pPieces = m_angularPieces.data();
-		int nPieces = 0;
+	public:
 
-		auto add = [&](int beg, int end, int element, int firstActive, int nActive, bool bSampled)
+		int64_t		cx, cy;
+		int64_t		left, top, right, bottom;	// Rect.
+		bool		bBack, bSquare, bHole, bOutline, bSlices;
+
+		int64_t		radius[4];					// 0 for no circle.
+		uint64_t	radius2[4];
+		int64_t		limit[4];					// Most squared length of a chord.
+
+		int64_t		sqLeft[2], sqTop[2], sqRight[2], sqBottom[2];	// Square ring.
+
+		int			outerLimit, innerLimit;		// Circles limiting slices.
+
+		const Ray*	pRays[2];
+		int			nRays[2];
+		int			startSegment[2];			// Segment at left end of rows above and below center.
+
+		int64_t		cacheY[4] = { INT64_MIN, INT64_MIN, INT64_MIN, INT64_MIN };
+		int64_t		cacheX[4];
+
+		static constexpr int	c_firstRayId = 10;
+
+		//____ halfWidth() ____________________________________________________
+
+		int64_t halfWidth(int i, int64_t y)
 		{
-			beg = std::max(beg, clipBeg);
-			end = std::min(end, clipEnd);
-			if (beg < end)
-				pPieces[nPieces++] = { beg, end, element, firstActive, nActive, bSampled };
-		};
-
-		if (m_boundaries.empty())
-		{
-			add(clipBeg, clipEnd, 0, 0, 0, false);
-			return m_nAngularPieces = nPieces;
-		}
-
-		int64_t dy = rowY - m_cy;
-
-		// Boundaries are rays from the center, which only cross rows on their own side of it
-		// as lines would. Rows with the center inside or on an edge are done per pixel.
-
-		if (dy > -64 && dy < 64)
-		{
-			add(clipBeg, clipEnd, -1, 0, 0, true);
-			return m_nAngularPieces = nPieces;
-		}
-
-		bool bUpper = dy < 0;
-		int half = bUpper ? 0 : 1;
-
-		// Crossings, in order along x.
-
-		ActiveBoundary* pActive = m_crossings[half].data();
-		int nActive = (int)m_crossings[half].size();
-
-		m_pActive = pActive;
-
-		if (nActive == 0)
-		{
-			add(clipBeg, clipEnd, _elementAt(0, bUpper ? -1 : 1), 0, 0, false);
-			return m_nAngularPieces = nPieces;
-		}
-
-		// Crossings move by the same amount from row to row, so they are stepped from the
-		// previous row with additions. Computed from scratch for the first row and after a
-		// jump.
-
-		int64_t prevY = m_crossingsRowY[half];
-		int steps = (prevY != INT64_MIN && rowY > prevY && rowY - prevY <= 64 * 4) ? int((rowY - prevY) >> 6) : 0;
-
-		for (int i = 0; i < nActive; i++)
-		{
-			ActiveBoundary& a = pActive[i];
-			const Boundary& b = m_boundaries[a.boundary];
-
-			if (steps > 0)
+			if (cacheY[i] != y)
 			{
-				for (int s = 0; s < steps; s++)
+				int64_t r = radius[i];
+				int64_t dy = y - cy;
+				cacheY[i] = y;
+				cacheX[i] = (dy <= -r || dy >= r) ? 0 : isqrt(radius2[i] - uint64_t(dy * dy));
+			}
+
+			return cacheX[i];
+		}
+
+		//____ x() ____________________________________________________________
+
+		int64_t x(const EdgeDef& edge, int64_t y)
+		{
+			const int id = edge.id;
+
+			if (id < 8)
+			{
+				const int i = id & 3;
+				const bool bLeft = id < 4;
+
+				if (bSquare && i < 2)
+					return bLeft ? sqLeft[i] : sqRight[i];
+
+				int64_t w = halfWidth(i, y);
+				return bLeft ? cx - w : cx + w;
+			}
+
+			if (id < c_firstRayId)
+				return id == 8 ? left : right;
+
+			int ray = id - c_firstRayId;
+			const Ray& r = ray < nRays[0] ? pRays[0][ray] : pRays[1][ray - nRays[0]];
+
+			int64_t dy = y - cy;
+			return cx + dy * r.slopeInt + mulFrac(dy, r.slopeFrac);
+		}
+
+		int uniformEnd(int row) const { return row + 1; }
+
+		//____ split() ________________________________________________________
+		// Not used, circles are split by the limits given with their edges.
+
+		bool split(const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y)
+		{
+			return false;
+		}
+
+		//____ edges() ________________________________________________________
+
+		bool within(int i, int64_t ya, int64_t yb) const
+		{
+			if (bSquare && i < 2)
+				return ya >= sqTop[i] && yb <= sqBottom[i];
+
+			return radius[i] > 0 && ya >= cy - radius[i] && yb <= cy + radius[i];
+		}
+
+		int edges(int64_t ya, int64_t yb, EdgeDef* pEdges) const
+		{
+			const int half = ya < cy ? 0 : 1;
+			const Ray* pRay = pRays[half];
+			const int nRay = nRays[half];
+			const int firstId = c_firstRayId + (half == 0 ? 0 : nRays[0]);
+
+			int n = 0;
+
+			auto put = [&](int id, int segment)
+			{
+				const int i = id & 3;
+				const int64_t lim = (id < 8 && !(bSquare && i < 2)) ? limit[i] : 0;
+				pEdges[n++] = { id, segment, false, false, { INT64_MAX, INT64_MAX }, { lim, lim, lim } };
+			};
+
+			auto putRay = [&](int i)
+			{
+				pEdges[n++] = { firstId + i, pRay[i].segment, true, false, { INT64_MAX, INT64_MAX }, { 0, 0, 0 } };
+			};
+
+			// 0: beyond the slices, 1: between, 2: in the hole.
+
+			auto rayClass = [&](const Ray& ray) -> int
+			{
+				if (half == 0)
+					return yb <= ray.yOuter ? 0 : (bHole && ya >= ray.yInner) ? 2 : 1;
+				else
+					return ya >= ray.yOuter ? 0 : (bHole && yb <= ray.yInner) ? 2 : 1;
+			};
+
+			const bool bInRect = bBack && !bSquare && ya >= top && yb <= bottom;
+			const int segmentRight = (bBack && !bSquare) ? c_ringBackSegment : -1;
+
+			if (bInRect)
+				put(8, c_ringBackSegment);
+
+			if (within(0, ya, yb))
+			{
+				const bool bInHub = bHole && within(3, ya, yb);
+
+				if (!bSlices)
 				{
-					uint64_t frac = uint64_t(a.xFrac) + (uint64_t(b.slopeFrac) << 6);
-					a.x += (b.slopeInt << 6) + int64_t(frac >> 32);
-					a.xFrac = uint32_t(frac);
+					put(0, c_ringOutlineSegment);
+
+					if (bInHub)
+					{
+						put(3, c_ringHubSegment);
+						put(7, c_ringOutlineSegment);
+					}
 				}
-			}
-			else
-			{
-				int64_t fracProduct = dy * int64_t(b.slopeFrac);
-				a.x = m_cx + dy * b.slopeInt + (fracProduct >> 32);
-				a.xFrac = uint32_t(fracProduct);
-			}
-
-			a.bandBeg = floorPixelClamped(a.x - b.halfBand - 33) + 1;
-			a.bandEnd = floorPixelClamped(a.x + b.halfBand - 31) + 1;
-		}
-
-		m_crossingsRowY[half] = rowY;
-
-		// Merge overlapping bands.
-
-		BandGroup* pGroups = m_groups.data();
-		int nGroups = 0;
-
-		for (int i = 0; i < nActive; i++)
-		{
-			BandGroup g = { pActive[i].bandBeg, pActive[i].bandEnd, i, i };
-
-			while (nGroups > 0 && g.beg < pGroups[nGroups - 1].end)
-			{
-				BandGroup& prev = pGroups[nGroups - 1];
-				g.beg = std::min(g.beg, prev.beg);
-				g.end = std::max(g.end, prev.end);
-				g.first = prev.first;
-				nGroups--;
-			}
-
-			pGroups[nGroups++] = g;
-		}
-
-		// Elements left and right of boundaries along x.
-
-		auto elementLeftOf = [&](int active) { const Boundary& b = m_boundaries[pActive[active].boundary]; return bUpper ? b.prevElement : b.element; };
-		auto elementRightOf = [&](int active) { const Boundary& b = m_boundaries[pActive[active].boundary]; return bUpper ? b.element : b.prevElement; };
-
-		int x = clipBeg;
-		int element = elementLeftOf(0);
-
-		for (int i = 0; i < nGroups; i++)
-		{
-			const BandGroup& g = pGroups[i];
-
-			add(std::min(x, g.beg), g.beg, element, 0, 0, false);
-			add(g.beg, g.end, -1, g.first, g.last - g.first + 1, false);
-
-			element = elementRightOf(g.last);
-			x = std::max(x, g.end);
-		}
-
-		add(x, clipEnd, element, 0, 0, false);
-
-		return m_nAngularPieces = nPieces;
-	}
-
-	//____ _pastShare() _______________________________________________________
-	// Share (0 -> 4096) of pixel, centered at dx, dy from the center, past boundary clockwise.
-
-	inline int SoftShapes::_pastShare(const Boundary& b, int32_t dx, int32_t dy)
-	{
-		int64_t d = -int64_t(b.sy) * dx + int64_t(b.sx) * dy;		// Distance from boundary, spx with 30 binals.
-		int64_t h = 2048 + (d >> 24);
-		return int(h < 0 ? 0 : h > c_fullCoverage ? c_fullCoverage : h);
-	}
-
-	//____ _pixelBoundaries() _________________________________________________
-	/*
-		Boundaries running through a pixel not containing the center, centered at dx, dy
-		from it. Returns their number and the index of the first in clockwise order, or of
-		the next boundary if there are none. Found from the directions of the pixel corners.
-	*/
-
-	int SoftShapes::_pixelBoundaries(int32_t dx, int32_t dy, int& first) const
-	{
-		const int64_t cx[4] = { dx - 32, dx + 32, dx + 32, dx - 32 };
-		const int64_t cy[4] = { dy - 32, dy - 32, dy + 32, dy + 32 };
-
-		// The pixel spans less than half a turn, so the cross product orders its corners.
-
-		int lo = 0, hi = 0;
-		for (int i = 1; i < 4; i++)
-		{
-			if (cx[i] * cy[lo] - cy[i] * cx[lo] > 0)
-				lo = i;
-			if (cx[hi] * cy[i] - cy[hi] * cx[i] > 0)
-				hi = i;
-		}
-
-		int nBoundaries = (int)m_boundaries.size();
-
-		// First boundary not before the first corner, wrapping around.
-
-		int l = 0, h = nBoundaries;
-		while (l < h)
-		{
-			int mid = (l + h) / 2;
-			const Boundary& b = m_boundaries[mid];
-			if (_isBefore(b.sx, b.sy, cx[lo], cy[lo]))
-				l = mid + 1;
-			else
-				h = mid;
-		}
-
-		first = l == nBoundaries ? 0 : l;
-
-		// Boundaries from there up to the last corner.
-
-		int n = 0;
-		while (n < nBoundaries)
-		{
-			const Boundary& b = m_boundaries[(first + n) % nBoundaries];
-			if (cx[lo] * b.sy - cy[lo] * b.sx < 0 || b.sx * cy[hi] - b.sy * cx[hi] < 0)
-				break;
-			n++;
-		}
-
-		return n;
-	}
-
-	//____ _samplePixel() _____________________________________________________
-	// Elements covering the pixel containing the center and their share (0 -> 4096) of it.
-
-	void SoftShapes::_samplePixel(int32_t dx, int32_t dy, int* pElements, int* pFractions, int& nElements) const
-	{
-		nElements = 0;
-
-		static const int offsets[4] = { -24, -8, 8, 24 };
-
-		for (int sy = 0; sy < 4; sy++)
-		{
-			for (int sx = 0; sx < 4; sx++)
-			{
-				int e = _elementAt(dx + offsets[sx], dy + offsets[sy]);
-
-				int i = 0;
-				while (i < nElements && pElements[i] != e)
-					i++;
-
-				if (i == nElements)
+				else
 				{
-					pElements[nElements] = e;
-					pFractions[nElements++] = 0;
+					const bool bInSlices = within(outerLimit, ya, yb);
+					const bool bInHole = bInSlices && bHole && within(innerLimit, ya, yb);
+
+					int segment = startSegment[half];
+					int i = 0;
+
+					if (bOutline)
+						put(0, c_ringOutlineSegment);
+
+					if (bInSlices)
+					{
+						while (i < nRay && pRay[i].bLeft && rayClass(pRay[i]) == 0)
+							segment = pRay[i++].segment;
+
+						put(outerLimit, segment);
+
+						if (bInHole)
+						{
+							while (i < nRay && pRay[i].bLeft && rayClass(pRay[i]) == 1)
+							{
+								putRay(i);
+								segment = pRay[i++].segment;
+							}
+
+							while (i < nRay && rayClass(pRay[i]) == 2)
+								segment = pRay[i++].segment;
+
+							if (bOutline)
+							{
+								put(2, c_ringOutlineSegment);
+
+								if (bInHub)
+								{
+									put(3, c_ringHubSegment);
+									put(7, c_ringOutlineSegment);
+								}
+
+								put(6, segment);
+							}
+							else
+							{
+								put(3, c_ringHubSegment);
+								put(7, segment);
+							}
+						}
+
+						for (; i < nRay; i++)
+							if (rayClass(pRay[i]) == 1)
+								putRay(i);
+
+						if (bOutline)
+							put(5, c_ringOutlineSegment);
+					}
 				}
 
-				pFractions[i] += c_fullCoverage / 16;
+				put(4, segmentRight);
 			}
+
+			if (bInRect)
+				put(9, -1);
+
+			return n;
 		}
-	}
+	};
 
 	//____ rasterizeRing() ____________________________________________________
 
@@ -1222,685 +1889,188 @@ namespace wg
 		if (rect.w <= 0 || rect.h <= 0 || clip.w <= 0 || clip.h <= 0)
 			return;
 
+		RingShape shape;
+
+		shape.cx = int64_t(rect.x) + rect.w / 2;
+		shape.cy = int64_t(rect.y) + rect.h / 2;
+		shape.left = rect.x;
+		shape.top = rect.y;
+		shape.right = int64_t(rect.x) + rect.w;
+		shape.bottom = int64_t(rect.y) + rect.h;
+
+		const int64_t cx = shape.cx, cy = shape.cy;
+
 		// Radial geometry
 
-		m_cx = int64_t(rect.x) + rect.w / 2;
-		m_cy = int64_t(rect.y) + rect.h / 2;
+		const int64_t outerRadius = std::min(rect.w, rect.h) / 2;
 
-		spx outerRadius = std::min(rect.w, rect.h) / 2;
+		const bool bHole = ring.thickness > 0 && ring.thickness < outerRadius;
+		const int64_t innerRadius = bHole ? outerRadius - ring.thickness : 0;
 
-		bool bHole = ring.thickness > 0 && ring.thickness < outerRadius;
-		spx innerRadius = bHole ? outerRadius - ring.thickness : 0;
+		int64_t outline = std::max(ring.outline, 0);
+		outline = std::min(outline, bHole ? int64_t(ring.thickness / 2) : outerRadius);
 
-		spx outline = std::max(ring.outline, 0);
-		outline = std::min(outline, bHole ? ring.thickness / 2 : outerRadius);
+		shape.bBack = ring.bBack;
+		shape.bSquare = ring.bSquare;
+		shape.bHole = bHole;
+		shape.bOutline = outline > 0;
 
-		// Nested shapes: rect, outer edge, inside of outer outline, outside of inner outline, inner edge.
+		int64_t* radius = shape.radius;
 
-		Shape shapes[5];
+		radius[0] = ring.bSquare ? 0 : outerRadius;
+		radius[1] = (shape.bOutline && !ring.bSquare) ? std::max(outerRadius - outline, int64_t(0)) : 0;
+		radius[2] = (shape.bOutline && bHole) ? innerRadius + outline : 0;
+		radius[3] = innerRadius;
 
-		auto circle = [&](Shape& shape, spx r)
+		for (int i = 0; i < 4; i++)
 		{
-			if (r <= 0)
-			{
-				shape.bEmpty = true;
-				return;
-			}
+			shape.radius2[i] = uint64_t(radius[i]) * uint64_t(radius[i]);
+			shape.limit[i] = 8 * radius[i] * c_maxSagitta;
+		}
 
-			spx radius[4] = { r, r, r, r };
-			_setupShape(shape, RectSPX(spx(m_cx - r), spx(m_cy - r), r * 2, r * 2), radius);
-		};
+		for (int i = 0; i < 2; i++)
+		{
+			int64_t inset = i == 0 ? 0 : outline;
+			shape.sqLeft[i] = shape.left + inset;
+			shape.sqTop[i] = shape.top + inset;
+			shape.sqRight[i] = shape.right - inset;
+			shape.sqBottom[i] = shape.bottom - inset;
+		}
 
-		spx square[4] = { 0, 0, 0, 0 };
+		shape.outerLimit = shape.bOutline ? 1 : 0;
+		shape.innerLimit = shape.bOutline ? 2 : 3;
 
-		_setupShape(shapes[0], rect, square);
+		// Slices between circles outerLimit and innerLimit.
 
 		if (ring.bSquare)
-		{
-			_setupShape(shapes[1], rect, square);
-			_setupShape(shapes[2], RectSPX(rect.x + outline, rect.y + outline, rect.w - outline * 2, rect.h - outline * 2), square);
-		}
+			shape.bSlices = shape.sqRight[shape.outerLimit] > shape.sqLeft[shape.outerLimit] && shape.sqBottom[shape.outerLimit] > shape.sqTop[shape.outerLimit];
 		else
-		{
-			circle(shapes[1], outerRadius);
-			circle(shapes[2], outerRadius - outline);
-		}
+			shape.bSlices = radius[shape.outerLimit] > 0;
 
 		if (bHole)
 		{
-			circle(shapes[3], innerRadius + outline);
-			circle(shapes[4], innerRadius);
+			int64_t holeRadius = radius[shape.innerLimit];
+			int64_t sliceRadius = ring.bSquare ? std::min(cx - shape.sqLeft[shape.outerLimit], cy - shape.sqTop[shape.outerLimit]) : radius[shape.outerLimit];
+			if (sliceRadius <= holeRadius)
+				shape.bSlices = false;
 		}
-		else
-		{
-			shapes[3].bEmpty = true;
-			shapes[4].bEmpty = true;
-		}
+
+		// Rays
 
 		_setupRingAngles(ring);
 
-		int nBoundaries = (int)m_boundaries.size();
-
-		if ((int)m_angularPieces.size() < nBoundaries * 2 + 4)
-			m_angularPieces.resize(nBoundaries * 2 + 4);
-
-		if ((int)m_groups.size() < nBoundaries + 1)
-			m_groups.resize(nBoundaries + 1);
-
-		if ((int)m_pixelLayers.size() < nBoundaries + 8)
+		for (int half = 0; half < 2; half++)
 		{
-			m_pixelLayers.resize(nBoundaries + 8);
-			m_pixelCoverage.resize(nBoundaries + 8);
-		}
+			auto& rays = m_rays[half];
+			rays.clear();
 
-		if ((int)m_bandDistances.size() < nBoundaries + 1)
-		{
-			m_bandDistances.resize(nBoundaries + 1);
-			m_bandSteps.resize(nBoundaries + 1);
-		}
-
-		// Without back, the outer edge bounds everything instead of rect.
-
-		const bool bBack = ring.bBack;
-		const int boundShape = bBack ? 0 : 1;
-
-		RectSPX bounds = rect;
-		if (!bBack && !ring.bSquare)
-			bounds = RectSPX(spx(m_cx - outerRadius), spx(m_cy - outerRadius), outerRadius * 2, outerRadius * 2);
-
-		// Rows and columns
-
-		int clipBeg = std::max(clip.x, floorPixel(bounds.x));
-		int clipEnd = std::min(clip.x + clip.w, ceilPixel(int64_t(bounds.x) + bounds.w));
-
-		int rowBeg = std::max(clip.y, floorPixel(bounds.y));
-		int rowEnd = std::min(clip.y + clip.h, ceilPixel(int64_t(bounds.y) + bounds.h));
-
-		if (clipBeg >= clipEnd || rowBeg >= rowEnd)
-			return;
-
-		int width = clipEnd - clipBeg;
-
-		if ((int)m_coverageBuffer.size() < width * 15 + 16)
-			m_coverageBuffer.resize(width * 15 + 16);
-
-		// Rows
-
-		Piece	pieces[5][c_maxPieces];
-		int		nPieces[5] = { 0, 0, 0, 0, 0 };
-
-		// Shapes that need rows of their own. Without outline its edges coincide with the
-		// outer and inner edge, without hole there are no inner edges.
-
-		const bool bOutline = outline > 0;
-
-		int		ownShapes[5];
-		int		nOwnShapes = 0;
-
-		if (bBack)
-			ownShapes[nOwnShapes++] = 0;
-		ownShapes[nOwnShapes++] = 1;
-		if (outline > 0)
-			ownShapes[nOwnShapes++] = 2;
-		if (bHole)
-		{
-			if (outline > 0)
-				ownShapes[nOwnShapes++] = 3;
-			ownShapes[nOwnShapes++] = 4;
-		}
-
-		std::vector<int>& spanLayerOfs = m_spanLayerOfs;
-		std::vector<int>& spanCoverageOfs = m_spanCoverageOfs;
-
-		int		elements[16];
-		int		fractions[16];
-
-		for (int y = rowBeg; y < rowEnd; y++)
-		{
-			int64_t rowY = int64_t(y) * 64 + 32;
-
-			uint16_t* pBuffer = m_coverageBuffer.data();
-
-			for (int i = 0; i < nOwnShapes; i++)
-				nPieces[ownShapes[i]] = _shapeRow(shapes[ownShapes[i]], y, clipBeg, clipEnd, pieces[ownShapes[i]], pBuffer);
-
-			if (nPieces[boundShape] == 0)
-				continue;
-
-			_angularRow(rowY, clipBeg, clipEnd);
-
-			// Produce spans. Layer lists and coverage are written to growing buffers, pointers
-			// set when the row is done.
-
-			m_spans.clear();
-			spanLayerOfs.clear();
-			spanCoverageOfs.clear();
-			m_layerBuffer.clear();
-			m_ringOutput.clear();
-
-			// Coverage of each shape in the current stretch: per pixel from pValues (indexed
-			// from base), or value. Only for the shapes the ring has.
-
-			struct Source
+			for (int idx : m_crossings[half])
 			{
-				const uint16_t*	pValues;
-				int				base;
-				int				value;
-			};
+				const Boundary& b = m_boundaries[idx];
 
-			Source src[5] = {};
+				Ray ray;
+				ray.slopeInt = b.slopeInt;
+				ray.slopeFrac = b.slopeFrac;
+				ray.segment = m_elementSegments[half == 0 ? b.element : b.prevElement];
+				ray.bLeft = b.sx < 0;
 
-			auto valueOf = [](const Source& source, int x) { return source.pValues ? int(source.pValues[x - source.base]) : source.value; };
+				// Where the ray leaves the slices, through the circle or a side of the square.
 
-			auto radialAt = [&](int x)
-			{
-				int outer = valueOf(src[1], x);
-				int r = bBack ? valueOf(src[0], x) : outer;
-				int c0 = std::min(outer, r);
-				int c1 = bOutline ? std::min(valueOf(src[2], x), c0) : c0;
-
-				if (!bHole)
-					return RadialValues{ r - c0, c0 - c1, 0, c1 };
-
-				int inner = valueOf(src[4], x);
-				int c2 = std::min(bOutline ? valueOf(src[3], x) : inner, c1);
-				int c3 = std::min(inner, c2);
-
-				return RadialValues{ r - c0, c0 - c1 + c2 - c3, c3, c1 - c2 };
-			};
-
-			// Segment covering all of a pixel, or -1.
-
-			auto wholeSegment = [](const RadialValues& v, int ringSegment)
-			{
-				return	v.ring == c_fullCoverage ? ringSegment :
-						v.back == c_fullCoverage ? c_ringBackSegment :
-						v.outline == c_fullCoverage ? c_ringOutlineSegment :
-						v.hub == c_fullCoverage ? c_ringHubSegment : -1;
-			};
-
-			auto beginSpan = [&](int beg, int end, int segment, bool bUniform)
-			{
-				m_spans.push_back({ beg, end, segment, bUniform, nullptr, 0, nullptr });
-				spanLayerOfs.push_back((int)m_layerBuffer.size());
-				spanCoverageOfs.push_back((int)m_ringOutput.size());
-			};
-
-			auto fullSpan = [&](int beg, int end, int segment)
-			{
-				if (!m_spans.empty() && m_spans.back().segment == segment && m_spans.back().end == beg)
-					m_spans.back().end = end;
-				else
-					beginSpan(beg, end, segment, false);
-			};
-
-			auto addLayer = [&](int segment)
-			{
-				m_layerBuffer.push_back(segment);
-				m_spans.back().nLayers++;
-			};
-
-			// Layers of the radial segments. Back, outline and hub are left out where they
-			// can't have any coverage.
-
-			auto addRadialLayers = [&]()
-			{
-				if (bBack)
-					addLayer(c_ringBackSegment);
-				if (bOutline)
-					addLayer(c_ringOutlineSegment);
-				if (bHole)
-					addLayer(c_ringHubSegment);
-			};
-
-			auto pushRadial = [&](const RadialValues& v)
-			{
-				if (bBack)
-					m_ringOutput.push_back(uint16_t(v.back));
-				if (bOutline)
-					m_ringOutput.push_back(uint16_t(v.outline));
-				if (bHole)
-					m_ringOutput.push_back(uint16_t(v.hub));
-			};
-
-			// A partly covered pixel with layers and coverage given, joining the span before if
-			// it has the same layers.
-
-			auto partialPixel = [&](int x, const int* pLayers, const uint16_t* pCoverage, int nLayers)
-			{
-				bool bJoin = false;
-
-				if (!m_spans.empty())
+				if (ring.bSquare)
 				{
-					const Span& last = m_spans.back();
-					if (last.segment < 0 && !last.bUniform && last.end == x && last.nLayers == nLayers)
-						bJoin = std::equal(pLayers, pLayers + nLayers, m_layerBuffer.data() + spanLayerOfs.back());
-				}
-
-				if (bJoin)
-					m_spans.back().end = x + 1;
-				else
-				{
-					beginSpan(x, x + 1, -1, false);
-					m_layerBuffer.insert(m_layerBuffer.end(), pLayers, pLayers + nLayers);
-					m_spans.back().nLayers = nLayers;
-				}
-
-				m_ringOutput.insert(m_ringOutput.end(), pCoverage, pCoverage + nLayers);
-			};
-
-			// Step through stretches of pixels where no shape or angular piece begins or ends.
-
-			int pieceIdx[5] = { 0, 0, 0, 0, 0 };
-			int angularIdx = 0;
-			const int nAngular = m_nAngularPieces;
-			const AngularPiece* pAngular = m_angularPieces.data();
-
-			int next = clipBeg;
-
-			while (next < clipEnd)
-			{
-				const int beg = next;
-				next = clipEnd;
-
-				bool bInRect = false;
-				bool bConstRadial = true;
-
-				for (int k = 0; k < nOwnShapes; k++)
-				{
-					int i = ownShapes[k];
-					const Piece* pPieces = pieces[i];
-					int& idx = pieceIdx[i];
-
-					while (idx < nPieces[i] && pPieces[idx].end <= beg)
-						idx++;
-
-					Source& source = src[i];
-					source.pValues = nullptr;
-					source.value = 0;
-
-					if (idx < nPieces[i])
-					{
-						const Piece& piece = pPieces[idx];
-
-						if (piece.begin <= beg)
-						{
-							next = std::min(next, piece.end);
-
-							if (piece.pValues)
-							{
-								source.pValues = piece.pValues;
-								source.base = piece.begin;
-								bConstRadial = false;
-							}
-							else
-								source.value = piece.value;
-
-							if (i == boundShape)
-								bInRect = true;
-						}
-						else
-							next = std::min(next, piece.begin);
-					}
-				}
-
-				if (!bInRect)
-					continue;
-
-				while (angularIdx < nAngular && pAngular[angularIdx].end <= beg)
-					angularIdx++;
-
-				if (angularIdx == nAngular)
-					break;
-
-				const AngularPiece& ap = pAngular[angularIdx];
-				next = std::min(next, ap.end);
-
-				const int end = next;
-
-				if (bConstRadial && ap.element >= 0)
-				{
-					RadialValues v = radialAt(beg);
-					int ringSegment = m_elementSegments[ap.element];
-					int segment = wholeSegment(v, ringSegment);
-
-					if (segment >= 0)
-						fullSpan(beg, end, segment);
-					else if (v.back + v.outline + v.hub + v.ring > 0)
-					{
-						beginSpan(beg, end, -1, true);
-						addRadialLayers();
-						addLayer(ringSegment);
-
-						pushRadial(v);
-						m_ringOutput.push_back(uint16_t(v.ring));
-					}
-				}
-				else if (ap.element >= 0)
-				{
-					// Radial edges within one slice.
-
-					beginSpan(beg, end, -1, false);
-					addRadialLayers();
-					addLayer(m_elementSegments[ap.element]);
-
-					for (int x = beg; x < end; x++)
-					{
-						RadialValues v = radialAt(x);
-						pushRadial(v);
-						m_ringOutput.push_back(uint16_t(v.ring));
-					}
-				}
-				else if (!ap.bSampled)
-				{
-					// Slice boundaries crossing the row. A pixel is split between the elements
-					// around the boundaries running through it, in clockwise order. Boundaries
-					// left and right of it don't matter. Where these limits are moves right with
-					// x, so they are followed from pixel to pixel. Pixels split between the same
-					// elements share a span, pixels inside one segment are fully covered.
-
-					bool bUpper = rowY < m_cy;
-					const ActiveBoundary* pActive = m_pActive + ap.firstActive;
-					int nActive = ap.nActive;
-
-					int32_t dy = int32_t(rowY - m_cy);
-					int32_t dx = 0;
-
-					auto boundary = [&](int j) -> const Boundary& { return m_boundaries[pActive[j].boundary]; };
-
-					if (nActive == 1)
-					{
-						// Just one boundary, the common case. Pixels are split between the
-						// elements before and after it by their distance from it, which changes
-						// by the same amount from pixel to pixel.
-
-						const Boundary& b = boundary(0);
-
-						dx = int32_t(int64_t(beg) * 64 + 32 - m_cx);
-						int64_t distance = -int64_t(b.sy) * dx + int64_t(b.sx) * dy;		// spx, 30 binals.
-						const int64_t distanceStep = -int64_t(b.sy) * 64;
-
-						const int segBefore = m_elementSegments[b.prevElement];
-						const int segAfter = m_elementSegments[b.element];
-
-						int* pPixelLayers = m_pixelLayers.data();
-						uint16_t* pPixelCoverage = m_pixelCoverage.data();
-
-						bool bSplitSpan = false;			// Last span is of pixels split by the boundary.
-
-						for (int x = beg; x < end; x++, distance += distanceStep)
-						{
-							int64_t past = 2048 + (distance >> 24);
-							int h = int(past < 0 ? 0 : past > c_fullCoverage ? c_fullCoverage : past);
-
-							RadialValues v = radialAt(x);
-
-							if (h == 0 || h == c_fullCoverage)
-							{
-								// On one side of the boundary.
-
-								int element = h == 0 ? segBefore : segAfter;
-								int segment = wholeSegment(v, element);
-
-								if (segment >= 0)
-									fullSpan(x, x + 1, segment);
-								else
-								{
-									int nPixelLayers = 0;
-									if (bBack) { pPixelLayers[nPixelLayers] = c_ringBackSegment; pPixelCoverage[nPixelLayers++] = uint16_t(v.back); }
-									if (bOutline) { pPixelLayers[nPixelLayers] = c_ringOutlineSegment; pPixelCoverage[nPixelLayers++] = uint16_t(v.outline); }
-									if (bHole) { pPixelLayers[nPixelLayers] = c_ringHubSegment; pPixelCoverage[nPixelLayers++] = uint16_t(v.hub); }
-									pPixelLayers[nPixelLayers] = element;
-									pPixelCoverage[nPixelLayers++] = uint16_t(v.ring);
-
-									partialPixel(x, pPixelLayers, pPixelCoverage, nPixelLayers);
-								}
-
-								bSplitSpan = false;
-								continue;
-							}
-
-							if (!bSplitSpan)
-							{
-								beginSpan(x, x + 1, -1, false);
-								addRadialLayers();
-								addLayer(segBefore);
-								addLayer(segAfter);
-								bSplitSpan = true;
-							}
-							else
-								m_spans.back().end = x + 1;
-
-							pushRadial(v);
-
-							int coverage = (v.ring * (c_fullCoverage - h) + 2048) >> 12;
-							m_ringOutput.push_back(uint16_t(coverage));
-							m_ringOutput.push_back(uint16_t(v.ring - coverage));
-						}
-
-						continue;
-					}
-
-					// Distances of the pixel from the boundaries, kept for those not yet passed
-					// and stepped from pixel to pixel.
-
-					int64_t* pDistance = m_bandDistances.data();
-					int64_t* pStep = m_bandSteps.data();
-					int nKnown = 0;
-
-					auto pastShare = [&](int j)
-					{
-						while (nKnown <= j)
-						{
-							const Boundary& b = boundary(nKnown);
-							pDistance[nKnown] = -int64_t(b.sy) * dx + int64_t(b.sx) * dy;		// spx, 30 binals.
-							pStep[nKnown] = -int64_t(b.sy) * 64;
-							nKnown++;
-						}
-
-						int64_t h = 2048 + (pDistance[j] >> 24);
-						return int(h < 0 ? 0 : h > c_fullCoverage ? c_fullCoverage : h);
-					};
-
-					auto rightShare = [&](int j) { int h = pastShare(j); return bUpper ? h : c_fullCoverage - h; };
-
-					int lo = 0, hi = -1;					// Boundaries running through pixel, along x.
-					int spanLo = INT_MIN, spanHi = INT_MIN;	// Of the partly covered span being extended.
-
-					dx = int32_t(int64_t(beg) * 64 + 32 - m_cx);
-
-					for (int x = beg; x < end; x++, dx += 64)
-					{
-						if (x > beg)
-						{
-							for (int j = lo; j < nKnown; j++)
-								pDistance[j] += pStep[j];
-						}
-
-						while (lo < nActive && rightShare(lo) == c_fullCoverage)
-							lo++;
-
-						hi = std::max(hi, lo - 1);
-
-						while (hi + 1 < nActive && rightShare(hi + 1) > 0)
-							hi++;
-
-						int first = bUpper ? lo : hi;			// Clockwise.
-						int step = bUpper ? 1 : -1;
-						int n = hi - lo + 1;
-
-						// Element before first boundary, or the one pixel is in.
-
-						int element;
-						if (first >= 0 && first < nActive)
-							element = boundary(first).prevElement;
-						else
-							element = boundary(bUpper ? nActive - 1 : 0).element;
-
-						RadialValues v = radialAt(x);
-
-						if (n == 0)
-						{
-							int segment = wholeSegment(v, m_elementSegments[element]);
-							if (segment >= 0)
-							{
-								fullSpan(x, x + 1, segment);
-								spanLo = spanHi = INT_MIN;
-								continue;
-							}
-						}
-
-						if (lo != spanLo || hi != spanHi)
-						{
-							beginSpan(x, x + 1, -1, false);
-							addRadialLayers();
-							addLayer(m_elementSegments[element]);
-
-							for (int i = 0, j = first; i < n; i++, j += step)
-								addLayer(m_elementSegments[boundary(j).element]);
-
-							spanLo = lo;
-							spanHi = hi;
-						}
-						else
-							m_spans.back().end = x + 1;
-
-						pushRadial(v);
-
-						// Share past each boundary, kept decreasing clockwise. Rounded cumulatively,
-						// so that slices add up to exactly the ring.
-
-						int prevH = c_fullCoverage, prevCoverage = 0;
-
-						for (int i = 0, j = first; i < n; i++, j += step)
-						{
-							int h = std::min(pastShare(j), prevH);
-							prevH = h;
-
-							int coverage = (v.ring * (c_fullCoverage - h) + 2048) >> 12;
-							m_ringOutput.push_back(uint16_t(coverage - prevCoverage));
-							prevCoverage = coverage;
-						}
-
-						m_ringOutput.push_back(uint16_t(v.ring - prevCoverage));
-					}
+					int o = shape.outerLimit;
+					int64_t halfW = b.sx < 0 ? cx - shape.sqLeft[o] : shape.sqRight[o] - cx;
+					int64_t halfH = b.sy < 0 ? cy - shape.sqTop[o] : shape.sqBottom[o] - cy;
+
+					if (int64_t(std::abs(b.sx)) * halfH > int64_t(std::abs(b.sy)) * halfW)
+						ray.yOuter = cy + (int64_t(b.sy) * halfW) / std::abs(b.sx);
+					else
+						ray.yOuter = b.sy < 0 ? shape.sqTop[o] : shape.sqBottom[o];
 				}
 				else
-				{
-					// Rows touching the center, where boundaries can't be followed along the row
-					// as lines. Boundaries running through each pixel are found from the
-					// directions of its corners instead. The pixel containing the center is
-					// sampled. Pixels inside one segment are fully covered.
+					ray.yOuter = cy + ((radius[shape.outerLimit] * b.sy) >> 30);
 
-					int32_t dy = int32_t(rowY - m_cy);
-					int nBoundaries = (int)m_boundaries.size();
-
-					int* pLayers = m_pixelLayers.data();
-					uint16_t* pCoverage = m_pixelCoverage.data();
-
-					for (int x = beg; x < end; x++)
-					{
-						RadialValues v = radialAt(x);
-
-						int nLayers = 0;
-
-						if (bBack)
-						{
-							pLayers[nLayers] = c_ringBackSegment;
-							pCoverage[nLayers++] = uint16_t(v.back);
-						}
-						if (bOutline)
-						{
-							pLayers[nLayers] = c_ringOutlineSegment;
-							pCoverage[nLayers++] = uint16_t(v.outline);
-						}
-						if (bHole)
-						{
-							pLayers[nLayers] = c_ringHubSegment;
-							pCoverage[nLayers++] = uint16_t(v.hub);
-						}
-
-						if (v.ring > 0)
-						{
-							int32_t dx = int32_t(int64_t(x) * 64 + 32 - m_cx);
-
-							int prevCoverage = 0;
-
-							if (dx >= -32 && dx <= 32 && dy >= -32 && dy <= 32)
-							{
-								int nElements;
-								_samplePixel(dx, dy, elements, fractions, nElements);
-
-								int cumulative = 0;
-								for (int i = 0; i < nElements - 1; i++)
-								{
-									cumulative += fractions[i];
-									int coverage = (v.ring * cumulative + 2048) >> 12;
-
-									pLayers[nLayers] = m_elementSegments[elements[i]];
-									pCoverage[nLayers++] = uint16_t(coverage - prevCoverage);
-									prevCoverage = coverage;
-								}
-
-								pLayers[nLayers] = m_elementSegments[elements[nElements - 1]];
-							}
-							else
-							{
-								int first;
-								int n = _pixelBoundaries(dx, dy, first);
-
-								pLayers[nLayers] = m_elementSegments[m_boundaries[first].prevElement];
-
-								int prevH = c_fullCoverage;
-
-								for (int i = 0; i < n; i++)
-								{
-									const Boundary& b = m_boundaries[(first + i) % nBoundaries];
-
-									int h = std::min(_pastShare(b, dx, dy), prevH);
-									prevH = h;
-
-									int coverage = (v.ring * (c_fullCoverage - h) + 2048) >> 12;
-									pCoverage[nLayers++] = uint16_t(coverage - prevCoverage);
-									prevCoverage = coverage;
-
-									pLayers[nLayers] = m_elementSegments[b.element];
-								}
-							}
-
-							pCoverage[nLayers++] = uint16_t(v.ring - prevCoverage);
-						}
-
-						// Fully covered by one segment, or partly.
-
-						int segment = -1;
-						for (int i = 0; i < nLayers; i++)
-							if (pCoverage[i] == c_fullCoverage)
-								segment = pLayers[i];
-
-						if (segment >= 0)
-							fullSpan(x, x + 1, segment);
-						else if (nLayers > 0)
-							partialPixel(x, pLayers, pCoverage, nLayers);
-					}
-				}
+				ray.yInner = bHole ? cy + ((radius[shape.innerLimit] * b.sy) >> 30) : cy;
+				rays.push_back(ray);
 			}
 
-			// Set pointers into buffers, now that they won't move.
+			shape.pRays[half] = rays.data();
+			shape.nRays[half] = (int)rays.size();
 
-			for (int i = 0; i < (int)m_spans.size(); i++)
+			if (rays.empty())
+				shape.startSegment[half] = m_elementSegments[_elementAt(0, half == 0 ? -1 : 1)];
+			else
 			{
-				Span& span = m_spans[i];
-				if (span.segment < 0)
-				{
-					span.pLayerSegments = m_layerBuffer.data() + spanLayerOfs[i];
-					span.pCoverage = m_ringOutput.data() + spanCoverageOfs[i];
-				}
+				const Boundary& b = m_boundaries[m_crossings[half][0]];
+				shape.startSegment[half] = m_elementSegments[half == 0 ? b.prevElement : b.element];
 			}
-
-			if (!m_spans.empty())
-				pSink->row(y, (int)m_spans.size(), m_spans.data());
 		}
+
+		// Sub-rows split where edges begin and end.
+
+		m_splits.clear();
+
+		if (ring.bBack || ring.bSquare)
+		{
+			m_splits.push_back(shape.top);
+			m_splits.push_back(shape.bottom);
+		}
+
+		if (ring.bSquare && shape.bOutline)
+		{
+			m_splits.push_back(shape.sqTop[1]);
+			m_splits.push_back(shape.sqBottom[1]);
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			if (radius[i] > 0)
+			{
+				m_splits.push_back(cy - radius[i]);
+				m_splits.push_back(cy + radius[i]);
+			}
+		}
+
+		if (!m_boundaries.empty())
+			m_splits.push_back(cy);
+
+		if (shape.bSlices)
+		{
+			for (int half = 0; half < 2; half++)
+				for (auto& ray : m_rays[half])
+				{
+					m_splits.push_back(ray.yOuter);
+					if (bHole)
+						m_splits.push_back(ray.yInner);
+				}
+		}
+
+		std::sort(m_splits.begin(), m_splits.end());
+		m_splits.erase(std::unique(m_splits.begin(), m_splits.end()), m_splits.end());
+
+		shape.pSplits = m_splits.data();
+		shape.nSplits = (int)m_splits.size();
+		shape.maxEdges = 10 + (int)std::max(m_rays[0].size(), m_rays[1].size());
+		shape.nIds = RingShape::c_firstRayId + (int)(m_rays[0].size() + m_rays[1].size());
+
+		// Rows and columns. Without back, the outer edge bounds the ring instead of rect.
+
+		int64_t boundsLeft = shape.left, boundsTop = shape.top, boundsRight = shape.right, boundsBottom = shape.bottom;
+
+		if (!ring.bBack && !ring.bSquare)
+		{
+			boundsLeft = cx - outerRadius;
+			boundsTop = cy - outerRadius;
+			boundsRight = cx + outerRadius;
+			boundsBottom = cy + outerRadius;
+		}
+
+		int clipBeg = std::max(clip.x, floorPixel(boundsLeft));
+		int clipEnd = std::min(clip.x + clip.w, ceilPixel(boundsRight));
+		int rowBeg = std::max(clip.y, floorPixel(boundsTop));
+		int rowEnd = std::min(clip.y + clip.h, ceilPixel(boundsBottom));
+
+		_rasterize(shape, c_ringFirstSliceSegment + ring.nSlices, rowBeg, rowEnd, clipBeg, clipEnd, pSink);
 	}
 
 }
