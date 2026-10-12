@@ -295,6 +295,21 @@ namespace wg
 					 outsideCorner(left + radius[3], bottom - radius[3], radius[3], true, false));
 		}
 
+		/**
+		 * Radii of the inner corners of an outline inside a box with the given (clamped)
+		 * corner radii: the radius minus the thicker of the two sides meeting there. With
+		 * uneven outlines they can be larger than the inside, but stay concentric with the
+		 * outer corners.
+		 */
+
+		inline void innerCornerRadii(const spx radius[4], const BorderSPX& outline, spx innerRadius[4])
+		{
+			innerRadius[0] = std::max(radius[0] - std::max(outline.left, outline.top), 0);
+			innerRadius[1] = std::max(radius[1] - std::max(outline.top, outline.right), 0);
+			innerRadius[2] = std::max(radius[2] - std::max(outline.right, outline.bottom), 0);
+			innerRadius[3] = std::max(radius[3] - std::max(outline.bottom, outline.left), 0);
+		}
+
 		inline void clampCornerRadii(const SizeSPX& size, CornersSPX& radius)
 		{
 			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };

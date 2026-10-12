@@ -292,8 +292,9 @@ namespace wg
 				return false;
 
 			BorderSPX o = align(ptsToSpx(m_outline,scale));
-			spx innerRadius[4] = {	std::max(radius[0] - std::max(o.left, o.top), 0), std::max(radius[1] - std::max(o.top, o.right), 0),
-									std::max(radius[2] - std::max(o.right, o.bottom), 0), std::max(radius[3] - std::max(o.bottom, o.left), 0) };
+			spx outerRadius[4] = { radius[0], radius[1], radius[2], radius[3] };
+			spx innerRadius[4];
+			Util::innerCornerRadii(outerRadius, o, innerRadius);
 
 			if( Util::isInsideRoundedBox(ofs, center, innerRadius) )
 				opacity = _getFillColor(state).a;

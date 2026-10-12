@@ -157,10 +157,11 @@ namespace
 		ref.inner.right = (in.x + in.w) / 64.0;
 		ref.inner.bottom = (in.y + in.h) / 64.0;
 
-		ref.inner.r[0] = std::max(radius[0] - std::max(o.left, o.top), 0) / 64.0;
-		ref.inner.r[1] = std::max(radius[1] - std::max(o.top, o.right), 0) / 64.0;
-		ref.inner.r[2] = std::max(radius[2] - std::max(o.right, o.bottom), 0) / 64.0;
-		ref.inner.r[3] = std::max(radius[3] - std::max(o.bottom, o.left), 0) / 64.0;
+		spx innerRadius[4];
+		Util::innerCornerRadii(radius, o, innerRadius);
+
+		for (int i = 0; i < 4; i++)
+			ref.inner.r[i] = innerRadius[i] / 64.0;
 
 		return ref;
 	}
@@ -220,6 +221,16 @@ namespace
 		cases.push_back({ "outline fills box", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 20, 64 * 12 }, 64 * 4, 64 * 4, 64 * 4, 64 * 4, { 64 * 7, 64 * 7, 64 * 7, 64 * 7 }), 0.1 });
 		cases.push_back({ "large radius", makeBox({ 64 * 1 + 21, 64 * 1 + 50, 64 * 700, 64 * 500 }, 64 * 240, 64 * 240, 64 * 240, 64 * 240, { 64 * 3, 64 * 3, 64 * 3, 64 * 3 }), 0.1 });
 		cases.push_back({ "negative position", makeBox({ -64 * 10 - 21, -64 * 5 - 13, 64 * 40, 64 * 30 }, 64 * 12, 64 * 12, 64 * 12, 64 * 12, { 64 * 2, 64 * 2, 64 * 2, 64 * 2 }), 0.1 });
+
+		// Diagonal corners reaching past each other.
+
+		cases.push_back({ "leaf", makeBox({ 64 * 3 + 13, 64 * 2 + 40, 64 * 24, 64 * 24 }, 0, 64 * 24, 0, 64 * 24), 0.1 });
+		cases.push_back({ "other leaf, outline", makeBox({ 64 * 3 + 13, 64 * 2 + 40, 64 * 40 + 20, 64 * 40 + 20 }, 64 * 40, 0, 64 * 40, 0, { 64 * 3, 64 * 3, 64 * 3, 64 * 3 }), 0.1 });
+		cases.push_back({ "large diagonal radii", makeBox({ 64 * 2 + 5, 64 * 2 + 33, 64 * 60, 64 * 50 }, 64 * 10, 64 * 45, 64 * 5, 64 * 40), 0.1 });
+
+		// Inner corner that would reach past the inside of a thick outline.
+
+		cases.push_back({ "thick outline on one side", makeBox({ 64 * 2, 64 * 2, 64 * 30, 64 * 100 }, 0, 0, 64 * 30, 0, { 64, 64, 64, 64 * 10 + 32 }), 0.1 });
 
 		return cases;
 	}

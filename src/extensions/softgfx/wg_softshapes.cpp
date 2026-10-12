@@ -32,6 +32,14 @@ namespace wg
 	static inline int floorPixel(int64_t value) { return int(value >> 6); }
 	static inline int ceilPixel(int64_t value) { return int((value + 63) >> 6); }
 
+	// As floorPixel(), for values that can be far outside any canvas.
+
+	static inline int floorPixelClamped(int64_t value)
+	{
+		int64_t pixel = value >> 6;
+		return int(pixel < -0x40000000 ? -0x40000000 : pixel > 0x40000000 ? 0x40000000 : pixel);
+	}
+
 	static const int64_t c_one = int64_t(1) << 32;			// 1.0 in 32.32 fixed point.
 
 	//____ Sine table _________________________________________________________
@@ -95,10 +103,8 @@ namespace wg
 			RectSPX innerRect(rect.x + outline.left, rect.y + outline.top,
 							  rect.w - outline.left - outline.right, rect.h - outline.top - outline.bottom);
 
-			spx innerRadius[4] = {	std::max(radius[0] - std::max(outline.left, outline.top), 0),
-									std::max(radius[1] - std::max(outline.top, outline.right), 0),
-									std::max(radius[2] - std::max(outline.right, outline.bottom), 0),
-									std::max(radius[3] - std::max(outline.bottom, outline.left), 0) };
+			spx innerRadius[4];
+			Util::innerCornerRadii(radius, outline, innerRadius);
 
 			_setupShape(inner, innerRect, innerRadius);
 		}
@@ -116,8 +122,8 @@ namespace wg
 
 		int width = clipEnd - clipBeg;
 
-		if ((int)m_coverageBuffer.size() < width * 4 + 16)
-			m_coverageBuffer.resize(width * 4 + 16);
+		if ((int)m_coverageBuffer.size() < width * 6 + 16)
+			m_coverageBuffer.resize(width * 6 + 16);
 
 		if ((int)m_outputBuffer.size() < width * 2 + c_maxPieces * 8)
 			m_outputBuffer.resize(width * 2 + c_maxPieces * 8);
@@ -323,28 +329,33 @@ namespace wg
 			arc.cx = arc.bLeft ? shape.left + r : shape.right - r;
 			arc.cy = bTop ? shape.top + r : shape.bottom - r;
 
-			// Pixels with their center inside the square spanned by the corner.
+			// Pixels with their center inside the square spanned by the corner. Only the
+			// inner corners of uneven outlines can be larger than the side, and then reach
+			// into the pixels cut by the opposite edge.
+
+			bool bPastWidth = r > rect.w;
+			bool bPastHeight = r > rect.h;
 
 			if (arc.bLeft)
 			{
 				arc.colBeg = leftCol;
-				arc.colEnd = std::min(ceilPixel(int64_t(shape.left) + r - 32), lastUncutCol + 1);
+				arc.colEnd = std::min(ceilPixel(int64_t(shape.left) + r - 32), (bPastWidth ? rightCol : lastUncutCol) + 1);
 			}
 			else
 			{
-				arc.colBeg = std::max(ceilPixel(int64_t(shape.right) - r - 32), firstUncutCol);
+				arc.colBeg = std::max(ceilPixel(int64_t(shape.right) - r - 32), bPastWidth ? leftCol : firstUncutCol);
 				arc.colEnd = rightCol + 1;
 			}
 
 			if (bTop)
 			{
 				arc.rowBeg = topRow;
-				arc.rowEnd = std::min(ceilPixel(int64_t(shape.top) + r - 32), lastUncutRow + 1);
+				arc.rowEnd = std::min(ceilPixel(int64_t(shape.top) + r - 32), (bPastHeight ? bottomRow : lastUncutRow) + 1);
 				shape.plainBeg = std::max(shape.plainBeg, arc.rowEnd);
 			}
 			else
 			{
-				arc.rowBeg = std::max(ceilPixel(int64_t(shape.bottom) - r - 32), firstUncutRow);
+				arc.rowBeg = std::max(ceilPixel(int64_t(shape.bottom) - r - 32), bPastHeight ? topRow : firstUncutRow);
 				arc.rowEnd = bottomRow + 1;
 				shape.plainEnd = std::min(shape.plainEnd, arc.rowBeg);
 			}
@@ -577,6 +588,22 @@ namespace wg
 
 		int midBeg, midEnd;
 
+		// Corners can reach past each other (large diagonal radii, as in a leaf shape) or
+		// into pixels cut by the opposite edge (inner corners of uneven outlines). Then each
+		// pixel gets the least coverage of the edges and corners reaching it.
+
+		const int oxLeft = (leftCol + 1) * 64 - shape.left;			// Part of left column inside shape.
+		const int oxRight = shape.right - rightCol * 64;
+
+		int leftReach = leftArc >= 0 ? shape.arcs[leftArc].colEnd : (oxLeft < 64 ? leftCol + 1 : leftCol);
+		int rightReach = rightArc >= 0 ? shape.arcs[rightArc].colBeg : (oxRight < 64 ? rightCol : rightCol + 1);
+
+		bool bTopCut = (row == shape.topRow && (shape.top & 63) != 0);
+		bool bBottomCut = (row == shape.bottomRow && (shape.bottom & 63) != 0);
+
+		if (leftReach > rightReach || (bBottomCut && (leftArc == 0 || rightArc == 1)) || (bTopCut && (leftArc == 3 || rightArc == 2)))
+			return _crossedShapeRow(shape, row, oy, leftArc, rightArc, clipBeg, clipEnd, pPieces, pBuffer);
+
 		// Left side
 
 		if (leftArc >= 0)
@@ -592,10 +619,9 @@ namespace wg
 		}
 		else
 		{
-			int ox = (leftCol + 1) * 64 - shape.left;
-			if (ox < 64)
+			if (oxLeft < 64)
 			{
-				add(leftCol, leftCol + 1, ox * oy);
+				add(leftCol, leftCol + 1, oxLeft * oy);
 				midBeg = leftCol + 1;
 			}
 			else
@@ -603,8 +629,6 @@ namespace wg
 		}
 
 		// Middle
-
-		int oxRight = shape.right - rightCol * 64;
 
 		if (rightArc >= 0)
 			midEnd = shape.arcs[rightArc].colBeg;
@@ -631,6 +655,166 @@ namespace wg
 		return nPieces;
 	}
 
+
+	//____ _crossedShapeRow() _________________________________________________
+	/*
+		Row of a shape where corners reach past each other or into pixels cut by the
+		opposite edge, see _shapeRow(). Coverage of each pixel is the least of the edges
+		and corners reaching it.
+	*/
+
+	int SoftShapes::_crossedShapeRow(Shape& shape, int row, int oy, int leftArc, int rightArc, int clipBeg, int clipEnd, Piece* pPieces, uint16_t*& pBuffer)
+	{
+		const int leftCol = floorPixel(shape.left);
+		const int rightCol = ceilPixel(shape.right) - 1;
+
+		const int oxLeft = (leftCol + 1) * 64 - shape.left;
+		const int oxRight = shape.right - rightCol * 64;
+
+		// Bands of the arcs.
+
+		int leftBeg = 0, leftEnd = 0, leftValues = 0;
+		int rightBeg = 0, rightEnd = 0, rightValues = 0;
+		const uint16_t* pLeft = pBuffer;
+		const uint16_t* pRight = pBuffer;
+
+		if (leftArc >= 0)
+		{
+			pLeft = pBuffer;
+			pBuffer += _arcRow(shape.arcs[leftArc], row, clipBeg, clipEnd, leftBeg, leftEnd, pBuffer);
+			leftValues = std::max(leftBeg, clipBeg);
+		}
+
+		if (rightArc >= 0)
+		{
+			pRight = pBuffer;
+			pBuffer += _arcRow(shape.arcs[rightArc], row, clipBeg, clipEnd, rightBeg, rightEnd, pBuffer);
+			rightValues = std::max(rightBeg, clipBeg);
+		}
+
+		// Coverage of each pixel.
+
+		const int beg = std::max(leftCol, clipBeg);
+		const int end = std::min(rightCol + 1, clipEnd);
+
+		if (beg >= end)
+			return 0;
+
+		uint16_t* pOut = pBuffer;
+		const int n = end - beg;
+		pBuffer += n;
+
+		for (int x = beg; x < end; x++)
+		{
+			int straight = (x == leftCol ? oxLeft : x == rightCol ? oxRight : 64) * oy;
+			int left = c_fullCoverage;
+			int right = c_fullCoverage;
+
+			if (leftArc >= 0 && x < shape.arcs[leftArc].colEnd)
+				left = x < leftBeg ? 0 : x < leftEnd ? int(pLeft[x - leftValues]) : c_fullCoverage;
+
+			if (rightArc >= 0 && x >= shape.arcs[rightArc].colBeg)
+				right = x >= rightEnd ? 0 : x >= rightBeg ? int(pRight[x - rightValues]) : c_fullCoverage;
+
+			int v = std::min(straight, std::min(left, right));
+
+			// Pixels cut by more than one edge are sampled.
+
+			int nCuts = (straight < c_fullCoverage) + (left < c_fullCoverage) + (right < c_fullCoverage);
+
+			if (v > 0 && nCuts > 1)
+				v = _sampleShapePixel(shape, x, row);
+
+			pOut[x - beg] = uint16_t(v);
+		}
+
+		// Pieces: runs of the same coverage, partly covered pixels in between per pixel.
+
+		int nPieces = 0;
+		int i = 0;
+
+		while (i < n)
+		{
+			if (pOut[i] == 0)
+			{
+				i++;
+				continue;
+			}
+
+			int j = i + 1;
+			while (j < n && pOut[j] == pOut[i])
+				j++;
+
+			if (j - i >= 2 && nPieces < c_maxPieces - 1)
+			{
+				pPieces[nPieces++] = { beg + i, beg + j, pOut[i], nullptr };
+				i = j;
+				continue;
+			}
+
+			// Per pixel until the next run or uncovered pixel, or to the end if out of pieces.
+
+			j = i + 1;
+			if (nPieces < c_maxPieces - 1)
+			{
+				while (j < n && pOut[j] != 0 && !(j + 1 < n && pOut[j + 1] == pOut[j]))
+					j++;
+			}
+			else
+			{
+				j = n;
+				while (pOut[j - 1] == 0)
+					j--;
+			}
+
+			pPieces[nPieces++] = { beg + i, beg + j, 0, pOut + i };
+			i = j;
+		}
+
+		return nPieces;
+	}
+
+	//____ _sampleShapePixel() ________________________________________________
+	// Coverage of a pixel by a shape, sampled 8x8.
+
+	int SoftShapes::_sampleShapePixel(const Shape& shape, int col, int row)
+	{
+		int inside = 0;
+
+		for (int j = 0; j < 8; j++)
+		{
+			int64_t py = int64_t(row) * 64 + 4 + j * 8;
+			if (py < shape.top || py >= shape.bottom)
+				continue;
+
+			for (int i = 0; i < 8; i++)
+			{
+				int64_t px = int64_t(col) * 64 + 4 + i * 8;
+				if (px < shape.left || px >= shape.right)
+					continue;
+
+				bool bInside = true;
+
+				for (int a = 0; a < 4 && bInside; a++)
+				{
+					const Arc& arc = shape.arcs[a];
+					bool bTop = (a < 2);
+
+					if (arc.bActive && (arc.bLeft ? px < arc.cx : px >= arc.cx) && (bTop ? py < arc.cy : py >= arc.cy))
+					{
+						int64_t dx = px - arc.cx;
+						int64_t dy = py - arc.cy;
+						bInside = dx * dx + dy * dy <= int64_t(arc.r) * arc.r;
+					}
+				}
+
+				if (bInside)
+					inside++;
+			}
+		}
+
+		return inside * (c_fullCoverage / 64);
+	}
 
 	//____ _sin30() ___________________________________________________________
 	// Sine in 2.30 fixed point, of angle where 2^32 is a full turn.
@@ -858,8 +1042,8 @@ namespace wg
 			ActiveBoundary& a = m_active[i];
 			a.boundary = order[i];
 			a.x = x;
-			a.bandBeg = floorPixel(x - b.halfBand - 33) + 1;
-			a.bandEnd = floorPixel(x + b.halfBand - 31) + 1;
+			a.bandBeg = floorPixelClamped(x - b.halfBand - 33) + 1;
+			a.bandEnd = floorPixelClamped(x + b.halfBand - 31) + 1;
 		}
 
 		// Merge overlapping bands.
@@ -1100,8 +1284,8 @@ namespace wg
 
 		int width = clipEnd - clipBeg;
 
-		if ((int)m_coverageBuffer.size() < width * 10 + 16)
-			m_coverageBuffer.resize(width * 10 + 16);
+		if ((int)m_coverageBuffer.size() < width * 15 + 16)
+			m_coverageBuffer.resize(width * 15 + 16);
 
 		// Rows
 

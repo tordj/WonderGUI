@@ -213,6 +213,8 @@ namespace wg
 		void	_initArc(Arc& arc, int row);
 		int		_arcRow(Arc& arc, int row, int clipBeg, int clipEnd, int& bandBeg, int& bandEnd, uint16_t* pOutput);
 		int		_shapeRow(Shape& shape, int row, int clipBeg, int clipEnd, Piece* pPieces, uint16_t*& pBuffer);
+		int		_crossedShapeRow(Shape& shape, int row, int oy, int leftArc, int rightArc, int clipBeg, int clipEnd, Piece* pPieces, uint16_t*& pBuffer);
+		static int	_sampleShapePixel(const Shape& shape, int col, int row);
 
 		static inline int	_arcCoverage(const Arc& arc, int64_t d);
 
