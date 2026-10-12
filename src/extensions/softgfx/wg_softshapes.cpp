@@ -147,52 +147,53 @@ namespace wg
 				pInnerPieces = innerPieces;
 			}
 
-			// Collect the edges of all pieces.
-
-			int breaks[c_maxPieces * 4];
-			int nBreaks = 0;
-
-			for (int i = 0; i < nOuter; i++)
-			{
-				breaks[nBreaks++] = outerPieces[i].begin;
-				breaks[nBreaks++] = outerPieces[i].end;
-			}
-
-			if (bOutline)
-			{
-				for (int i = 0; i < nInner; i++)
-				{
-					breaks[nBreaks++] = pInnerPieces[i].begin;
-					breaks[nBreaks++] = pInnerPieces[i].end;
-				}
-			}
-
-			std::sort(breaks, breaks + nBreaks);
-			nBreaks = int(std::unique(breaks, breaks + nBreaks) - breaks);
-
-			// Split into spans, fill = inner coverage and outline = outer - inner.
+			// Split into spans, fill = inner coverage and outline = outer - inner. Steps through
+			// stretches of pixels where no piece begins or ends.
 
 			Span*		pSpans = m_spans.data();
 			int			nSpans = 0;
 			uint16_t*	pOut = m_outputBuffer.data();
 
 			int io = 0, ii = 0;
+			int next = outerPieces[0].begin;
 
-			for (int k = 0; k + 1 < nBreaks; k++)
+			while (true)
 			{
-				int beg = breaks[k];
-				int end = breaks[k + 1];
+				const int beg = next;
 
 				while (io < nOuter && outerPieces[io].end <= beg)
 					io++;
+
+				if (io == nOuter)
+					break;
+
+				const Piece* po = &outerPieces[io];
+
+				if (po->begin > beg)
+				{
+					next = po->begin;
+					continue;
+				}
+
+				next = po->end;
+
 				while (ii < nInner && pInnerPieces[ii].end <= beg)
 					ii++;
 
-				const Piece* po = (io < nOuter && outerPieces[io].begin <= beg) ? &outerPieces[io] : nullptr;
-				const Piece* pi = (ii < nInner && pInnerPieces[ii].begin <= beg) ? &pInnerPieces[ii] : nullptr;
+				const Piece* pi = nullptr;
 
-				if (!po)
-					continue;
+				if (ii < nInner)
+				{
+					if (pInnerPieces[ii].begin <= beg)
+					{
+						pi = &pInnerPieces[ii];
+						next = std::min(next, pi->end);
+					}
+					else
+						next = std::min(next, pInnerPieces[ii].begin);
+				}
+
+				const int end = next;
 
 				Span* pPrev = nSpans > 0 ? &pSpans[nSpans - 1] : nullptr;
 
@@ -645,6 +646,8 @@ namespace wg
 	{
 		m_boundaries.clear();
 		m_elementSegments.clear();
+		m_upperOrder.clear();
+		m_lowerOrder.clear();
 
 		const uint64_t fullTurn = uint64_t(1) << 32;
 
@@ -705,6 +708,27 @@ namespace wg
 				b.slopeFrac = uint32_t(slope & 0xFFFFFFFF);
 				b.halfBand = (int64_t(32) << 30) / std::abs(b.sy);
 			}
+		}
+
+		// Boundaries crossing rows above and below the center, in order of their crossings
+		// from left to right. Rays from the center don't cross, so that is clockwise from
+		// 9 o'clock above and counter-clockwise from 9 o'clock below.
+
+		int nBoundaries = (int)m_boundaries.size();
+
+		for (int pass = 0; pass < 2; pass++)
+			for (int i = 0; i < nBoundaries; i++)
+			{
+				const Boundary& b = m_boundaries[i];
+				if (!b.bFlat && b.sy < 0 && (b.angle >= 0xC0000000) == (pass == 0))
+					m_upperOrder.push_back(i);
+			}
+
+		for (int i = nBoundaries - 1; i >= 0; i--)
+		{
+			const Boundary& b = m_boundaries[i];
+			if (!b.bFlat && b.sy > 0)
+				m_lowerOrder.push_back(i);
 		}
 	}
 
@@ -770,38 +794,31 @@ namespace wg
 
 		bool bUpper = dy < 0;
 
-		for (int i = 0; i < (int)m_boundaries.size(); i++)
-		{
-			const Boundary& b = m_boundaries[i];
+		// Crossings, in order along x.
 
-			if (b.bFlat || (bUpper ? b.sy >= 0 : b.sy <= 0))
-				continue;
+		const std::vector<int>& order = bUpper ? m_upperOrder : m_lowerOrder;
+		int nActive = (int)order.size();
 
-			int64_t x = m_cx + dy * b.slopeInt + ((dy * int64_t(b.slopeFrac)) >> 32);
-
-			int bandBeg = floorPixel(x - b.halfBand - 33) + 1;
-			int bandEnd = floorPixel(x + b.halfBand - 31) + 1;
-
-			m_active.push_back({ i, x, bandBeg, bandEnd });
-		}
-
-		if (m_active.empty())
+		if (nActive == 0)
 		{
 			add(clipBeg, clipEnd, _elementAt(bUpper ? 0 : 0x80000000), 0, 0, false);
 			return (int)m_angularPieces.size();
 		}
 
-		// Sort by crossing, which is clockwise in the upper half and counter-clockwise in the lower.
+		m_active.resize(nActive);
 
-		std::sort(m_active.begin(), m_active.end(), [this, bUpper](const ActiveBoundary& a, const ActiveBoundary& b)
+		for (int i = 0; i < nActive; i++)
 		{
-			if (a.x != b.x)
-				return a.x < b.x;
+			const Boundary& b = m_boundaries[order[i]];
 
-			uint32_t ka = m_boundaries[a.boundary].angle - (bUpper ? 0xC0000000 : 0x40000000);
-			uint32_t kb = m_boundaries[b.boundary].angle - (bUpper ? 0xC0000000 : 0x40000000);
-			return bUpper ? ka < kb : ka > kb;
-		});
+			int64_t x = m_cx + dy * b.slopeInt + ((dy * int64_t(b.slopeFrac)) >> 32);
+
+			ActiveBoundary& a = m_active[i];
+			a.boundary = order[i];
+			a.x = x;
+			a.bandBeg = floorPixel(x - b.halfBand - 33) + 1;
+			a.bandEnd = floorPixel(x + b.halfBand - 31) + 1;
+		}
 
 		// Merge overlapping bands.
 
@@ -1038,7 +1055,24 @@ namespace wg
 		// Rows
 
 		Piece	pieces[5][c_maxPieces];
-		int		nPieces[5];
+		int		nPieces[5] = { 0, 0, 0, 0, 0 };
+
+		// Shapes that need rows of their own. Without outline its edges coincide with the
+		// outer and inner edge, without hole there are no inner edges.
+
+		int		ownShapes[5];
+		int		nOwnShapes = 0;
+
+		ownShapes[nOwnShapes++] = 0;
+		ownShapes[nOwnShapes++] = 1;
+		if (outline > 0)
+			ownShapes[nOwnShapes++] = 2;
+		if (bHole)
+		{
+			if (outline > 0)
+				ownShapes[nOwnShapes++] = 3;
+			ownShapes[nOwnShapes++] = 4;
+		}
 
 		std::vector<int>& spanLayerOfs = m_spanLayerOfs;
 		std::vector<int>& spanCoverageOfs = m_spanCoverageOfs;
@@ -1052,49 +1086,13 @@ namespace wg
 
 			uint16_t* pBuffer = m_coverageBuffer.data();
 
-			nPieces[0] = _shapeRow(shapes[0], y, clipBeg, clipEnd, pieces[0], pBuffer);
-			nPieces[1] = _shapeRow(shapes[1], y, clipBeg, clipEnd, pieces[1], pBuffer);
-			nPieces[4] = _shapeRow(shapes[4], y, clipBeg, clipEnd, pieces[4], pBuffer);
-
-			if (outline > 0)
-			{
-				nPieces[2] = _shapeRow(shapes[2], y, clipBeg, clipEnd, pieces[2], pBuffer);
-				nPieces[3] = _shapeRow(shapes[3], y, clipBeg, clipEnd, pieces[3], pBuffer);
-			}
-			else
-			{
-				// Without outline its edges coincide with the outer and inner edge.
-
-				nPieces[2] = nPieces[1];
-				std::copy(pieces[1], pieces[1] + nPieces[1], pieces[2]);
-				nPieces[3] = nPieces[4];
-				std::copy(pieces[4], pieces[4] + nPieces[4], pieces[3]);
-			}
+			for (int i = 0; i < nOwnShapes; i++)
+				nPieces[ownShapes[i]] = _shapeRow(shapes[ownShapes[i]], y, clipBeg, clipEnd, pieces[ownShapes[i]], pBuffer);
 
 			if (nPieces[0] == 0)
 				continue;
 
 			_angularRow(rowY, clipBeg, clipEnd);
-
-			// Collect breakpoints.
-
-			m_breaks.clear();
-
-			for (int i = 0; i < 5; i++)
-				for (int p = 0; p < nPieces[i]; p++)
-				{
-					m_breaks.push_back(pieces[i][p].begin);
-					m_breaks.push_back(pieces[i][p].end);
-				}
-
-			for (auto& ap : m_angularPieces)
-			{
-				m_breaks.push_back(ap.begin);
-				m_breaks.push_back(ap.end);
-			}
-
-			std::sort(m_breaks.begin(), m_breaks.end());
-			m_breaks.erase(std::unique(m_breaks.begin(), m_breaks.end()), m_breaks.end());
 
 			// Produce spans. Layer lists and coverage are written to growing buffers, pointers
 			// set when the row is done.
@@ -1105,18 +1103,29 @@ namespace wg
 			m_layerBuffer.clear();
 			m_ringOutput.clear();
 
-			int pieceIdx[5] = { 0, 0, 0, 0, 0 };
-			int angularIdx = 0;
+			// Coverage of each shape in the current stretch: per pixel from pValues (indexed
+			// from base), or value.
 
-			auto valueAt = [](const Piece* p, int x) { return p ? (p->pValues ? p->pValues[x - p->begin] : p->value) : 0; };
-
-			auto radialAt = [&](const Piece* const* pp, int x)
+			struct Source
 			{
-				int r = valueAt(pp[0], x);
-				int c0 = std::min(valueAt(pp[1], x), r);
-				int c1 = std::min(valueAt(pp[2], x), c0);
-				int c2 = std::min(valueAt(pp[3], x), c1);
-				int c3 = std::min(valueAt(pp[4], x), c2);
+				const uint16_t*	pValues;
+				int				base;
+				int				value;
+			};
+
+			Source src[5] = {};
+
+			auto radialAt = [&src](int x)
+			{
+				int v[5];
+				for (int i = 0; i < 5; i++)
+					v[i] = src[i].pValues ? src[i].pValues[x - src[i].base] : src[i].value;
+
+				int r = v[0];
+				int c0 = std::min(v[1], r);
+				int c1 = std::min(v[2], c0);
+				int c2 = std::min(v[3], c1);
+				int c3 = std::min(v[4], c2);
 
 				return RadialValues{ r - c0, c0 - c1 + c2 - c3, c3, c1 - c2 };
 			};
@@ -1134,36 +1143,104 @@ namespace wg
 				m_spans.back().nLayers++;
 			};
 
-			for (int k = 0; k + 1 < (int)m_breaks.size(); k++)
-			{
-				int beg = m_breaks[k];
-				int end = m_breaks[k + 1];
+			// Layers of the radial segments. Outline and hub are left out where they can't
+			// have any coverage.
 
-				const Piece* pp[5];
+			auto addRadialLayers = [&]()
+			{
+				addLayer(c_ringBackSegment);
+				if (outline > 0)
+					addLayer(c_ringOutlineSegment);
+				if (bHole)
+					addLayer(c_ringHubSegment);
+			};
+
+			auto pushRadial = [&](const RadialValues& v)
+			{
+				m_ringOutput.push_back(uint16_t(v.back));
+				if (outline > 0)
+					m_ringOutput.push_back(uint16_t(v.outline));
+				if (bHole)
+					m_ringOutput.push_back(uint16_t(v.hub));
+			};
+
+			// Step through stretches of pixels where no shape or angular piece begins or ends.
+
+			int pieceIdx[5] = { 0, 0, 0, 0, 0 };
+			int angularIdx = 0;
+			const int nAngular = (int)m_angularPieces.size();
+
+			int next = clipBeg;
+
+			while (next < clipEnd)
+			{
+				const int beg = next;
+				next = clipEnd;
+
+				bool bInRect = false;
 				bool bConstRadial = true;
 
-				for (int i = 0; i < 5; i++)
+				for (int k = 0; k < nOwnShapes; k++)
 				{
-					while (pieceIdx[i] < nPieces[i] && pieces[i][pieceIdx[i]].end <= beg)
-						pieceIdx[i]++;
+					int i = ownShapes[k];
+					const Piece* pPieces = pieces[i];
+					int& idx = pieceIdx[i];
 
-					pp[i] = (pieceIdx[i] < nPieces[i] && pieces[i][pieceIdx[i]].begin <= beg) ? &pieces[i][pieceIdx[i]] : nullptr;
+					while (idx < nPieces[i] && pPieces[idx].end <= beg)
+						idx++;
 
-					if (pp[i] && pp[i]->pValues)
-						bConstRadial = false;
+					Source& source = src[i];
+					source.pValues = nullptr;
+					source.value = 0;
+
+					if (idx < nPieces[i])
+					{
+						const Piece& piece = pPieces[idx];
+
+						if (piece.begin <= beg)
+						{
+							next = std::min(next, piece.end);
+
+							if (piece.pValues)
+							{
+								source.pValues = piece.pValues;
+								source.base = piece.begin;
+								bConstRadial = false;
+							}
+							else
+								source.value = piece.value;
+
+							if (i == 0)
+								bInRect = true;
+						}
+						else
+							next = std::min(next, piece.begin);
+					}
 				}
 
-				if (!pp[0])
+				if (outline == 0)
+				{
+					src[2] = src[1];
+					src[3] = src[4];
+				}
+
+				if (!bInRect)
 					continue;
 
-				while (angularIdx < (int)m_angularPieces.size() && m_angularPieces[angularIdx].end <= beg)
+				while (angularIdx < nAngular && m_angularPieces[angularIdx].end <= beg)
 					angularIdx++;
 
+				if (angularIdx == nAngular)
+					break;
+
 				const AngularPiece& ap = m_angularPieces[angularIdx];
+				next = std::min(next, ap.end);
+
+				const int end = next;
 
 				if (bConstRadial && ap.element >= 0)
 				{
-					RadialValues v = radialAt(pp, beg);
+					RadialValues v = radialAt(beg);
 					int ringSegment = m_elementSegments[ap.element];
 
 					int segment = -1;
@@ -1186,14 +1263,10 @@ namespace wg
 					else if (v.back + v.outline + v.hub + v.ring > 0)
 					{
 						beginSpan(beg, end, -1, true);
-						addLayer(c_ringBackSegment);
-						addLayer(c_ringOutlineSegment);
-						addLayer(c_ringHubSegment);
+						addRadialLayers();
 						addLayer(ringSegment);
 
-						m_ringOutput.push_back(uint16_t(v.back));
-						m_ringOutput.push_back(uint16_t(v.outline));
-						m_ringOutput.push_back(uint16_t(v.hub));
+						pushRadial(v);
 						m_ringOutput.push_back(uint16_t(v.ring));
 					}
 				}
@@ -1202,17 +1275,13 @@ namespace wg
 					// Radial edges within one slice.
 
 					beginSpan(beg, end, -1, false);
-					addLayer(c_ringBackSegment);
-					addLayer(c_ringOutlineSegment);
-					addLayer(c_ringHubSegment);
+					addRadialLayers();
 					addLayer(m_elementSegments[ap.element]);
 
 					for (int x = beg; x < end; x++)
 					{
-						RadialValues v = radialAt(pp, x);
-						m_ringOutput.push_back(uint16_t(v.back));
-						m_ringOutput.push_back(uint16_t(v.outline));
-						m_ringOutput.push_back(uint16_t(v.hub));
+						RadialValues v = radialAt(x);
+						pushRadial(v);
 						m_ringOutput.push_back(uint16_t(v.ring));
 					}
 				}
@@ -1264,9 +1333,7 @@ namespace wg
 								element = boundary(bUpper ? nActive - 1 : 0).element;
 
 							beginSpan(x, x + 1, -1, false);
-							addLayer(c_ringBackSegment);
-							addLayer(c_ringOutlineSegment);
-							addLayer(c_ringHubSegment);
+							addRadialLayers();
 							addLayer(m_elementSegments[element]);
 
 							for (int i = 0, j = first; i < n; i++, j += step)
@@ -1278,11 +1345,9 @@ namespace wg
 						else
 							m_spans.back().end = x + 1;
 
-						RadialValues v = radialAt(pp, x);
+						RadialValues v = radialAt(x);
 
-						m_ringOutput.push_back(uint16_t(v.back));
-						m_ringOutput.push_back(uint16_t(v.outline));
-						m_ringOutput.push_back(uint16_t(v.hub));
+						pushRadial(v);
 
 						// Share past each boundary, kept decreasing clockwise. Rounded cumulatively,
 						// so that slices add up to exactly the ring.
@@ -1313,16 +1378,12 @@ namespace wg
 
 					for (int x = beg; x < end; x++)
 					{
-						RadialValues v = radialAt(pp, x);
+						RadialValues v = radialAt(x);
 
 						beginSpan(x, x + 1, -1, false);
-						addLayer(c_ringBackSegment);
-						addLayer(c_ringOutlineSegment);
-						addLayer(c_ringHubSegment);
+						addRadialLayers();
 
-						m_ringOutput.push_back(uint16_t(v.back));
-						m_ringOutput.push_back(uint16_t(v.outline));
-						m_ringOutput.push_back(uint16_t(v.hub));
+						pushRadial(v);
 
 						if (v.ring == 0)
 							continue;

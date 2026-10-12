@@ -2577,10 +2577,25 @@ namespace wg
 					m_coveragePixels.resize(length);
 
 				CoveragePixel* pPixels = m_coveragePixels.data();
-				std::memset(pPixels, 0, sizeof(CoveragePixel) * length);
 
 				const bool bAlphaWeighted = isCoverageAlphaWeighted(m_blendMode);
 				const int covStride = span.bUniform ? 0 : span.nLayers;
+
+				// Same coverage for all pixels: flat segments mix the same for all of them, so
+				// only the first is mixed and then copied.
+
+				bool bAllFlat = true;
+				for (int layer = 0; layer < span.nLayers; layer++)
+				{
+					const ShapeSegment& seg = m_shapeSegments[span.pLayerSegments[layer]];
+					if (seg.bActive && !seg.bFlat)
+						bAllFlat = false;
+				}
+
+				const bool bCopyFirst = span.bUniform && bAllFlat && length > 1;
+				const int mixLength = bCopyFirst ? 1 : length;
+
+				std::memset(pPixels, 0, sizeof(CoveragePixel) * mixLength);
 
 				for (int layer = 0; layer < span.nLayers; layer++)
 				{
@@ -2601,7 +2616,7 @@ namespace wg
 						int r = bAlphaWeighted ? (c.r * c.a) >> 12 : c.r;
 						int a = c.a;
 
-						for (int x = 0; x < length; x++)
+						for (int x = 0; x < mixLength; x++)
 						{
 							int cov = pCov[x * covStride];
 							if (cov == 0)
@@ -2641,6 +2656,9 @@ namespace wg
 						}
 					}
 				}
+
+				if (bCopyFirst)
+					std::fill(pPixels + 1, pPixels + length, pPixels[0]);
 
 				uint8_t* pDst = pOrigin + y * pitch + span.begin * pixelBytes;
 				pKernels->pCoverageKernels[(int)m_blendMode](pDst, pixelBytes, length, pPixels, m_colTrans);

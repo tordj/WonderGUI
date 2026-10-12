@@ -254,13 +254,14 @@ namespace wg
 		int64_t						m_cx, m_cy;			// Center of ring, spx.
 		std::vector<Boundary>		m_boundaries;		// Sorted by angle.
 		std::vector<int>			m_elementSegments;	// Segment of each element.
+		std::vector<int>			m_upperOrder;		// Boundaries crossing rows above center, in order along x.
+		std::vector<int>			m_lowerOrder;		// Boundaries crossing rows below center, in order along x.
 		std::vector<ActiveBoundary>	m_active;
 		std::vector<AngularPiece>	m_angularPieces;
 		std::vector<int>			m_layerBuffer;
 		std::vector<uint16_t>		m_ringOutput;
 		std::vector<int>			m_spanLayerOfs;
 		std::vector<int>			m_spanCoverageOfs;
-		std::vector<int>			m_breaks;
 		std::vector<uint64_t>		m_elementStarts;
 
 		std::vector<uint16_t>	m_coverageBuffer;
