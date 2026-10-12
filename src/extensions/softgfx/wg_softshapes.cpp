@@ -991,7 +991,7 @@ namespace wg
 	/*
 		Splits a row into pieces by slice. Between slice boundaries a piece belongs to one
 		element. Where boundaries cross the row, pixels are split between elements, worked
-		out per pixel. Rows around the center are sampled per pixel.
+		out per pixel. Rows touching the center are done per pixel.
 	*/
 
 	int SoftShapes::_angularRow(int64_t rowY, int clipBeg, int clipEnd)
@@ -1015,7 +1015,10 @@ namespace wg
 
 		int64_t dy = rowY - m_cy;
 
-		if (dy > -96 && dy < 96)
+		// Boundaries are rays from the center, which only cross rows on their own side of it
+		// as lines would. Rows with the center inside or on an edge are done per pixel.
+
+		if (dy > -64 && dy < 64)
 		{
 			add(clipBeg, clipEnd, -1, 0, 0, true);
 			return m_nAngularPieces = nPieces;
@@ -1288,6 +1291,12 @@ namespace wg
 		{
 			m_pixelLayers.resize(nBoundaries + 8);
 			m_pixelCoverage.resize(nBoundaries + 8);
+		}
+
+		if ((int)m_bandDistances.size() < nBoundaries + 1)
+		{
+			m_bandDistances.resize(nBoundaries + 1);
+			m_bandSteps.resize(nBoundaries + 1);
 		}
 
 		// Without back, the outer edge bounds everything instead of rect.
@@ -1598,14 +1607,115 @@ namespace wg
 					int32_t dx = 0;
 
 					auto boundary = [&](int j) -> const Boundary& { return m_boundaries[pActive[j].boundary]; };
-					auto rightShare = [&](int j) { int h = _pastShare(boundary(j), dx, dy); return bUpper ? h : c_fullCoverage - h; };
+
+					if (nActive == 1)
+					{
+						// Just one boundary, the common case. Pixels are split between the
+						// elements before and after it by their distance from it, which changes
+						// by the same amount from pixel to pixel.
+
+						const Boundary& b = boundary(0);
+
+						dx = int32_t(int64_t(beg) * 64 + 32 - m_cx);
+						int64_t distance = -int64_t(b.sy) * dx + int64_t(b.sx) * dy;		// spx, 30 binals.
+						const int64_t distanceStep = -int64_t(b.sy) * 64;
+
+						const int segBefore = m_elementSegments[b.prevElement];
+						const int segAfter = m_elementSegments[b.element];
+
+						int* pPixelLayers = m_pixelLayers.data();
+						uint16_t* pPixelCoverage = m_pixelCoverage.data();
+
+						bool bSplitSpan = false;			// Last span is of pixels split by the boundary.
+
+						for (int x = beg; x < end; x++, distance += distanceStep)
+						{
+							int64_t past = 2048 + (distance >> 24);
+							int h = int(past < 0 ? 0 : past > c_fullCoverage ? c_fullCoverage : past);
+
+							RadialValues v = radialAt(x);
+
+							if (h == 0 || h == c_fullCoverage)
+							{
+								// On one side of the boundary.
+
+								int element = h == 0 ? segBefore : segAfter;
+								int segment = wholeSegment(v, element);
+
+								if (segment >= 0)
+									fullSpan(x, x + 1, segment);
+								else
+								{
+									int nPixelLayers = 0;
+									if (bBack) { pPixelLayers[nPixelLayers] = c_ringBackSegment; pPixelCoverage[nPixelLayers++] = uint16_t(v.back); }
+									if (bOutline) { pPixelLayers[nPixelLayers] = c_ringOutlineSegment; pPixelCoverage[nPixelLayers++] = uint16_t(v.outline); }
+									if (bHole) { pPixelLayers[nPixelLayers] = c_ringHubSegment; pPixelCoverage[nPixelLayers++] = uint16_t(v.hub); }
+									pPixelLayers[nPixelLayers] = element;
+									pPixelCoverage[nPixelLayers++] = uint16_t(v.ring);
+
+									partialPixel(x, pPixelLayers, pPixelCoverage, nPixelLayers);
+								}
+
+								bSplitSpan = false;
+								continue;
+							}
+
+							if (!bSplitSpan)
+							{
+								beginSpan(x, x + 1, -1, false);
+								addRadialLayers();
+								addLayer(segBefore);
+								addLayer(segAfter);
+								bSplitSpan = true;
+							}
+							else
+								m_spans.back().end = x + 1;
+
+							pushRadial(v);
+
+							int coverage = (v.ring * (c_fullCoverage - h) + 2048) >> 12;
+							m_ringOutput.push_back(uint16_t(coverage));
+							m_ringOutput.push_back(uint16_t(v.ring - coverage));
+						}
+
+						continue;
+					}
+
+					// Distances of the pixel from the boundaries, kept for those not yet passed
+					// and stepped from pixel to pixel.
+
+					int64_t* pDistance = m_bandDistances.data();
+					int64_t* pStep = m_bandSteps.data();
+					int nKnown = 0;
+
+					auto pastShare = [&](int j)
+					{
+						while (nKnown <= j)
+						{
+							const Boundary& b = boundary(nKnown);
+							pDistance[nKnown] = -int64_t(b.sy) * dx + int64_t(b.sx) * dy;		// spx, 30 binals.
+							pStep[nKnown] = -int64_t(b.sy) * 64;
+							nKnown++;
+						}
+
+						int64_t h = 2048 + (pDistance[j] >> 24);
+						return int(h < 0 ? 0 : h > c_fullCoverage ? c_fullCoverage : h);
+					};
+
+					auto rightShare = [&](int j) { int h = pastShare(j); return bUpper ? h : c_fullCoverage - h; };
 
 					int lo = 0, hi = -1;					// Boundaries running through pixel, along x.
 					int spanLo = INT_MIN, spanHi = INT_MIN;	// Of the partly covered span being extended.
 
-					for (int x = beg; x < end; x++)
+					dx = int32_t(int64_t(beg) * 64 + 32 - m_cx);
+
+					for (int x = beg; x < end; x++, dx += 64)
 					{
-						dx = int32_t(int64_t(x) * 64 + 32 - m_cx);
+						if (x > beg)
+						{
+							for (int j = lo; j < nKnown; j++)
+								pDistance[j] += pStep[j];
+						}
 
 						while (lo < nActive && rightShare(lo) == c_fullCoverage)
 							lo++;
@@ -1664,7 +1774,7 @@ namespace wg
 
 						for (int i = 0, j = first; i < n; i++, j += step)
 						{
-							int h = std::min(_pastShare(boundary(j), dx, dy), prevH);
+							int h = std::min(pastShare(j), prevH);
 							prevH = h;
 
 							int coverage = (v.ring * (c_fullCoverage - h) + 2048) >> 12;
@@ -1677,9 +1787,9 @@ namespace wg
 				}
 				else
 				{
-					// Rows around the center, where boundaries can be too close to horizontal to
-					// follow along the row. Boundaries running through each pixel are found from
-					// the directions of its corners instead. The pixel containing the center is
+					// Rows touching the center, where boundaries can't be followed along the row
+					// as lines. Boundaries running through each pixel are found from the
+					// directions of its corners instead. The pixel containing the center is
 					// sampled. Pixels inside one segment are fully covered.
 
 					int32_t dy = int32_t(rowY - m_cy);

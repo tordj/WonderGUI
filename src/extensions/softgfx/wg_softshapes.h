@@ -283,6 +283,8 @@ namespace wg
 		std::vector<AngularPiece>	m_angularPieces;
 		int							m_nAngularPieces = 0;
 		std::vector<BandGroup>		m_groups;
+		std::vector<int64_t>		m_bandDistances;	// Distances of a pixel from boundaries crossing its row.
+		std::vector<int64_t>		m_bandSteps;		// Change of distance from one pixel to the next.
 		std::vector<int>			m_pixelLayers;		// Layers of one pixel around the center.
 		std::vector<uint16_t>		m_pixelCoverage;
 		std::vector<int>			m_layerBuffer;
