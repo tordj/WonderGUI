@@ -5,6 +5,7 @@
 #include <wg_q565compression.h>
 #include <wg_lzcompression.h>
 #include <wg_rlecompression.h>
+#include <wg_qoicompression.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -24,9 +25,28 @@ ColorSpace		g_colorSpace = ColorSpace::sRGB;
 bool			g_bBigEndian = (WG_IS_BIG_ENDIAN == 1);
 
 Compressor_p	g_pPixelCompressor;
+bool			g_bQOICompression = false;
 
 char *			g_pInputFileName = nullptr;
 char *			g_pOutputFileName = nullptr;
+
+//____ hasExtension() _________________________________________________________
+
+bool hasExtension( const char * pFileName, const char * pExtension )
+{
+	size_t nameLen = strlen(pFileName);
+	size_t extLen = strlen(pExtension);
+
+	if( nameLen < extLen )
+		return false;
+
+	for( size_t i = 0 ; i < extLen ; i++ )
+	{
+		if( tolower(pFileName[nameLen - extLen + i]) != tolower(pExtension[i]) )
+			return false;
+	}
+	return true;
+}
 
 //____ parseComandLine() ______________________________________________________
 
@@ -110,6 +130,10 @@ int parseCommandLine( int argc, char** argv )
 			{
 				g_pPixelCompressor = RLECompressor::create(WGBP(RLECompressor, _.primSize = 2 ));
 			}
+			else if (strcmp(pValue, "QOI") == 0)
+			{
+				g_bQOICompression = true;		// Compressor is created once we know format and byte order.
+			}
 			else
 			{
 				printf( "ERROR: '%s' is not a recognized compressor format.\n", pValue );
@@ -138,6 +162,17 @@ int parseCommandLine( int argc, char** argv )
 		return -1;
 	}
 
+	if( g_bQOICompression )
+	{
+		if( g_format != PixelFormat::ARGB_8 && g_format != PixelFormat::XRGB_8 )
+		{
+			printf( "ERROR: QOI compression is only supported for formats ARGB_8 and XRGB_8!\n" );
+			return -1;
+		}
+
+		g_pPixelCompressor = QOICompressor::create( WGBP(QOICompressor, _.format = g_format, _.bigEndian = g_bBigEndian ) );
+	}
+
 	return 0;
 }
 
@@ -146,6 +181,9 @@ int parseCommandLine( int argc, char** argv )
 void printUsage(char** argv)
 {
 	printf( "%s [param] inputImage outputSurface\n\n", argv[0]);
+
+	printf( "Input image can be in any format supported by stb_image or QOI.\n" );
+	printf( "Output surface is saved as QOI image if filename ends with '.qoi'.\n\n" );
 
 	printf( "Parameters:\n\n" );
 	printf( "--format=[format]          - Set format of output surface. Default is ARGB_8.\n" );
@@ -166,6 +204,7 @@ void printUsage(char** argv)
 	printf( "    LZWG - Lempel-Ziw derivative for compression of any data.\n");
 	printf("     RLE1 - Simple RLE-compression, with one byte prim size.\n");
 	printf("     RLE2 - Simple RLE-compression, with two byte prim size.\n");
+	printf( "    QOI  - QOI compression for ARGB_8 and XRGB_8, same as in QOI images.\n");
 }
 
 //____ main() _________________________________________________________________
@@ -181,32 +220,47 @@ int main ( int argc, char** argv )
 	if( parseCommandLine(argc,argv) != 0 )
 		return -1;
 
-	// Load image
-
-	int width, height, channels;
-	unsigned char *pImage = stbi_load(g_pInputFileName, &width, &height, &channels, 4);
-	
-	if( pImage == NULL )
-	{
-		printf( "Error loading/decoding '%s'\n", g_pInputFileName );
-		return -1;
-	}
-
 	// Init wg
 
 	GfxBase::init();
 
+	// Load image
+
+	unsigned char *pImage = nullptr;
+	Surface_p pOrg;
+
+	if( hasExtension(g_pInputFileName, ".qoi") )
+	{
+		std::ifstream in(g_pInputFileName, std::ios::binary);
+		pOrg = SurfaceReader::create({ .factory = SoftSurfaceFactory::create() })->readSurfaceFromStream(in);
+	}
+	else
+	{
+		int width, height, channels;
+		pImage = stbi_load(g_pInputFileName, &width, &height, &channels, 4);
+
+		// stb_image gives us sRGB bytes in R, G, B, A order, which is ARGB_8 with red and blue
+		// swapped, read as little endian.
+
+		if( pImage )
+		{
+			PixelDescription desc = Util::pixelFormatToDescription(PixelFormat::ARGB_8, false);
+
+			swap( desc.B_mask, desc.R_mask);
+
+			pOrg = SoftSurface::create( { .format = PixelFormat::ARGB_8, .size = {width,height}}, pImage, desc, 0 );
+		}
+	}
+
+	if( pOrg == nullptr )
+	{
+		printf( "Error loading/decoding '%s'\n", g_pInputFileName );
+		GfxBase::exit();
+		return -1;
+	}
+
 	// Convert surface
 
-	// stb_image gives us sRGB bytes in R, G, B, A order, which is ARGB_8 with red and blue
-	// swapped, read as little endian.
-
-	PixelDescription desc = Util::pixelFormatToDescription(PixelFormat::ARGB_8, false);
-	
-	swap( desc.B_mask, desc.R_mask);
-
-	auto pOrg = SoftSurface::create( { .format = PixelFormat::ARGB_8, .size = {width,height}}, pImage, desc, 0 );
-	
 	auto pConverted = pOrg->convert({ .bigEndian = g_bBigEndian, .colorSpace = g_colorSpace, .format = g_format }, SoftSurfaceFactory::create());
 
 	if( pConverted == nullptr )
@@ -220,13 +274,21 @@ int main ( int argc, char** argv )
 	{
 		std::ofstream out(g_pOutputFileName, std::ios::binary);
 		auto pWriter = SurfaceWriter::create({ .pixelCompressor = g_pPixelCompressor });
-		pWriter->writeSurfaceToStream(out, pConverted);
+
+		if( hasExtension(g_pOutputFileName, ".qoi") )
+			pWriter->writeSurfaceToQOIStream(out, pConverted);
+		else
+			pWriter->writeSurfaceToStream(out, pConverted);
 		out.close();
 	}
 
 exit:
+	pOrg = nullptr;
+	pConverted = nullptr;
+	g_pPixelCompressor = nullptr;
 	GfxBase::exit();
-	stbi_image_free(pImage);
+	if( pImage )
+		stbi_image_free(pImage);
     return 0;
 }
 

@@ -57,6 +57,8 @@ set( SOURCES
 	wg_printer.h
 	wg_q565compression.cpp
 	wg_q565compression.h
+	wg_qoicompression.cpp
+	wg_qoicompression.h
 	wg_rlecompression.cpp
 	wg_rlecompression.h
 	wg_spans.h

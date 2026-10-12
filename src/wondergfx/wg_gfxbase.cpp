@@ -27,6 +27,7 @@
 
 #include <wg_compression.h>
 #include <wg_q565compression.h>
+#include <wg_qoicompression.h>
 #include <wg_lzcompression.h>
 #include <wg_spxcompression.h>
 #include <wg_rlecompression.h>
@@ -184,6 +185,12 @@ namespace wg
 			pDecompressor = SPXDecompressor::create();
 		else if (idToken == RLEDecompressor::ID_TOKEN)
 			pDecompressor = RLEDecompressor::create();
+		else if (idToken == QOIDecompressor::ID_TOKEN || idToken == QOIDecompressor::ID_TOKEN_BIG_ENDIAN)
+		{
+			QOIDecompressor::Blueprint bp;
+			bp.bigEndian = (idToken == QOIDecompressor::ID_TOKEN_BIG_ENDIAN);
+			pDecompressor = QOIDecompressor::create(bp);
+		}
 
 		if( pDecompressor )
 			s_decompressors.push_back(pDecompressor);

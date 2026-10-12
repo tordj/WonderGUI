@@ -91,6 +91,18 @@ protected:
 
 	Surface_p		_readSurfFromStream(std::istream& stream, const Surface::Blueprint& extraFlags);
 	Surface_p		_readQOIFromStream(std::istream& stream, const Surface::Blueprint& extraFlags);
+	Surface_p		_readQOIFromMemory(const char * pData, const char * pDataEnd, const Surface::Blueprint& extraFlags);
+
+	struct QOIHeader
+	{
+		int		width;
+		int		height;
+		int		channels;		// 3 = RGB, 4 = RGBA
+		int		colorspace;		// 0 = sRGB with linear alpha, 1 = all channels linear
+	};
+
+	bool			_parseQOIHeader(const uint8_t * pHeader, QOIHeader& header);
+	Surface_p		_createSurfaceFromQOI(const QOIHeader& header, const uint8_t * pChunks, const uint8_t * pChunksEnd, const Surface::Blueprint& extraFlags);
 
 	void			_copyUncompressedFromMemory(void * pDest, const void * pSource, int rowBytes, int pitch, int rows);
 
