@@ -31,6 +31,10 @@ endif()
 
 if(TARGET wgplugin)
 	add_subdirectory(pluginworkbench)
+
+	if(UNIX)							# Loads its plugin with dlopen().
+		add_subdirectory(plugingfxdevicetest)
+	endif()
 endif()
 
 if(TARGET wglegacygui)
@@ -59,6 +63,8 @@ set(TOOL_TARGETS
 	image2surf
 	packlayouttester
 	pluginworkbench
+	plugingfxdevicetest
+	plugingfxdevicetestplugin
 	softkernelgenerator
 	streamanalyzer
 	streamgenerator
