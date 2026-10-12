@@ -2463,3 +2463,167 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* WG_RESTRICT pStripStar
 		}
 	}
 }
+
+//____ _limit4096() _______________________________________________________
+
+static inline int _limit4096(int value)
+{
+	return value < 0 ? 0 : value > 4096 ? 4096 : value;
+}
+
+//____ _draw_coverage_span() _______________________________________________
+//
+// Blends a horizontal span of partly covered pixels, see SoftBackend::CoveragePixel.
+// Each pixel is blended with the blend mode as if fully covered and the result
+// mixed with the original pixel by the coverage:
+//
+//   out = dst * (1 - coverage) + blend(src, dst) * coverage
+//
+// Pixels can be shared by several segments, so src is a coverage weighted sum,
+// which is linear in src for all blend modes except Min and Max. These are exact
+// for pixels covered by a single segment and a close approximation otherwise.
+//
+// Alpha-only destinations treat alpha as the color, like the fill kernels.
+
+template<BlendMode BLEND, SoftFormat DSTFORMAT>
+void _draw_coverage_span(uint8_t* WG_RESTRICT pDst, int pixelPitch, int length, const SoftBackend::CoveragePixel* WG_RESTRICT pPixels, const SoftBackend::ColTrans& tint)
+{
+	constexpr bool bAlphaOnly = (DSTFORMAT == SoftFormat::Alpha_8);
+
+	const int fixedB = tint.fixedBlendColor.b;
+	const int fixedG = tint.fixedBlendColor.g;
+	const int fixedR = tint.fixedBlendColor.r;
+	const int fixedA = tint.fixedBlendColor.a;
+
+	const int morph = tint.morphFactor;
+
+	for (int i = 0; i < length; i++)
+	{
+		const SoftBackend::CoveragePixel& px = pPixels[i];
+		const int cov = px.coverage;
+
+		if (cov > 0)
+		{
+			int16_t backB, backG, backR, backA;
+			_read_pixel<DSTFORMAT>(pDst, nullptr, nullptr, backB, backG, backR, backA);
+
+			int outB = backB, outG = backG, outR = backR, outA = backA;
+
+			if constexpr (BLEND == BlendMode::Replace)
+			{
+				int inv = 4096 - cov;
+
+				outB = ((backB * inv + 2048) >> 12) + px.b;
+				outG = ((backG * inv + 2048) >> 12) + px.g;
+				outR = ((backR * inv + 2048) >> 12) + px.r;
+				outA = ((backA * inv + 2048) >> 12) + px.a;
+			}
+			else if constexpr (BLEND == BlendMode::Blend)
+			{
+				int inv = 4096 - px.a;
+
+				outB = ((backB * inv + 2048) >> 12) + px.b;
+				outG = ((backG * inv + 2048) >> 12) + px.g;
+				outR = ((backR * inv + 2048) >> 12) + px.r;
+				outA = ((backA * inv + 2048) >> 12) + px.a;
+			}
+			else if constexpr (BLEND == BlendMode::BlendFixedColor)
+			{
+				int inv = 4096 - cov;
+				int fixed = cov - px.a;					// Covered but transparent part shows the fixed color.
+
+				outB = ((backB * inv + fixedB * fixed + 2048) >> 12) + px.b;
+				outG = ((backG * inv + fixedG * fixed + 2048) >> 12) + px.g;
+				outR = ((backR * inv + fixedR * fixed + 2048) >> 12) + px.r;
+				outA = ((backA * inv + fixedA * fixed + 2048) >> 12) + px.a;
+			}
+			else if constexpr (BLEND == BlendMode::Add)
+			{
+				if constexpr (bAlphaOnly)
+					outA = backA + px.a;
+				else
+				{
+					outB = backB + px.b;
+					outG = backG + px.g;
+					outR = backR + px.r;
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Subtract)
+			{
+				if constexpr (bAlphaOnly)
+					outA = backA - px.a;
+				else
+				{
+					outB = backB - px.b;
+					outG = backG - px.g;
+					outR = backR - px.r;
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Multiply)
+			{
+				// Uncovered part multiplies with white.
+
+				int white = 4096 - cov;
+
+				if constexpr (bAlphaOnly)
+					outA = (backA * (white + px.a) + 2048) >> 12;
+				else
+				{
+					outB = (backB * (white + px.b) + 2048) >> 12;
+					outG = (backG * (white + px.g) + 2048) >> 12;
+					outR = (backR * (white + px.r) + 2048) >> 12;
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Invert)
+			{
+				if constexpr (bAlphaOnly)
+					outA = (px.a * (4096 - backA) + backA * (4096 - px.a) + 2048) >> 12;
+				else
+				{
+					outB = (px.b * (4096 - backB) + backB * (4096 - px.b) + 2048) >> 12;
+					outG = (px.g * (4096 - backG) + backG * (4096 - px.g) + 2048) >> 12;
+					outR = (px.r * (4096 - backR) + backR * (4096 - px.r) + 2048) >> 12;
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Min)
+			{
+				// dst - coverage * max(0, dst - src)
+
+				if constexpr (bAlphaOnly)
+					outA = backA - std::max(0, ((backA * cov + 2048) >> 12) - px.a);
+				else
+				{
+					outB = backB - std::max(0, ((backB * cov + 2048) >> 12) - px.b);
+					outG = backG - std::max(0, ((backG * cov + 2048) >> 12) - px.g);
+					outR = backR - std::max(0, ((backR * cov + 2048) >> 12) - px.r);
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Max)
+			{
+				// dst + coverage * max(0, src - dst)
+
+				if constexpr (bAlphaOnly)
+					outA = backA + std::max(0, px.a - ((backA * cov + 2048) >> 12));
+				else
+				{
+					outB = backB + std::max(0, px.b - ((backB * cov + 2048) >> 12));
+					outG = backG + std::max(0, px.g - ((backG * cov + 2048) >> 12));
+					outR = backR + std::max(0, px.r - ((backR * cov + 2048) >> 12));
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Morph)
+			{
+				int inv = 4096 - ((morph * cov + 2048) >> 12);
+
+				outB = (backB * inv + px.b * morph + 2048) >> 12;
+				outG = (backG * inv + px.g * morph + 2048) >> 12;
+				outR = (backR * inv + px.r * morph + 2048) >> 12;
+				outA = (backA * inv + px.a * morph + 2048) >> 12;
+			}
+
+			_write_pixel<DSTFORMAT>(pDst, _limit4096(outB), _limit4096(outG), _limit4096(outR), _limit4096(outA));
+		}
+
+		pDst += pixelPitch;
+	}
+}

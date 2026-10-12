@@ -1317,6 +1317,17 @@ namespace wg
 		return true;
 	}
 
+	//____ setCoverageKernel() ________________________________________________
+
+	bool SoftBackend::setCoverageKernel(BlendMode blendMode, SoftFormat destFormat, CoverageOp_p pKernel)
+	{
+		if (!_setupDestFormatKernels(destFormat))
+			return false;
+
+		m_pKernels[(int)destFormat]->pCoverageKernels[(int)blendMode] = pKernel;
+		return true;
+	}
+
 	//____ _onePassStraightBlit() _____________________________________________
 
 	void SoftBackend::_onePassStraightBlit(const RectI& dest, CoordI src, const Transform& mtx, CoordI patchPos, StraightBlitOp_p pPassOneOp)

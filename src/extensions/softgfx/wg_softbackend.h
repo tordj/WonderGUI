@@ -164,13 +164,53 @@ namespace wg
 			Tintmaps,
 			ColorsAndTintmaps,
 		};
-		
+
+		/**
+		 * A pixel only partly covered by what is drawn, e.g. along the edge of a shape,
+		 * for coverage kernels.
+		 *
+		 * Partly covered pixels are blended with the blend mode as if fully covered and
+		 * the result is then mixed with the original pixel by the coverage, so that edges
+		 * are blended against the background whatever the blend mode:
+		 *
+		 *   out = dst * (1 - coverage) + blend(src, dst) * coverage
+		 *
+		 * Several segments of a shape can share a pixel, so the color is a sum of the
+		 * colors of the segments, each weighted by its coverage. How depends on the blend
+		 * mode, see isCoverageAlphaWeighted():
+		 *
+		 *   Alpha weighted:  b,g,r = sum( coverage * alpha * color ), a = sum( coverage * alpha )
+		 *   Otherwise:       b,g,r,a = sum( coverage * color )			(color with straight alpha)
+		 *
+		 *   coverage = sum( coverage )
+		 *
+		 * All values are linear, 0 -> 4096.
+		 */
+
+		struct CoveragePixel
+		{
+			int16_t		b;
+			int16_t		g;
+			int16_t		r;
+			int16_t		a;
+			int16_t		coverage;
+			int16_t		padding;
+		};
+
+		// Blend modes where the colors of coverage pixels are weighted by alpha.
+
+		static constexpr bool isCoverageAlphaWeighted(BlendMode mode)
+		{
+			return mode == BlendMode::Blend || mode == BlendMode::BlendFixedColor || mode == BlendMode::Add || mode == BlendMode::Subtract;
+		}
+
 		typedef	void(*LineOp_p)(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*FillOp_p)(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*StraightBlitOp_p)(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const Transform * pMatrix);
 		typedef	void(*TransformBlitOp_p)(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t* pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t* pStripStart, int pixelPitch, int nEdges, SegmentEdge* pEdges, const int16_t* pSegmentColors, const HiColor * pSegmentTintmap, int segmentTintmapPitch, const bool* pTransparentSegments, const bool* pOpaqueSegments, const ColTrans& tint);
+		typedef void(*CoverageOp_p)(uint8_t* pDst, int pixelPitch, int length, const CoveragePixel* pPixels, const ColTrans& tint);
 
 		alignas(kCacheLineSize) static const int16_t s_channel_5_linear[32];
 		alignas(kCacheLineSize) static const int16_t s_channel_6_linear[64];
@@ -204,6 +244,8 @@ namespace wg
 		bool	setClipLineKernel(BlendMode blendMode, SoftFormat destFormat, ClipLineOp_p pKernel);
 
 		bool	setSegmentStripKernel(SoftBackend::StripSource, BlendMode blendMode, SoftFormat destFormat, SegmentOp_p pKernel);
+
+		bool	setCoverageKernel(BlendMode blendMode, SoftFormat destFormat, CoverageOp_p pKernel);
 
 		bool	setTransformBlitKernel(SoftFormat sourceFormat, SampleMethod sampleMethod, ReadOp readOp,
 			TintMode tintMode, BlendMode blendMode, SoftFormat destFormat, TransformBlitOp_p pKernel);
@@ -379,6 +421,7 @@ namespace wg
 			ClipLineOp_p			pClipLineKernels[BlendMode_size];
 			FillOp_p				pFillKernels[TintMode_size][BlendMode_size];
 			SegmentOp_p				pSegmentKernels[3][BlendMode_size];
+			CoverageOp_p			pCoverageKernels[BlendMode_size];
 
 			StraightBlitOp_p		pStraightBlitFromHiColorKernels[TintMode_size][BlendMode_size];
 			StraightBlitOp_p		pStraightBlitFromBGRA8Kernels[TintMode_size][BlendMode_size];
