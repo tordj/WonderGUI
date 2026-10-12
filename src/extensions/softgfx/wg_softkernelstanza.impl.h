@@ -3,6 +3,9 @@
 #include <wg_gfxutil.h>
 #include <wg_gfxbase.h>
 
+#include <cstring>
+#include <type_traits>
+
 using namespace wg;
 using namespace wg::Util;
 
@@ -1266,7 +1269,87 @@ void _fill(uint8_t* WG_RESTRICT pDst, int pitchX, int pitchY, int nLines, int li
 		fixedR = tint.fixedBlendColor.r;
 		fixedA = tint.fixedBlendColor.a;
 	}
-	
+
+	// Replacing with a color that is the same along each line (no tint, flat or vertical tint)
+	// writes the same pixel throughout the line. It is packed once per line and copied, keeping
+	// any bytes the format doesn't write, like the X of XRGB.
+
+	constexpr int pixelBytes = SoftFormatInfo::bytesPerPixel(DSTFORMAT);
+
+	if constexpr (BLEND == BlendMode::Replace && DSTFORMAT != SoftFormat::Undefined && !SoftFormatInfo::isIndexed(DSTFORMAT) &&
+				  (TINT == TintMode::None || TINT == TintMode::Flat || TINT == TintMode::GradientY) &&
+				  (pixelBytes == 1 || pixelBytes == 2 || pixelBytes == 4))
+	{
+		using Pixel = std::conditional_t<pixelBytes == 4, uint32_t, std::conditional_t<pixelBytes == 2, uint16_t, uint8_t>>;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int16_t lineB, lineG, lineR, lineA;
+
+			_color_tint_line<TINT>(tint, bits, srcB, srcG, srcR, srcA,
+								 lineB, lineG, lineR, lineA,
+								 tintedB, tintedG, tintedR, tintedA,
+								 pTintmapX, pTintmapY, patchPos);
+
+			int16_t outB = 0, outG = 0, outR = 0, outA = 0;
+			int16_t backB = 0, backG = 0, backR = 0, backA = 0;
+
+			// Written into a cleared and a filled pixel, bytes that differ aren't written.
+
+			Pixel cleared = 0, filled = Pixel(~Pixel(0));
+
+			if constexpr(bFast8)
+			{
+				_blend_pixels_fast8<BLEND, DSTFORMAT>(tint.morphFactor, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA,
+															  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
+				_write_pixel_fast8<DSTFORMAT>((uint8_t*)&cleared, outB, outG, outR, outA);
+				_write_pixel_fast8<DSTFORMAT>((uint8_t*)&filled, outB, outG, outR, outA);
+			}
+			else
+			{
+				_blend_pixels<BLEND, DSTFORMAT>(tint.morphFactor, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA,
+														outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
+				_write_pixel<DSTFORMAT>((uint8_t*)&cleared, outB, outG, outR, outA);
+				_write_pixel<DSTFORMAT>((uint8_t*)&filled, outB, outG, outR, outA);
+			}
+
+			const Pixel keep = Pixel(cleared ^ filled);
+
+			if (keep == 0 && pitchX == pixelBytes)
+			{
+				// Pixels next to each other, the common case, are written 16 bytes at a time.
+
+				uint8_t pattern[16];
+				for (int i = 0; i < 16; i += pixelBytes)
+					std::memcpy(pattern + i, &cleared, pixelBytes);
+
+				uint8_t* p = pDst;
+				int bytes = lineLength * pixelBytes;
+
+				for (; bytes >= 16; bytes -= 16, p += 16)
+					std::memcpy(p, pattern, 16);
+
+				for (; bytes > 0; bytes -= pixelBytes, p += pixelBytes)
+					std::memcpy(p, &cleared, pixelBytes);
+			}
+			else
+			{
+				uint8_t* p = pDst;
+
+				for (int x = 0; x < lineLength; x++, p += pitchX)
+				{
+					Pixel pixel;
+					std::memcpy(&pixel, p, pixelBytes);
+					pixel = Pixel((pixel & keep) | cleared);
+					std::memcpy(p, &pixel, pixelBytes);
+				}
+			}
+
+			pDst += pitchX * lineLength + pitchY;
+		}
+		return;
+	}
+
 	for (int y = 0; y < nLines; y++)
 	{
 
