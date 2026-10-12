@@ -328,6 +328,20 @@ namespace wg
 			decoder >> nTransforms;
 			decoder >> nObjects;
 
+			// Shape counts, since 3.3.
+
+			uint16_t	nShapeDraws = 0;
+			uint16_t	nShapeTints = 0;
+			int32_t		nShapeSegments = 0;
+
+			if( header.size >= 48 )
+			{
+				decoder >> nShapeDraws;
+				decoder >> nShapeTints;
+				decoder >> nShapeSegments;
+				decoder.skip(header.size - 48);
+			}
+
 			if( canvasId > 0 && ( canvasId >= m_vObjects.size() || m_vObjects[canvasId] == nullptr ))
 			{
 				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "BeginSession with invalid canvasId, will skip this session.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
@@ -347,6 +361,9 @@ namespace wg
 			m_sessionInfo.nEdgemapDraws = nEdgemapDraws;
 			m_sessionInfo.nTransforms = nTransforms;
 			m_sessionInfo.nObjects = nObjects;
+			m_sessionInfo.nShapeDraws = nShapeDraws;
+			m_sessionInfo.nShapeTints = nShapeTints;
+			m_sessionInfo.nShapeSegments = nShapeSegments;
 
 			m_baseCanvasRef = canvasRef;
 			m_baseCanvasSurface = canvasId > 0 ? static_cast<Surface*>(m_vObjects[canvasId].rawPtr()) : nullptr;

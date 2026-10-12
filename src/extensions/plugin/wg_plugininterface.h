@@ -290,6 +290,8 @@ typedef struct wg_gfxdevice_calls_struct
 	void				(*clearTintColor)(wg_obj device);
 	int					(*hasTintColor)(wg_obj device);
 
+	void				(*drawRoundedBox)(wg_obj device, const wg_roundedBoxSpec* spec);
+
 } wg_gfxdevice_calls;
 
 /*

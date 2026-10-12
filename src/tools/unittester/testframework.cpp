@@ -11,6 +11,7 @@
 #include "tests/qoi.h"
 #include "tests/surfacefile.h"
 #include "tests/softshapes.h"
+#include "tests/shaperender.h"
 
 
 
@@ -27,6 +28,7 @@ TestFramework::TestFramework( std::ostream& output ) :
 	addCollection( new QOITest() );
 	addCollection( new SurfaceFileTest() );
 	addCollection( new SoftShapesTest() );
+	addCollection( new ShapeRenderTest() );
 }
 
 //____ Destructor ______________________________________________________________

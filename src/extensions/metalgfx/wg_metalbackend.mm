@@ -1348,6 +1348,27 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				break;
 			}
 
+			case Command::DrawShape:
+			{
+				// Not supported yet, stepped over.
+
+				static bool bReported = false;
+				if (!bReported)
+				{
+					GfxBase::throwError(ErrorLevel::Warning, ErrorCode::Other, "MetalBackend doesn't support DrawShape yet, shapes are not drawn.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					bReported = true;
+				}
+
+				int nRects = p[1];
+				int nColors = p[2];
+				int nWords = p[3];
+
+				p += c_drawShapeHeaderWords - 1 + nWords;
+				pRects += nRects;
+				pColors += nColors;
+				break;
+			}
+
 			case Command::DrawEdgemap:
 			{
 				auto pEdgemap = static_cast<MetalEdgemap*>(*pObjects++);

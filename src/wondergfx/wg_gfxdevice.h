@@ -65,6 +65,37 @@ namespace wg
 		int		hold;      // Value for extending the line if it is too short (or completely missing).
 	};
 
+	//____ RoundedBoxSpec _____________________________________________________
+	/**
+	 * A box with rounded corners and an outline, drawn by GfxDevice::drawRoundedBox().
+	 *
+	 * Fill and outline are drawn together, so no background shows through between
+	 * them, and they are placed with subpixel precision.
+	 *
+	 * Corner radii that don't fit the box are scaled down, all four by the same factor,
+	 * as in CSS. A radius of at least half the shorter side gives a pill.
+	 *
+	 * The outline lies inside rect, with its own thickness along each side. Its inner
+	 * corners are circular, with the radius of the corner minus the thicker of the two
+	 * sides meeting there, so a thick outline gets square inner corners.
+	 *
+	 * Tints are placed in rect and multiplied with the colors. The tint and tint color
+	 * of the device apply on top, as for any other draw.
+	 *
+	 * Like fill(), a fully transparent color draws nothing in BlendMode::Blend.
+	 */
+
+	struct RoundedBoxSpec
+	{
+		RectSPX		rect;										// Outer edge of the box.
+		spx			radius[4] = { 0, 0, 0, 0 };					// Corner radii: top-left, top-right, bottom-right, bottom-left.
+		BorderSPX	outline;									// Thickness of the outline along each side.
+		HiColor		fillColor = HiColor::Transparent;
+		HiColor		outlineColor = HiColor::Black;
+		Tint*		pFillTint = nullptr;
+		Tint*		pOutlineTint = nullptr;
+	};
+
 	//____ CanvasInfo _________________________________________________________
 
 	struct CanvasInfo
@@ -184,6 +215,10 @@ namespace wg
 
 	 	virtual void	drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64 ) = 0;
 		virtual void	drawLine( CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness = 64 ) = 0;
+
+		// Shapes
+
+		virtual void	drawRoundedBox( const RoundedBoxSpec& spec ) = 0;
 
 		// Blit methods
 

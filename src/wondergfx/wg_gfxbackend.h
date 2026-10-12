@@ -80,6 +80,12 @@ namespace wg
 			int		nColors;			// Total number of colors to be used through all commands.
 			int		nTransforms;		// Total number of transforms for session.
 			int		nObjects;			// Total number of object references for session.
+
+			// Shapes
+
+			int		nShapeDraws;		// Number of DrawShape commands.
+			int		nShapeSegments;		// Total number of segments (fill, outline, slices...) of all shapes.
+			int		nShapeTints;		// Total number of Tints encoded in DrawShape commands.
 		};
 
 		enum class Command : uint16_t
@@ -92,8 +98,57 @@ namespace wg
 			ClipBlit,					// Might be blitting from outside source surface.
 			Tile,
 			Blur,
-			DrawEdgemap
+			DrawEdgemap,
+			DrawShape					// See below.
 		};
+
+		/*
+			DrawShape draws an analytic shape, made of segments (fill, outline...) that are
+			drawn together. Layout, in 16-bit words:
+
+			  uint16	Command::DrawShape
+			  uint16	ShapeKind
+			  uint16	nRects			Clip rectangles in rect buffer.
+			  uint16	nColors			Colors in color buffer.
+			  uint16	nWords			Words of payload following this header.
+			  uint16	padding
+			  ...		payload
+
+			The command starts at a 32-bit boundary (padded with Command::None if needed), so
+			32-bit values in the payload are aligned. Backends that don't support a kind of
+			shape can skip it using nWords, nRects and nColors.
+
+			ShapeKind::RoundedBox payload:
+
+			  spx		rect x, y, w, h
+			  spx		radius top-left, top-right, bottom-right, bottom-left
+			  spx		outline top, right, bottom, left
+			  spx		softness		Reserved for soft edges (shadows, glows), always 0 for now.
+			  uint16	flags			See RoundedBoxFlags.
+			  uint16	padding
+			  ...		fill tint		Encoded as by TintTools::encodeTint(), placed in rect. Only if HasFillTint.
+			  ...		outline tint	Encoded as by TintTools::encodeTint(), placed in rect. Only if HasOutlineTint.
+
+			  Colors: fill color if HasFill, outline color if HasOutline, then the colors of
+			  the encoded tints.
+
+			  Radii are clamped as by Util::clampCornerRadii().
+		*/
+
+		enum class ShapeKind : uint16_t
+		{
+			RoundedBox = 1
+		};
+
+		enum RoundedBoxFlags : uint16_t
+		{
+			HasFill			= 1,
+			HasOutline		= 1 << 1,
+			HasFillTint		= 1 << 2,
+			HasOutlineTint	= 1 << 3
+		};
+
+		static const int	c_drawShapeHeaderWords = 6;
 
 		enum class StateChange : uint8_t
 		{

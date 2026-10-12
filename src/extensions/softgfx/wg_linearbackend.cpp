@@ -945,6 +945,47 @@ namespace wg
 				break;
 			}
 
+			case Command::DrawShape:
+			{
+				auto kind = ShapeKind(p[0]);
+				int nRects = p[1];
+				int nColors = p[2];
+				int nWords = p[3];
+				const uint16_t* pPayload = p + c_drawShapeHeaderWords - 1;
+				p = pPayload + nWords;
+
+				const RectSPX* pMyRects = pRects;
+				pRects += nRects;
+
+				const HiColor* pMyColors = pColors;
+				pColors += nColors;
+
+				if (_beginShape(kind, pPayload, pMyColors))
+				{
+					for (int i = 0; i < nRects; i++)
+					{
+						RectI patch = pMyRects[i] / 64;
+
+						if (patch.isEmpty())
+							continue;
+
+						while (patch.x < pSegment->rect.x || patch.x >= pSegment->rect.x + pSegment->rect.w ||
+							   patch.y < pSegment->rect.y || patch.y >= pSegment->rect.y + pSegment->rect.h)
+						{
+							pSegment++;
+							if (pSegment == pSegEnd)
+								pSegment = pSegBeg;
+						}
+
+						Segment& seg = *pSegment;
+
+						uint8_t* pOrigin = seg.pBuffer - seg.rect.y * seg.pitch - seg.rect.x * m_canvasPixelBytes;
+						_drawShape(patch, pOrigin, seg.pitch);
+					}
+				}
+				break;
+			}
+
 			case Command::Blur:
 			case Command::Blit:
 			case Command::ClipBlit:

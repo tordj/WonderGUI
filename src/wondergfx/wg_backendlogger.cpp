@@ -20,6 +20,7 @@
 
 =========================================================================*/
 #include <wg_backendlogger.h>
+#include <cstring>
 #include <wg_tinttools.h>
 
 namespace wg
@@ -78,6 +79,9 @@ namespace wg
 				*m_pOStream << "    Blits:         " << pInfo->nBlit << std::endl;
 				*m_pOStream << "    Blurs:         " << pInfo->nBlur << std::endl;
 				*m_pOStream << "    EdgemapDraws:  " << pInfo->nEdgemapDraws << std::endl;
+				*m_pOStream << "    ShapeDraws:    " << pInfo->nShapeDraws << std::endl;
+				*m_pOStream << "    ShapeSegments: " << pInfo->nShapeSegments << std::endl;
+				*m_pOStream << "    ShapeTints:    " << pInfo->nShapeTints << std::endl;
 
 				*m_pOStream << "    LineCoords:    " << pInfo->nLineCoords << std::endl;
 				*m_pOStream << "    LineClipRects: " << pInfo->nLineClipRects << std::endl;
@@ -266,7 +270,7 @@ namespace wg
 				switch (cmd)
 				{
 				case Command::None:
-					*m_pOStream << "None (this should not be present, something is probably wrong!)" << std::endl;
+					*m_pOStream << "    None (padding)" << std::endl;
 					break;
 
 				case Command::StateChange:
@@ -438,6 +442,37 @@ namespace wg
 
 					_printRects(*m_pOStream, nRects, pRects);
 					pRects += nRects;
+					break;
+				}
+
+				case Command::DrawShape:
+				{
+					auto kind = GfxBackend::ShapeKind(p[0]);
+					int nRects = p[1];
+					int nColors = p[2];
+					int nWords = p[3];
+					const uint16_t* pPayload = p + c_drawShapeHeaderWords - 1;
+
+					if (kind == ShapeKind::RoundedBox)
+					{
+						spx v[13];
+						std::memcpy(v, pPayload, sizeof(v));
+						uint16_t flags = pPayload[26];
+
+						*m_pOStream << "    DrawShape: RoundedBox " << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3]
+							<< " radius: " << v[4] << ", " << v[5] << ", " << v[6] << ", " << v[7]
+							<< " outline: " << v[8] << ", " << v[9] << ", " << v[10] << ", " << v[11]
+							<< (flags & HasFill ? " fill" : "") << (flags & HasOutline ? " outline" : "")
+							<< (flags & HasFillTint ? " fillTint" : "") << (flags & HasOutlineTint ? " outlineTint" : "")
+							<< " split into " << nRects << " rectangles." << std::endl;
+					}
+					else
+						*m_pOStream << "    DrawShape: unknown kind " << int(kind) << ", " << nWords << " words, split into " << nRects << " rectangles." << std::endl;
+
+					_printRects(*m_pOStream, nRects, pRects);
+					pRects += nRects;
+					pColors += nColors;
+					p = pPayload + nWords;
 					break;
 				}
 

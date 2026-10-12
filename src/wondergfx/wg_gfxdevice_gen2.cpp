@@ -1455,6 +1455,185 @@ void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thic
 	m_pActiveCanvas->sessionInfo.nLineCoords+=2;
 }
 
+//____ drawRoundedBox() ______________________________________________________
+
+void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
+{
+	if (!m_pActiveCanvas)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "No active canvas to draw rounded box to.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+
+		return;
+	}
+
+	const RectSPX& rect = spec.rect;
+
+	if (rect.w <= 0 || rect.h <= 0 || !rect.isOverlapping(m_pActiveClipList->bounds))
+		return;
+
+	BlendMode blendMode = m_renderState.blendMode;
+
+	BorderSPX outline = {	std::max(spec.outline.top, 0), std::max(spec.outline.right, 0),
+							std::max(spec.outline.bottom, 0), std::max(spec.outline.left, 0) };
+
+	RectSPX innerRect(rect.x + outline.left, rect.y + outline.top,
+					  rect.w - outline.left - outline.right, rect.h - outline.top - outline.bottom);
+
+	bool bInner = innerRect.w > 0 && innerRect.h > 0;
+
+	// Like fill(), transparent colors draw nothing in Blend mode.
+
+	bool bHasOutline = (outline.top | outline.right | outline.bottom | outline.left) != 0 &&
+						!(spec.outlineColor.a == 0 && blendMode == BlendMode::Blend);
+
+	bool bHasFill = bInner && !(spec.fillColor.a == 0 && blendMode == BlendMode::Blend);
+
+	if (!bHasFill && !bHasOutline)
+		return;
+
+	spx radius[4] = { spec.radius[0], spec.radius[1], spec.radius[2], spec.radius[3] };
+	Util::clampCornerRadii(rect.size(), radius);
+
+	// Square, untinted boxes aligned to pixels are just fills.
+
+	if ((radius[0] | radius[1] | radius[2] | radius[3]) == 0 && !spec.pFillTint && !spec.pOutlineTint &&
+		((rect.x | rect.y | rect.w | rect.h | outline.top | outline.right | outline.bottom | outline.left) & 63) == 0)
+	{
+		if (bHasOutline)
+		{
+			if (!bInner)
+				fill(rect, spec.outlineColor);
+			else
+			{
+				RectSPX parts[4] = {	{ rect.x, rect.y, rect.w, outline.top },
+										{ rect.x, innerRect.y, outline.left, innerRect.h },
+										{ innerRect.x + innerRect.w, innerRect.y, outline.right, innerRect.h },
+										{ rect.x, innerRect.y + innerRect.h, rect.w, outline.bottom } };
+
+				for (auto& part : parts)
+					if (part.w > 0 && part.h > 0)
+						fill(part, spec.outlineColor);
+			}
+		}
+
+		if (bHasFill)
+			fill(innerRect, spec.fillColor);
+
+		return;
+	}
+
+	// Clip against the pixels touched by the box, so that clip rectangles stay pixel aligned.
+
+	RectSPX bounds;
+	bounds.x = rect.x & ~63;
+	bounds.y = rect.y & ~63;
+	bounds.w = ((rect.x + rect.w + 63) & ~63) - bounds.x;
+	bounds.h = ((rect.y + rect.h + 63) & ~63) - bounds.y;
+
+	int nRects = 0;
+	auto& rects = m_pActiveLayer->rects;
+
+	for (int i = 0; i < m_pActiveClipList->nRects; i++)
+	{
+		RectSPX clipped = RectSPX::overlap(m_pActiveClipList->pRects[i], bounds);
+
+		if (!clipped.isEmpty())
+		{
+			rects.emplace_back(clipped);
+			nRects++;
+		}
+	}
+
+	if (nRects == 0)
+		return;
+
+	if (m_stateChanges != 0)
+		_encodeStateChanges();
+
+	// Encode tints
+
+	uint16_t	tintWords[2][TintTools::c_maxEncodedTintWords];
+	HiColor		tintColors[2][TintTools::c_maxEncodedTintColors];
+	int			nTintWords[2] = { 0, 0 };
+	int			nTintColors[2] = { 0, 0 };
+
+	Tint* pTints[2] = { bHasFill ? spec.pFillTint : nullptr, bHasOutline ? spec.pOutlineTint : nullptr };
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (pTints[i])
+			nTintWords[i] = TintTools::encodeTint(pTints[i], rect, tintWords[i], tintColors[i], nTintColors[i]);
+	}
+
+	uint16_t flags = 0;
+	if (bHasFill)
+		flags |= GfxBackend::HasFill;
+	if (bHasOutline)
+		flags |= GfxBackend::HasOutline;
+	if (pTints[0])
+		flags |= GfxBackend::HasFillTint;
+	if (pTints[1])
+		flags |= GfxBackend::HasOutlineTint;
+
+	int nWords = 4 * 2 * 3 + 2 + 2 + nTintWords[0] + nTintWords[1];
+	int nColors = (bHasFill ? 1 : 0) + (bHasOutline ? 1 : 0) + nTintColors[0] + nTintColors[1];
+
+	// Write command, aligned to 32 bits.
+
+	auto& commands = m_pActiveLayer->commands;
+
+	commands.secureSpace((GfxBackend::c_drawShapeHeaderWords + nWords + 1) * 2);
+
+	if (commands.size() % 4 != 0)
+		commands.pushUnchecked(uint16_t(Command::None));
+
+	m_pActiveLayer->latestCommand = Command::DrawShape;
+	m_pActiveLayer->latestCommandOfs = (int)commands.size();
+
+	commands.pushUnchecked(uint16_t(Command::DrawShape));
+	commands.pushUnchecked(uint16_t(GfxBackend::ShapeKind::RoundedBox));
+	commands.pushUnchecked(uint16_t(nRects));
+	commands.pushUnchecked(uint16_t(nColors));
+	commands.pushUnchecked(uint16_t(nWords));
+	commands.pushUnchecked(uint16_t(0));
+
+	commands.pushUnchecked(rect);
+
+	for (int i = 0; i < 4; i++)
+		commands.pushUnchecked(radius[i]);
+
+	commands.pushUnchecked(outline.top);
+	commands.pushUnchecked(outline.right);
+	commands.pushUnchecked(outline.bottom);
+	commands.pushUnchecked(outline.left);
+
+	commands.pushUnchecked(spx(0));					// Softness, reserved.
+	commands.pushUnchecked(flags);
+	commands.pushUnchecked(uint16_t(0));
+
+	for (int i = 0; i < 2; i++)
+		for (int w = 0; w < nTintWords[i]; w++)
+			commands.pushUnchecked(tintWords[i][w]);
+
+	// Colors
+
+	auto& colors = m_pActiveLayer->colors;
+
+	if (bHasFill)
+		colors.push_back(spec.fillColor);
+	if (bHasOutline)
+		colors.push_back(spec.outlineColor);
+
+	for (int i = 0; i < 2; i++)
+		colors.insert(colors.end(), tintColors[i], tintColors[i] + nTintColors[i]);
+
+	auto& info = m_pActiveCanvas->sessionInfo;
+	info.nShapeDraws++;
+	info.nShapeSegments += 2;
+	info.nShapeTints += (pTints[0] ? 1 : 0) + (pTints[1] ? 1 : 0);
+}
+
 //____ blit() ________________________________________________________________
 
 void GfxDeviceGen2::blit(CoordSPX dest)

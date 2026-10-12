@@ -162,6 +162,10 @@ namespace wg
 		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64) override;
 		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness = 64) override;
 
+		// Shapes
+
+		void	drawRoundedBox(const RoundedBoxSpec& spec) override;
+
 		// Blit methods
 
 		void	blit(CoordSPX dest) override;

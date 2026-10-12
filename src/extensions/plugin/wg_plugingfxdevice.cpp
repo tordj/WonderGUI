@@ -658,6 +658,33 @@ namespace wg
         PluginCalls::gfxDevice->flipDrawEdgemap(m_cDevice, { dest.x,dest.y }, static_cast<PluginEdgemap*>(pEdgemap)->cObject(), (wg_gfxFlip) flip);
     }
 
+    //.____ drawRoundedBox() __________________________________________________
+	//
+	// The host gets its own copies of the Tints.
+
+	void PluginGfxDevice::drawRoundedBox(const RoundedBoxSpec& spec)
+	{
+		wg_roundedBoxSpec box;
+
+		box.rect = *(const wg_rectSPX*)&spec.rect;
+
+		for (int i = 0; i < 4; i++)
+			box.radius[i] = spec.radius[i];
+
+		box.outline = *(const wg_borderSPX*)&spec.outline;
+		box.fillColor = *(const wg_color*)&spec.fillColor;
+		box.outlineColor = *(const wg_color*)&spec.outlineColor;
+		box.fillTint = PluginCalls::_hostTint(spec.pFillTint);
+		box.outlineTint = PluginCalls::_hostTint(spec.pOutlineTint);
+
+		PluginCalls::gfxDevice->drawRoundedBox(m_cDevice, &box);
+
+		if (box.fillTint)
+			PluginCalls::object->release(box.fillTint);
+		if (box.outlineTint)
+			PluginCalls::object->release(box.outlineTint);
+	}
+
     //.____ blitNinePatch() ___________________________________________________
 
     void PluginGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)

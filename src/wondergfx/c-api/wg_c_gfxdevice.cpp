@@ -512,6 +512,24 @@ void wg_flipDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap, wg_gfxF
 }
 
 
+void wg_drawRoundedBox(wg_obj device, const wg_roundedBoxSpec* spec)
+{
+	RoundedBoxSpec box;
+
+	box.rect = *(const RectSPX*)&spec->rect;
+
+	for (int i = 0; i < 4; i++)
+		box.radius[i] = spec->radius[i];
+
+	box.outline = *(const BorderSPX*)&spec->outline;
+	box.fillColor = *(const HiColor*)&spec->fillColor;
+	box.outlineColor = *(const HiColor*)&spec->outlineColor;
+	box.pFillTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->fillTint));
+	box.pOutlineTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->outlineTint));
+
+	getPtr(device)->drawRoundedBox(box);
+}
+
 void wg_blitNinePatch(wg_obj device, const wg_rectSPX* dstRect, const wg_borderSPX* dstFrame, const wg_ninePatch* patch, int scale)
 {
 	getPtr(device)->blitNinePatch(*(const RectSPX*)dstRect, *(BorderSPX*) dstFrame, * (NinePatch*) patch, scale);

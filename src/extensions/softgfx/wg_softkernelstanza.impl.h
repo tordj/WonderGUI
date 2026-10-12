@@ -2479,9 +2479,10 @@ static inline int _limit4096(int value)
 //
 //   out = dst * (1 - coverage) + blend(src, dst) * coverage
 //
-// Pixels can be shared by several segments, so src is a coverage weighted sum,
-// which is linear in src for all blend modes except Min and Max. These are exact
-// for pixels covered by a single segment and a close approximation otherwise.
+// Pixels can be shared by several segments, so src is a coverage weighted sum.
+// Blend modes that saturate or select (Add, Subtract, Min, Max) are exact for
+// pixels covered by a single segment and a close approximation otherwise. The
+// others are exact.
 //
 // Alpha-only destinations treat alpha as the color, like the fill kernels.
 
@@ -2539,24 +2540,28 @@ void _draw_coverage_span(uint8_t* WG_RESTRICT pDst, int pixelPitch, int length, 
 			}
 			else if constexpr (BLEND == BlendMode::Add)
 			{
+				// dst + coverage * min(1 - dst, src), so the covered part saturates as it would if fully covered.
+
 				if constexpr (bAlphaOnly)
-					outA = backA + px.a;
+					outA = backA + std::min(int(px.a), (cov * (4096 - backA) + 2048) >> 12);
 				else
 				{
-					outB = backB + px.b;
-					outG = backG + px.g;
-					outR = backR + px.r;
+					outB = backB + std::min(int(px.b), (cov * (4096 - backB) + 2048) >> 12);
+					outG = backG + std::min(int(px.g), (cov * (4096 - backG) + 2048) >> 12);
+					outR = backR + std::min(int(px.r), (cov * (4096 - backR) + 2048) >> 12);
 				}
 			}
 			else if constexpr (BLEND == BlendMode::Subtract)
 			{
+				// dst - coverage * min(dst, src)
+
 				if constexpr (bAlphaOnly)
-					outA = backA - px.a;
+					outA = backA - std::min(int(px.a), (cov * backA + 2048) >> 12);
 				else
 				{
-					outB = backB - px.b;
-					outG = backG - px.g;
-					outR = backR - px.r;
+					outB = backB - std::min(int(px.b), (cov * backB + 2048) >> 12);
+					outG = backG - std::min(int(px.g), (cov * backG + 2048) >> 12);
+					outR = backR - std::min(int(px.r), (cov * backR + 2048) >> 12);
 				}
 			}
 			else if constexpr (BLEND == BlendMode::Multiply)

@@ -1488,6 +1488,27 @@ namespace wg
 					break;
 				}
 
+				case Command::DrawShape:
+				{
+					// Not supported yet, stepped over.
+
+					static bool bReported = false;
+					if (!bReported)
+					{
+						GfxBase::throwError(ErrorLevel::Warning, ErrorCode::Other, "DX12Backend doesn't support DrawShape yet, shapes are not drawn.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+						bReported = true;
+					}
+
+					int nRects = p[1];
+					int nColors = p[2];
+					int nWords = p[3];
+
+					p += c_drawShapeHeaderWords - 1 + nWords;
+					pRects += nRects;
+					pColors += nColors;
+					break;
+				}
+
 				case Command::DrawEdgemap:
 				{
 					int32_t nRects = *p++;
