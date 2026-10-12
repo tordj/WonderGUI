@@ -367,12 +367,33 @@ namespace wg
 			return nullptr;
 		}
 
-		// Prepare palette. We only support uncompressed palette for the moment.
+		// Prepare palette, decompressing it if needed.
 
-		const Color8 * pPalette = nullptr;
+		const Color8 *		pPalette = nullptr;
+		std::vector<Color8>	decompressedPalette;
+
 		if( header.paletteSize > 0 )
 		{
 			pPalette = (const Color8*) pData;
+
+			if (header.paletteCompression != Util::makeEndianSpecificToken( 'N','O','N','E' ))
+			{
+				Decompressor * pDecompressor = GfxBase::getDecompressor(header.paletteCompression);
+
+				if( !pDecompressor )
+				{
+					char msg[] = "Don't know how to decompress 'XXXX'.";
+					* (uint32_t*)&msg[30] = header.paletteCompression;
+
+					GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, msg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					return nullptr;
+				}
+
+				decompressedPalette.resize( header.paletteSize + (header.paletteDecompressMargin + 3) / 4 );
+				pDecompressor->decompress(decompressedPalette.data(), pData, pData + header.paletteBytes - header.paletteDataPadding);
+				pPalette = decompressedPalette.data();
+			}
+
 			bp.palette = pPalette;
 		}
 

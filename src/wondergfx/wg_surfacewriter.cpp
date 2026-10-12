@@ -415,6 +415,19 @@ namespace wg
 			pPixels = pConverted;
 			pitch = lineBytes;
 		}
+		else if( m_pPixelCompressor && pitch > lineBytes )
+		{
+			// Compressors need the pixels without the padding at the end of each line.
+
+			convertedBytes = lineBytes * size.h;
+			uint8_t * pPacked = (uint8_t*) GfxBase::memStackAlloc(convertedBytes);
+
+			for (int y = 0; y < size.h; y++)
+				std::memcpy(pPacked + y * lineBytes, pPixels + y * pitch, lineBytes);
+
+			pPixels = pPacked;
+			pitch = lineBytes;
+		}
 
 		if( m_pPixelCompressor )
 		{
@@ -462,7 +475,7 @@ namespace wg
 			return 0;
 
 		if( m_pPaletteCompressor )
-			return m_pPaletteCompressor->compress(pDest, pPalette, pPalette + nColors * sizeof(Color8) );
+			return m_pPaletteCompressor->compress(pDest, pPalette, pPalette + nColors );
 		else
 		{
 			std::memcpy( pDest, pPalette, nColors * sizeof(Color8) );
