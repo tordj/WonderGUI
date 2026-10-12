@@ -32,6 +32,7 @@ bool MyApp::init(API * pAPI)
 	m_compressors.push_back( RLECompressor::create({ .primSize = 1}) );
 	m_compressors.push_back( RLECompressor::create({ .primSize = 2}) );
 	m_compressors.push_back( RLECompressor::create({ .primSize = 4}) );
+	m_compressors.push_back( QOICompressor::create() );
 
 	m_decompressors.push_back( LZDecompressor::create() );
 	m_decompressors.push_back( Q565Decompressor::create() );
@@ -41,6 +42,7 @@ bool MyApp::init(API * pAPI)
 	m_decompressors.push_back( pRLEDecompressor );
 	m_decompressors.push_back( pRLEDecompressor );
 	m_decompressors.push_back( pRLEDecompressor );
+	m_decompressors.push_back( QOIDecompressor::create() );
 
 
 	m_pCompressor = m_compressors[0];
@@ -101,6 +103,7 @@ bool MyApp::_setupGUI(API* pAPI)
 	m_pCompressorSelector->entries.pushBack( SelectBoxEntry::Blueprint{ .id = 2, .text = "RLEx-1 (Simple one byte run length encoding)" } );
 	m_pCompressorSelector->entries.pushBack( SelectBoxEntry::Blueprint{ .id = 3, .text = "RLEx-2 (Simple two byte run length encoding)" } );
 	m_pCompressorSelector->entries.pushBack( SelectBoxEntry::Blueprint{ .id = 4, .text = "RLEx-4 (Simple four byte run length encoding)" } );
+	m_pCompressorSelector->entries.pushBack( SelectBoxEntry::Blueprint{ .id = 5, .text = "QOI (for ARGB_8 and XRGB_8)" } );
 	m_pCompressorSelector->selectEntryByIndex(0);
 
 	pButtonPanel->slots.pushBack({

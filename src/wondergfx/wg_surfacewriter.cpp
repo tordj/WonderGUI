@@ -23,6 +23,7 @@
 #include <wg_gfxbase.h>
 #include <wg_gfxutil.h>
 #include <wg_pixeltools.h>
+#include <wg_qoicompression.h>
 #include <cstring>
 
 namespace wg
@@ -199,6 +200,42 @@ namespace wg
 		return pBlob;
 	}
 
+
+	//____ writeSurfaceToQOIStream() __________________________________________
+
+	bool SurfaceWriter::writeSurfaceToQOIStream( std::ostream& stream, Surface * pSurface )
+	{
+		int bufferSize = _safeQOIBufferSize(pSurface);
+		if( bufferSize == 0 )
+			return false;
+
+		char * pBuffer = GfxBase::memStackAlloc(bufferSize);
+
+		int bytes = _encodeQOI(pBuffer, pSurface);
+		stream.write(pBuffer, bytes);
+
+		GfxBase::memStackFree(bufferSize);
+		return stream.good();
+	}
+
+	//____ writeSurfaceToQOIBlob() ____________________________________________
+
+	Blob_p SurfaceWriter::writeSurfaceToQOIBlob( Surface * pSurface )
+	{
+		int bufferSize = _safeQOIBufferSize(pSurface);
+		if( bufferSize == 0 )
+			return nullptr;
+
+		char * pBuffer = GfxBase::memStackAlloc(bufferSize);
+
+		int bytes = _encodeQOI(pBuffer, pSurface);
+
+		Blob_p pBlob = Blob::create(bytes);
+		std::memcpy(pBlob->data(), pBuffer, bytes);
+
+		GfxBase::memStackFree(bufferSize);
+		return pBlob;
+	}
 
 	//____ _prepareHeader() _____________________________________________________
 
@@ -447,5 +484,108 @@ namespace wg
 		}
 	}
 
-} // namespace wg
+	//____ _safeQOIBufferSize() _________________________________________________
 
+	int SurfaceWriter::_safeQOIBufferSize(Surface* pSurface)
+	{
+		SizeI size = pSurface->pixelSize();
+
+		if( size.w <= 0 || size.h <= 0 || uint32_t(size.h) >= c_qoiMaxPixels / uint32_t(size.w) )
+		{
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Surface is empty or too large to be saved as a QOI image.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return 0;
+		}
+
+		// Worst case scenario is a 5 byte RGBA chunk per pixel, plus header and end marker.
+
+		return c_qoiHeaderSize + size.w * size.h * 5 + 8;
+	}
+
+	//____ _qoiChannels() _______________________________________________________
+
+	int SurfaceWriter::_qoiChannels(Surface* pSurface)
+	{
+		if( pSurface->pixelDescription()->A_mask != 0 )
+			return 4;
+
+		auto pPalette = pSurface->palette();
+		if( pPalette )
+		{
+			int paletteSize = pSurface->paletteSize();
+			for( int i = 0 ; i < paletteSize ; i++ )
+			{
+				if( pPalette[i].a != 255 )
+					return 4;
+			}
+		}
+
+		return 3;
+	}
+
+	//____ _encodeQOI() _________________________________________________________
+
+	int SurfaceWriter::_encodeQOI(void* pDest, Surface* pSurface)
+	{
+		uint8_t* pWrite = (uint8_t*)pDest;
+
+		SizeI size = pSurface->pixelSize();
+		int channels = _qoiChannels(pSurface);
+		ColorSpace colorSpace = pSurface->colorSpace();
+
+		// Write header
+
+		auto write32 = [](uint8_t * p, uint32_t v) { p[0] = uint8_t(v >> 24); p[1] = uint8_t(v >> 16); p[2] = uint8_t(v >> 8); p[3] = uint8_t(v); };
+
+		std::memcpy(pWrite, "qoif", 4);
+		write32(pWrite + 4, uint32_t(size.w));
+		write32(pWrite + 8, uint32_t(size.h));
+		pWrite[12] = uint8_t(channels);
+		pWrite[13] = colorSpace == ColorSpace::Linear ? 1 : 0;
+		pWrite += c_qoiHeaderSize;
+
+		// Get pixels as ARGB_8 or XRGB_8, which the QOI compressor needs.
+
+		auto pixbuf = pSurface->allocPixelBuffer();
+		pSurface->pushPixels(pixbuf);
+
+		PixelFormat format = channels == 4 ? PixelFormat::ARGB_8 : PixelFormat::XRGB_8;
+		int lineBytes = size.w * 4;
+
+		bool bSameLayout = (pixbuf.format == PixelFormat::ARGB_8 || pixbuf.format == format) && pixbuf.colorSpace == colorSpace &&
+							pixbuf.pitch == lineBytes;
+
+		const uint8_t * pPixels = pixbuf.pixels;
+		bool bBigEndian = pixbuf.bigEndian;
+		int convertedBytes = 0;
+
+		if( !bSameLayout )
+		{
+			convertedBytes = lineBytes * size.h;
+			uint8_t * pConverted = (uint8_t*) GfxBase::memStackAlloc(convertedBytes);
+
+			auto bufDesc = Util::pixelFormatToDescription(pixbuf.format, pixbuf.bigEndian);
+			int dummyPaletteEntries = 0;
+
+			PixelTools::copyPixels(size.w, size.h, pixbuf.pixels, pixbuf.format, pixbuf.colorSpace, pixbuf.bigEndian, pixbuf.pitch - PixelTools::bytesPerLine(bufDesc, size.w),
+								   pixbuf.palette, pSurface->paletteSize(), pConverted, format, colorSpace, false, 0,
+								   nullptr, dummyPaletteEntries, 0);
+
+			pPixels = pConverted;
+			bBigEndian = false;
+		}
+
+		// Compress. Alpha of XRGB_8 is ignored by the compressor, as QOI wants it for 3 channels.
+
+		auto pCompressor = QOICompressor::create( WGBP(QOICompressor, _.format = format, _.bigEndian = bBigEndian ) );
+
+		pWrite += pCompressor->compress(pWrite, pPixels, pPixels + lineBytes * size.h);
+
+		if( convertedBytes > 0 )
+			GfxBase::memStackFree(convertedBytes);
+
+		pSurface->freePixelBuffer(pixbuf);
+
+		return int(pWrite - (uint8_t*)pDest);
+	}
+
+} // namespace wg

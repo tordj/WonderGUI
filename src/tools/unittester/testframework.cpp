@@ -8,6 +8,7 @@
 #include "tests/gfxstream.h"
 #include "tests/softgfxdevice.h"
 #include "tests/slotlinks.h"
+#include "tests/qoi.h"
 
 
 
@@ -21,6 +22,7 @@ TestFramework::TestFramework( std::ostream& output ) :
 	addCollection( new GfxStreamTest() );
 	addCollection( new SoftGfxDeviceTest() );
 	addCollection( new SlotLinksTest() );
+	addCollection( new QOITest() );
 }
 
 //____ Destructor ______________________________________________________________

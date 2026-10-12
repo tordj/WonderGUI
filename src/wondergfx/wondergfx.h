@@ -52,6 +52,7 @@
 #include <wg_pixeltools.h>
 #include <wg_printer.h>
 #include <wg_q565compression.h>
+#include <wg_qoicompression.h>
 #include <wg_rlecompression.h>
 #include <wg_spans.h>
 #include <wg_spxcompression.h>

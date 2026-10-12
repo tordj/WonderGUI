@@ -78,6 +78,12 @@ public:
 	void			writeSurfaceToStream( std::ostream& stream, Surface * pSurface, int extraDataSize = 0, char * pExtraData = nullptr );
 	Blob_p			writeSurfaceToBlob( Surface * pSurface, int extraDataSize = 0, char * pExtraData = nullptr );
 
+	// Writes surface as a QOI image. Pixels are converted to 8-bit RGB or RGBA (if surface has alpha),
+	// in the color space of the surface. Compressors and SaveInfo are ignored.
+
+	bool			writeSurfaceToQOIStream( std::ostream& stream, Surface * pSurface );
+	Blob_p			writeSurfaceToQOIBlob( Surface * pSurface );
+
 protected:
 
 	template<class BP>
@@ -106,6 +112,10 @@ protected:
 	int				_encodePixelData(void* pDest, Surface* pSurface);
 	int				_encodePaletteData(void* pDest, Surface* pSurface);
 	int				_encodeExtrasData(void* pDest, void * pBegin, void * pEnd);
+
+	int				_safeQOIBufferSize(Surface* pSurface);
+	int				_encodeQOI(void* pDest, Surface* pSurface);
+	int				_qoiChannels(Surface* pSurface);
 
 
 	SaveInfo			m_saveInfo;

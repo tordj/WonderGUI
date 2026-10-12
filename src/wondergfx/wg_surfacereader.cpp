@@ -27,6 +27,7 @@
 #include <wg_compression.h>
 #include <wg_lzcompression.h>
 #include <wg_q565compression.h>
+#include <wg_qoicompression.h>
 #include <wg_rlecompression.h>
 
 #include <cstring>
@@ -109,45 +110,211 @@ namespace wg
 
 	Surface_p SurfaceReader::_readQOIFromStream(std::istream& stream, const Surface::Blueprint& _bp)
 	{
-		struct qoi_header{
-			uint32_t width; // image width in pixels (BE)
-			uint32_t height; // image height in pixels (BE)
-			uint8_t channels; // 3 = RGB, 4 = RGBA
-			uint8_t colorspace; // 0 = sRGB with linear alpha
-								// 1 = all channels linear
-		};
+		// Read rest of header, the magic has already been read.
 
-		qoi_header header;
+		uint8_t headerBytes[c_qoiHeaderSize];
+		std::memcpy(headerBytes, "qoif", 4);
+		stream.read((char*) headerBytes + 4, c_qoiHeaderSize - 4);
 
-		// Read header
-
-		stream.read(((char*)(&header)), 10);
-
-		if (!Util::isSystemBigEndian())
+		if( !stream.good() )
 		{
-			header.width = Util::endianSwap(header.width);
-			header.height = Util::endianSwap(header.height);
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::Other, "QOI image ended before end of header.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return nullptr;
+		}
+
+		QOIHeader header;
+		if( !_parseQOIHeader(headerBytes, header) )
+			return nullptr;
+
+		// The size of the data isn't stored anywhere, so we read it chunk by chunk
+		// until all pixels have been covered, so we read the image and nothing more.
+
+		std::vector<uint8_t>	data;
+		std::streambuf *		pBuffer = stream.rdbuf();
+		int64_t					pixelsLeft = int64_t(header.width) * header.height;
+
+		while( pixelsLeft > 0 )
+		{
+			int tag = pBuffer->sbumpc();
+			if( tag == std::char_traits<char>::eof() )
+				break;
+
+			data.push_back(uint8_t(tag));
+
+			int extraBytes = 0;
+			if( tag == 0xFE )
+				extraBytes = 3;						// RGB
+			else if( tag == 0xFF )
+				extraBytes = 4;						// RGBA
+			else if( (tag & 0xC0) == 0x80 )
+				extraBytes = 1;						// Luma
+			else if( (tag & 0xC0) == 0xC0 )
+				pixelsLeft -= (tag & 0x3F);			// Run, one pixel more is subtracted below.
+
+			pixelsLeft--;
+
+			if( extraBytes > 0 )
+			{
+				size_t ofs = data.size();
+				data.resize(ofs + extraBytes);
+				if( pBuffer->sgetn((char*) &data[ofs], extraBytes) != extraBytes )
+					break;
+			}
+		}
+
+		// Read the end marker, which ends the stream.
+
+		size_t ofs = data.size();
+		data.resize(ofs + 8);
+
+		if( pixelsLeft > 0 || pBuffer->sgetn((char*) &data[ofs], 8) != 8 )
+		{
+			stream.setstate(std::ios::eofbit | std::ios::failbit);
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::Other, "QOI image ended before all pixels were read.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return nullptr;
+		}
+
+		return _createSurfaceFromQOI(header, data.data(), data.data() + data.size(), _bp);
+	}
+
+	//____ _readQOIFromMemory() ______________________________________________
+
+	Surface_p SurfaceReader::_readQOIFromMemory(const char* pData, const char* pDataEnd, const Surface::Blueprint& _bp)
+	{
+		if( pDataEnd && pDataEnd - pData < c_qoiHeaderSize )
+		{
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::Other, "QOI image is too small to contain a header.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return nullptr;
+		}
+
+		QOIHeader header;
+		if( !_parseQOIHeader((const uint8_t*) pData, header) )
+			return nullptr;
+
+		auto pChunks = (const uint8_t*) pData + c_qoiHeaderSize;
+
+		// If we don't know where the data ends, we let it end where it at most can.
+		// Decompression stops at the end marker anyway.
+
+		auto pChunksEnd = pDataEnd ? (const uint8_t*) pDataEnd : pChunks + int64_t(header.width) * header.height * 5 + 8;
+
+		return _createSurfaceFromQOI(header, pChunks, pChunksEnd, _bp);
+	}
+
+	//____ _parseQOIHeader() ___________________________________________________
+
+	bool SurfaceReader::_parseQOIHeader(const uint8_t* p, QOIHeader& header)
+	{
+		auto read32 = [](const uint8_t * p) { return (uint32_t(p[0]) << 24) | (uint32_t(p[1]) << 16) | (uint32_t(p[2]) << 8) | uint32_t(p[3]); };
+
+		uint32_t width = read32(p + 4);
+		uint32_t height = read32(p + 8);
+
+		header.channels = p[12];
+		header.colorspace = p[13];
+
+		if( std::memcmp(p, "qoif", 4) != 0 || width == 0 || height == 0 || height >= c_qoiMaxPixels / width ||
+		   (header.channels != 3 && header.channels != 4) || header.colorspace > 1 )
+		{
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::Other, "Invalid or unsupported QOI header.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+
+		header.width = int(width);
+		header.height = int(height);
+		return true;
+	}
+
+	//____ _createSurfaceFromQOI() _____________________________________________
+
+	Surface_p SurfaceReader::_createSurfaceFromQOI(const QOIHeader& header, const uint8_t * pChunks, const uint8_t * pChunksEnd, const Surface::Blueprint& _bp)
+	{
+		// Prepare surface blueprint
+
+		auto bp = WGBP(Surface,
+						_.size			= { header.width, header.height },
+						_.format		= header.channels == 4 ? PixelFormat::ARGB_8 : PixelFormat::XRGB_8,
+						_.colorSpace	= header.colorspace == 1 ? ColorSpace::Linear : ColorSpace::sRGB );
+
+		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
+		{
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Provided blueprint can not alter size, format or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return nullptr;
 		}
 
 		// Create surface
 
+		auto pSurface = m_pFactory->createSurface(bp);
+		if( !pSurface )
+			return nullptr;
 
+		auto pixbuf = pSurface->allocPixelBuffer();
 
+		int nPixels = header.width * header.height;
+		int lineBytes = header.width * 4;
 
+		// Decompress straight into the pixel buffer if it has the pixels as we want them,
+		// otherwise to little endian ARGB_8/XRGB_8 that we convert from.
 
-		return nullptr;
+		bool bSameLayout = pixbuf.format == bp.format && pixbuf.colorSpace == bp.colorSpace && pixbuf.pitch == lineBytes;
+
+		auto pDecompressor = QOIDecompressor::create( WGBP(QOIDecompressor, _.bigEndian = bSameLayout ? pixbuf.bigEndian : false ) );
+
+		uint8_t *	pDecompressed = bSameLayout ? pixbuf.pixels : (uint8_t*) GfxBase::memStackAlloc(nPixels * 4);
+
+		int bytes = pDecompressor->decompress(pDecompressed, nPixels * 4, pChunks, pChunksEnd);
+
+		bool bOk = true;
+
+		if( bytes != nPixels * 4 )
+		{
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::Other, "QOI data ended before all pixels were decoded.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			bOk = false;
+		}
+		else if( !bSameLayout )
+		{
+			auto dstDesc = Util::pixelFormatToDescription(pixbuf.format, pixbuf.bigEndian);
+			int paletteEntries = pSurface->paletteSize();
+
+			bOk = PixelTools::copyPixels(header.width, header.height, pDecompressed, bp.format, bp.colorSpace, false, 0, nullptr, 0,
+										 pixbuf.pixels, pixbuf.format, pixbuf.colorSpace, pixbuf.bigEndian,
+										 pixbuf.pitch - PixelTools::bytesPerLine(dstDesc, header.width),
+										 const_cast<Color8*>(pixbuf.palette), paletteEntries, pSurface->paletteCapacity());
+
+			if( !bOk )
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Failed to convert pixels of QOI image to surface.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		}
+
+		if( !bSameLayout )
+			GfxBase::memStackFree(nPixels * 4);
+
+		if( !bOk )
+		{
+			pSurface->freePixelBuffer(pixbuf);
+			return nullptr;
+		}
+
+		pSurface->pullPixels(pixbuf);
+		pSurface->freePixelBuffer(pixbuf);
+		return pSurface;
 	}
 
 	//____ readSurfaceFromBlob() _______________________________________________
 
 	Surface_p SurfaceReader::readSurfaceFromBlob(const Blob* pBlob)
 	{
-		return readSurfaceFromMemory(static_cast<const char*>(pBlob->data()));
+		Surface::Blueprint dummy;
+		return readSurfaceFromBlob(pBlob, dummy);
 	}
 
 	Surface_p SurfaceReader::readSurfaceFromBlob( const Blob * pBlob, const Surface::Blueprint& bp )
 	{
-		return readSurfaceFromMemory( static_cast<const char*>(pBlob->data()), bp);
+		auto pData = static_cast<const char*>(pBlob->data());
+
+		if( pBlob->size() >= 4 && std::memcmp(pData, "qoif", 4) == 0 )
+			return _readQOIFromMemory(pData, pData + pBlob->size(), bp);
+
+		return readSurfaceFromMemory( pData, bp);
 	}
 
 	//____ readSurfaceFromMemory() _____________________________________________
@@ -160,6 +327,9 @@ namespace wg
 
 	Surface_p SurfaceReader::readSurfaceFromMemory(const char* pData, const Surface::Blueprint& _bp)
 	{
+		if( std::memcmp(pData, "qoif", 4) == 0 )
+			return _readQOIFromMemory(pData, nullptr, _bp);
+
 		SurfaceFileHeader	header;
 
 		// Read the header
