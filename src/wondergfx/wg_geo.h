@@ -34,6 +34,7 @@ namespace wg
 {
 	template<class T> class CoordT;
 	template<class T> class BorderT;
+	template<class T> class CornersT;
 	template<class T> class SizeT;
 	template<class T> class RectT;
 
@@ -48,6 +49,9 @@ namespace wg
 	typedef BorderT<short>	BorderS;
 	typedef BorderT<int>	BorderI;
 	typedef BorderT<float>	BorderF;
+
+	typedef CornersT<pts>	Corners;
+	typedef CornersT<spx>	CornersSPX;
 
 	typedef	SizeT<pts>		Size;
 	typedef	SizeT<spx>		SizeSPX;
@@ -237,6 +241,44 @@ namespace wg
 		//.____ Properties __________________________________________
 
 		Type		top, right, bottom, left;
+	};
+
+
+	//____ CornersT<> _________________________________________________________
+	/**
+		@brief Class template for a value for each corner of a rectangle, e.g. corner radii.
+
+		Corners are in clockwise order from the top-left one, which is also the order
+		of the index operator.
+	*/
+
+	template<class Type> class CornersT
+	{
+	public:
+		//.____ Creation __________________________________________
+
+		CornersT() : topLeft(0), topRight(0), bottomRight(0), bottomLeft(0) {}
+		CornersT( Type all ) : topLeft(all), topRight(all), bottomRight(all), bottomLeft(all) {}
+		CornersT( Type topLeft, Type topRight, Type bottomRight, Type bottomLeft ) : topLeft(topLeft), topRight(topRight), bottomRight(bottomRight), bottomLeft(bottomLeft) {}
+
+		template<typename T>
+		explicit CornersT(const CornersT<T>& c) : topLeft((Type)c.topLeft), topRight((Type)c.topRight), bottomRight((Type)c.bottomRight), bottomLeft((Type)c.bottomLeft) {}
+
+		//.____ Misc ______________________________________________
+
+		inline bool		isEmpty() const { return topLeft == 0 && topRight == 0 && bottomRight == 0 && bottomLeft == 0; }
+
+		//.____ Operators ___________________________________________
+
+		inline Type&	operator[](int corner) { return corner == 0 ? topLeft : corner == 1 ? topRight : corner == 2 ? bottomRight : bottomLeft; }
+		inline const Type& operator[](int corner) const { return corner == 0 ? topLeft : corner == 1 ? topRight : corner == 2 ? bottomRight : bottomLeft; }
+
+		inline bool		operator==(const CornersT<Type>& c) const { return topLeft == c.topLeft && topRight == c.topRight && bottomRight == c.bottomRight && bottomLeft == c.bottomLeft; }
+		inline bool		operator!=(const CornersT<Type>& c) const { return !(*this == c); }
+
+		//.____ Properties __________________________________________
+
+		Type	topLeft, topRight, bottomRight, bottomLeft;
 	};
 
 

@@ -69,6 +69,7 @@ namespace wg
 		{
 			BlendMode		blendMode = BlendMode::Blend;
 			HiColor			color = HiColor::White;
+			Corners			cornerRadius;
 			Finalizer_p		finalizer = nullptr;
 			int				layer = -1;
 			int				markAlpha = 1;
@@ -117,6 +118,11 @@ namespace wg
 
 		Border			m_outline;
 		BlendMode		m_blendMode = BlendMode::Blend;
+		Corners			m_cornerRadius;
+		bool			m_bRounded = false;
+
+		CornersSPX		_cornerRadii(const RectSPX& canvas, int scale) const;
+		RectSPX			_roundedCoverage(const RectSPX& canvas, const RectSPX& coverage, int scale) const;
 
 		const HiColor&	_getFillColor(State state) const
 		{

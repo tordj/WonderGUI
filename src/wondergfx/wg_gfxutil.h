@@ -193,6 +193,12 @@ namespace wg
 			return spx(value * scale);
 		}
 
+		inline CornersSPX ptsToSpx(const Corners& corners, int scale)
+		{
+			return CornersSPX(spx(corners.topLeft * scale), spx(corners.topRight * scale),
+							  spx(corners.bottomRight * scale), spx(corners.bottomLeft * scale));
+		}
+
 		inline CoordSPX ptsToSpx(const Coord& coord, int scale)
 		{
 			return CoordSPX(spx(coord.x * scale), spx(coord.y * scale));
@@ -258,6 +264,48 @@ namespace wg
 				for (int i = 0; i < 4; i++)
 					radius[i] = spx(radius[i] * num / den);
 			}
+		}
+
+		/**
+		 * Checks if a point is inside a box with rounded corners, with radii as given to
+		 * clampCornerRadii() (top-left, top-right, bottom-right, bottom-left), already clamped.
+		 */
+
+		inline bool isInsideRoundedBox(const CoordSPX& point, const RectSPX& box, const spx radius[4])
+		{
+			if (!box.contains(point))
+				return false;
+
+			int64_t x = point.x;
+			int64_t y = point.y;
+
+			auto outsideCorner = [&](int64_t cx, int64_t cy, int64_t r, bool bLeft, bool bTop)
+			{
+				if ((bLeft ? x >= cx : x < cx) || (bTop ? y >= cy : y < cy))
+					return false;
+
+				return (x - cx) * (x - cx) + (y - cy) * (y - cy) > r * r;
+			};
+
+			int64_t left = box.x, top = box.y, right = int64_t(box.x) + box.w, bottom = int64_t(box.y) + box.h;
+
+			return !(outsideCorner(left + radius[0], top + radius[0], radius[0], true, true) ||
+					 outsideCorner(right - radius[1], top + radius[1], radius[1], false, true) ||
+					 outsideCorner(right - radius[2], bottom - radius[2], radius[2], false, false) ||
+					 outsideCorner(left + radius[3], bottom - radius[3], radius[3], true, false));
+		}
+
+		inline void clampCornerRadii(const SizeSPX& size, CornersSPX& radius)
+		{
+			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };
+			clampCornerRadii(size, r);
+			radius = CornersSPX(r[0], r[1], r[2], r[3]);
+		}
+
+		inline bool isInsideRoundedBox(const CoordSPX& point, const RectSPX& box, const CornersSPX& radius)
+		{
+			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };
+			return isInsideRoundedBox(point, box, r);
 		}
 
 		inline spx align(spx x)

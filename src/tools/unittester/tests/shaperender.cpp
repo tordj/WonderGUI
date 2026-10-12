@@ -233,6 +233,7 @@ ShapeRenderTest::ShapeRenderTest()
 	ADD_TEST(linearBackendTest);
 	ADD_TEST(streamTest);
 	ADD_TEST(alignedBoxTest);
+	ADD_TEST(boxSkinTest);
 }
 
 ShapeRenderTest::~ShapeRenderTest()
@@ -677,4 +678,78 @@ bool ShapeRenderTest::alignedBoxTest(std::ostream& output)
 			return toC12(spec.outlineColor);
 		return toC12(c_background);
 	});
+}
+
+//____ boxSkinTest() __________________________________________________________
+// BoxSkin with corner radii draws a rounded box and respects the corners when mark testing.
+
+bool ShapeRenderTest::boxSkinTest(std::ostream& output)
+{
+	auto pSkin = BoxSkin::create(WGBP(BoxSkin,
+		_.color = HiColor(3000, 1500, 600, 4096),
+		_.outlineColor = HiColor(200, 4000, 1000, 4096),
+		_.outlineThickness = { 2, 3, 2, 1 },
+		_.cornerRadius = { 8, 8, 3, 0 }));
+
+	RectSPX canvas = { 64 * 5, 64 * 4, 64 * 40, 64 * 30 };
+	int scale = 64;
+
+	// Skin
+
+	Canvas skinCanvas;
+	auto pDevice = createSoftDevice();
+
+	pDevice->beginRender();
+	pDevice->beginCanvasUpdate(skinCanvas.surface);
+	pDevice->setBlendMode(BlendMode::Replace);
+	pDevice->fill(c_background);
+	pDevice->setBlendMode(BlendMode::Blend);
+	pSkin->_render(pDevice, canvas, scale, State::Default);
+	pDevice->endCanvasUpdate();
+	pDevice->endRender();
+
+	// Same box drawn directly
+
+	RoundedBoxSpec spec;
+	spec.rect = canvas;
+	spec.radius = { 64 * 8, 64 * 8, 64 * 3, 0 };
+	spec.outline = { 64 * 2, 64 * 3, 64 * 2, 64 * 1 };
+	spec.fillColor = HiColor(3000, 1500, 600, 4096);
+	spec.outlineColor = HiColor(200, 4000, 1000, 4096);
+
+	Canvas boxCanvas;
+
+	pDevice->beginRender();
+	pDevice->beginCanvasUpdate(boxCanvas.surface);
+	pDevice->setBlendMode(BlendMode::Replace);
+	pDevice->fill(c_background);
+	pDevice->setBlendMode(BlendMode::Blend);
+	pDevice->drawRoundedBox(spec);
+	pDevice->endCanvasUpdate();
+	pDevice->endRender();
+
+	auto skinPixels = skinCanvas.read();
+	auto boxPixels = boxCanvas.read();
+
+	TEST_ASSERT(skinPixels == boxPixels);
+
+	// Mark test
+
+	TEST_ASSERT(!pSkin->_markTest({ canvas.x + 64, canvas.y + 64 }, canvas, scale, State::Default));					// Outside top-left corner.
+	TEST_ASSERT(pSkin->_markTest({ canvas.x + 64 * 3, canvas.y + 64 * 3 }, canvas, scale, State::Default));				// Inside it.
+	TEST_ASSERT(pSkin->_markTest({ canvas.x + 64, canvas.y + canvas.h - 64 }, canvas, scale, State::Default));			// Square bottom-left corner.
+	TEST_ASSERT(pSkin->_markTest({ canvas.x + canvas.w / 2, canvas.y + canvas.h / 2 }, canvas, scale, State::Default));
+
+	// Coverage must lie inside the rounded box.
+
+	RectSPX coverage = pSkin->_coverage(canvas, scale, State::Default);
+	TEST_ASSERT(!coverage.isEmpty());
+
+	spx radius[4] = { 64 * 8, 64 * 8, 64 * 3, 0 };
+	TEST_ASSERT(Util::isInsideRoundedBox(coverage.pos(), canvas, radius));
+	TEST_ASSERT(Util::isInsideRoundedBox({ coverage.x + coverage.w - 1, coverage.y }, canvas, radius));
+	TEST_ASSERT(Util::isInsideRoundedBox({ coverage.x, coverage.y + coverage.h - 1 }, canvas, radius));
+	TEST_ASSERT(Util::isInsideRoundedBox({ coverage.x + coverage.w - 1, coverage.y + coverage.h - 1 }, canvas, radius));
+
+	return true;
 }

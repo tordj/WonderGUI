@@ -58,6 +58,13 @@ namespace wg
 		m_outline		= bp.outlineThickness;
 		m_blendMode		= bp.blendMode;
 
+		for (int i = 0; i < 4; i++)
+		{
+			m_cornerRadius[i] = std::max(bp.cornerRadius[i], pts(0));
+			if (m_cornerRadius[i] > 0)
+				m_bRounded = true;
+		}
+
 		// Generate lists of states that affects shift, color and surface.
 
 		State	shiftingStates[State::NbStates];
@@ -182,10 +189,25 @@ namespace wg
 
 		BorderSPX outline = align(ptsToSpx(m_outline, scale));
 
-		const Color& fillColor = _getFillColor(state);
-		const Color& outlineColor = _getOutlineColor(state);
+		const HiColor& fillColor = _getFillColor(state);
+		const HiColor& outlineColor = _getOutlineColor(state);
 
-		if( outline.width() + outline.height() == 0 || fillColor == outlineColor )
+		if( m_bRounded )
+		{
+			RoundedBoxSpec spec;
+			spec.rect = canvas;
+			spec.radius = _cornerRadii(canvas, scale);
+			spec.fillColor = fillColor;
+
+			if( fillColor != outlineColor )
+			{
+				spec.outline = outline;
+				spec.outlineColor = outlineColor;
+			}
+
+			pDevice->drawRoundedBox(spec);
+		}
+		else if( outline.width() + outline.height() == 0 || fillColor == outlineColor )
 		{
 			pDevice->fill( canvas, fillColor );
 		}
@@ -259,7 +281,26 @@ namespace wg
 		int opacity;
 
 		RectSPX center = canvas - align(ptsToSpx(m_outline,scale));
-		if( center.contains(ofs) )
+
+		if( m_bRounded )
+		{
+			// Test against the rounded box, with inner corners as drawn by GfxDevice::drawRoundedBox().
+
+			CornersSPX radius = _cornerRadii(canvas, scale);
+
+			if( !Util::isInsideRoundedBox(ofs, canvas, radius) )
+				return false;
+
+			BorderSPX o = align(ptsToSpx(m_outline,scale));
+			spx innerRadius[4] = {	std::max(radius[0] - std::max(o.left, o.top), 0), std::max(radius[1] - std::max(o.top, o.right), 0),
+									std::max(radius[2] - std::max(o.right, o.bottom), 0), std::max(radius[3] - std::max(o.bottom, o.left), 0) };
+
+			if( Util::isInsideRoundedBox(ofs, center, innerRadius) )
+				opacity = _getFillColor(state).a;
+			else
+				opacity = _getOutlineColor(state).a;
+		}
+		else if( center.contains(ofs) )
 			opacity = _getFillColor(state).a;
 		else
 			opacity = _getOutlineColor(state).a;
@@ -295,17 +336,65 @@ namespace wg
 		{
 			if( _getFillColor(state).a == 4096 )
 			{
-				RectSPX coverage = geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
+				RectSPX canvas = geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
+				RectSPX coverage = canvas;
+
 				if( _getOutlineColor(state).a != 4096 )
 					coverage -= align(ptsToSpx(m_outline,scale));
 				
-				return coverage;
+				return m_bRounded ? _roundedCoverage(canvas, coverage, scale) : coverage;
 			}
 		}
 		else if( m_blendMode == BlendMode::Replace )
-			return geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
+		{
+			RectSPX canvas = geo - align(ptsToSpx(m_spacing,scale)) + align(ptsToSpx(m_overflow,scale));
+			return m_bRounded ? _roundedCoverage(canvas, canvas, scale) : canvas;
+		}
 
 		return RectSPX();
+	}
+
+	//____ _cornerRadii() _______________________________________________________
+
+	CornersSPX BoxSkin::_cornerRadii(const RectSPX& canvas, int scale) const
+	{
+		CornersSPX radius = ptsToSpx(m_cornerRadius, scale);
+		Util::clampCornerRadii(canvas.size(), radius);
+		return radius;
+	}
+
+	//____ _roundedCoverage() ___________________________________________________
+	// The part of coverage (a rectangle inside canvas) that is fully covered despite the
+	// rounded corners: the band between the corners, horizontal or vertical, whichever is
+	// larger, shrunk to whole pixels.
+
+	RectSPX BoxSkin::_roundedCoverage(const RectSPX& canvas, const RectSPX& coverage, int scale) const
+	{
+		CornersSPX radius = _cornerRadii(canvas, scale);
+
+		spx top = canvas.y + std::max(radius[0], radius[1]);
+		spx bottom = canvas.y + canvas.h - std::max(radius[2], radius[3]);
+		spx left = canvas.x + std::max(radius[0], radius[3]);
+		spx right = canvas.x + canvas.w - std::max(radius[1], radius[2]);
+
+		RectSPX horizontal = RectSPX::overlap(coverage, RectSPX(canvas.x, top, canvas.w, std::max(bottom - top, 0)));
+		RectSPX vertical = RectSPX::overlap(coverage, RectSPX(left, canvas.y, std::max(right - left, 0), canvas.h));
+
+		RectSPX band = int64_t(horizontal.w) * horizontal.h >= int64_t(vertical.w) * vertical.h ? horizontal : vertical;
+
+		if (band.w <= 0 || band.h <= 0)
+			return RectSPX();
+
+		RectSPX out;
+		out.x = (band.x + 63) & ~63;
+		out.y = (band.y + 63) & ~63;
+		out.w = ((band.x + band.w) & ~63) - out.x;
+		out.h = ((band.y + band.h) & ~63) - out.y;
+
+		if (out.w <= 0 || out.h <= 0)
+			return RectSPX();
+
+		return out;
 	}
 
 } // namespace wg

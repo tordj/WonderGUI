@@ -88,7 +88,7 @@ namespace wg
 	struct RoundedBoxSpec
 	{
 		RectSPX		rect;										// Outer edge of the box.
-		spx			radius[4] = { 0, 0, 0, 0 };					// Corner radii: top-left, top-right, bottom-right, bottom-left.
+		CornersSPX	radius;										// Corner radii.
 		BorderSPX	outline;									// Thickness of the outline along each side.
 		HiColor		fillColor = HiColor::Transparent;
 		HiColor		outlineColor = HiColor::Black;

@@ -19,4 +19,5 @@ private:
 	bool linearBackendTest(std::ostream& output);
 	bool streamTest(std::ostream& output);
 	bool alignedBoxTest(std::ostream& output);
+	bool boxSkinTest(std::ostream& output);
 };
