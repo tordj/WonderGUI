@@ -130,18 +130,19 @@ namespace wg
 
 		// 
 
-		// Force canvas to be square.
+		// Force canvas to be square. Kept on whole pixels, so the frame around it meets the
+		// background of the pie without seams.
 
 		if (canvas.w != canvas.h)
 		{
 			if (canvas.w > canvas.h)
 			{
-				canvas.x += (canvas.w - canvas.h) / 2;
+				canvas.x += ((canvas.w - canvas.h) / 2) & ~63;
 				canvas.w = canvas.h;
 			}
 			else if (canvas.h > canvas.w)
 			{
-				canvas.y += (canvas.h - canvas.w) / 2;
+				canvas.y += ((canvas.h - canvas.w) / 2) & ~63;
 				canvas.h = canvas.w;
 			}
 			bFramed = true;
@@ -168,8 +169,8 @@ namespace wg
 
 		//
 
-		float sliceSizes[c_maxSlices];
-		HiColor sliceColors[c_maxSlices];
+		float sliceSizes[c_maxSlices + 2];			// Room for empty slices before and after.
+		HiColor sliceColors[c_maxSlices + 2];
 		int nSlices = 0;
 
 		HiColor hubColor = m_hubColor.a == 4096 ? m_hubColor : HiColor::blend(m_backColor, m_hubColor, BlendMode::Blend);
@@ -272,7 +273,30 @@ namespace wg
 		
 		//
 		
-		pDevice->drawPieChart(canvas, startPos, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
+		if (m_hubSize >= 1.f && !m_bRectangular)
+			return;
+
+		RingSlice slices[c_maxSlices + 2];
+
+		for (int i = 0; i < nSlices; i++)
+		{
+			slices[i].size = sliceSizes[i];
+			slices[i].color = sliceColors[i];
+		}
+
+		RingSpec ring;
+		ring.rect = canvas;
+		ring.bSquare = m_bRectangular;
+		ring.start = startPos;
+		ring.nSlices = nSlices;
+		ring.pSlices = slices;
+		ring.hubColor = hubColor;
+		ring.backColor = m_backColor;
+
+		if (m_hubSize > 0.f)
+			ring.thickness = std::max(spx(canvas.w / 2 * (1.f - std::min(m_hubSize, 1.f))), spx(1));
+
+		pDevice->drawRing(ring);
 	}
 
 	//____  _defaultSize() ___________________________________________________

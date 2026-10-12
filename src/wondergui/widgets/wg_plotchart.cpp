@@ -130,14 +130,24 @@ namespace wg
 					spx canvasSize = Util::alignUp(size);
 					spx offset = (canvasSize - size) / 2;
 
-					auto pSurface = pDevice->surfaceFactory()->createSurface(WGBP(Surface, _.format = PixelFormat::ARGB_8, _.colorSpace = colorSpace, _.size = { size / 64,size / 64 }, _.canvas = true));
+					auto pSurface = pDevice->surfaceFactory()->createSurface(WGBP(Surface, _.format = PixelFormat::ARGB_8, _.colorSpace = colorSpace, _.size = { canvasSize / 64, canvasSize / 64 }, _.canvas = true));
 
 					pDevice->beginCanvasUpdate(pSurface);
 					pDevice->setBlendMode(BlendMode::Replace);
 					pDevice->fill(HiColor::Transparent);
 					pDevice->setBlendMode(BlendMode::Blend);
-					pDevice->drawElipse({ offset, offset, canvasSize, canvasSize }, size, 
-						entry.m_fillColor, entry.m_outlineThickness*m_scale, entry.m_outlineColor);
+					RingSlice slice;
+					slice.size = 1.f;
+					slice.color = entry.m_fillColor;
+
+					RingSpec dot;
+					dot.rect = { offset, offset, size, size };
+					dot.outline = spx(entry.m_outlineThickness * m_scale);
+					dot.outlineColor = entry.m_outlineColor;
+					dot.nSlices = 1;
+					dot.pSlices = &slice;
+
+					pDevice->drawRing(dot);
 					pDevice->endCanvasUpdate();
 
 					entry.m_sprite = pSurface;

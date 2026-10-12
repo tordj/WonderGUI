@@ -270,7 +270,23 @@ namespace wg
 		spx outlineThickness = _getOutlineThickness(state) * scale;
 
 
-		pDevice->drawElipse(canvas, thickness, _getColor(state), outlineThickness, _getOutlineColor(state));
+		// A ring of given thickness with outline on both sides, or a disc with outline if they reach the center.
+
+		RingSlice slice;
+		slice.size = 1.f;
+		slice.color = _getColor(state);
+
+		spx total = thickness + outlineThickness * 2;
+
+		RingSpec ring;
+		ring.rect = canvas;
+		ring.thickness = total >= canvas.w / 2 ? 0 : total;
+		ring.outline = outlineThickness;
+		ring.nSlices = 1;
+		ring.pSlices = &slice;
+		ring.outlineColor = _getOutlineColor(state);
+
+		pDevice->drawRing(ring);
 	}
 
 	//____ _markTest() _____________________________________________________________
