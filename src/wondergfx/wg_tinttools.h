@@ -120,6 +120,7 @@ namespace wg
 			int			nStops;
 			float		geo[4];					// See CanvasGeometry.
 			float		stopPos[Tint::c_maxStops];
+			uint16_t	stopPos16[Tint::c_maxStops];	// Same positions as encoded, 0 -> 65535 for 0.0 -> 1.0, for integer math.
 			HiColor		stopColors[Tint::c_maxStops];
 		};
 
@@ -160,15 +161,24 @@ namespace wg
 		bool			isLayerFlat(const TintLayer& layer);
 
 		// Build LUT for a decoded layer, entry i covering positions i/(entries-1) -> (i+1)/(entries-1) and sampled
-		// in the middle of that span, so it should be indexed with floor(position * (entries - 1)).
-		// Spread is not applied, entries - 1 is expected to be a power of two so the renderer can apply it.
+		// in the middle of that span, so it should be indexed with floor(position * (entries - 1)). The last entry
+		// is the color at 1.0. Spread is not applied, entries - 1 is expected to be a power of two so the renderer
+		// can apply it. 2 to 4097 entries.
+		//
+		// Integer math only, so that software renderers can use it on CPUs without FPU. Colors are interpolated
+		// exactly and rounded to nearest.
 
 		void			buildLUT(const TintLayer& layer, int entries, HiColor* pOutput, HiColor multiplier = HiColor::White);
 
 		HiColor			layerColorAt(const TintLayer& layer, float position, HiColor multiplier = HiColor::White);		// No spread applied (e.g. Pad).
 
+		// As layerColorAt(), but with position in the same fixed point as stopPos16 (0 -> 65535 for 0.0 -> 1.0)
+		// and integer math only.
+
+		HiColor			layerColorAtFixed(const TintLayer& layer, int position, HiColor multiplier = HiColor::White);
+
 		// Size of lookup table for a layer, as (1 << bits) + 1 entries. Based on the length of the gradient
-		// in pixels, two entries per pixel, 2 to 2048+1 entries. 0 for a flat layer.
+		// in pixels, two entries per pixel, 2 to 2048+1 entries. -1 for a flat layer.
 
 		int				lutBitsForLayer(const TintLayer& layer);
 

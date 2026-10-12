@@ -225,13 +225,145 @@ namespace TintTools
 		_buildLUT(nStops, pos, colors, pTint->spread(), entries, pOutput, begin, end, bSquared, HiColor::White);
 	}
 
+	//____ _floorDiv() ________________________________________________________
+
+	static inline int _floorDiv(int num, int den)		// den > 0
+	{
+		int q = num / den;
+		return (num % den < 0) ? q - 1 : q;
+	}
+
+	//____ _clampedStopColor() ________________________________________________
+
+	static inline void _clampedStopColor(const HiColor& color, int* pOut)
+	{
+		auto clamp = [](int v) { return v < 0 ? 0 : v > 4096 ? 4096 : v; };
+
+		pOut[0] = clamp(color.r);
+		pOut[1] = clamp(color.g);
+		pOut[2] = clamp(color.b);
+		pOut[3] = clamp(color.a);
+	}
+
+	//____ buildLUT() _________________________________________________________
+
 	void buildLUT(const TintLayer& layer, int entries, HiColor* pOutput, HiColor multiplier)
 	{
 		// Entry i is sampled at (i + 0.5) / (entries - 1), so that a renderer that looks up floor(position * (entries - 1))
 		// gets the color of the middle of the span the entry covers and hard edges end up exactly on entry boundaries.
+		// Last entry is sampled at 1.0, the clamped position of (entries - 0.5) / (entries - 1).
+		//
+		// Positions are compared as fractions with denominator 2 * (entries - 1) * 65535, which makes entry i
+		// (2i + 1) * 65535 and stop k 2 * (entries - 1) * stopPos16[k]. Odd and even, so entries never are
+		// exactly on a stop. Each channel between two stops is c0 + (c1 - c0) * (pos - stopPos) / span, rounded
+		// to nearest, which is stepped from entry to entry as a quotient and remainder.
 
-		float halfEntry = entries > 1 ? 0.5f / (entries - 1) : 0.f;
-		_buildLUT(layer.nStops, layer.stopPos, layer.stopColors, TintSpread::Pad, entries, pOutput, halfEntry, 1.f + halfEntry, false, multiplier);
+		if (entries <= 0)
+			return;
+
+		int nStops = layer.nStops;
+
+		if (entries == 1 || nStops <= 1)
+		{
+			HiColor color = layerColorAtFixed(layer, 0, multiplier);
+			for (int i = 0; i < entries; i++)
+				pOutput[i] = color;
+			return;
+		}
+
+		// Up to 4097 entries keeps numerators and remainders below 2^31. More is outside the contract,
+		// the extra entries get the last color.
+
+		const int	spans = std::min(entries, 4097) - 1;
+		const int	entryStep = 2 * 65535;
+		const bool	bMultiply = (multiplier != HiColor::White);
+
+		int		colors[Tint::c_maxStops][4];
+		for (int s = 0; s < nStops; s++)
+			_clampedStopColor(layer.stopColors[s], colors[s]);
+
+		auto put = [&](int i, const int* pColor)
+		{
+			HiColor& out = pOutput[i];
+			out.r = (int16_t) pColor[0];
+			out.g = (int16_t) pColor[1];
+			out.b = (int16_t) pColor[2];
+			out.a = (int16_t) pColor[3];
+
+			if (bMultiply)
+				out = out * multiplier;
+		};
+
+		int i = 0;
+		int pos = 65535;								// (2i + 1) * 65535 for entry i.
+
+		// Before first stop
+
+		int stopPos = 2 * spans * layer.stopPos16[0];
+
+		while (i < spans && pos < stopPos)
+		{
+			put(i++, colors[0]);
+			pos += entryStep;
+		}
+
+		// Between stops
+
+		for (int s = 0; s < nStops - 1 && i < spans; s++)
+		{
+			int nextStopPos = 2 * spans * layer.stopPos16[s + 1];
+
+			if (pos < nextStopPos)
+			{
+				// Per channel: value = c0 + floor((2 * delta * (pos - stopPos) + span) / (2 * span)).
+				// Numerators stay below 2^31 since pos - stopPos is at most one entryStep here.
+
+				int span = nextStopPos - stopPos;
+				int den = 2 * span;
+
+				int quot[4], rem[4], quotStep[4], remStep[4];
+
+				for (int c = 0; c < 4; c++)
+				{
+					int delta = colors[s + 1][c] - colors[s][c];
+
+					int num = 2 * delta * (pos - stopPos) + span;
+					quot[c] = _floorDiv(num, den);
+					rem[c] = num - quot[c] * den;
+
+					int numStep = 2 * delta * entryStep;
+					quotStep[c] = _floorDiv(numStep, den);
+					remStep[c] = numStep - quotStep[c] * den;
+				}
+
+				while (i < spans && pos < nextStopPos)
+				{
+					int color[4];
+					for (int c = 0; c < 4; c++)
+					{
+						color[c] = colors[s][c] + quot[c];
+
+						quot[c] += quotStep[c];
+						rem[c] += remStep[c];
+						if (rem[c] >= den)
+						{
+							rem[c] -= den;
+							quot[c]++;
+						}
+					}
+
+					put(i++, color);
+					pos += entryStep;
+				}
+			}
+
+			stopPos = nextStopPos;
+		}
+
+		// After last stop, including the last entry.
+
+		while (i < entries)
+			put(i++, colors[nStops - 1]);
 	}
 
 	//____ layerColorAt() _____________________________________________________
@@ -243,6 +375,45 @@ namespace TintTools
 		return color;
 	}
 
+	//____ layerColorAtFixed() ________________________________________________
+
+	HiColor layerColorAtFixed(const TintLayer& layer, int position, HiColor multiplier)
+	{
+		// Same choice of stops as _buildLUT(): right limit at hard edges, except for a hard edge
+		// at the first stop, which is left of it.
+
+		int nStops = layer.nStops;
+		if (nStops <= 0)
+			return multiplier;
+
+		const uint16_t* pPos = layer.stopPos16;
+		int color[4];
+
+		if (nStops == 1 || (position <= pPos[0] && !(position == pPos[0] && pPos[1] == pPos[0])))
+			_clampedStopColor(layer.stopColors[0], color);
+		else if (position >= pPos[nStops - 1])
+			_clampedStopColor(layer.stopColors[nStops - 1], color);
+		else
+		{
+			int s = nStops - 1;
+			while (pPos[s] > position)
+				s--;
+
+			int from[4], to[4];
+			_clampedStopColor(layer.stopColors[s], from);
+			_clampedStopColor(layer.stopColors[s + 1], to);
+
+			int span = pPos[s + 1] - pPos[s];
+			int ofs = position - pPos[s];
+
+			for (int c = 0; c < 4; c++)
+				color[c] = from[c] + _floorDiv(2 * (to[c] - from[c]) * ofs + span, 2 * span);
+		}
+
+		HiColor out(color[0], color[1], color[2], color[3]);
+		return multiplier == HiColor::White ? out : out * multiplier;
+	}
+
 	//____ lutBitsForLayer() __________________________________________________
 
 	int lutBitsForLayer(const TintLayer& layer)
@@ -251,24 +422,35 @@ namespace TintTools
 			return -1;
 
 		CanvasGeometry geo = layerGeometry(layer);
-		float length;
+
+		// Two entries per pixel of gradient length keeps quantization well below a pixel. Smallest
+		// number of bits where (1 << bits) >= 2 * length, compared without square root or division
+		// since software renderers call this on CPUs without FPU.
+
+		int bits = 1;
 
 		if (geo.shape == TintShape::Linear)
 		{
-			float grad = std::sqrt(geo.a * geo.a + geo.b * geo.b);
-			length = grad > 0.f ? 1.f / grad : 1.f;
+			// length = 1 / sqrt(a^2 + b^2), or 1 if a and b are 0.
+
+			float grad2 = geo.a * geo.a + geo.b * geo.b;
+			if (grad2 > 0.f)
+			{
+				while (bits < 11 && float(1 << (2 * bits)) * grad2 < 4.f)
+					bits++;
+			}
 		}
 		else
 		{
-			float invRadius = std::max(geo.invRadiusX, geo.invRadiusY);		// Shortest radius gives steepest gradient.
-			length = invRadius > 0.f ? 1.f / invRadius : 1.f;
+			// length = 1 / invRadius for the shortest radius, which gives steepest gradient.
+
+			float invRadius = std::max(geo.invRadiusX, geo.invRadiusY);
+			if (invRadius > 0.f)
+			{
+				while (bits < 11 && float(1 << bits) * invRadius < 2.f)
+					bits++;
+			}
 		}
-
-		// Two entries per pixel of gradient length keeps quantization well below a pixel.
-
-		int bits = 1;
-		while (bits < 11 && (1 << bits) < length * 2)
-			bits++;
 
 		return bits;
 	}
@@ -470,6 +652,7 @@ namespace TintTools
 				if (i < nStored)
 				{
 					layer.stopPos[i] = pos / 65535.f;
+					layer.stopPos16[i] = pos;
 					layer.stopColors[i] = color;
 				}
 			}

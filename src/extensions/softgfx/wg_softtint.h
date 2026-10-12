@@ -36,6 +36,10 @@ namespace wg
 	 * Holds lookup tables and geometry for a decoded Tint and generates lines
 	 * of tint colors from them. Used by SoftBackend for the device tint and by
 	 * SoftEdgemap for segment tints.
+	 *
+	 * Generating colors and building the lookup tables is integer math only, since
+	 * SoftBackend runs on CPUs without FPU. Floating point is limited to converting
+	 * the geometry of each layer to fixed point in set().
 	 */
 
 	class SoftTint
@@ -67,6 +71,7 @@ namespace wg
 
 		// Generate colors for pixels (x,y), (x+dx, y+dy) ... length pixels.
 		// Colors are sampled at pixel centers. dx and dy should be -1, 0 or 1.
+		// Coordinates are expected to stay within +-2^20.
 
 		void		generate(int x, int y, int dx, int dy, int length, HiColor* pOutput) const;
 
@@ -74,7 +79,7 @@ namespace wg
 
 		struct Layer
 		{
-			TintTools::CanvasGeometry	geo;
+			TintShape		shape;
 			TintSpread		spread;
 			int				weight;			// 0 -> 4096.
 			bool			bFlat;
@@ -82,9 +87,27 @@ namespace wg
 			HiColor			padLowColor;	// Color for positions below 0.0 with Pad spread (LUT entry 0 is sampled a bit inside).
 			int				lutBits;		// LUT has (1 << lutBits) + 1 entries.
 			int				lutOfs;			// Offset into m_lut.
+
+			// Geometry in fixed point, positions in LUT entries with 32 binals, for the center
+			// of pixel (x,y):
+			//
+			//   Linear:	position = stepX * x + stepY * y + originX
+			//   Radial:	position = length(u, v), where u = stepX * x + originX, v = stepY * y + originY
+
+			int64_t			stepX;
+			int64_t			stepY;
+			int64_t			originX;
+			int64_t			originY;		// Radial only.
+
+			int64_t			stepX16;		// Linear only, stepX and stepY with 16 binals, each rounded
+			int64_t			stepY16;		// once from floating point.
+
+			mutable int		radialHints[2];	// Radial only, LUT index / 2 at start and end of last span, -1 if none.
 		};
 
 		void		_generateLayer(const Layer& layer, int x, int y, int dx, int dy, int length, HiColor* pOutput) const;
+		void		_generateLinear(const Layer& layer, int x, int y, int dx, int dy, int length, HiColor* pOutput) const;
+		void		_generateRadial(const Layer& layer, int x, int y, int dx, int dy, int length, HiColor* pOutput) const;
 
 		int			m_nLayers = 0;
 		Layer		m_layers[Tint::c_maxMixComponents];
