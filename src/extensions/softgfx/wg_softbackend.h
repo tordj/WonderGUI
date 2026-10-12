@@ -331,6 +331,7 @@ namespace wg
 		{
 		public:
 			void	row(int y, int nSpans, const SoftShapes::Span* pSpans) override;
+			void	rows(int yBeg, int yEnd, int nSpans, const SoftShapes::Span* pSpans) override;
 
 			SoftBackend*	pBackend;
 			uint8_t*		pOrigin;
@@ -340,7 +341,7 @@ namespace wg
 		bool	_beginShape(GfxBackend::ShapeKind kind, const uint16_t* pPayload, const HiColor* pColors);
 		void	_setupShapeSegment(ShapeSegment& seg, bool bActive, HiColor color, bool bTint, const uint16_t*& pTintWords, const HiColor*& pTintColors);
 		void	_drawShape(const RectI& clip, uint8_t* pOrigin, int pitch);
-		void	_drawShapeRow(uint8_t* pOrigin, int pitch, int y, int nSpans, const SoftShapes::Span* pSpans);
+		void	_drawShapeRows(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nSpans, const SoftShapes::Span* pSpans);
 		void	_shapeSegmentColors(int segment, int x, int y, int length, HiColor* pOutput);
 		HiColor* _shapeBuffer(int index, int length);
 
@@ -409,6 +410,7 @@ namespace wg
 		BlendMode					m_shapeBlendMode;				// Blend mode for runs of opaque segments.
 		std::vector<HiColor>		m_shapeBuffers[3];
 		std::vector<CoveragePixel>	m_coveragePixels;
+		std::vector<CoveragePixel>	m_coverageColumn;
 
 
 //		PixelBuffer		m_canvasPixelBuffer;

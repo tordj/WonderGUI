@@ -130,8 +130,21 @@ namespace wg
 		Piece	outerPieces[c_maxPieces];
 		Piece	innerPieces[c_maxPieces];
 
-		for (int y = rowBeg; y < rowEnd; y++)
+		for (int y = rowBeg, yEnd; y < rowEnd; y = yEnd)
 		{
+			// Rows that give the same spans are done together.
+
+			yEnd = y + 1;
+
+			int outerKind = _rowKind(outer, y);
+			int innerKind = bOutline ? _rowKind(inner, y) : 0;
+
+			if (outerKind >= 0 && innerKind >= 0)
+			{
+				while (yEnd < rowEnd && _rowKind(outer, yEnd) == outerKind && (!bOutline || _rowKind(inner, yEnd) == innerKind))
+					yEnd++;
+			}
+
 			uint16_t* pBuffer = m_coverageBuffer.data();
 
 			int nOuter = _shapeRow(outer, y, clipBeg, clipEnd, outerPieces, pBuffer);
@@ -244,7 +257,12 @@ namespace wg
 			}
 
 			if (nSpans > 0)
-				pSink->row(y, nSpans, pSpans);
+			{
+				if (yEnd == y + 1)
+					pSink->row(y, nSpans, pSpans);
+				else
+					pSink->rows(y, yEnd, nSpans, pSpans);
+			}
 		}
 	}
 
@@ -254,7 +272,12 @@ namespace wg
 	{
 		shape.bEmpty = (rect.w <= 0 || rect.h <= 0);
 		if (shape.bEmpty)
+		{
+			shape.topRow = 0;
+			shape.bottomRow = -1;
+			shape.plainBeg = shape.plainEnd = 0;
 			return;
+		}
 
 		shape.left = rect.x;
 		shape.top = rect.y;
@@ -274,6 +297,11 @@ namespace wg
 		int lastUncutCol = (shape.right & 63) ? rightCol - 1 : rightCol;
 		int firstUncutRow = (shape.top & 63) ? topRow + 1 : topRow;
 		int lastUncutRow = (shape.bottom & 63) ? bottomRow - 1 : bottomRow;
+
+		shape.topRow = topRow;
+		shape.bottomRow = bottomRow;
+		shape.plainBeg = firstUncutRow;
+		shape.plainEnd = lastUncutRow + 1;
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -312,11 +340,13 @@ namespace wg
 			{
 				arc.rowBeg = topRow;
 				arc.rowEnd = std::min(ceilPixel(int64_t(shape.top) + r - 32), lastUncutRow + 1);
+				shape.plainBeg = std::max(shape.plainBeg, arc.rowEnd);
 			}
 			else
 			{
 				arc.rowBeg = std::max(ceilPixel(int64_t(shape.bottom) - r - 32), firstUncutRow);
 				arc.rowEnd = bottomRow + 1;
+				shape.plainEnd = std::min(shape.plainEnd, arc.rowBeg);
 			}
 
 			// d' changes by -1/r for each step, as does the change itself.
@@ -336,6 +366,18 @@ namespace wg
 			arc.lo = -half - adjust;
 			arc.hi = half - adjust;
 		}
+	}
+
+	//____ _rowKind() _________________________________________________________
+	// 0 for rows outside the shape, 1 for plain rows (see Shape), otherwise -1. Rows of
+	// kind 0 or 1 give the same pieces as other rows of the same kind.
+
+	inline int SoftShapes::_rowKind(const Shape& shape, int row)
+	{
+		if (shape.bEmpty || row < shape.topRow || row > shape.bottomRow)
+			return 0;
+
+		return (row >= shape.plainBeg && row < shape.plainEnd) ? 1 : -1;
 	}
 
 	//____ _initArc() _________________________________________________________

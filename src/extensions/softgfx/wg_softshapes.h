@@ -95,6 +95,16 @@ namespace wg
 			 * to segment pLayerSegments[i]. Several layers can belong to the same segment.
 			 */
 			virtual void	row(int y, int nSpans, const Span* pSpans) = 0;
+
+			/**
+			 * Receives spans that are the same for rows yBeg up to yEnd, like the straight
+			 * sides of a box. Handled one row at a time unless overridden.
+			 */
+			virtual void	rows(int yBeg, int yEnd, int nSpans, const Span* pSpans)
+			{
+				for (int y = yBeg; y < yEnd; y++)
+					row(y, nSpans, pSpans);
+			}
 		};
 
 		//____ RoundedBox _____________________________________________________
@@ -192,10 +202,13 @@ namespace wg
 		{
 			bool		bEmpty;
 			spx			left, top, right, bottom;
-			Arc			arcs[4];			// Top-left, top-right, bottom-right, bottom-left.
+			int			topRow, bottomRow;		// First and last row touched.
+			int			plainBeg, plainEnd;		// Rows fully covered top to bottom and not reached by corners.
+			Arc			arcs[4];				// Top-left, top-right, bottom-right, bottom-left.
 		};
 
 		void	_setupShape(Shape& shape, const RectSPX& rect, const spx radius[4]);
+		static inline int	_rowKind(const Shape& shape, int row);
 		void	_initArc(Arc& arc, int row);
 		int		_arcRow(Arc& arc, int row, int clipBeg, int clipEnd, int& bandBeg, int& bandEnd, uint16_t* pOutput);
 		int		_shapeRow(Shape& shape, int row, int clipBeg, int clipEnd, Piece* pPieces, uint16_t*& pBuffer);
