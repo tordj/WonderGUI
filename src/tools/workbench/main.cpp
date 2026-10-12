@@ -2109,7 +2109,8 @@ bool canvasStackTest(ComponentPtr<DynamicSlot> pSlot)
 
 		//
 
-		pDevice->setCanvas(pLedMixTempSurf, CanvasInit::Keep, false);
+		pDevice->beginCanvasUpdate(pLedMixTempSurf);
+		pDevice->setBlendMode(BlendMode::Replace);
 		pDevice->fill(Color::Transparent);
 		pDevice->setBlendMode(BlendMode::Blend);
 		pDevice->setBlitSource(canvases[1]);
@@ -2120,7 +2121,7 @@ bool canvasStackTest(ComponentPtr<DynamicSlot> pSlot)
 		pDevice->setBlitSource(pLedMaskSurf);
 		pDevice->blit({ 0,0 });
 
-		pDevice->setCanvas(pEndCanvas, CanvasInit::Keep,false);
+		pDevice->endCanvasUpdate();
 		pDevice->setBlendMode(BlendMode::Blend);
 		pDevice->setBlitSource(pLedMixTempSurf);
 		pDevice->blit({ 0,0 });

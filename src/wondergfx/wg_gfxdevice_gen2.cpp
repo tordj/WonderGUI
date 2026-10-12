@@ -558,6 +558,13 @@ void GfxDeviceGen2::setRenderLayer(int layer)
 		return;
 	}
 
+	if (layer < 0 || layer >= int(m_pActiveCanvas->layers.size()))
+	{
+		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Specified layer out of bounds.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
 	if (layer == m_pActiveCanvas->activeLayer)
 		return;
 
@@ -684,6 +691,17 @@ bool GfxDeviceGen2::_beginCanvasUpdate(CanvasRef ref, Surface* pCanvas, int nUpd
 		return false;
 	}
 
+	// Out of bounds start layer falls back to the default rather than failing,
+	// since callers don't always check our return value before ending the update.
+
+	if (startLayer != -1 && (startLayer < 0 || startLayer > (pLayers ? pLayers->size() : 0)))
+	{
+		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Start layer out of bounds, using default instead.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+
+		startLayer = -1;
+	}
+
 	// Save renderState for current canvas
 	// and reset it.
 
@@ -798,6 +816,10 @@ bool GfxDeviceGen2::_beginCanvasUpdate(CanvasRef ref, Surface* pCanvas, int nUpd
 			}
 		}
 	}
+
+	// Clearing the layers left us on the last of them, go back to the one we start on.
+
+	setRenderLayer(activeLayer);
 
 	// Encode clearing of base canvas if clearCanvasFunc set.
 

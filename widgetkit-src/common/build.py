@@ -838,7 +838,7 @@ def generate_header(kit, manifest, palette, density):
 
 
 # ---------------------------------------------------------------------------
-# Faithful port of GfxDeviceGen1::blitNinePatch, used to render the preview's
+# Faithful port of GfxDeviceGen2::blitNinePatch, used to render the preview's
 # stretch demos. CSS border-image cannot express rigidPartX/Y at all, so
 # simulating the real algorithm here is the only way the preview can show what
 # the widget will actually look like when stretched.

@@ -83,7 +83,6 @@ namespace wg
 	class	CanvasLayers : public Object	
 	{
 		friend class GfxDevice;
-		friend class GfxDeviceGen1;
 		friend class GfxDeviceGen2;
 
 	public:

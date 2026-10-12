@@ -91,6 +91,7 @@ target_working_directory(pluginworkbench ${WG_ROOT} )
 target_link_libraries(pluginworkbench PRIVATE
 	${WAPPLIB}
 	PRIVATE wgpluginhost
+	${SDL2_LIBS}
 )
 
 

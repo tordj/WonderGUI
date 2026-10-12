@@ -242,18 +242,6 @@ namespace wg
 		Undefined			// Needs to be last! Default to Bilinear if it is accelerated, otherwise Nearest.
 	};
 
-	//____ CanvasInit ______________________________________________________________
-
-	//TODO: This is deprecated. Remove once last Gen1 GfxDevice is gone!
-
-	enum class CanvasInit 		//. autoExtras
-	{
-		Keep,
-		Discard,
-		Clear
-	};
-
-
 	//____ PixelFormat _____________________________________________________________
 	/**
 	 * Organization of the channels of a pixel.

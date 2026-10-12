@@ -47,7 +47,6 @@ namespace wg
 	const static Direction       Direction_min       = Direction::Up;
 	const static Axis            Axis_min            = Axis::Undefined;
 	const static SampleMethod    SampleMethod_min    = SampleMethod::Nearest;
-	const static CanvasInit      CanvasInit_min      = CanvasInit::Keep;
 	const static PixelFormat     PixelFormat_min     = PixelFormat::Undefined;
 	const static PixelType       PixelType_min       = PixelType::Chunky;
 	const static ColorSpace      ColorSpace_min      = ColorSpace::Undefined;
@@ -67,7 +66,6 @@ namespace wg
 	const static Direction       Direction_max       = Direction::Left;
 	const static Axis            Axis_max            = Axis::Y;
 	const static SampleMethod    SampleMethod_max    = SampleMethod::Undefined;
-	const static CanvasInit      CanvasInit_max      = CanvasInit::Clear;
 	const static PixelFormat     PixelFormat_max     = PixelFormat::ARGB_16;
 	const static PixelType       PixelType_max       = PixelType::Bitplanes;
 	const static ColorSpace      ColorSpace_max      = ColorSpace::sRGB;
@@ -87,7 +85,6 @@ namespace wg
 	const static int             Direction_size      = (int)Direction::Left + 1;
 	const static int             Axis_size           = (int)Axis::Y + 1;
 	const static int             SampleMethod_size   = (int)SampleMethod::Undefined + 1;
-	const static int             CanvasInit_size     = (int)CanvasInit::Clear + 1;
 	const static int             PixelFormat_size    = (int)PixelFormat::ARGB_16 + 1;
 	const static int             PixelType_size      = (int)PixelType::Bitplanes + 1;
 	const static int             ColorSpace_size     = (int)ColorSpace::sRGB + 1;
@@ -107,7 +104,6 @@ namespace wg
 	const char * toString(Direction);
 	const char * toString(Axis);
 	const char * toString(SampleMethod);
-	const char * toString(CanvasInit);
 	const char * toString(PixelFormat);
 	const char * toString(PixelType);
 	const char * toString(ColorSpace);
