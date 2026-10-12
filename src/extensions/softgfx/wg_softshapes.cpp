@@ -1078,13 +1078,22 @@ namespace wg
 
 		_setupRingAngles(ring);
 
+		// Without back, the outer edge bounds everything instead of rect.
+
+		const bool bBack = ring.bBack;
+		const int boundShape = bBack ? 0 : 1;
+
+		RectSPX bounds = rect;
+		if (!bBack && !ring.bSquare)
+			bounds = RectSPX(spx(m_cx - outerRadius), spx(m_cy - outerRadius), outerRadius * 2, outerRadius * 2);
+
 		// Rows and columns
 
-		int clipBeg = std::max(clip.x, floorPixel(rect.x));
-		int clipEnd = std::min(clip.x + clip.w, ceilPixel(int64_t(rect.x) + rect.w));
+		int clipBeg = std::max(clip.x, floorPixel(bounds.x));
+		int clipEnd = std::min(clip.x + clip.w, ceilPixel(int64_t(bounds.x) + bounds.w));
 
-		int rowBeg = std::max(clip.y, floorPixel(rect.y));
-		int rowEnd = std::min(clip.y + clip.h, ceilPixel(int64_t(rect.y) + rect.h));
+		int rowBeg = std::max(clip.y, floorPixel(bounds.y));
+		int rowEnd = std::min(clip.y + clip.h, ceilPixel(int64_t(bounds.y) + bounds.h));
 
 		if (clipBeg >= clipEnd || rowBeg >= rowEnd)
 			return;
@@ -1105,7 +1114,8 @@ namespace wg
 		int		ownShapes[5];
 		int		nOwnShapes = 0;
 
-		ownShapes[nOwnShapes++] = 0;
+		if (bBack)
+			ownShapes[nOwnShapes++] = 0;
 		ownShapes[nOwnShapes++] = 1;
 		if (outline > 0)
 			ownShapes[nOwnShapes++] = 2;
@@ -1131,7 +1141,7 @@ namespace wg
 			for (int i = 0; i < nOwnShapes; i++)
 				nPieces[ownShapes[i]] = _shapeRow(shapes[ownShapes[i]], y, clipBeg, clipEnd, pieces[ownShapes[i]], pBuffer);
 
-			if (nPieces[0] == 0)
+			if (nPieces[boundShape] == 0)
 				continue;
 
 			_angularRow(rowY, clipBeg, clipEnd);
@@ -1185,12 +1195,13 @@ namespace wg
 				m_spans.back().nLayers++;
 			};
 
-			// Layers of the radial segments. Outline and hub are left out where they can't
-			// have any coverage.
+			// Layers of the radial segments. Back, outline and hub are left out where they
+			// can't have any coverage.
 
 			auto addRadialLayers = [&]()
 			{
-				addLayer(c_ringBackSegment);
+				if (bBack)
+					addLayer(c_ringBackSegment);
 				if (outline > 0)
 					addLayer(c_ringOutlineSegment);
 				if (bHole)
@@ -1199,7 +1210,8 @@ namespace wg
 
 			auto pushRadial = [&](const RadialValues& v)
 			{
-				m_ringOutput.push_back(uint16_t(v.back));
+				if (bBack)
+					m_ringOutput.push_back(uint16_t(v.back));
 				if (outline > 0)
 					m_ringOutput.push_back(uint16_t(v.outline));
 				if (bHole)
@@ -1252,13 +1264,16 @@ namespace wg
 							else
 								source.value = piece.value;
 
-							if (i == 0)
+							if (i == boundShape)
 								bInRect = true;
 						}
 						else
 							next = std::min(next, piece.begin);
 					}
 				}
+
+				if (!bBack)
+					src[0] = src[1];
 
 				if (outline == 0)
 				{

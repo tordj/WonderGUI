@@ -2370,6 +2370,7 @@ namespace wg
 			m_ring.thickness = values[4];
 			m_ring.outline = values[5];
 			m_ring.bSquare = (flags & Square) != 0;
+			m_ring.bBack = (flags & HasBack) != 0;
 			m_ring.start = start;
 			m_ring.nSlices = nSlices;
 

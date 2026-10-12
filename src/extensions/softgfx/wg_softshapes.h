@@ -141,6 +141,7 @@ namespace wg
 			uint32_t		start = 0;				// Start of first slice, clockwise from 12 o'clock. c_fullTurn is a full turn.
 			int				nSlices = 0;
 			const uint32_t*	pSliceSizes = nullptr;	// Size of each slice, c_fullTurn is a full turn. Slices beyond a full turn are cut.
+			bool			bBack = true;			// Rest of rect is covered by the back segment. Faster without, when back isn't drawn.
 		};
 
 		static constexpr int	c_ringBackSegment = 0;			// Rest of rect, and the part of the ring the slices don't reach.

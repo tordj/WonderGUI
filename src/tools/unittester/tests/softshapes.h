@@ -20,4 +20,5 @@ private:
 	bool clampCornerRadiiTest(std::ostream& output);
 	bool ringCoverageTest(std::ostream& output);
 	bool ringClipTest(std::ostream& output);
+	bool ringWithoutBackTest(std::ostream& output);
 };

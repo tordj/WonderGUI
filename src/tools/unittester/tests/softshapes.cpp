@@ -236,6 +236,7 @@ SoftShapesTest::SoftShapesTest()
 	ADD_TEST(clampCornerRadiiTest);
 	ADD_TEST(ringCoverageTest);
 	ADD_TEST(ringClipTest);
+	ADD_TEST(ringWithoutBackTest);
 }
 
 SoftShapesTest::~SoftShapesTest()
@@ -755,6 +756,57 @@ bool SoftShapesTest::ringClipTest(std::ostream& output)
 							   << " when tiled, " << whole.coverage(s, x, y) << " when not." << std::endl;
 						return false;
 					}
+	}
+
+	return true;
+}
+
+//____ ringWithoutBackTest() __________________________________________________
+// Without back, the other segments get the same coverage, except where the outer
+// edge touches the edge of rect and isn't cut by it. The back segment only gets the
+// part of the ring not reached by slices.
+
+bool SoftShapesTest::ringWithoutBackTest(std::ostream& output)
+{
+	SoftShapes shapes;
+	std::vector<uint32_t> sizes;
+
+	for (auto& c : ringCases())
+	{
+		RectI area = pixelBounds(c.rect, 1);
+		int nSegments = SoftShapes::c_ringFirstSliceSegment + (int)c.slices.size();
+
+		SegmentGrid withBack(area, nSegments);
+		shapes.rasterizeRing(makeRing(c, sizes), area, &withBack);
+
+		SoftShapes::Ring ring = makeRing(c, sizes);
+		ring.bBack = false;
+
+		SegmentGrid withoutBack(area, nSegments);
+		shapes.rasterizeRing(ring, area, &withoutBack);
+
+		double sliceSum = 0;
+		for (double size : c.slices)
+			sliceSum += size;
+
+		bool bGap = sliceSum < 0.9999;
+
+		for (int y = area.y; y < area.y + area.h; y++)
+			for (int x = area.x; x < area.x + area.w; x++)
+				for (int s = 0; s < nSegments; s++)
+				{
+					int a = withBack.coverage(s, x, y);
+					int b = withoutBack.coverage(s, x, y);
+
+					bool bOk = (s == SoftShapes::c_ringBackSegment) ? (b <= a && (bGap || b == 0)) : std::abs(a - b) <= 16;
+
+					if (!bOk)
+					{
+						output << c.name << ": segment " << s << " of pixel " << x << "," << y << " is " << b
+							   << " without back, " << a << " with." << std::endl;
+						return false;
+					}
+				}
 	}
 
 	return true;
