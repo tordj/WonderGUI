@@ -196,6 +196,7 @@ static void populateBody(wg_c_calls_body * pBody)
 	pBody->gfxDevice.clearTintColor			= LOCKED(wg_clearTintColor);
 	pBody->gfxDevice.hasTintColor			= LOCKED(wg_hasTintColor);
 	pBody->gfxDevice.drawRoundedBox			= LOCKED(wg_drawRoundedBox);
+	pBody->gfxDevice.drawRing				= LOCKED(wg_drawRing);
 	pBody->gfxDevice.getTintColor			= LOCKED(wg_getTintColor);
 
 	pBody->gfxDevice.setTintmap				= &stub_setTintmap;

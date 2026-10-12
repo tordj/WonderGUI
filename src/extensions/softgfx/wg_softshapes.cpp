@@ -34,6 +34,39 @@ namespace wg
 
 	static const int64_t c_one = int64_t(1) << 32;			// 1.0 in 32.32 fixed point.
 
+	//____ Sine table _________________________________________________________
+	// sin(i/1024 * pi/2) in 2.30 fixed point, generated at compile time.
+
+	namespace
+	{
+		constexpr double constexprSin(double x)
+		{
+			double term = x, sum = x;
+			for (int n = 1; n < 20; n++)
+			{
+				term *= -x * x / ((2 * n) * (2 * n + 1));
+				sum += term;
+			}
+			return sum;
+		}
+
+		struct SinTable
+		{
+			int32_t v[1026];
+
+			constexpr SinTable() : v{}
+			{
+				for (int i = 0; i <= 1025; i++)
+				{
+					double angle = (i > 1024 ? 1024 : i) * (3.14159265358979323846 / 2) / 1024;
+					v[i] = int32_t(constexprSin(angle) * 1073741824.0 + 0.5);
+				}
+			}
+		};
+
+		constexpr SinTable c_sinTable;
+	}
+
 	//____ rasterizeRoundedBox() ______________________________________________
 
 	void SoftShapes::rasterizeRoundedBox(const RoundedBox& box, const RectI& clip, RowSink* pSink)
@@ -179,11 +212,11 @@ namespace wg
 						if (pPrev && pPrev->segment == segment && pPrev->end == beg)
 							pPrev->end = end;
 						else
-							pSpans[nSpans++] = { beg, end, segment, false, nullptr };
+							pSpans[nSpans++] = { beg, end, segment, false, nullptr, 0, nullptr };
 					}
 					else
 					{
-						pSpans[nSpans++] = { beg, end, -1, true, pOut };
+						pSpans[nSpans++] = { beg, end, -1, true, pOut, 2, layerSegments };
 						*pOut++ = uint16_t(innerCov);
 						*pOut++ = uint16_t(outerCov - innerCov);
 					}
@@ -193,7 +226,7 @@ namespace wg
 					if (pPrev && pPrev->segment == -1 && !pPrev->bUniform && pPrev->end == beg)
 						pPrev->end = end;
 					else
-						pSpans[nSpans++] = { beg, end, -1, false, pOut };
+						pSpans[nSpans++] = { beg, end, -1, false, pOut, 2, layerSegments };
 
 					for (int x = beg; x < end; x++)
 					{
@@ -210,7 +243,7 @@ namespace wg
 			}
 
 			if (nSpans > 0)
-				pSink->row(y, nSpans, pSpans, 2, layerSegments);
+				pSink->row(y, nSpans, pSpans);
 		}
 	}
 
@@ -553,6 +586,726 @@ namespace wg
 			add(rightCol, rightCol + 1, oxRight * oy);
 
 		return nPieces;
+	}
+
+
+	//____ _sin30() ___________________________________________________________
+	// Sine in 2.30 fixed point, of angle where 2^32 is a full turn.
+
+	int32_t SoftShapes::_sin30(uint32_t angle)
+	{
+		uint32_t quadrant = angle >> 30;
+		uint32_t a = angle & 0x3FFFFFFF;
+
+		if (quadrant & 1)
+			a = 0x40000000 - a;
+
+		uint32_t idx = a >> 20;
+		uint32_t frac = a & 0xFFFFF;
+
+		int32_t v0 = c_sinTable.v[idx];
+		int32_t v1 = c_sinTable.v[idx + 1];
+		int32_t v = v0 + int32_t((int64_t(v1 - v0) * frac) >> 20);
+
+		return quadrant >= 2 ? -v : v;
+	}
+
+	//____ _pseudoAngle() _____________________________________________________
+	/*
+		A value that grows with the angle of direction (x,y) (y pointing down), clockwise
+		from 12 o'clock, 2^32 being a full turn. Not linear in the angle, but monotonic, which
+		is all that is needed to tell which slice a direction is in, and needs no trigonometry.
+	*/
+
+	uint32_t SoftShapes::_pseudoAngle(int64_t x, int64_t y)
+	{
+		int64_t u = x;
+		int64_t v = -y;
+
+		if (u == 0 && v == 0)
+			return 0;
+
+		if (u >= 0 && v > 0)
+			return uint32_t((u << 30) / (u + v));
+		if (u > 0 && v <= 0)
+			return uint32_t((uint64_t(1) << 30) + uint64_t(((-v) << 30) / (u - v)));
+		if (u <= 0 && v < 0)
+			return uint32_t((uint64_t(2) << 30) + uint64_t(((-u) << 30) / (-u - v)));
+
+		return uint32_t((uint64_t(3) << 30) + uint64_t((v << 30) / (v - u)));
+	}
+
+	//____ _setupRingAngles() _________________________________________________
+	/*
+		Splits the turn into elements: the slices, followed by a gap (back segment) if they
+		don't make a full turn. Each element starts at a boundary.
+	*/
+
+	void SoftShapes::_setupRingAngles(const Ring& ring)
+	{
+		m_boundaries.clear();
+		m_elementSegments.clear();
+
+		const uint64_t fullTurn = uint64_t(1) << 32;
+
+		std::vector<uint64_t>& starts = m_elementStarts;
+		starts.clear();
+
+		uint64_t pos = 0;
+		for (int i = 0; i < ring.nSlices && pos < fullTurn; i++)
+		{
+			uint64_t size = uint64_t(std::min(ring.pSliceSizes[i], c_fullTurn)) << 1;
+			if (size == 0)
+				continue;
+
+			starts.push_back(pos);
+			m_elementSegments.push_back(c_ringFirstSliceSegment + i);
+			pos += size;
+		}
+
+		if (pos < fullTurn)
+		{
+			starts.push_back(pos);
+			m_elementSegments.push_back(c_ringBackSegment);
+		}
+
+		int nElements = (int)starts.size();
+		if (nElements <= 1)
+			return;
+
+		uint32_t start = (ring.start % c_fullTurn) << 1;
+
+		m_boundaries.resize(nElements);
+
+		for (int e = 0; e < nElements; e++)
+		{
+			Boundary& b = m_boundaries[e];
+			b.angle = uint32_t(start + starts[e]);
+			b.element = e;
+			b.prevElement = (e == 0) ? nElements - 1 : e - 1;
+		}
+
+		std::sort(m_boundaries.begin(), m_boundaries.end(), [](const Boundary& a, const Boundary& b) { return a.angle < b.angle; });
+
+		for (auto& b : m_boundaries)
+		{
+			b.sx = _sin30(b.angle);
+			b.sy = -_sin30(b.angle + 0x40000000);
+			b.pseudoAngle = _pseudoAngle(b.sx, b.sy);
+
+			// Rays too close to horizontal cross rows only far outside any canvas, except
+			// for the rows around the center, which are sampled.
+
+			b.bFlat = std::abs(b.sy) < 1024;
+
+			if (!b.bFlat)
+			{
+				int64_t slope = (int64_t(b.sx) * c_one) / b.sy;		// 32.32
+				b.slopeInt = slope >> 32;
+				b.slopeFrac = uint32_t(slope & 0xFFFFFFFF);
+				b.halfBand = (int64_t(32) << 30) / std::abs(b.sy);
+			}
+		}
+	}
+
+	//____ _elementAt() _______________________________________________________
+
+	int SoftShapes::_elementAt(uint32_t pseudoAngle) const
+	{
+		if (m_boundaries.empty())
+			return 0;
+
+		// Last boundary at or before pseudoAngle, wrapping around to the last one.
+
+		int lo = 0, hi = (int)m_boundaries.size();
+		while (lo < hi)
+		{
+			int mid = (lo + hi) / 2;
+			if (m_boundaries[mid].pseudoAngle <= pseudoAngle)
+				lo = mid + 1;
+			else
+				hi = mid;
+		}
+
+		int idx = lo - 1;
+		if (idx < 0)
+			idx = (int)m_boundaries.size() - 1;
+
+		return m_boundaries[idx].element;
+	}
+
+	//____ _angularRow() ______________________________________________________
+	/*
+		Splits a row into pieces by slice. Between slice boundaries a piece belongs to one
+		element. Where boundaries cross the row, pixels are split between elements, worked
+		out per pixel. Rows around the center are sampled per pixel.
+	*/
+
+	int SoftShapes::_angularRow(int64_t rowY, int clipBeg, int clipEnd)
+	{
+		m_angularPieces.clear();
+		m_active.clear();
+
+		auto add = [&](int beg, int end, int element, int firstActive, int nActive, bool bSampled)
+		{
+			beg = std::max(beg, clipBeg);
+			end = std::min(end, clipEnd);
+			if (beg < end)
+				m_angularPieces.push_back({ beg, end, element, firstActive, nActive, bSampled });
+		};
+
+		if (m_boundaries.empty())
+		{
+			add(clipBeg, clipEnd, 0, 0, 0, false);
+			return (int)m_angularPieces.size();
+		}
+
+		int64_t dy = rowY - m_cy;
+
+		if (dy > -96 && dy < 96)
+		{
+			add(clipBeg, clipEnd, -1, 0, 0, true);
+			return (int)m_angularPieces.size();
+		}
+
+		bool bUpper = dy < 0;
+
+		for (int i = 0; i < (int)m_boundaries.size(); i++)
+		{
+			const Boundary& b = m_boundaries[i];
+
+			if (b.bFlat || (bUpper ? b.sy >= 0 : b.sy <= 0))
+				continue;
+
+			int64_t x = m_cx + dy * b.slopeInt + ((dy * int64_t(b.slopeFrac)) >> 32);
+
+			int bandBeg = floorPixel(x - b.halfBand - 32);
+			int bandEnd = floorPixel(x + b.halfBand - 32) + 2;
+
+			m_active.push_back({ i, x, bandBeg, bandEnd });
+		}
+
+		if (m_active.empty())
+		{
+			add(clipBeg, clipEnd, _elementAt(bUpper ? 0 : 0x80000000), 0, 0, false);
+			return (int)m_angularPieces.size();
+		}
+
+		// Sort by crossing, which is clockwise in the upper half and counter-clockwise in the lower.
+
+		std::sort(m_active.begin(), m_active.end(), [this, bUpper](const ActiveBoundary& a, const ActiveBoundary& b)
+		{
+			if (a.x != b.x)
+				return a.x < b.x;
+
+			uint32_t ka = m_boundaries[a.boundary].angle - (bUpper ? 0xC0000000 : 0x40000000);
+			uint32_t kb = m_boundaries[b.boundary].angle - (bUpper ? 0xC0000000 : 0x40000000);
+			return bUpper ? ka < kb : ka > kb;
+		});
+
+		// Merge overlapping bands.
+
+		struct Group { int beg, end, first, last; };
+		Group groups[64];
+		int nGroups = 0;
+
+		std::vector<Group> moreGroups;			// In the unlikely case of many groups.
+		bool bManyGroups = false;
+
+		auto groupAt = [&](int i) -> Group& { return bManyGroups ? moreGroups[i] : groups[i]; };
+
+		for (int i = 0; i < (int)m_active.size(); i++)
+		{
+			Group g = { m_active[i].bandBeg, m_active[i].bandEnd, i, i };
+
+			while (nGroups > 0 && g.beg < groupAt(nGroups - 1).end)
+			{
+				Group& prev = groupAt(nGroups - 1);
+				g.beg = std::min(g.beg, prev.beg);
+				g.end = std::max(g.end, prev.end);
+				g.first = prev.first;
+				nGroups--;
+			}
+
+			if (!bManyGroups && nGroups == 64)
+			{
+				moreGroups.assign(groups, groups + 64);
+				bManyGroups = true;
+			}
+
+			if (bManyGroups)
+			{
+				if ((int)moreGroups.size() <= nGroups)
+					moreGroups.resize(nGroups + 1);
+				moreGroups[nGroups++] = g;
+			}
+			else
+				groups[nGroups++] = g;
+		}
+
+		// Elements left and right of boundaries along x.
+
+		auto elementLeftOf = [&](int active) { const Boundary& b = m_boundaries[m_active[active].boundary]; return bUpper ? b.prevElement : b.element; };
+		auto elementRightOf = [&](int active) { const Boundary& b = m_boundaries[m_active[active].boundary]; return bUpper ? b.element : b.prevElement; };
+
+		int x = clipBeg;
+		int element = elementLeftOf(0);
+
+		for (int i = 0; i < nGroups; i++)
+		{
+			const Group& g = groupAt(i);
+
+			add(std::min(x, g.beg), g.beg, element, 0, 0, false);
+			add(g.beg, g.end, -1, g.first, g.last - g.first + 1, false);
+
+			element = elementRightOf(g.last);
+			x = std::max(x, g.end);
+		}
+
+		add(x, clipEnd, element, 0, 0, false);
+
+		return (int)m_angularPieces.size();
+	}
+
+	//____ _samplePixel() _____________________________________________________
+	// Elements covering a pixel around the center and their share (0 -> 4096) of it.
+
+	void SoftShapes::_samplePixel(int col, int64_t rowY, int* pElements, int* pFractions, int& nElements) const
+	{
+		nElements = 0;
+
+		int64_t x = int64_t(col) * 64 + 32 - m_cx;
+		int64_t y = rowY - m_cy;
+
+		if (m_boundaries.empty())
+		{
+			pElements[0] = 0;
+			pFractions[0] = c_fullCoverage;
+			nElements = 1;
+			return;
+		}
+
+		// Pixels not containing the center, with all corners in the same element, are inside it.
+
+		bool bCenter = (x > -32 && x <= 32 && y > -32 && y <= 32);
+
+		if (!bCenter)
+		{
+			int e = _elementAt(_pseudoAngle(x - 32, y - 32));
+
+			if (_elementAt(_pseudoAngle(x + 32, y - 32)) == e && _elementAt(_pseudoAngle(x - 32, y + 32)) == e &&
+				_elementAt(_pseudoAngle(x + 32, y + 32)) == e)
+			{
+				pElements[0] = e;
+				pFractions[0] = c_fullCoverage;
+				nElements = 1;
+				return;
+			}
+		}
+
+		// Sample 4x4.
+
+		static const int offsets[4] = { -24, -8, 8, 24 };
+
+		for (int sy = 0; sy < 4; sy++)
+		{
+			for (int sx = 0; sx < 4; sx++)
+			{
+				int e = _elementAt(_pseudoAngle(x + offsets[sx], y + offsets[sy]));
+
+				int i = 0;
+				while (i < nElements && pElements[i] != e)
+					i++;
+
+				if (i == nElements)
+				{
+					pElements[nElements] = e;
+					pFractions[nElements++] = 0;
+				}
+
+				pFractions[i] += c_fullCoverage / 16;
+			}
+		}
+	}
+
+	//____ rasterizeRing() ____________________________________________________
+
+	void SoftShapes::rasterizeRing(const Ring& ring, const RectI& clip, RowSink* pSink)
+	{
+		const RectSPX& rect = ring.rect;
+
+		if (rect.w <= 0 || rect.h <= 0 || clip.w <= 0 || clip.h <= 0)
+			return;
+
+		// Radial geometry
+
+		m_cx = int64_t(rect.x) + rect.w / 2;
+		m_cy = int64_t(rect.y) + rect.h / 2;
+
+		spx outerRadius = std::min(rect.w, rect.h) / 2;
+
+		bool bHole = ring.thickness > 0 && ring.thickness < outerRadius;
+		spx innerRadius = bHole ? outerRadius - ring.thickness : 0;
+
+		spx outline = std::max(ring.outline, 0);
+		outline = std::min(outline, bHole ? ring.thickness / 2 : outerRadius);
+
+		// Nested shapes: rect, outer edge, inside of outer outline, outside of inner outline, inner edge.
+
+		Shape shapes[5];
+
+		auto circle = [&](Shape& shape, spx r)
+		{
+			if (r <= 0)
+			{
+				shape.bEmpty = true;
+				return;
+			}
+
+			spx radius[4] = { r, r, r, r };
+			_setupShape(shape, RectSPX(spx(m_cx - r), spx(m_cy - r), r * 2, r * 2), radius);
+		};
+
+		spx square[4] = { 0, 0, 0, 0 };
+
+		_setupShape(shapes[0], rect, square);
+
+		if (ring.bSquare)
+		{
+			_setupShape(shapes[1], rect, square);
+			_setupShape(shapes[2], RectSPX(rect.x + outline, rect.y + outline, rect.w - outline * 2, rect.h - outline * 2), square);
+		}
+		else
+		{
+			circle(shapes[1], outerRadius);
+			circle(shapes[2], outerRadius - outline);
+		}
+
+		if (bHole)
+		{
+			circle(shapes[3], innerRadius + outline);
+			circle(shapes[4], innerRadius);
+		}
+		else
+		{
+			shapes[3].bEmpty = true;
+			shapes[4].bEmpty = true;
+		}
+
+		_setupRingAngles(ring);
+
+		// Rows and columns
+
+		int clipBeg = std::max(clip.x, floorPixel(rect.x));
+		int clipEnd = std::min(clip.x + clip.w, ceilPixel(int64_t(rect.x) + rect.w));
+
+		int rowBeg = std::max(clip.y, floorPixel(rect.y));
+		int rowEnd = std::min(clip.y + clip.h, ceilPixel(int64_t(rect.y) + rect.h));
+
+		if (clipBeg >= clipEnd || rowBeg >= rowEnd)
+			return;
+
+		int width = clipEnd - clipBeg;
+
+		if ((int)m_coverageBuffer.size() < width * 10 + 16)
+			m_coverageBuffer.resize(width * 10 + 16);
+
+		// Rows
+
+		Piece	pieces[5][c_maxPieces];
+		int		nPieces[5];
+
+		std::vector<int>& spanLayerOfs = m_spanLayerOfs;
+		std::vector<int>& spanCoverageOfs = m_spanCoverageOfs;
+
+		int		elements[16];
+		int		fractions[16];
+
+		for (int y = rowBeg; y < rowEnd; y++)
+		{
+			int64_t rowY = int64_t(y) * 64 + 32;
+
+			uint16_t* pBuffer = m_coverageBuffer.data();
+
+			nPieces[0] = _shapeRow(shapes[0], y, clipBeg, clipEnd, pieces[0], pBuffer);
+			nPieces[1] = _shapeRow(shapes[1], y, clipBeg, clipEnd, pieces[1], pBuffer);
+			nPieces[4] = _shapeRow(shapes[4], y, clipBeg, clipEnd, pieces[4], pBuffer);
+
+			if (outline > 0)
+			{
+				nPieces[2] = _shapeRow(shapes[2], y, clipBeg, clipEnd, pieces[2], pBuffer);
+				nPieces[3] = _shapeRow(shapes[3], y, clipBeg, clipEnd, pieces[3], pBuffer);
+			}
+			else
+			{
+				// Without outline its edges coincide with the outer and inner edge.
+
+				nPieces[2] = nPieces[1];
+				std::copy(pieces[1], pieces[1] + nPieces[1], pieces[2]);
+				nPieces[3] = nPieces[4];
+				std::copy(pieces[4], pieces[4] + nPieces[4], pieces[3]);
+			}
+
+			if (nPieces[0] == 0)
+				continue;
+
+			_angularRow(rowY, clipBeg, clipEnd);
+
+			// Collect breakpoints.
+
+			m_breaks.clear();
+
+			for (int i = 0; i < 5; i++)
+				for (int p = 0; p < nPieces[i]; p++)
+				{
+					m_breaks.push_back(pieces[i][p].begin);
+					m_breaks.push_back(pieces[i][p].end);
+				}
+
+			for (auto& ap : m_angularPieces)
+			{
+				m_breaks.push_back(ap.begin);
+				m_breaks.push_back(ap.end);
+			}
+
+			std::sort(m_breaks.begin(), m_breaks.end());
+			m_breaks.erase(std::unique(m_breaks.begin(), m_breaks.end()), m_breaks.end());
+
+			// Produce spans. Layer lists and coverage are written to growing buffers, pointers
+			// set when the row is done.
+
+			m_spans.clear();
+			spanLayerOfs.clear();
+			spanCoverageOfs.clear();
+			m_layerBuffer.clear();
+			m_ringOutput.clear();
+
+			int pieceIdx[5] = { 0, 0, 0, 0, 0 };
+			int angularIdx = 0;
+
+			auto valueAt = [](const Piece* p, int x) { return p ? (p->pValues ? p->pValues[x - p->begin] : p->value) : 0; };
+
+			auto radialAt = [&](const Piece* const* pp, int x)
+			{
+				int r = valueAt(pp[0], x);
+				int c0 = std::min(valueAt(pp[1], x), r);
+				int c1 = std::min(valueAt(pp[2], x), c0);
+				int c2 = std::min(valueAt(pp[3], x), c1);
+				int c3 = std::min(valueAt(pp[4], x), c2);
+
+				return RadialValues{ r - c0, c0 - c1 + c2 - c3, c3, c1 - c2 };
+			};
+
+			auto beginSpan = [&](int beg, int end, int segment, bool bUniform)
+			{
+				m_spans.push_back({ beg, end, segment, bUniform, nullptr, 0, nullptr });
+				spanLayerOfs.push_back((int)m_layerBuffer.size());
+				spanCoverageOfs.push_back((int)m_ringOutput.size());
+			};
+
+			auto addLayer = [&](int segment)
+			{
+				m_layerBuffer.push_back(segment);
+				m_spans.back().nLayers++;
+			};
+
+			for (int k = 0; k + 1 < (int)m_breaks.size(); k++)
+			{
+				int beg = m_breaks[k];
+				int end = m_breaks[k + 1];
+
+				const Piece* pp[5];
+				bool bConstRadial = true;
+
+				for (int i = 0; i < 5; i++)
+				{
+					while (pieceIdx[i] < nPieces[i] && pieces[i][pieceIdx[i]].end <= beg)
+						pieceIdx[i]++;
+
+					pp[i] = (pieceIdx[i] < nPieces[i] && pieces[i][pieceIdx[i]].begin <= beg) ? &pieces[i][pieceIdx[i]] : nullptr;
+
+					if (pp[i] && pp[i]->pValues)
+						bConstRadial = false;
+				}
+
+				if (!pp[0])
+					continue;
+
+				while (angularIdx < (int)m_angularPieces.size() && m_angularPieces[angularIdx].end <= beg)
+					angularIdx++;
+
+				const AngularPiece& ap = m_angularPieces[angularIdx];
+
+				if (bConstRadial && ap.element >= 0)
+				{
+					RadialValues v = radialAt(pp, beg);
+					int ringSegment = m_elementSegments[ap.element];
+
+					int segment = -1;
+					if (v.ring == c_fullCoverage)
+						segment = ringSegment;
+					else if (v.back == c_fullCoverage)
+						segment = c_ringBackSegment;
+					else if (v.outline == c_fullCoverage)
+						segment = c_ringOutlineSegment;
+					else if (v.hub == c_fullCoverage)
+						segment = c_ringHubSegment;
+
+					if (segment >= 0)
+					{
+						if (!m_spans.empty() && m_spans.back().segment == segment && m_spans.back().end == beg)
+							m_spans.back().end = end;
+						else
+							beginSpan(beg, end, segment, false);
+					}
+					else if (v.back + v.outline + v.hub + v.ring > 0)
+					{
+						beginSpan(beg, end, -1, true);
+						addLayer(c_ringBackSegment);
+						addLayer(c_ringOutlineSegment);
+						addLayer(c_ringHubSegment);
+						addLayer(ringSegment);
+
+						m_ringOutput.push_back(uint16_t(v.back));
+						m_ringOutput.push_back(uint16_t(v.outline));
+						m_ringOutput.push_back(uint16_t(v.hub));
+						m_ringOutput.push_back(uint16_t(v.ring));
+					}
+				}
+				else if (ap.element >= 0)
+				{
+					// Radial edges within one slice.
+
+					beginSpan(beg, end, -1, false);
+					addLayer(c_ringBackSegment);
+					addLayer(c_ringOutlineSegment);
+					addLayer(c_ringHubSegment);
+					addLayer(m_elementSegments[ap.element]);
+
+					for (int x = beg; x < end; x++)
+					{
+						RadialValues v = radialAt(pp, x);
+						m_ringOutput.push_back(uint16_t(v.back));
+						m_ringOutput.push_back(uint16_t(v.outline));
+						m_ringOutput.push_back(uint16_t(v.hub));
+						m_ringOutput.push_back(uint16_t(v.ring));
+					}
+				}
+				else if (!ap.bSampled)
+				{
+					// Slice boundaries crossing the row. Order boundaries clockwise.
+
+					bool bUpper = rowY < m_cy;
+					int nActive = ap.nActive;
+
+					int order[c_maxBandBoundaries];
+					int nOrder = std::min(nActive, (int)c_maxBandBoundaries);
+
+					for (int i = 0; i < nOrder; i++)
+						order[i] = bUpper ? ap.firstActive + i : ap.firstActive + nActive - 1 - i;
+
+					const Boundary& first = m_boundaries[m_active[order[0]].boundary];
+
+					beginSpan(beg, end, -1, false);
+					addLayer(c_ringBackSegment);
+					addLayer(c_ringOutlineSegment);
+					addLayer(c_ringHubSegment);
+					addLayer(m_elementSegments[first.prevElement]);
+
+					for (int i = 0; i < nOrder; i++)
+						addLayer(m_elementSegments[m_boundaries[m_active[order[i]].boundary].element]);
+
+					int32_t dy = int32_t(rowY - m_cy);
+
+					for (int x = beg; x < end; x++)
+					{
+						RadialValues v = radialAt(pp, x);
+
+						m_ringOutput.push_back(uint16_t(v.back));
+						m_ringOutput.push_back(uint16_t(v.outline));
+						m_ringOutput.push_back(uint16_t(v.hub));
+
+						// Share of the pixel past each boundary, kept decreasing in clockwise order.
+
+						int32_t dx = int32_t(int64_t(x) * 64 + 32 - m_cx);
+
+						int prevH = c_fullCoverage;
+						int fractions[c_maxBandBoundaries + 1];
+
+						for (int i = 0; i < nOrder; i++)
+						{
+							const Boundary& b = m_boundaries[m_active[order[i]].boundary];
+
+							int64_t d = -int64_t(b.sy) * dx + int64_t(b.sx) * dy;		// spx, 30 binals
+							int h = 2048 + int(d >> 24);
+							h = h < 0 ? 0 : h > prevH ? prevH : h;
+
+							fractions[i] = prevH - h;
+							prevH = h;
+						}
+						fractions[nOrder] = prevH;
+
+						// Rounded cumulatively, so that slices add up to exactly the ring.
+
+						int cumulative = 0, prevCoverage = 0;
+						for (int i = 0; i <= nOrder; i++)
+						{
+							cumulative += fractions[i];
+							int coverage = (v.ring * cumulative + 2048) >> 12;
+							m_ringOutput.push_back(uint16_t(coverage - prevCoverage));
+							prevCoverage = coverage;
+						}
+					}
+				}
+				else
+				{
+					// Around the center, each pixel sampled.
+
+					for (int x = beg; x < end; x++)
+					{
+						RadialValues v = radialAt(pp, x);
+
+						int nElements;
+						_samplePixel(x, rowY, elements, fractions, nElements);
+
+						beginSpan(x, x + 1, -1, false);
+						addLayer(c_ringBackSegment);
+						addLayer(c_ringOutlineSegment);
+						addLayer(c_ringHubSegment);
+
+						m_ringOutput.push_back(uint16_t(v.back));
+						m_ringOutput.push_back(uint16_t(v.outline));
+						m_ringOutput.push_back(uint16_t(v.hub));
+
+						int cumulative = 0, prevCoverage = 0;
+						for (int i = 0; i < nElements; i++)
+						{
+							addLayer(m_elementSegments[elements[i]]);
+
+							cumulative += fractions[i];
+							int coverage = (v.ring * cumulative + 2048) >> 12;
+							m_ringOutput.push_back(uint16_t(coverage - prevCoverage));
+							prevCoverage = coverage;
+						}
+					}
+				}
+			}
+
+			// Set pointers into buffers, now that they won't move.
+
+			for (int i = 0; i < (int)m_spans.size(); i++)
+			{
+				Span& span = m_spans[i];
+				if (span.segment < 0)
+				{
+					span.pLayerSegments = m_layerBuffer.data() + spanLayerOfs[i];
+					span.pCoverage = m_ringOutput.data() + spanCoverageOfs[i];
+				}
+			}
+
+			if (!m_spans.empty())
+				pSink->row(y, (int)m_spans.size(), m_spans.data());
+		}
 	}
 
 }

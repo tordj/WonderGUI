@@ -20,4 +20,5 @@ private:
 	bool streamTest(std::ostream& output);
 	bool alignedBoxTest(std::ostream& output);
 	bool boxSkinTest(std::ostream& output);
+	bool ringTest(std::ostream& output);
 };

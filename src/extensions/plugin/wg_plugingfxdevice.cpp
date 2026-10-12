@@ -21,6 +21,7 @@
 =========================================================================*/
 #include <wg_plugincalls.h>
 #include <wg_plugingfxdevice.h>
+#include <algorithm>
 #include <wg_pluginsurface.h>
 #include <wg_pluginedgemap.h>
 #include <wg_pluginsurfacefactory.h>
@@ -683,6 +684,51 @@ namespace wg
 			PluginCalls::object->release(box.fillTint);
 		if (box.outlineTint)
 			PluginCalls::object->release(box.outlineTint);
+	}
+
+    //.____ drawRing() ________________________________________________________
+	//
+	// The host gets its own copies of the Tints.
+
+	void PluginGfxDevice::drawRing(const RingSpec& spec)
+	{
+		int nSlices = std::min(std::max(spec.nSlices, 0), maxRingSlices());
+
+		wg_ringSlice slices[c_maxRingSlices];
+
+		for (int i = 0; i < nSlices; i++)
+		{
+			slices[i].size = spec.pSlices[i].size;
+			slices[i].color = *(const wg_color*)&spec.pSlices[i].color;
+			slices[i].tint = PluginCalls::_hostTint(spec.pSlices[i].pTint);
+		}
+
+		wg_ringSpec ring;
+
+		ring.rect = *(const wg_rectSPX*)&spec.rect;
+		ring.thickness = spec.thickness;
+		ring.outline = spec.outline;
+		ring.start = spec.start;
+		ring.nSlices = nSlices;
+		ring.pSlices = slices;
+		ring.bSquare = spec.bSquare;
+		ring.outlineColor = *(const wg_color*)&spec.outlineColor;
+		ring.outlineTint = PluginCalls::_hostTint(spec.pOutlineTint);
+		ring.hubColor = *(const wg_color*)&spec.hubColor;
+		ring.hubTint = PluginCalls::_hostTint(spec.pHubTint);
+		ring.backColor = *(const wg_color*)&spec.backColor;
+		ring.backTint = PluginCalls::_hostTint(spec.pBackTint);
+
+		PluginCalls::gfxDevice->drawRing(m_cDevice, &ring);
+
+		auto release = [](wg_obj obj) { if (obj) PluginCalls::object->release(obj); };
+
+		for (int i = 0; i < nSlices; i++)
+			release(slices[i].tint);
+
+		release(ring.outlineTint);
+		release(ring.hubTint);
+		release(ring.backTint);
 	}
 
     //.____ blitNinePatch() ___________________________________________________

@@ -165,6 +165,7 @@ namespace wg
 		// Shapes
 
 		void	drawRoundedBox(const RoundedBoxSpec& spec) override;
+		void	drawRing(const RingSpec& spec) override;
 
 		// Blit methods
 

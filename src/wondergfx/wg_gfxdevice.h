@@ -96,6 +96,55 @@ namespace wg
 		Tint*		pOutlineTint = nullptr;
 	};
 
+	//____ RingSlice __________________________________________________________
+
+	struct RingSlice
+	{
+		float		size = 0.f;						// Fraction of a full turn.
+		HiColor		color = HiColor::White;
+		Tint*		pTint = nullptr;				// Placed in rect of ring.
+	};
+
+	//____ RingSpec ___________________________________________________________
+	/**
+	 * A circle, ring, pie or donut chart, gauge or progress ring, drawn by
+	 * GfxDevice::drawRing().
+	 *
+	 * The circle is the largest one centered in rect. The ring reaches thickness in
+	 * from its outer edge and is split into slices clockwise from start (12 o'clock is
+	 * 0.0, 3 o'clock 0.25). Slices beyond a full turn are cut off.
+	 *
+	 * Optionally the ring has an outline along its outer and inner edge (inside the
+	 * thickness), the hub (inside the ring) is filled and the rest of rect, together
+	 * with the part of the ring not reached by slices, is filled with a back color.
+	 * With bSquare, the outer edge of the ring follows rect instead.
+	 *
+	 * Everything is drawn together, so no background shows through between slices,
+	 * outline, hub and back, and it is placed with subpixel precision.
+	 *
+	 * Tints are placed in rect and multiplied with the colors. The tint and tint color
+	 * of the device apply on top. Like fill(), fully transparent colors draw nothing in
+	 * BlendMode::Blend.
+	 */
+
+	struct RingSpec
+	{
+		RectSPX				rect;
+		spx					thickness = 0;						// Width of ring, outline included. 0 or at least the radius for a full pie or disc.
+		spx					outline = 0;						// Thickness of outline along outer and inner edge.
+		float				start = 0.f;						// Start of first slice, fraction of a turn clockwise from 12 o'clock.
+		int					nSlices = 0;						// At most GfxDevice::maxRingSlices().
+		const RingSlice*	pSlices = nullptr;
+		bool				bSquare = false;					// Outer edge follows rect.
+
+		HiColor				outlineColor = HiColor::Black;
+		Tint*				pOutlineTint = nullptr;
+		HiColor				hubColor = HiColor::Transparent;	// Inside the ring.
+		Tint*				pHubTint = nullptr;
+		HiColor				backColor = HiColor::Transparent;	// Rest of rect and the part of the ring not reached by slices.
+		Tint*				pBackTint = nullptr;
+	};
+
 	//____ CanvasInfo _________________________________________________________
 
 	struct CanvasInfo
@@ -145,6 +194,7 @@ namespace wg
 		virtual EdgemapFactory_p	edgemapFactory() = 0;
 
 		static constexpr int		maxSegments() { return c_maxSegments; }
+		static constexpr int		maxRingSlices() { return c_maxRingSlices; }
 		
 		//.____ Geometry _________________________________________________
 
@@ -219,6 +269,7 @@ namespace wg
 		// Shapes
 
 		virtual void	drawRoundedBox( const RoundedBoxSpec& spec ) = 0;
+		virtual void	drawRing( const RingSpec& spec ) = 0;
 
 		// Blit methods
 
@@ -282,6 +333,7 @@ namespace wg
 		virtual ~GfxDevice();
 
 		const static int	c_maxSegments = 16;
+		const static int	c_maxRingSlices = 256;
 	};
 
 

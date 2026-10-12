@@ -97,7 +97,7 @@ namespace
 	public:
 		Coverage() : fill(c_canvasSize.w * c_canvasSize.h, 0), outline(c_canvasSize.w * c_canvasSize.h, 0) {}
 
-		void row(int y, int nSpans, const SoftShapes::Span* pSpans, int nLayers, const int* pLayerSegments) override
+		void row(int y, int nSpans, const SoftShapes::Span* pSpans) override
 		{
 			for (int i = 0; i < nSpans; i++)
 			{
@@ -109,9 +109,9 @@ namespace
 						(span.segment == 0 ? fill : outline)[idx] = 4096;
 					else
 					{
-						const uint16_t* p = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * nLayers);
-						for (int l = 0; l < nLayers; l++)
-							(pLayerSegments[l] == 0 ? fill : outline)[idx] += p[l];
+						const uint16_t* p = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * span.nLayers);
+						for (int l = 0; l < span.nLayers; l++)
+							(span.pLayerSegments[l] == 0 ? fill : outline)[idx] += p[l];
 					}
 				}
 			}
@@ -234,6 +234,7 @@ ShapeRenderTest::ShapeRenderTest()
 	ADD_TEST(streamTest);
 	ADD_TEST(alignedBoxTest);
 	ADD_TEST(boxSkinTest);
+	ADD_TEST(ringTest);
 }
 
 ShapeRenderTest::~ShapeRenderTest()
@@ -523,6 +524,25 @@ namespace
 		pill.rect.y -= 64 * 20 + 13;
 		pDevice->drawRoundedBox(pill);
 		pDevice->clearTintColor();
+
+		auto pSliceTint = Tint::create(HiColor(4096, 4096, 4096, 4096), HiColor(0, 0, 0, 4096), { 0.f, 0.f }, { 1.f, 1.f });
+
+		RingSlice slices[4] = { { 0.2f, HiColor(4096, 0, 0, 4096) }, { 0.3f, HiColor(0, 4096, 0, 3000), pSliceTint },
+								{ 0.1f, HiColor(0, 0, 4096, 4096) }, { 0.15f, HiColor(4096, 4096, 0, 4096) } };
+
+		RingSpec ring;
+		ring.rect = { 64 * 30 + 21, 64 * 3 + 9, 64 * 30 + 40, 64 * 30 + 40 };
+		ring.thickness = 64 * 9;
+		ring.outline = 64 + 20;
+		ring.start = 0.85f;
+		ring.nSlices = 4;
+		ring.pSlices = slices;
+		ring.outlineColor = HiColor(1000, 1000, 1000, 4096);
+		ring.hubColor = HiColor(4096, 4096, 4096, 2000);
+		ring.backColor = HiColor(0, 0, 0, 1500);
+
+		pDevice->setBlendMode(BlendMode::Blend);
+		pDevice->drawRing(ring);
 	}
 }
 
@@ -752,4 +772,115 @@ bool ShapeRenderTest::boxSkinTest(std::ostream& output)
 	TEST_ASSERT(Util::isInsideRoundedBox({ coverage.x + coverage.w - 1, coverage.y + coverage.h - 1 }, canvas, radius));
 
 	return true;
+}
+
+//____ ringTest() _____________________________________________________________
+// Ring with slices, outline, hub and back, against coverage from SoftShapes.
+
+namespace
+{
+	class SegmentCoverage : public SoftShapes::RowSink
+	{
+	public:
+		SegmentCoverage(int nSegments) : coverage(nSegments, std::vector<int>(c_canvasSize.w * c_canvasSize.h, 0)) {}
+
+		void row(int y, int nSpans, const SoftShapes::Span* pSpans) override
+		{
+			for (int i = 0; i < nSpans; i++)
+			{
+				auto& span = pSpans[i];
+				for (int x = span.begin; x < span.end; x++)
+				{
+					int idx = y * c_canvasSize.w + x;
+					if (span.segment >= 0)
+						coverage[span.segment][idx] += 4096;
+					else
+					{
+						const uint16_t* p = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * span.nLayers);
+						for (int l = 0; l < span.nLayers; l++)
+							coverage[span.pLayerSegments[l]][idx] += p[l];
+					}
+				}
+			}
+		}
+
+		std::vector<std::vector<int>>	coverage;
+	};
+}
+
+bool ShapeRenderTest::ringTest(std::ostream& output)
+{
+	RingSlice slices[5] = { { 0.1f, HiColor(4096, 0, 0, 4096) }, { 0.25f, HiColor(0, 4096, 0, 4096) },
+							{ 0.05f, HiColor(0, 0, 4096, 4096) }, { 0.3f, HiColor(4096, 4096, 0, 4096) }, { 0.15f, HiColor(0, 4096, 4096, 4096) } };
+
+	RingSpec ring;
+	ring.rect = { 64 * 3 + 21, 64 * 2 + 9, 64 * 50 + 40, 64 * 42 + 10 };
+	ring.thickness = 64 * 12 + 30;
+	ring.outline = 64 + 20;
+	ring.start = 0.9f;
+	ring.nSlices = 5;
+	ring.pSlices = slices;
+	ring.outlineColor = HiColor(1000, 1000, 1000, 4096);
+	ring.hubColor = HiColor(4096, 4096, 4096, 4096);
+	ring.backColor = HiColor(2000, 0, 2000, 4096);
+
+	// Coverage, converted as GfxDeviceGen2 does.
+
+	uint32_t sizes[5];
+	for (int i = 0; i < 5; i++)
+		sizes[i] = uint32_t(double(slices[i].size) * 2147483648.0);
+
+	SoftShapes::Ring shape;
+	shape.rect = ring.rect;
+	shape.thickness = ring.thickness;
+	shape.outline = ring.outline;
+	shape.start = uint32_t(double(ring.start - std::floor(ring.start)) * 2147483648.0) % 0x80000000;
+	shape.nSlices = 5;
+	shape.pSliceSizes = sizes;
+
+	SegmentCoverage cov(SoftShapes::c_ringFirstSliceSegment + 5);
+	SoftShapes shapes;
+	shapes.rasterizeRing(shape, RectI(0, 0, c_canvasSize.w, c_canvasSize.h), &cov);
+
+	// Render
+
+	Canvas canvas;
+	auto pDevice = createSoftDevice();
+
+	pDevice->beginRender();
+	pDevice->beginCanvasUpdate(canvas.surface);
+	pDevice->setBlendMode(BlendMode::Replace);
+	pDevice->fill(c_background);
+	pDevice->setBlendMode(BlendMode::Blend);
+	pDevice->drawRing(ring);
+	pDevice->endCanvasUpdate();
+	pDevice->endRender();
+
+	auto pixels = canvas.read();
+
+	HiColor segmentColors[8] = { ring.backColor, ring.outlineColor, ring.hubColor, slices[0].color, slices[1].color, slices[2].color, slices[3].color, slices[4].color };
+	C12 colors[8];
+	for (int i = 0; i < 8; i++)
+		colors[i] = toC12(segmentColors[i]);
+
+	C12 bg = toC12(c_background);
+
+	return compare(output, "Ring", pixels, 3, [&](int x, int y)
+	{
+		int idx = y * c_canvasSize.w + x;
+		int total = 0;
+		C12 sum = { 0, 0, 0, 0 };
+
+		for (int s = 0; s < 8; s++)
+		{
+			int c = cov.coverage[s][idx];
+			total += c;
+			sum.b += colors[s].b * c;
+			sum.g += colors[s].g * c;
+			sum.r += colors[s].r * c;
+		}
+
+		int back = 4096 - total;
+		return C12{ (bg.b * back + sum.b) / 4096, (bg.g * back + sum.g) / 4096, (bg.r * back + sum.r) / 4096, 4096 };
+	});
 }

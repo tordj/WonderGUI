@@ -291,6 +291,7 @@ typedef struct wg_gfxdevice_calls_struct
 	int					(*hasTintColor)(wg_obj device);
 
 	void				(*drawRoundedBox)(wg_obj device, const wg_roundedBoxSpec* spec);
+	void				(*drawRing)(wg_obj device, const wg_ringSpec* spec);
 
 } wg_gfxdevice_calls;
 

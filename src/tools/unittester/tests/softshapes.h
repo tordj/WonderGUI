@@ -18,4 +18,6 @@ private:
 	bool roundedBoxSymmetryTest(std::ostream& output);
 	bool roundedBoxClipTest(std::ostream& output);
 	bool clampCornerRadiiTest(std::ostream& output);
+	bool ringCoverageTest(std::ostream& output);
+	bool ringClipTest(std::ostream& output);
 };

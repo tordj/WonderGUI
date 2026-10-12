@@ -330,7 +330,7 @@ namespace wg
 		class ShapeSink : public SoftShapes::RowSink
 		{
 		public:
-			void	row(int y, int nSpans, const SoftShapes::Span* pSpans, int nLayers, const int* pLayerSegments) override;
+			void	row(int y, int nSpans, const SoftShapes::Span* pSpans) override;
 
 			SoftBackend*	pBackend;
 			uint8_t*		pOrigin;
@@ -338,8 +338,9 @@ namespace wg
 		};
 
 		bool	_beginShape(GfxBackend::ShapeKind kind, const uint16_t* pPayload, const HiColor* pColors);
+		void	_setupShapeSegment(ShapeSegment& seg, bool bActive, HiColor color, bool bTint, const uint16_t*& pTintWords, const HiColor*& pTintColors);
 		void	_drawShape(const RectI& clip, uint8_t* pOrigin, int pitch);
-		void	_drawShapeRow(uint8_t* pOrigin, int pitch, int y, int nSpans, const SoftShapes::Span* pSpans, int nLayers, const int* pLayerSegments);
+		void	_drawShapeRow(uint8_t* pOrigin, int pitch, int y, int nSpans, const SoftShapes::Span* pSpans);
 		void	_shapeSegmentColors(int segment, int x, int y, int length, HiColor* pOutput);
 		HiColor* _shapeBuffer(int index, int length);
 
@@ -401,6 +402,8 @@ namespace wg
 
 		SoftShapes					m_shapes;
 		SoftShapes::RoundedBox		m_roundedBox;
+		SoftShapes::Ring			m_ring;
+		std::vector<uint32_t>		m_ringSliceSizes;
 		GfxBackend::ShapeKind		m_shapeKind;
 		std::vector<ShapeSegment>	m_shapeSegments;
 		BlendMode					m_shapeBlendMode;				// Blend mode for runs of opaque segments.

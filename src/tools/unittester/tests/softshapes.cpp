@@ -20,7 +20,7 @@ namespace
 	public:
 		CoverageGrid(const RectI& area) : m_area(area), m_fill(area.w * area.h, 0), m_outline(area.w * area.h, 0), m_hits(area.w * area.h, 0) {}
 
-		void row(int y, int nSpans, const SoftShapes::Span* pSpans, int nLayers, const int* pLayerSegments) override
+		void row(int y, int nSpans, const SoftShapes::Span* pSpans) override
 		{
 			int prevEnd = INT_MIN;
 
@@ -47,10 +47,10 @@ namespace
 						(span.segment == 0 ? m_fill : m_outline)[idx] = SoftShapes::c_fullCoverage;
 					else
 					{
-						const uint16_t* pCov = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * nLayers);
+						const uint16_t* pCov = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * span.nLayers);
 
-						for (int l = 0; l < nLayers; l++)
-							(pLayerSegments[l] == 0 ? m_fill : m_outline)[idx] += pCov[l];
+						for (int l = 0; l < span.nLayers; l++)
+							(span.pLayerSegments[l] == 0 ? m_fill : m_outline)[idx] += pCov[l];
 					}
 				}
 			}
@@ -234,6 +234,8 @@ SoftShapesTest::SoftShapesTest()
 	ADD_TEST(roundedBoxSymmetryTest);
 	ADD_TEST(roundedBoxClipTest);
 	ADD_TEST(clampCornerRadiiTest);
+	ADD_TEST(ringCoverageTest);
+	ADD_TEST(ringClipTest);
 }
 
 SoftShapesTest::~SoftShapesTest()
@@ -461,6 +463,292 @@ bool SoftShapesTest::clampCornerRadiiTest(std::ostream& output)
 		spx r[4] = { 1000, 1000, 1000, 1000 };
 		Util::clampCornerRadii({ 300, 100 }, r);
 		TEST_ASSERT(r[0] == 50 && r[1] == 50 && r[2] == 50 && r[3] == 50);
+	}
+
+	return true;
+}
+
+//____ Ring tests ______________________________________________________________
+
+namespace
+{
+	// Collects coverage per segment.
+
+	class SegmentGrid : public SoftShapes::RowSink
+	{
+	public:
+		SegmentGrid(const RectI& area, int nSegments) : m_area(area), m_coverage(nSegments, std::vector<int>(area.w * area.h, 0)) {}
+
+		void row(int y, int nSpans, const SoftShapes::Span* pSpans) override
+		{
+			int prevEnd = INT_MIN;
+			for (int i = 0; i < nSpans; i++)
+			{
+				const SoftShapes::Span& span = pSpans[i];
+
+				if (span.begin >= span.end || span.begin < prevEnd || span.begin < m_area.x || span.end > m_area.x + m_area.w)
+				{
+					if (m_error.empty())
+						m_error = "Bad span " + std::to_string(span.begin) + "-" + std::to_string(span.end) + " on row " + std::to_string(y);
+					return;
+				}
+				prevEnd = span.end;
+
+				for (int x = span.begin; x < span.end; x++)
+				{
+					int idx = (y - m_area.y) * m_area.w + (x - m_area.x);
+
+					if (span.segment >= 0)
+						m_coverage[span.segment][idx] += SoftShapes::c_fullCoverage;
+					else
+					{
+						const uint16_t* pCov = span.pCoverage + (span.bUniform ? 0 : (x - span.begin) * span.nLayers);
+						for (int l = 0; l < span.nLayers; l++)
+							m_coverage[span.pLayerSegments[l]][idx] += pCov[l];
+					}
+				}
+			}
+		}
+
+		int coverage(int segment, int x, int y) const { return m_coverage[segment][(y - m_area.y) * m_area.w + (x - m_area.x)]; }
+
+		std::string		m_error;
+
+	private:
+		RectI			m_area;
+		std::vector<std::vector<int>>	m_coverage;
+	};
+
+	struct RingCase
+	{
+		const char*			name;
+		RectSPX				rect;
+		spx					thickness;
+		spx					outline;
+		bool				bSquare;
+		double				start;				// Turns
+		std::vector<double>	slices;				// Turns
+	};
+
+	std::vector<RingCase> ringCases()
+	{
+		std::vector<RingCase> cases;
+
+		cases.push_back({ "pie", { 64 * 4 + 13, 64 * 3 + 37, 64 * 60 + 10, 64 * 60 + 10 }, 0, 0, false, 0.03, { 0.1, 0.2, 0.05, 0.15, 0.3, 0.12, 0.08 } });
+		cases.push_back({ "donut with outline", { 64 * 4 + 13, 64 * 3 + 37, 64 * 60, 64 * 60 }, 64 * 12, 64 + 30, false, 0.0, { 0.25, 0.25, 0.3, 0.2 } });
+		cases.push_back({ "gauge", { 64 * 2 + 50, 64 * 3 + 5, 64 * 64, 64 * 64 }, 64 * 8, 0, false, 0.7, { 0.2, 0.3, 0.1 } });
+		cases.push_back({ "square pie", { 64 * 4 + 13, 64 * 3 + 37, 64 * 50, 64 * 40 }, 0, 0, true, 0.1, { 0.3, 0.3, 0.2, 0.2 } });
+		cases.push_back({ "many slices", { 64 * 2, 64 * 2, 64 * 70, 64 * 70 }, 0, 0, false, 0.0, std::vector<double>(64, 1.0 / 64) });
+		cases.push_back({ "single slice ring", { 64 * 4 + 13, 64 * 3 + 37, 64 * 50, 64 * 50 }, 64 * 10, 64 * 2, false, 0.4, { 1.0 } });
+		cases.push_back({ "no slices", { 64 * 4 + 13, 64 * 3 + 37, 64 * 50, 64 * 50 }, 64 * 10, 64 * 2, false, 0.0, {} });
+		cases.push_back({ "wide rect", { 64 * 2 + 9, 64 * 5 + 21, 64 * 70, 64 * 40 }, 64 * 6, 0, false, 0.85, { 0.4, 0.35 } });
+		cases.push_back({ "tiny pie", { 64 * 3 + 21, 64 * 3 + 40, 64 * 6 + 20, 64 * 6 + 20 }, 0, 0, false, 0.2, { 0.2, 0.3, 0.1, 0.2, 0.2 } });
+		cases.push_back({ "horizontal boundaries", { 64 * 4, 64 * 4, 64 * 50, 64 * 50 }, 0, 0, false, 0.25, { 0.5, 0.5 } });
+
+		return cases;
+	}
+
+	SoftShapes::Ring makeRing(const RingCase& c, std::vector<uint32_t>& sizes)
+	{
+		sizes.clear();
+		for (double size : c.slices)
+			sizes.push_back(uint32_t(size * SoftShapes::c_fullTurn + 0.5));
+
+		SoftShapes::Ring ring;
+		ring.rect = c.rect;
+		ring.thickness = c.thickness;
+		ring.outline = c.outline;
+		ring.bSquare = c.bSquare;
+		ring.start = uint32_t(c.start * SoftShapes::c_fullTurn + 0.5) % SoftShapes::c_fullTurn;
+		ring.nSlices = (int)sizes.size();
+		ring.pSliceSizes = sizes.data();
+		return ring;
+	}
+
+	// Segment at a point, from exact geometry.
+
+	int refRingSegment(const RingCase& c, double x, double y)
+	{
+		double left = c.rect.x / 64.0, top = c.rect.y / 64.0;
+		double right = (c.rect.x + c.rect.w) / 64.0, bottom = (c.rect.y + c.rect.h) / 64.0;
+
+		if (x < left || x >= right || y < top || y >= bottom)
+			return -1;
+
+		double cx = (c.rect.x + c.rect.w / 2) / 64.0;
+		double cy = (c.rect.y + c.rect.h / 2) / 64.0;
+		double r0 = std::min(c.rect.w, c.rect.h) / 2 / 64.0;
+
+		bool bHole = c.thickness > 0 && c.thickness / 64.0 < r0;
+		double ri = bHole ? r0 - c.thickness / 64.0 : 0;
+		double o = std::min(c.outline / 64.0, bHole ? (c.thickness / 2) / 64.0 : r0);
+
+		double dist = std::sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+
+		if (c.bSquare)
+		{
+			if (x < left + o || x >= right - o || y < top + o || y >= bottom - o)
+				return SoftShapes::c_ringOutlineSegment;
+		}
+		else
+		{
+			if (dist >= r0)
+				return SoftShapes::c_ringBackSegment;
+			if (dist >= r0 - o)
+				return SoftShapes::c_ringOutlineSegment;
+		}
+
+		if (bHole)
+		{
+			if (dist < ri)
+				return SoftShapes::c_ringHubSegment;
+			if (dist < ri + o)
+				return SoftShapes::c_ringOutlineSegment;
+		}
+
+		double angle = std::atan2(x - cx, -(y - cy)) / (2 * 3.14159265358979323846);
+		angle = angle - std::floor(angle);
+
+		double pos = angle - c.start;
+		pos -= std::floor(pos);
+
+		double sum = 0;
+		for (int i = 0; i < (int)c.slices.size(); i++)
+		{
+			sum += c.slices[i];
+			if (pos < sum)
+				return SoftShapes::c_ringFirstSliceSegment + i;
+		}
+
+		return SoftShapes::c_ringBackSegment;
+	}
+}
+
+//____ ringCoverageTest() _____________________________________________________
+
+bool SoftShapesTest::ringCoverageTest(std::ostream& output)
+{
+	SoftShapes shapes;
+	std::vector<uint32_t> sizes;
+
+	for (auto& c : ringCases())
+	{
+		RectI area = pixelBounds(c.rect, 1);
+		int nSegments = SoftShapes::c_ringFirstSliceSegment + (int)c.slices.size();
+
+		SegmentGrid grid(area, nSegments);
+		shapes.rasterizeRing(makeRing(c, sizes), area, &grid);
+
+		if (!grid.m_error.empty())
+		{
+			output << c.name << ": " << grid.m_error << std::endl;
+			return false;
+		}
+
+		double cx = (c.rect.x + c.rect.w / 2) / 64.0;
+		double cy = (c.rect.y + c.rect.h / 2) / 64.0;
+
+		double worst = 0;
+		int worstX = 0, worstY = 0, worstSegment = 0;
+
+		const int samples = 16;
+		std::vector<int> counts(nSegments);
+
+		for (int y = area.y; y < area.y + area.h; y++)
+		{
+			for (int x = area.x; x < area.x + area.w; x++)
+			{
+				// Segments must add up to exactly the coverage of rect.
+
+				int64_t ox = std::min<int64_t>(c.rect.x + c.rect.w, x * 64 + 64) - std::max<int64_t>(c.rect.x, x * 64);
+				int64_t oy = std::min<int64_t>(c.rect.y + c.rect.h, y * 64 + 64) - std::max<int64_t>(c.rect.y, y * 64);
+				int rectCoverage = int(std::max<int64_t>(ox, 0) * std::max<int64_t>(oy, 0));
+
+				int sum = 0;
+				for (int s = 0; s < nSegments; s++)
+					sum += grid.coverage(s, x, y);
+
+				if (sum != rectCoverage)
+				{
+					output << c.name << ": segments of pixel " << x << "," << y << " add up to " << sum << ", expected " << rectCoverage << "." << std::endl;
+					return false;
+				}
+
+				// Compare with sampled exact geometry.
+
+				std::fill(counts.begin(), counts.end(), 0);
+
+				for (int sy = 0; sy < samples; sy++)
+					for (int sx = 0; sx < samples; sx++)
+					{
+						int seg = refRingSegment(c, x + (sx + 0.5) / samples, y + (sy + 0.5) / samples);
+						if (seg >= 0)
+							counts[seg]++;
+					}
+
+				bool bNearCenter = std::abs(x + 0.5 - cx) < 2.5 && std::abs(y + 0.5 - cy) < 2.5;
+
+				for (int s = 0; s < nSegments; s++)
+				{
+					double diff = std::abs(grid.coverage(s, x, y) / 4096.0 - counts[s] / double(samples * samples));
+					if (bNearCenter)
+						diff /= 2;									// Sampled 4x4, twice the tolerance.
+
+					if (diff > worst)
+					{
+						worst = diff;
+						worstX = x;
+						worstY = y;
+						worstSegment = s;
+					}
+				}
+			}
+		}
+
+		if (std::getenv("WG_VERBOSE_TESTS"))
+			std::cout << "      " << c.name << ": worst difference " << worst << " (segment " << worstSegment << " of pixel " << worstX << "," << worstY << ")" << std::endl;
+
+		if (worst > 0.12)
+		{
+			output << c.name << ": segment " << worstSegment << " of pixel " << worstX << "," << worstY << " is " << grid.coverage(worstSegment, worstX, worstY) / 4096.0
+				   << ", differs by " << worst << " from reference." << std::endl;
+			return false;
+		}
+	}
+
+	return true;
+}
+
+//____ ringClipTest() _________________________________________________________
+
+bool SoftShapesTest::ringClipTest(std::ostream& output)
+{
+	SoftShapes shapes;
+	std::vector<uint32_t> sizes;
+
+	for (auto& c : ringCases())
+	{
+		RectI area = pixelBounds(c.rect, 1);
+		int nSegments = SoftShapes::c_ringFirstSliceSegment + (int)c.slices.size();
+
+		SegmentGrid whole(area, nSegments);
+		shapes.rasterizeRing(makeRing(c, sizes), area, &whole);
+
+		SegmentGrid tiled(area, nSegments);
+
+		for (int ty = area.y; ty < area.y + area.h; ty += 5)
+			for (int tx = area.x; tx < area.x + area.w; tx += 7)
+				shapes.rasterizeRing(makeRing(c, sizes), RectI::overlap(RectI(tx, ty, 7, 5), area), &tiled);
+
+		for (int y = area.y; y < area.y + area.h; y++)
+			for (int x = area.x; x < area.x + area.w; x++)
+				for (int s = 0; s < nSegments; s++)
+					if (std::abs(whole.coverage(s, x, y) - tiled.coverage(s, x, y)) > 2)
+					{
+						output << c.name << ": segment " << s << " of pixel " << x << "," << y << " is " << tiled.coverage(s, x, y)
+							   << " when tiled, " << whole.coverage(s, x, y) << " when not." << std::endl;
+						return false;
+					}
 	}
 
 	return true;

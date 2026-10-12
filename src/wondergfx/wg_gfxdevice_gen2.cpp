@@ -1634,6 +1634,223 @@ void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
 	info.nShapeTints += (pTints[0] ? 1 : 0) + (pTints[1] ? 1 : 0);
 }
 
+//____ drawRing() ____________________________________________________________
+
+void GfxDeviceGen2::drawRing(const RingSpec& spec)
+{
+	if (!m_pActiveCanvas)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "No active canvas to draw ring to.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+
+		return;
+	}
+
+	const RectSPX& rect = spec.rect;
+
+	if (rect.w <= 0 || rect.h <= 0 || !rect.isOverlapping(m_pActiveClipList->bounds))
+		return;
+
+	int nSlices = spec.nSlices;
+
+	if (nSlices < 0 || (nSlices > 0 && !spec.pSlices))
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Invalid slices.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	if (nSlices > c_maxRingSlices)
+	{
+		GfxBase::throwError(ErrorLevel::Warning, ErrorCode::InvalidParam, "Too many slices, the ones beyond maxRingSlices() are not drawn.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		nSlices = c_maxRingSlices;
+	}
+
+	// Like fill(), transparent colors draw nothing in Blend mode.
+
+	BlendMode blendMode = m_renderState.blendMode;
+	auto isDrawn = [blendMode](HiColor color) { return !(color.a == 0 && blendMode == BlendMode::Blend); };
+
+	spx radius = std::min(rect.w, rect.h) / 2;
+	spx outline = std::max(spec.outline, 0);
+	bool bHole = spec.thickness > 0 && spec.thickness < radius;
+
+	bool bOutline = outline > 0 && isDrawn(spec.outlineColor);
+	bool bHub = bHole && isDrawn(spec.hubColor);
+	bool bBack = isDrawn(spec.backColor);
+
+	bool bAnySlice = false;
+	for (int i = 0; i < nSlices; i++)
+		if (spec.pSlices[i].size > 0.f && isDrawn(spec.pSlices[i].color))
+			bAnySlice = true;
+
+	if (!bAnySlice && !bOutline && !bHub && !bBack)
+		return;
+
+	// Clip against the pixels touched, the circle if nothing is drawn outside it.
+
+	RectSPX area = rect;
+
+	if (!bBack && !spec.bSquare)
+		area = RectSPX(rect.x + rect.w / 2 - radius, rect.y + rect.h / 2 - radius, radius * 2, radius * 2);
+
+	RectSPX bounds;
+	bounds.x = area.x & ~63;
+	bounds.y = area.y & ~63;
+	bounds.w = ((area.x + area.w + 63) & ~63) - bounds.x;
+	bounds.h = ((area.y + area.h + 63) & ~63) - bounds.y;
+
+	int nRects = 0;
+	auto& rects = m_pActiveLayer->rects;
+
+	for (int i = 0; i < m_pActiveClipList->nRects; i++)
+	{
+		RectSPX clipped = RectSPX::overlap(m_pActiveClipList->pRects[i], bounds);
+
+		if (!clipped.isEmpty())
+		{
+			rects.emplace_back(clipped);
+			nRects++;
+		}
+	}
+
+	if (nRects == 0)
+		return;
+
+	if (m_stateChanges != 0)
+		_encodeStateChanges();
+
+	// Header, counts filled in when known. Aligned to 32 bits.
+
+	auto& commands = m_pActiveLayer->commands;
+	auto& colors = m_pActiveLayer->colors;
+
+	commands.secureSpace((GfxBackend::c_drawShapeHeaderWords + 18 + nSlices * 4 + 1) * 2);
+
+	if (commands.size() % 4 != 0)
+		commands.pushUnchecked(uint16_t(Command::None));
+
+	m_pActiveLayer->latestCommand = Command::DrawShape;
+	m_pActiveLayer->latestCommandOfs = (int)commands.size();
+
+	int headerOfs = (int)commands.size();
+	int nColorsBefore = (int)colors.size();
+
+	commands.pushUnchecked(uint16_t(Command::DrawShape));
+	commands.pushUnchecked(uint16_t(GfxBackend::ShapeKind::Ring));
+	commands.pushUnchecked(uint16_t(nRects));
+	commands.pushUnchecked(uint16_t(0));						// nColors, filled in below.
+	commands.pushUnchecked(uint16_t(0));						// nWords, filled in below.
+	commands.pushUnchecked(uint16_t(0));
+
+	int payloadOfs = (int)commands.size();
+
+	uint16_t flags = 0;
+	if (spec.bSquare)
+		flags |= GfxBackend::Square;
+	if (bOutline)
+		flags |= GfxBackend::HasRingOutline;
+	if (bHub)
+		flags |= GfxBackend::HasHub;
+	if (bBack)
+		flags |= GfxBackend::HasBack;
+	if (bOutline && spec.pOutlineTint)
+		flags |= GfxBackend::HasRingOutlineTint;
+	if (bHub && spec.pHubTint)
+		flags |= GfxBackend::HasHubTint;
+	if (bBack && spec.pBackTint)
+		flags |= GfxBackend::HasBackTint;
+
+	float start = spec.start - std::floor(spec.start);
+
+	commands.pushUnchecked(rect);
+	commands.pushUnchecked(spec.thickness);
+	commands.pushUnchecked(outline);
+	commands.pushUnchecked(spx(0));								// Softness, reserved.
+	commands.pushUnchecked(flags);
+	commands.pushUnchecked(uint16_t(nSlices));
+	commands.pushUnchecked(uint32_t(double(start) * 2147483648.0) % 0x80000000);
+
+	int nTints = 0;
+
+	for (int i = 0; i < nSlices; i++)
+	{
+		const RingSlice& slice = spec.pSlices[i];
+
+		float size = std::min(std::max(slice.size, 0.f), 1.f);
+		bool bDrawn = size > 0.f && isDrawn(slice.color);
+
+		uint16_t sliceFlags = 0;
+		if (bDrawn)
+			sliceFlags |= GfxBackend::SliceDrawn;
+		if (bDrawn && slice.pTint)
+			sliceFlags |= GfxBackend::SliceTinted;
+
+		commands.pushUnchecked(uint32_t(double(size) * 2147483648.0));
+		commands.pushUnchecked(sliceFlags);
+		commands.pushUnchecked(uint16_t(0));
+	}
+
+	// Colors
+
+	if (bOutline)
+		colors.push_back(spec.outlineColor);
+	if (bHub)
+		colors.push_back(spec.hubColor);
+	if (bBack)
+		colors.push_back(spec.backColor);
+
+	for (int i = 0; i < nSlices; i++)
+		if (spec.pSlices[i].size > 0.f && isDrawn(spec.pSlices[i].color))
+			colors.push_back(spec.pSlices[i].color);
+
+	// Tints, encoded one at a time.
+
+	auto encodeTint = [&](Tint* pTint)
+	{
+		uint16_t	words[TintTools::c_maxEncodedTintWords];
+		HiColor		tintColors[TintTools::c_maxEncodedTintColors];
+		int			nTintColors;
+
+		int nWords = TintTools::encodeTint(pTint, rect, words, tintColors, nTintColors);
+
+		commands.secureSpace(nWords * 2);
+		for (int w = 0; w < nWords; w++)
+			commands.pushUnchecked(words[w]);
+
+		colors.insert(colors.end(), tintColors, tintColors + nTintColors);
+		nTints++;
+	};
+
+	if (flags & GfxBackend::HasRingOutlineTint)
+		encodeTint(spec.pOutlineTint);
+	if (flags & GfxBackend::HasHubTint)
+		encodeTint(spec.pHubTint);
+	if (flags & GfxBackend::HasBackTint)
+		encodeTint(spec.pBackTint);
+
+	for (int i = 0; i < nSlices; i++)
+	{
+		const RingSlice& slice = spec.pSlices[i];
+		if (slice.size > 0.f && isDrawn(slice.color) && slice.pTint)
+			encodeTint(slice.pTint);
+	}
+
+	// Fill in counts
+
+	int nWords = ((int)commands.size() - payloadOfs) / 2;
+	int nColors = (int)colors.size() - nColorsBefore;
+
+	commands.at(headerOfs + 6).as<uint16_t>() = uint16_t(nColors);
+	commands.at(headerOfs + 8).as<uint16_t>() = uint16_t(nWords);
+
+	auto& info = m_pActiveCanvas->sessionInfo;
+	info.nShapeDraws++;
+	info.nShapeSegments += 3 + nSlices;
+	info.nShapeTints += nTints;
+}
+
 //____ blit() ________________________________________________________________
 
 void GfxDeviceGen2::blit(CoordSPX dest)

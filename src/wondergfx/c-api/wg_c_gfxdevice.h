@@ -57,6 +57,34 @@ extern "C" {
 		wg_obj			outlineTint;		// Tint or null.
 	} wg_roundedBoxSpec;
 
+	//____ wg_ringSlice ___________________________________________________________
+
+	typedef struct wg_ringSlice_struct
+	{
+		float			size;				// Fraction of a full turn.
+		wg_color		color;
+		wg_obj			tint;				// Tint or null.
+	} wg_ringSlice;
+
+	//____ wg_ringSpec ____________________________________________________________
+
+	typedef struct wg_ringSpec_struct
+	{
+		wg_rectSPX			rect;
+		wg_spx				thickness;		// Width of ring, outline included. 0 for a full pie or disc.
+		wg_spx				outline;
+		float				start;			// Fraction of a turn clockwise from 12 o'clock.
+		int					nSlices;
+		const wg_ringSlice*	pSlices;
+		int					bSquare;
+		wg_color			outlineColor;
+		wg_obj				outlineTint;
+		wg_color			hubColor;
+		wg_obj				hubTint;
+		wg_color			backColor;
+		wg_obj				backTint;
+	} wg_ringSpec;
+
 	//____ Creation ___________________________________________________
 
 	WG_EXPORT wg_obj		wg_createGfxDevice( wg_obj backend );
@@ -183,6 +211,7 @@ extern "C" {
 	// Shapes
 
 	WG_EXPORT void			wg_drawRoundedBox(wg_obj device, const wg_roundedBoxSpec* spec);
+	WG_EXPORT void			wg_drawRing(wg_obj device, const wg_ringSpec* spec);
 
 	// Draw edgemap methods
 

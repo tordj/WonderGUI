@@ -2306,7 +2306,7 @@ namespace wg
 		if (m_blendMode == BlendMode::Ignore)
 			return false;
 
-		if (kind != ShapeKind::RoundedBox)
+		if (kind != ShapeKind::RoundedBox && kind != ShapeKind::Ring)
 		{
 			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, "Failed DrawShape operation. Unsupported kind of shape.",
 				this, &TYPEINFO, __func__, __FILE__, __LINE__);
@@ -2329,54 +2329,92 @@ namespace wg
 			return false;
 		}
 
-		// Decode rounded box
-
-		spx values[13];
-		std::memcpy(values, pPayload, sizeof(values));
-
-		m_roundedBox.rect = { values[0], values[1], values[2], values[3] };
-
-		for (int i = 0; i < 4; i++)
-			m_roundedBox.radius[i] = values[4 + i];
-
-		m_roundedBox.outline = { values[8], values[9], values[10], values[11] };
-
-		uint16_t flags = pPayload[26];
-		const uint16_t* pTintWords = pPayload + 28;
-
-		HiColor fillColor = (flags & HasFill) ? *pColors++ : HiColor::Transparent;
-		HiColor outlineColor = (flags & HasOutline) ? *pColors++ : HiColor::Transparent;
-
 		m_shapeKind = kind;
 
-		if (m_shapeSegments.size() < 2)
-			m_shapeSegments.resize(2);
-
-		auto setup = [&](ShapeSegment& seg, bool bActive, HiColor color, bool bTint)
+		if (kind == ShapeKind::RoundedBox)
 		{
-			seg.bActive = bActive;
-			if (!bActive)
-				return;
+			spx values[13];
+			std::memcpy(values, pPayload, sizeof(values));
 
-			HiColor linear = color.toLinear();
+			m_roundedBox.rect = { values[0], values[1], values[2], values[3] };
 
-			if (bTint)
+			for (int i = 0; i < 4; i++)
+				m_roundedBox.radius[i] = values[4 + i];
+
+			m_roundedBox.outline = { values[8], values[9], values[10], values[11] };
+
+			uint16_t flags = pPayload[26];
+			const uint16_t* pTintWords = pPayload + 28;
+
+			HiColor fillColor = (flags & HasFill) ? *pColors++ : HiColor::Transparent;
+			HiColor outlineColor = (flags & HasOutline) ? *pColors++ : HiColor::Transparent;
+
+			if (m_shapeSegments.size() < 2)
+				m_shapeSegments.resize(2);
+
+			_setupShapeSegment(m_shapeSegments[0], (flags & HasFill) != 0, fillColor, (flags & HasFillTint) != 0, pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[1], (flags & HasOutline) != 0, outlineColor, (flags & HasOutlineTint) != 0, pTintWords, pColors);
+		}
+		else
+		{
+			spx values[7];
+			std::memcpy(values, pPayload, sizeof(values));
+
+			uint16_t flags = pPayload[14];
+			int nSlices = pPayload[15];
+
+			uint32_t start;
+			std::memcpy(&start, pPayload + 16, 4);
+
+			m_ring.rect = { values[0], values[1], values[2], values[3] };
+			m_ring.thickness = values[4];
+			m_ring.outline = values[5];
+			m_ring.bSquare = (flags & Square) != 0;
+			m_ring.start = start;
+			m_ring.nSlices = nSlices;
+
+			m_ringSliceSizes.resize(nSlices);
+
+			const uint16_t* pSlice = pPayload + 18;
+			for (int i = 0; i < nSlices; i++)
 			{
-				TintTools::DecodedTint tint;
-				pTintWords = TintTools::decodeTint(pTintWords, pColors, tint);
-				seg.tint.set(tint, linear);
+				std::memcpy(&m_ringSliceSizes[i], pSlice + i * 4, 4);
 			}
-			else
-				seg.tint.setFlat(linear);
 
-			seg.bFlat = seg.tint.isFlat() && m_softTint.isFlat();
+			m_ring.pSliceSizes = m_ringSliceSizes.data();
 
-			if (seg.bFlat)
-				seg.flatColor = seg.tint.flatColor() * m_softTint.flatColor();
-		};
+			const uint16_t* pTintWords = pSlice + nSlices * 4;
 
-		setup(m_shapeSegments[0], (flags & HasFill) != 0, fillColor, (flags & HasFillTint) != 0);
-		setup(m_shapeSegments[1], (flags & HasOutline) != 0, outlineColor, (flags & HasOutlineTint) != 0);
+			// Colors come first, then the colors of the tints, in the same order.
+
+			HiColor outlineColor = (flags & HasRingOutline) ? *pColors++ : HiColor::Transparent;
+			HiColor hubColor = (flags & HasHub) ? *pColors++ : HiColor::Transparent;
+			HiColor backColor = (flags & HasBack) ? *pColors++ : HiColor::Transparent;
+
+			const HiColor* pSliceColors = pColors;
+
+			for (int i = 0; i < nSlices; i++)
+				if (pSlice[i * 4 + 2] & SliceDrawn)
+					pColors++;
+
+			int nSegments = SoftShapes::c_ringFirstSliceSegment + nSlices;
+			if ((int)m_shapeSegments.size() < nSegments)
+				m_shapeSegments.resize(nSegments);
+
+			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringOutlineSegment], (flags & HasRingOutline) != 0, outlineColor, (flags & HasRingOutlineTint) != 0, pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringHubSegment], (flags & HasHub) != 0, hubColor, (flags & HasHubTint) != 0, pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringBackSegment], (flags & HasBack) != 0, backColor, (flags & HasBackTint) != 0, pTintWords, pColors);
+
+			for (int i = 0; i < nSlices; i++)
+			{
+				uint16_t sliceFlags = pSlice[i * 4 + 2];
+				bool bDrawn = (sliceFlags & SliceDrawn) != 0;
+
+				HiColor color = bDrawn ? *pSliceColors++ : HiColor::Transparent;
+
+				_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringFirstSliceSegment + i], bDrawn, color, (sliceFlags & SliceTinted) != 0, pTintWords, pColors);
+			}
+		}
 
 		return true;
 	}
@@ -2390,14 +2428,42 @@ namespace wg
 		sink.pOrigin = pOrigin;
 		sink.pitch = pitch;
 
-		m_shapes.rasterizeRoundedBox(m_roundedBox, clip, &sink);
+		if (m_shapeKind == ShapeKind::RoundedBox)
+			m_shapes.rasterizeRoundedBox(m_roundedBox, clip, &sink);
+		else
+			m_shapes.rasterizeRing(m_ring, clip, &sink);
+	}
+
+	//____ _setupShapeSegment() ________________________________________________
+
+	void SoftBackend::_setupShapeSegment(ShapeSegment& seg, bool bActive, HiColor color, bool bTint, const uint16_t*& pTintWords, const HiColor*& pTintColors)
+	{
+		seg.bActive = bActive;
+		if (!bActive)
+			return;
+
+		HiColor linear = color.toLinear();
+
+		if (bTint)
+		{
+			TintTools::DecodedTint tint;
+			pTintWords = TintTools::decodeTint(pTintWords, pTintColors, tint);
+			seg.tint.set(tint, linear);
+		}
+		else
+			seg.tint.setFlat(linear);
+
+		seg.bFlat = seg.tint.isFlat() && m_softTint.isFlat();
+
+		if (seg.bFlat)
+			seg.flatColor = seg.tint.flatColor() * m_softTint.flatColor();
 	}
 
 	//____ ShapeSink::row() ____________________________________________________
 
-	void SoftBackend::ShapeSink::row(int y, int nSpans, const SoftShapes::Span* pSpans, int nLayers, const int* pLayerSegments)
+	void SoftBackend::ShapeSink::row(int y, int nSpans, const SoftShapes::Span* pSpans)
 	{
-		pBackend->_drawShapeRow(pOrigin, pitch, y, nSpans, pSpans, nLayers, pLayerSegments);
+		pBackend->_drawShapeRow(pOrigin, pitch, y, nSpans, pSpans);
 	}
 
 	//____ _drawShapeRow() _____________________________________________________
@@ -2407,7 +2473,7 @@ namespace wg
 		drawn with the coverage kernels.
 	*/
 
-	void SoftBackend::_drawShapeRow(uint8_t* pOrigin, int pitch, int y, int nSpans, const SoftShapes::Span* pSpans, int nLayers, const int* pLayerSegments)
+	void SoftBackend::_drawShapeRow(uint8_t* pOrigin, int pitch, int y, int nSpans, const SoftShapes::Span* pSpans)
 	{
 		auto pKernels = m_pKernels[(int)m_canvasSoftFormat];
 		const int pixelBytes = m_canvasPixelBytes;
@@ -2514,11 +2580,11 @@ namespace wg
 				std::memset(pPixels, 0, sizeof(CoveragePixel) * length);
 
 				const bool bAlphaWeighted = isCoverageAlphaWeighted(m_blendMode);
-				const int covStride = span.bUniform ? 0 : nLayers;
+				const int covStride = span.bUniform ? 0 : span.nLayers;
 
-				for (int layer = 0; layer < nLayers; layer++)
+				for (int layer = 0; layer < span.nLayers; layer++)
 				{
-					int segment = pLayerSegments[layer];
+					int segment = span.pLayerSegments[layer];
 					ShapeSegment& seg = m_shapeSegments[segment];
 
 					if (!seg.bActive)

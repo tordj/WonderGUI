@@ -20,6 +20,7 @@
 
 =========================================================================*/
 #include <wg_c_gfxdevice.h>
+#include <algorithm>
 #include <wg_gfxdevice_gen2.h>
 
 #include <wg_c_blurbrush.h>
@@ -528,6 +529,38 @@ void wg_drawRoundedBox(wg_obj device, const wg_roundedBoxSpec* spec)
 	box.pOutlineTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->outlineTint));
 
 	getPtr(device)->drawRoundedBox(box);
+}
+
+void wg_drawRing(wg_obj device, const wg_ringSpec* spec)
+{
+	int nSlices = std::min(std::max(spec->nSlices, 0), GfxDevice::maxRingSlices());
+
+	RingSlice slices[GfxDevice::maxRingSlices()];
+
+	for (int i = 0; i < nSlices; i++)
+	{
+		slices[i].size = spec->pSlices[i].size;
+		slices[i].color = *(const HiColor*)&spec->pSlices[i].color;
+		slices[i].pTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->pSlices[i].tint));
+	}
+
+	RingSpec ring;
+
+	ring.rect = *(const RectSPX*)&spec->rect;
+	ring.thickness = spec->thickness;
+	ring.outline = spec->outline;
+	ring.start = spec->start;
+	ring.nSlices = nSlices;
+	ring.pSlices = slices;
+	ring.bSquare = spec->bSquare != 0;
+	ring.outlineColor = *(const HiColor*)&spec->outlineColor;
+	ring.pOutlineTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->outlineTint));
+	ring.hubColor = *(const HiColor*)&spec->hubColor;
+	ring.pHubTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->hubTint));
+	ring.backColor = *(const HiColor*)&spec->backColor;
+	ring.pBackTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->backTint));
+
+	getPtr(device)->drawRing(ring);
 }
 
 void wg_blitNinePatch(wg_obj device, const wg_rectSPX* dstRect, const wg_borderSPX* dstFrame, const wg_ninePatch* patch, int scale)

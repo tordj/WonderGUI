@@ -79,6 +79,8 @@ namespace wg
 			int				segment;		// Pixels fully covered by this segment, or -1 for partly covered pixels.
 			bool			bUniform;		// Partly covered pixels that all have the coverage of the first pixel.
 			const uint16_t*	pCoverage;		// Partly covered pixels: coverage of each layer, for each pixel (just one if bUniform).
+			int				nLayers;		// Partly covered pixels: number of coverage values per pixel.
+			const int*		pLayerSegments;	// Partly covered pixels: segment of each layer.
 		};
 
 		//____ RowSink ________________________________________________________
@@ -90,9 +92,9 @@ namespace wg
 			 * Receives the spans of one row, in increasing order, not overlapping and
 			 * within the clip rectangle. Pixels in no span are not covered at all.
 			 * Partly covered pixels have nLayers coverage values each, layer i belonging
-			 * to segment pLayerSegments[i].
+			 * to segment pLayerSegments[i]. Several layers can belong to the same segment.
 			 */
-			virtual void	row(int y, int nSpans, const Span* pSpans, int nLayers, const int* pLayerSegments) = 0;
+			virtual void	row(int y, int nSpans, const Span* pSpans) = 0;
 		};
 
 		//____ RoundedBox _____________________________________________________
@@ -115,6 +117,37 @@ namespace wg
 		 */
 
 		void	rasterizeRoundedBox(const RoundedBox& box, const RectI& clip, RowSink* pSink);
+
+		//____ Ring ___________________________________________________________
+
+		static constexpr uint32_t c_fullTurn = 0x80000000;	// Angles and slice sizes of Ring.
+
+		struct Ring
+		{
+			RectSPX			rect;
+			spx				thickness = 0;			// Width of ring from outer edge, outlines included. 0 or at least the radius for a full disc.
+			spx				outline = 0;			// Outline along outer and inner edge.
+			bool			bSquare = false;		// Outer edge is rect, not the largest circle centered in it.
+			uint32_t		start = 0;				// Start of first slice, clockwise from 12 o'clock. c_fullTurn is a full turn.
+			int				nSlices = 0;
+			const uint32_t*	pSliceSizes = nullptr;	// Size of each slice, c_fullTurn is a full turn. Slices beyond a full turn are cut.
+		};
+
+		static constexpr int	c_ringBackSegment = 0;			// Rest of rect, and the part of the ring the slices don't reach.
+		static constexpr int	c_ringOutlineSegment = 1;
+		static constexpr int	c_ringHubSegment = 2;			// Inside the ring.
+		static constexpr int	c_ringFirstSliceSegment = 3;	// Followed by the other slices.
+
+		/**
+		 * Rasterizes a ring, pie or disc into rows within clip (pixels).
+		 *
+		 * The circle is the largest centered in rect, or rect itself if bSquare. Slices are
+		 * split along straight lines from the center, so neighboring slices always add up
+		 * to the coverage of the ring. Pixels around the center, where many slices may meet,
+		 * are supersampled.
+		 */
+
+		void	rasterizeRing(const Ring& ring, const RectI& clip, RowSink* pSink);
 
 	protected:
 
@@ -168,6 +201,66 @@ namespace wg
 		int		_shapeRow(Shape& shape, int row, int clipBeg, int clipEnd, Piece* pPieces, uint16_t*& pBuffer);
 
 		static inline int	_arcCoverage(const Arc& arc, int64_t d);
+
+		// Ring
+
+		struct Boundary
+		{
+			uint32_t	angle;				// Clockwise from 12 o'clock, 2^32 is a full turn.
+			uint32_t	pseudoAngle;		// Monotonic with angle, see _pseudoAngle().
+			int32_t		sx, sy;				// Direction from center, 2.30 fixed point, y pointing down.
+			bool		bFlat;				// Too close to horizontal to cross any row but those around the center.
+			int64_t		slopeInt;			// sx / sy, integer part (rounded down)...
+			uint32_t	slopeFrac;			// ...and 32 binals.
+			int64_t		halfBand;			// Half width (spx) of partly covered pixels along a row.
+			int			element;			// Element (slice or gap) starting here.
+			int			prevElement;		// Element ending here.
+		};
+
+		struct ActiveBoundary
+		{
+			int			boundary;
+			int64_t		x;					// Crossing of row, spx.
+			int			bandBeg;			// Columns of partly covered pixels.
+			int			bandEnd;
+		};
+
+		struct AngularPiece
+		{
+			int			begin;
+			int			end;
+			int			element;			// Element of all pixels, or -1 if per pixel.
+			int			firstActive;		// Per pixel: first of the active boundaries (in order along x)...
+			int			nActive;			// ...and their number.
+			bool		bSampled;			// Per pixel: sample each pixel (around center).
+		};
+
+		struct RadialValues
+		{
+			int			back, outline, hub, ring;
+		};
+
+		void	_setupRingAngles(const Ring& ring);
+		int		_elementAt(uint32_t pseudoAngle) const;
+		int		_angularRow(int64_t rowCenterY, int clipBeg, int clipEnd);
+		void	_samplePixel(int col, int64_t rowCenterY, int* pElements, int* pFractions, int& nElements) const;
+
+		static uint32_t	_pseudoAngle(int64_t x, int64_t y);
+		static int32_t	_sin30(uint32_t angle);
+
+		int64_t						m_cx, m_cy;			// Center of ring, spx.
+		std::vector<Boundary>		m_boundaries;		// Sorted by angle.
+		std::vector<int>			m_elementSegments;	// Segment of each element.
+		std::vector<ActiveBoundary>	m_active;
+		std::vector<AngularPiece>	m_angularPieces;
+		std::vector<int>			m_layerBuffer;
+		std::vector<uint16_t>		m_ringOutput;
+		std::vector<int>			m_spanLayerOfs;
+		std::vector<int>			m_spanCoverageOfs;
+		std::vector<int>			m_breaks;
+		std::vector<uint64_t>		m_elementStarts;
+
+		static const int			c_maxBandBoundaries = 32;	// More boundaries crossing a pixel than this are cut.
 
 		std::vector<uint16_t>	m_coverageBuffer;
 		std::vector<uint16_t>	m_outputBuffer;

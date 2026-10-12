@@ -133,11 +133,50 @@ namespace wg
 			  the encoded tints.
 
 			  Radii are clamped as by Util::clampCornerRadii().
+
+			ShapeKind::Ring payload:
+
+			  spx		rect x, y, w, h
+			  spx		thickness		Width of ring, outline included. 0 for no hole.
+			  spx		outline
+			  spx		softness		Reserved, always 0 for now.
+			  uint16	flags			See RingFlags.
+			  uint16	nSlices
+			  uint32	start			Clockwise from 12 o'clock, 0x80000000 is a full turn.
+			  per slice:
+			    uint32	size			0x80000000 is a full turn.
+			    uint16	flags			See RingSliceFlags.
+			    uint16	padding
+			  ...		tints			Encoded as by TintTools::encodeTint(), placed in rect: outline, hub, back
+										and slices, each only if flagged as tinted.
+
+			  Colors: outline, hub and back color if they are drawn, color of each slice that
+			  is drawn, then the colors of the encoded tints.
+
+			  Segments are numbered back (0), outline (1), hub (2) and slices (3...).
 		*/
 
 		enum class ShapeKind : uint16_t
 		{
-			RoundedBox = 1
+			RoundedBox = 1,
+			Ring = 2
+		};
+
+		enum RingFlags : uint16_t
+		{
+			Square			= 1,
+			HasRingOutline	= 1 << 1,
+			HasHub			= 1 << 2,
+			HasBack			= 1 << 3,
+			HasRingOutlineTint	= 1 << 4,
+			HasHubTint		= 1 << 5,
+			HasBackTint		= 1 << 6
+		};
+
+		enum RingSliceFlags : uint16_t
+		{
+			SliceDrawn		= 1,
+			SliceTinted		= 1 << 1
 		};
 
 		enum RoundedBoxFlags : uint16_t

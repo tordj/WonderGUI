@@ -466,6 +466,22 @@ namespace wg
 							<< (flags & HasFillTint ? " fillTint" : "") << (flags & HasOutlineTint ? " outlineTint" : "")
 							<< " split into " << nRects << " rectangles." << std::endl;
 					}
+					else if (kind == ShapeKind::Ring)
+					{
+						spx v[7];
+						std::memcpy(v, pPayload, sizeof(v));
+						uint16_t flags = pPayload[14];
+						int nSlices = pPayload[15];
+						uint32_t start;
+						std::memcpy(&start, pPayload + 16, 4);
+
+						*m_pOStream << "    DrawShape: Ring " << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3]
+							<< " thickness: " << v[4] << " outline: " << v[5] << " start: " << start / double(0x80000000)
+							<< " slices: " << nSlices
+							<< (flags & Square ? " square" : "") << (flags & HasRingOutline ? " outline" : "")
+							<< (flags & HasHub ? " hub" : "") << (flags & HasBack ? " back" : "")
+							<< " split into " << nRects << " rectangles." << std::endl;
+					}
 					else
 						*m_pOStream << "    DrawShape: unknown kind " << int(kind) << ", " << nWords << " words, split into " << nRects << " rectangles." << std::endl;
 
