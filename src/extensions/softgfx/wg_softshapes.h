@@ -243,7 +243,10 @@ namespace wg
 		void	_setupRingAngles(const Ring& ring);
 		int		_elementAt(uint32_t pseudoAngle) const;
 		int		_angularRow(int64_t rowCenterY, int clipBeg, int clipEnd);
-		void	_samplePixel(int col, int64_t rowCenterY, int* pElements, int* pFractions, int& nElements) const;
+		int		_pixelBoundaries(int32_t dx, int32_t dy, int& first) const;
+		void	_samplePixel(int32_t dx, int32_t dy, int* pElements, int* pFractions, int& nElements) const;
+
+		static inline int	_pastShare(const Boundary& b, int32_t dx, int32_t dy);
 
 		static uint32_t	_pseudoAngle(int64_t x, int64_t y);
 		static int32_t	_sin30(uint32_t angle);
@@ -259,8 +262,6 @@ namespace wg
 		std::vector<int>			m_spanCoverageOfs;
 		std::vector<int>			m_breaks;
 		std::vector<uint64_t>		m_elementStarts;
-
-		static const int			c_maxBandBoundaries = 32;	// More boundaries crossing a pixel than this are cut.
 
 		std::vector<uint16_t>	m_coverageBuffer;
 		std::vector<uint16_t>	m_outputBuffer;

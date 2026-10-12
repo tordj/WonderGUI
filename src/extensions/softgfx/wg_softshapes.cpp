@@ -779,8 +779,8 @@ namespace wg
 
 			int64_t x = m_cx + dy * b.slopeInt + ((dy * int64_t(b.slopeFrac)) >> 32);
 
-			int bandBeg = floorPixel(x - b.halfBand - 32);
-			int bandEnd = floorPixel(x + b.halfBand - 32) + 2;
+			int bandBeg = floorPixel(x - b.halfBand - 33) + 1;
+			int bandEnd = floorPixel(x + b.halfBand - 31) + 1;
 
 			m_active.push_back({ i, x, bandBeg, bandEnd });
 		}
@@ -867,43 +867,68 @@ namespace wg
 		return (int)m_angularPieces.size();
 	}
 
-	//____ _samplePixel() _____________________________________________________
-	// Elements covering a pixel around the center and their share (0 -> 4096) of it.
+	//____ _pastShare() _______________________________________________________
+	// Share (0 -> 4096) of pixel, centered at dx, dy from the center, past boundary clockwise.
 
-	void SoftShapes::_samplePixel(int col, int64_t rowY, int* pElements, int* pFractions, int& nElements) const
+	inline int SoftShapes::_pastShare(const Boundary& b, int32_t dx, int32_t dy)
+	{
+		int64_t d = -int64_t(b.sy) * dx + int64_t(b.sx) * dy;		// Distance from boundary, spx with 30 binals.
+		int64_t h = 2048 + (d >> 24);
+		return int(h < 0 ? 0 : h > c_fullCoverage ? c_fullCoverage : h);
+	}
+
+	//____ _pixelBoundaries() _________________________________________________
+	/*
+		Boundaries running through a pixel not containing the center, centered at dx, dy
+		from it. Returns their number and the index of the first in clockwise order, or of
+		the next boundary if there are none. Found from the angles of the pixel corners.
+	*/
+
+	int SoftShapes::_pixelBoundaries(int32_t dx, int32_t dy, int& first) const
+	{
+		uint32_t corners[4] = { _pseudoAngle(dx - 32, dy - 32), _pseudoAngle(dx + 32, dy - 32),
+								_pseudoAngle(dx + 32, dy + 32), _pseudoAngle(dx - 32, dy + 32) };
+
+		// The pixel spans less than half a turn, so differences to one corner tell the extent.
+
+		int32_t lo = 0, hi = 0;
+		for (int i = 1; i < 4; i++)
+		{
+			int32_t diff = int32_t(corners[i] - corners[0]);
+			lo = std::min(lo, diff);
+			hi = std::max(hi, diff);
+		}
+
+		uint32_t beg = corners[0] + uint32_t(lo);
+		uint32_t extent = uint32_t(hi - lo);
+
+		int nBoundaries = (int)m_boundaries.size();
+
+		int l = 0, h = nBoundaries;
+		while (l < h)
+		{
+			int mid = (l + h) / 2;
+			if (m_boundaries[mid].pseudoAngle < beg)
+				l = mid + 1;
+			else
+				h = mid;
+		}
+
+		first = l == nBoundaries ? 0 : l;
+
+		int n = 0;
+		while (n < nBoundaries && m_boundaries[(first + n) % nBoundaries].pseudoAngle - beg <= extent)
+			n++;
+
+		return n;
+	}
+
+	//____ _samplePixel() _____________________________________________________
+	// Elements covering the pixel containing the center and their share (0 -> 4096) of it.
+
+	void SoftShapes::_samplePixel(int32_t dx, int32_t dy, int* pElements, int* pFractions, int& nElements) const
 	{
 		nElements = 0;
-
-		int64_t x = int64_t(col) * 64 + 32 - m_cx;
-		int64_t y = rowY - m_cy;
-
-		if (m_boundaries.empty())
-		{
-			pElements[0] = 0;
-			pFractions[0] = c_fullCoverage;
-			nElements = 1;
-			return;
-		}
-
-		// Pixels not containing the center, with all corners in the same element, are inside it.
-
-		bool bCenter = (x > -32 && x <= 32 && y > -32 && y <= 32);
-
-		if (!bCenter)
-		{
-			int e = _elementAt(_pseudoAngle(x - 32, y - 32));
-
-			if (_elementAt(_pseudoAngle(x + 32, y - 32)) == e && _elementAt(_pseudoAngle(x - 32, y + 32)) == e &&
-				_elementAt(_pseudoAngle(x + 32, y + 32)) == e)
-			{
-				pElements[0] = e;
-				pFractions[0] = c_fullCoverage;
-				nElements = 1;
-				return;
-			}
-		}
-
-		// Sample 4x4.
 
 		static const int offsets[4] = { -24, -8, 8, 24 };
 
@@ -911,7 +936,7 @@ namespace wg
 		{
 			for (int sx = 0; sx < 4; sx++)
 			{
-				int e = _elementAt(_pseudoAngle(x + offsets[sx], y + offsets[sy]));
+				int e = _elementAt(_pseudoAngle(dx + offsets[sx], dy + offsets[sy]));
 
 				int i = 0;
 				while (i < nElements && pElements[i] != e)
@@ -1193,80 +1218,102 @@ namespace wg
 				}
 				else if (!ap.bSampled)
 				{
-					// Slice boundaries crossing the row. Order boundaries clockwise.
+					// Slice boundaries crossing the row. A pixel is split between the elements
+					// around the boundaries running through it, in clockwise order. Boundaries
+					// left and right of it don't matter. Where these limits are moves right with
+					// x, so they are followed from pixel to pixel. Pixels split between the same
+					// elements share a span.
 
 					bool bUpper = rowY < m_cy;
+					const ActiveBoundary* pActive = m_active.data() + ap.firstActive;
 					int nActive = ap.nActive;
 
-					int order[c_maxBandBoundaries];
-					int nOrder = std::min(nActive, (int)c_maxBandBoundaries);
-
-					for (int i = 0; i < nOrder; i++)
-						order[i] = bUpper ? ap.firstActive + i : ap.firstActive + nActive - 1 - i;
-
-					const Boundary& first = m_boundaries[m_active[order[0]].boundary];
-
-					beginSpan(beg, end, -1, false);
-					addLayer(c_ringBackSegment);
-					addLayer(c_ringOutlineSegment);
-					addLayer(c_ringHubSegment);
-					addLayer(m_elementSegments[first.prevElement]);
-
-					for (int i = 0; i < nOrder; i++)
-						addLayer(m_elementSegments[m_boundaries[m_active[order[i]].boundary].element]);
-
 					int32_t dy = int32_t(rowY - m_cy);
+					int32_t dx = 0;
+
+					auto boundary = [&](int j) -> const Boundary& { return m_boundaries[pActive[j].boundary]; };
+					auto rightShare = [&](int j) { int h = _pastShare(boundary(j), dx, dy); return bUpper ? h : c_fullCoverage - h; };
+
+					int lo = 0, hi = -1;					// Boundaries running through pixel, along x.
+					int spanLo = -1, spanHi = -1;
 
 					for (int x = beg; x < end; x++)
 					{
+						dx = int32_t(int64_t(x) * 64 + 32 - m_cx);
+
+						while (lo < nActive && rightShare(lo) == c_fullCoverage)
+							lo++;
+
+						hi = std::max(hi, lo - 1);
+
+						while (hi + 1 < nActive && rightShare(hi + 1) > 0)
+							hi++;
+
+						int first = bUpper ? lo : hi;			// Clockwise.
+						int step = bUpper ? 1 : -1;
+						int n = hi - lo + 1;
+
+						if (lo != spanLo || hi != spanHi)
+						{
+							// Element before first boundary, or the one pixel is in.
+
+							int element;
+							if (first >= 0 && first < nActive)
+								element = boundary(first).prevElement;
+							else
+								element = boundary(bUpper ? nActive - 1 : 0).element;
+
+							beginSpan(x, x + 1, -1, false);
+							addLayer(c_ringBackSegment);
+							addLayer(c_ringOutlineSegment);
+							addLayer(c_ringHubSegment);
+							addLayer(m_elementSegments[element]);
+
+							for (int i = 0, j = first; i < n; i++, j += step)
+								addLayer(m_elementSegments[boundary(j).element]);
+
+							spanLo = lo;
+							spanHi = hi;
+						}
+						else
+							m_spans.back().end = x + 1;
+
 						RadialValues v = radialAt(pp, x);
 
 						m_ringOutput.push_back(uint16_t(v.back));
 						m_ringOutput.push_back(uint16_t(v.outline));
 						m_ringOutput.push_back(uint16_t(v.hub));
 
-						// Share of the pixel past each boundary, kept decreasing in clockwise order.
+						// Share past each boundary, kept decreasing clockwise. Rounded cumulatively,
+						// so that slices add up to exactly the ring.
 
-						int32_t dx = int32_t(int64_t(x) * 64 + 32 - m_cx);
+						int prevH = c_fullCoverage, prevCoverage = 0;
 
-						int prevH = c_fullCoverage;
-						int fractions[c_maxBandBoundaries + 1];
-
-						for (int i = 0; i < nOrder; i++)
+						for (int i = 0, j = first; i < n; i++, j += step)
 						{
-							const Boundary& b = m_boundaries[m_active[order[i]].boundary];
-
-							int64_t d = -int64_t(b.sy) * dx + int64_t(b.sx) * dy;		// spx, 30 binals
-							int h = 2048 + int(d >> 24);
-							h = h < 0 ? 0 : h > prevH ? prevH : h;
-
-							fractions[i] = prevH - h;
+							int h = std::min(_pastShare(boundary(j), dx, dy), prevH);
 							prevH = h;
-						}
-						fractions[nOrder] = prevH;
 
-						// Rounded cumulatively, so that slices add up to exactly the ring.
-
-						int cumulative = 0, prevCoverage = 0;
-						for (int i = 0; i <= nOrder; i++)
-						{
-							cumulative += fractions[i];
-							int coverage = (v.ring * cumulative + 2048) >> 12;
+							int coverage = (v.ring * (c_fullCoverage - h) + 2048) >> 12;
 							m_ringOutput.push_back(uint16_t(coverage - prevCoverage));
 							prevCoverage = coverage;
 						}
+
+						m_ringOutput.push_back(uint16_t(v.ring - prevCoverage));
 					}
 				}
 				else
 				{
-					// Around the center, each pixel sampled.
+					// Rows around the center, where boundaries can be too close to horizontal to
+					// follow along the row. Boundaries running through each pixel are found from
+					// the angles of its corners instead. The pixel containing the center is sampled.
+
+					int32_t dy = int32_t(rowY - m_cy);
+					int nBoundaries = (int)m_boundaries.size();
 
 					for (int x = beg; x < end; x++)
 					{
 						RadialValues v = radialAt(pp, x);
-
-						int nElements;
-						_samplePixel(x, rowY, elements, fractions, nElements);
 
 						beginSpan(x, x + 1, -1, false);
 						addLayer(c_ringBackSegment);
@@ -1277,16 +1324,55 @@ namespace wg
 						m_ringOutput.push_back(uint16_t(v.outline));
 						m_ringOutput.push_back(uint16_t(v.hub));
 
-						int cumulative = 0, prevCoverage = 0;
-						for (int i = 0; i < nElements; i++)
-						{
-							addLayer(m_elementSegments[elements[i]]);
+						if (v.ring == 0)
+							continue;
 
-							cumulative += fractions[i];
-							int coverage = (v.ring * cumulative + 2048) >> 12;
-							m_ringOutput.push_back(uint16_t(coverage - prevCoverage));
-							prevCoverage = coverage;
+						int32_t dx = int32_t(int64_t(x) * 64 + 32 - m_cx);
+
+						int prevCoverage = 0;
+
+						if (dx >= -32 && dx <= 32 && dy >= -32 && dy <= 32)
+						{
+							int nElements;
+							_samplePixel(dx, dy, elements, fractions, nElements);
+
+							int cumulative = 0;
+							for (int i = 0; i < nElements - 1; i++)
+							{
+								addLayer(m_elementSegments[elements[i]]);
+
+								cumulative += fractions[i];
+								int coverage = (v.ring * cumulative + 2048) >> 12;
+								m_ringOutput.push_back(uint16_t(coverage - prevCoverage));
+								prevCoverage = coverage;
+							}
+
+							addLayer(m_elementSegments[elements[nElements - 1]]);
 						}
+						else
+						{
+							int first;
+							int n = _pixelBoundaries(dx, dy, first);
+
+							addLayer(m_elementSegments[m_boundaries[first].prevElement]);
+
+							int prevH = c_fullCoverage;
+
+							for (int i = 0; i < n; i++)
+							{
+								const Boundary& b = m_boundaries[(first + i) % nBoundaries];
+								addLayer(m_elementSegments[b.element]);
+
+								int h = std::min(_pastShare(b, dx, dy), prevH);
+								prevH = h;
+
+								int coverage = (v.ring * (c_fullCoverage - h) + 2048) >> 12;
+								m_ringOutput.push_back(uint16_t(coverage - prevCoverage));
+								prevCoverage = coverage;
+							}
+						}
+
+						m_ringOutput.push_back(uint16_t(v.ring - prevCoverage));
 					}
 				}
 			}

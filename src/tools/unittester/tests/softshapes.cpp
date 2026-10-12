@@ -528,6 +528,7 @@ namespace
 		bool				bSquare;
 		double				start;				// Turns
 		std::vector<double>	slices;				// Turns
+		std::vector<double>	ends = {};			// End of each slice, set by ringCases().
 	};
 
 	std::vector<RingCase> ringCases()
@@ -544,6 +545,15 @@ namespace
 		cases.push_back({ "wide rect", { 64 * 2 + 9, 64 * 5 + 21, 64 * 70, 64 * 40 }, 64 * 6, 0, false, 0.85, { 0.4, 0.35 } });
 		cases.push_back({ "tiny pie", { 64 * 3 + 21, 64 * 3 + 40, 64 * 6 + 20, 64 * 6 + 20 }, 0, 0, false, 0.2, { 0.2, 0.3, 0.1, 0.2, 0.2 } });
 		cases.push_back({ "horizontal boundaries", { 64 * 4, 64 * 4, 64 * 50, 64 * 50 }, 0, 0, false, 0.25, { 0.5, 0.5 } });
+		cases.push_back({ "256 slices", { 64 * 3 + 17, 64 * 2 + 45, 64 * 150, 64 * 150 }, 0, 0, false, 0.0, std::vector<double>(256, 1.0 / 256) });
+		cases.push_back({ "256 slices turned", { 64 * 3 + 17, 64 * 2 + 45, 64 * 150, 64 * 150 }, 64 * 40, 0, false, 0.37, std::vector<double>(256, 1.0 / 256) });
+
+		for (auto& c : cases)
+		{
+			double sum = 0;
+			for (double size : c.slices)
+				c.ends.push_back(sum += size);
+		}
 
 		return cases;
 	}
@@ -612,13 +622,9 @@ namespace
 		double pos = angle - c.start;
 		pos -= std::floor(pos);
 
-		double sum = 0;
-		for (int i = 0; i < (int)c.slices.size(); i++)
-		{
-			sum += c.slices[i];
-			if (pos < sum)
-				return SoftShapes::c_ringFirstSliceSegment + i;
-		}
+		auto it = std::upper_bound(c.ends.begin(), c.ends.end(), pos);
+		if (it != c.ends.end())
+			return SoftShapes::c_ringFirstSliceSegment + int(it - c.ends.begin());
 
 		return SoftShapes::c_ringBackSegment;
 	}
