@@ -817,6 +817,10 @@ bool GfxDeviceGen2::_beginCanvasUpdate(CanvasRef ref, Surface* pCanvas, int nUpd
 		}
 	}
 
+	// Clearing the layers left us on the last of them, go back to the one we start on.
+
+	setRenderLayer(activeLayer);
+
 	// Encode clearing of base canvas if clearCanvasFunc set.
 
 	if (pLayers)
