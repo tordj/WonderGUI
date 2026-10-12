@@ -129,6 +129,18 @@ if(NOT SDL2_image_FOUND AND WONDERGUI_FETCH_DEPS)
         GIT_SUBMODULES ""
     )
     FetchContent_MakeAvailable(SDL2_image)
+
+    # Our sources include SDL_image.h as <SDL2/SDL_image.h> on Linux and as
+    # <SDL2_image/SDL_image.h> on Mac, the way installed packages provide it.
+    # SDL2_image built from source only has it directly in its include
+    # directory, so copies are put in those subdirectories as well.
+
+    set(SDL2IMAGE_PREFIXED_INCLUDE_DIR ${CMAKE_BINARY_DIR}/sdl2_image-include)
+    foreach(prefix SDL2 SDL2_image)
+        configure_file(${sdl2_image_SOURCE_DIR}/include/SDL_image.h
+                       ${SDL2IMAGE_PREFIXED_INCLUDE_DIR}/${prefix}/SDL_image.h COPYONLY)
+    endforeach()
+    target_include_directories(SDL2_image INTERFACE $<BUILD_INTERFACE:${SDL2IMAGE_PREFIXED_INCLUDE_DIR}>)
 endif()
 
 # The CMakeLists below link SDL through these variables. They are filled in from
