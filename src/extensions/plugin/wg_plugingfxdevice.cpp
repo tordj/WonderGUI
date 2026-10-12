@@ -68,6 +68,9 @@ namespace wg
 
 	PluginGfxDevice::~PluginGfxDevice()
 	{
+		if( m_hostBlurbrush )
+			PluginCalls::object->release(m_hostBlurbrush);
+
         PluginCalls::object->release(m_cDevice);
 	}
 
@@ -357,6 +360,16 @@ namespace wg
 
     void PluginGfxDevice::setRenderLayer(int layer)
     {
+		// The host doesn't check the layer, so we do it here.
+
+		int nLayers = m_pCanvasLayers ? m_pCanvasLayers->size() : 0;
+
+		if( layer < 0 || layer > nLayers )
+		{
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Specified layer out of bounds.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
         PluginCalls::gfxDevice->setRenderLayer(m_cDevice, layer);
     }
 
