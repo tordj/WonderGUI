@@ -215,6 +215,51 @@ namespace wg
 				spx(rect.w * scale), spx(rect.h * scale));
 		}
 
+		/**
+		 * Clamps the corner radii of a rounded box so that corners never overlap.
+		 *
+		 * Negative radii are set to 0. If the radii along any side of the box add up
+		 * to more than the length of that side, all four radii are scaled down by the
+		 * same factor, the smallest that makes them fit (as in CSS). The shape keeps its
+		 * proportions and a radius larger than half the shorter side gives a pill.
+		 *
+		 * Radii are given as top-left, top-right, bottom-right, bottom-left.
+		 */
+
+		inline void clampCornerRadii(const SizeSPX& size, spx radius[4])
+		{
+			for (int i = 0; i < 4; i++)
+				if (radius[i] < 0)
+					radius[i] = 0;
+
+			int64_t w = size.w > 0 ? size.w : 0;
+			int64_t h = size.h > 0 ? size.h : 0;
+
+			// Find the side needing most scaling, as the fraction num/den.
+
+			int64_t num = 1, den = 1;
+
+			auto check = [&](int64_t length, int64_t sum)
+			{
+				if (sum > length && length * den < num * sum)
+				{
+					num = length;
+					den = sum;
+				}
+			};
+
+			check(w, int64_t(radius[0]) + radius[1]);
+			check(h, int64_t(radius[1]) + radius[2]);
+			check(w, int64_t(radius[2]) + radius[3]);
+			check(h, int64_t(radius[3]) + radius[0]);
+
+			if (num < den)
+			{
+				for (int i = 0; i < 4; i++)
+					radius[i] = spx(radius[i] * num / den);
+			}
+		}
+
 		inline spx align(spx x)
 		{
 			return (x + 32) & 0xFFFFFFC0;
