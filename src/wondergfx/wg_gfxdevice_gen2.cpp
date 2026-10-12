@@ -1482,12 +1482,12 @@ void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
 
 	bool bInner = innerRect.w > 0 && innerRect.h > 0;
 
-	// Like fill(), transparent colors draw nothing in Blend mode.
+	// Undefined colors are not drawn. Like fill(), transparent colors draw nothing in Blend mode.
 
-	bool bHasOutline = (outline.top | outline.right | outline.bottom | outline.left) != 0 &&
-						!(spec.outlineColor.a == 0 && blendMode == BlendMode::Blend);
+	auto isDrawn = [blendMode](HiColor color) { return !color.isUndefined() && !(color.a == 0 && blendMode == BlendMode::Blend); };
 
-	bool bHasFill = bInner && !(spec.fillColor.a == 0 && blendMode == BlendMode::Blend);
+	bool bHasOutline = (outline.top | outline.right | outline.bottom | outline.left) != 0 && isDrawn(spec.outlineColor);
+	bool bHasFill = bInner && isDrawn(spec.fillColor);
 
 	if (!bHasFill && !bHasOutline)
 		return;
@@ -1667,10 +1667,10 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 		nSlices = c_maxRingSlices;
 	}
 
-	// Like fill(), transparent colors draw nothing in Blend mode.
+	// Undefined colors are not drawn. Like fill(), transparent colors draw nothing in Blend mode.
 
 	BlendMode blendMode = m_renderState.blendMode;
-	auto isDrawn = [blendMode](HiColor color) { return !(color.a == 0 && blendMode == BlendMode::Blend); };
+	auto isDrawn = [blendMode](HiColor color) { return !color.isUndefined() && !(color.a == 0 && blendMode == BlendMode::Blend); };
 
 	spx radius = std::min(rect.w, rect.h) / 2;
 	spx outline = std::max(spec.outline, 0);

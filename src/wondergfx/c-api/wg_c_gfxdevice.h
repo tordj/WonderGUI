@@ -45,6 +45,7 @@ extern "C" {
 	} wg_waveLine;
 
 	//____ wg_roundedBoxSpec ______________________________________________________
+	// Colors with negative alpha (undefined) are not drawn.
 
 	typedef struct wg_roundedBoxSpec_struct
 	{
@@ -67,6 +68,7 @@ extern "C" {
 	} wg_ringSlice;
 
 	//____ wg_ringSpec ____________________________________________________________
+	// Colors with negative alpha (undefined) are not drawn.
 
 	typedef struct wg_ringSpec_struct
 	{

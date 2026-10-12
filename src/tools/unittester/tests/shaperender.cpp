@@ -235,6 +235,7 @@ ShapeRenderTest::ShapeRenderTest()
 	ADD_TEST(alignedBoxTest);
 	ADD_TEST(boxSkinTest);
 	ADD_TEST(ringTest);
+	ADD_TEST(undefinedColorTest);
 }
 
 ShapeRenderTest::~ShapeRenderTest()
@@ -883,4 +884,82 @@ bool ShapeRenderTest::ringTest(std::ostream& output)
 		int back = 4096 - total;
 		return C12{ (bg.b * back + sum.b) / 4096, (bg.g * back + sum.g) / 4096, (bg.r * back + sum.r) / 4096, 4096 };
 	});
+}
+
+//____ undefinedColorTest() ___________________________________________________
+// Fill, hub and back left undefined are not drawn, also in Replace mode where a
+// transparent color is written as is.
+
+bool ShapeRenderTest::undefinedColorTest(std::ostream& output)
+{
+	RoundedBoxSpec box;
+	box.rect = { 64 * 4, 64 * 4, 64 * 40, 64 * 30 };
+	box.radius = 64 * 8;
+	box.outline = { 64 * 3, 64 * 3, 64 * 3, 64 * 3 };
+
+	RingSlice slice = { 1.f, HiColor(4096, 0, 0, 4096) };
+
+	RingSpec ring;
+	ring.rect = { 64 * 4, 64 * 2, 64 * 44, 64 * 44 };
+	ring.thickness = 64 * 10;
+	ring.nSlices = 1;
+	ring.pSlices = &slice;
+
+	struct Probe { const char* what; int x, y; };
+
+	auto render = [&](bool bRing, bool bTransparent)
+	{
+		Canvas canvas;
+		auto pDevice = createSoftDevice();
+
+		RoundedBoxSpec b = box;
+		RingSpec r = ring;
+
+		if (bTransparent)
+		{
+			b.fillColor = HiColor::Transparent;
+			r.hubColor = HiColor::Transparent;
+			r.backColor = HiColor::Transparent;
+		}
+
+		pDevice->beginRender();
+		pDevice->beginCanvasUpdate(canvas.surface);
+		pDevice->setBlendMode(BlendMode::Replace);
+		pDevice->fill(c_background);
+		if (bRing)
+			pDevice->drawRing(r);
+		else
+			pDevice->drawRoundedBox(b);
+		pDevice->endCanvasUpdate();
+		pDevice->endRender();
+
+		return canvas.read();
+	};
+
+	auto check = [&](const char* shape, bool bRing, std::initializer_list<Probe> probes)
+	{
+		auto untouched = render(bRing, false);
+		auto cleared = render(bRing, true);
+
+		for (auto& p : probes)
+		{
+			int ofs = (p.y * c_canvasSize.w + p.x) * 4;
+
+			if (std::memcmp(untouched.data() + ofs, untouched.data(), 4) != 0)		// Pixel 0,0 is outside shape.
+			{
+				output << shape << ": " << p.what << " left undefined was drawn." << std::endl;
+				return false;
+			}
+
+			if (cleared[ofs + 3] != 0)
+			{
+				output << shape << ": transparent " << p.what << " was not written in Replace mode." << std::endl;
+				return false;
+			}
+		}
+		return true;
+	};
+
+	return check("RoundedBox", false, { { "fill", 24, 19 } }) &&
+		   check("Ring", true, { { "hub", 26, 24 }, { "back", 5, 3 } });
 }

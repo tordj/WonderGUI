@@ -82,7 +82,8 @@ namespace wg
 	 * Tints are placed in rect and multiplied with the colors. The tint and tint color
 	 * of the device apply on top, as for any other draw.
 	 *
-	 * Like fill(), a fully transparent color draws nothing in BlendMode::Blend.
+	 * A color left undefined is not drawn. Like fill(), a fully transparent color draws
+	 * nothing in BlendMode::Blend, but is written as is in BlendMode::Replace.
 	 */
 
 	struct RoundedBoxSpec
@@ -90,7 +91,7 @@ namespace wg
 		RectSPX		rect;										// Outer edge of the box.
 		CornersSPX	radius;										// Corner radii.
 		BorderSPX	outline;									// Thickness of the outline along each side.
-		HiColor		fillColor = HiColor::Transparent;
+		HiColor		fillColor = HiColor::Undefined;				// Not filled unless set.
 		HiColor		outlineColor = HiColor::Black;
 		Tint*		pFillTint = nullptr;
 		Tint*		pOutlineTint = nullptr;
@@ -123,8 +124,9 @@ namespace wg
 	 * outline, hub and back, and it is placed with subpixel precision.
 	 *
 	 * Tints are placed in rect and multiplied with the colors. The tint and tint color
-	 * of the device apply on top. Like fill(), fully transparent colors draw nothing in
-	 * BlendMode::Blend.
+	 * of the device apply on top. Colors left undefined are not drawn. Like fill(), fully
+	 * transparent colors draw nothing in BlendMode::Blend, but are written as is in
+	 * BlendMode::Replace.
 	 */
 
 	struct RingSpec
@@ -139,9 +141,9 @@ namespace wg
 
 		HiColor				outlineColor = HiColor::Black;
 		Tint*				pOutlineTint = nullptr;
-		HiColor				hubColor = HiColor::Transparent;	// Inside the ring.
+		HiColor				hubColor = HiColor::Undefined;		// Inside the ring, not filled unless set.
 		Tint*				pHubTint = nullptr;
-		HiColor				backColor = HiColor::Transparent;	// Rest of rect and the part of the ring not reached by slices.
+		HiColor				backColor = HiColor::Undefined;		// Rest of rect and the part of the ring not reached by slices, not filled unless set.
 		Tint*				pBackTint = nullptr;
 	};
 
