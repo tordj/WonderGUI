@@ -66,7 +66,7 @@ namespace wg
 		bool	isTransitioningColors() const { return m_pColorTransition; }
 		bool	isTransitioningSamples() const { return m_pSampleTransition; }
 		bool	isTransitioningSize() const { return m_pSizeTransition; }
-		bool	isTransitioningTint() const { return m_pSampleTransition; }
+		bool	isTransitioningTint() const { return m_pTintTransition; }
 
 		HiColor	color() const { return m_fillColor; }
 		HiColor	outlineColor() const { return m_outlineColor; }

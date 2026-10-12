@@ -19,57 +19,152 @@ set(SOURCES
     sections/wg_dummyinfosection.h
     sections/wg_dummyinfosection.cpp
 
+    sections/objects/wg_animplayerinfosection.h
+    sections/objects/wg_animplayerinfosection.cpp
+    sections/objects/wg_areachartinfosection.h
+    sections/objects/wg_areachartinfosection.cpp
+    sections/objects/wg_areascrollchartinfosection.h
+    sections/objects/wg_areascrollchartinfosection.cpp
+    sections/objects/wg_blockingcapsuleinfosection.h
+    sections/objects/wg_blockingcapsuleinfosection.cpp
     sections/objects/wg_buttoninfosection.h
     sections/objects/wg_buttoninfosection.cpp
     sections/objects/wg_canvascapsuleinfosection.h
     sections/objects/wg_canvascapsuleinfosection.cpp
+    sections/objects/wg_canvasdisplayinfosection.h
+    sections/objects/wg_canvasdisplayinfosection.cpp
     sections/objects/wg_capsuleinfosection.h
     sections/objects/wg_capsuleinfosection.cpp
+    sections/objects/wg_chartinfosection.h
+    sections/objects/wg_chartinfosection.cpp
     sections/objects/wg_containerinfosection.h
     sections/objects/wg_containerinfosection.cpp
+    sections/objects/wg_dragndropoverlayinfosection.h
+    sections/objects/wg_dragndropoverlayinfosection.cpp
+    sections/objects/wg_drawerpanelinfosection.h
+    sections/objects/wg_drawerpanelinfosection.cpp
+    sections/objects/wg_edgemapdisplayinfosection.h
+    sections/objects/wg_edgemapdisplayinfosection.cpp
     sections/objects/wg_fillerinfosection.h
     sections/objects/wg_fillerinfosection.cpp
     sections/objects/wg_flexpanelinfosection.h
     sections/objects/wg_flexpanelinfosection.cpp
+    sections/objects/wg_fpsdisplayinfosection.h
+    sections/objects/wg_fpsdisplayinfosection.cpp
+    sections/objects/wg_imageinfosection.h
+    sections/objects/wg_imageinfosection.cpp
+    sections/objects/wg_knobinfosection.h
+    sections/objects/wg_knobinfosection.cpp
     sections/objects/wg_labelcapsuleinfosection.h
     sections/objects/wg_labelcapsuleinfosection.cpp
+    sections/objects/wg_lambdapanelinfosection.h
+    sections/objects/wg_lambdapanelinfosection.cpp
+    sections/objects/wg_lineeditorinfosection.h
+    sections/objects/wg_lineeditorinfosection.cpp
+    sections/objects/wg_meterinfosection.h
+    sections/objects/wg_meterinfosection.cpp
+    sections/objects/wg_modaloverlayinfosection.h
+    sections/objects/wg_modaloverlayinfosection.cpp
+    sections/objects/wg_nodepanelinfosection.h
+    sections/objects/wg_nodepanelinfosection.cpp
+    sections/objects/wg_nodewiresinfosection.h
+    sections/objects/wg_nodewiresinfosection.cpp
+    sections/objects/wg_numberdisplayinfosection.h
+    sections/objects/wg_numberdisplayinfosection.cpp
     sections/objects/wg_objectinfosection.h
     sections/objects/wg_objectinfosection.cpp
+    sections/objects/wg_overlayinfosection.h
+    sections/objects/wg_overlayinfosection.cpp
     sections/objects/wg_packpanelinfosection.h
     sections/objects/wg_packpanelinfosection.cpp
     sections/objects/wg_paddingcapsuleinfosection.h
     sections/objects/wg_paddingcapsuleinfosection.cpp
     sections/objects/wg_panelinfosection.h
     sections/objects/wg_panelinfosection.cpp
+    sections/objects/wg_pianokeyboardinfosection.h
+    sections/objects/wg_pianokeyboardinfosection.cpp
+    sections/objects/wg_plotchartinfosection.h
+    sections/objects/wg_plotchartinfosection.cpp
+    sections/objects/wg_popupopenerinfosection.h
+    sections/objects/wg_popupopenerinfosection.cpp
+    sections/objects/wg_popupoverlayinfosection.h
+    sections/objects/wg_popupoverlayinfosection.cpp
+    sections/objects/wg_rangesliderinfosection.h
+    sections/objects/wg_rangesliderinfosection.cpp
     sections/objects/wg_renderlayercapsuleinfosection.h
     sections/objects/wg_renderlayercapsuleinfosection.cpp
     sections/objects/wg_reordercapsuleinfosection.h
     sections/objects/wg_reordercapsuleinfosection.cpp
     sections/objects/wg_scalecapsuleinfosection.h
     sections/objects/wg_scalecapsuleinfosection.cpp
+    sections/objects/wg_scrollbarinfosection.h
+    sections/objects/wg_scrollbarinfosection.cpp
+    sections/objects/wg_scrollcapsuleinfosection.h
+    sections/objects/wg_scrollcapsuleinfosection.cpp
+    sections/objects/wg_scrollchartinfosection.h
+    sections/objects/wg_scrollchartinfosection.cpp
     sections/objects/wg_scrollpanelinfosection.h
     sections/objects/wg_scrollpanelinfosection.cpp
+    sections/objects/wg_selectboxinfosection.h
+    sections/objects/wg_selectboxinfosection.cpp
     sections/objects/wg_selectcapsuleinfosection.h
     sections/objects/wg_selectcapsuleinfosection.cpp
+    sections/objects/wg_sidecanvasinfosection.h
+    sections/objects/wg_sidecanvasinfosection.cpp
     sections/objects/wg_sizecapsuleinfosection.h
     sections/objects/wg_sizecapsuleinfosection.cpp
+    sections/objects/wg_skindisplayinfosection.h
+    sections/objects/wg_skindisplayinfosection.cpp
     sections/objects/wg_skininfosection.h
     sections/objects/wg_skininfosection.cpp
+    sections/objects/wg_sliderinfosection.h
+    sections/objects/wg_sliderinfosection.cpp
+    sections/objects/wg_splitpanelinfosection.h
+    sections/objects/wg_splitpanelinfosection.cpp
+    sections/objects/wg_stackpanelinfosection.h
+    sections/objects/wg_stackpanelinfosection.cpp
+    sections/objects/wg_surfacedisplayinfosection.h
+    sections/objects/wg_surfacedisplayinfosection.cpp
+    sections/objects/wg_tablepanelinfosection.h
+    sections/objects/wg_tablepanelinfosection.cpp
     sections/objects/wg_textdisplayinfosection.h
     sections/objects/wg_textdisplayinfosection.cpp
     sections/objects/wg_texteditorinfosection.h
     sections/objects/wg_texteditorinfosection.cpp
+    sections/objects/wg_timerinfosection.h
+    sections/objects/wg_timerinfosection.cpp
+    sections/objects/wg_togglebuttoninfosection.h
+    sections/objects/wg_togglebuttoninfosection.cpp
+    sections/objects/wg_tooltipoverlayinfosection.h
+    sections/objects/wg_tooltipoverlayinfosection.cpp
     sections/objects/wg_twoslotpanelinfosection.h
     sections/objects/wg_twoslotpanelinfosection.cpp
     sections/objects/wg_widgetinfosection.h
     sections/objects/wg_widgetinfosection.cpp
 
+    sections/entries/wg_gridlineinfosection.h
+    sections/entries/wg_gridlineinfosection.cpp
+
     sections/slots/wg_flexpanelslotinfosection.h
     sections/slots/wg_flexpanelslotinfosection.cpp
+    sections/slots/wg_lambdapanelslotinfosection.h
+    sections/slots/wg_lambdapanelslotinfosection.cpp
+    sections/slots/wg_modaloverlayslotinfosection.h
+    sections/slots/wg_modaloverlayslotinfosection.cpp
+    sections/slots/wg_nodepanelslotinfosection.h
+    sections/slots/wg_nodepanelslotinfosection.cpp
+    sections/slots/wg_overlayslotinfosection.h
+    sections/slots/wg_overlayslotinfosection.cpp
     sections/slots/wg_packpanelslotinfosection.h
     sections/slots/wg_packpanelslotinfosection.cpp
     sections/slots/wg_panelslotinfosection.h
     sections/slots/wg_panelslotinfosection.cpp
+    sections/slots/wg_popupoverlayslotinfosection.h
+    sections/slots/wg_popupoverlayslotinfosection.cpp
+    sections/slots/wg_splitpanelslotinfosection.h
+    sections/slots/wg_splitpanelslotinfosection.cpp
+    sections/slots/wg_stackpanelslotinfosection.h
+    sections/slots/wg_stackpanelslotinfosection.cpp
     sections/slots/wg_staticslotinfosection.h
     sections/slots/wg_staticslotinfosection.cpp
     sections/slots/wg_twoslotpanelslotinfosection.h
@@ -117,6 +212,7 @@ set(INCDIRS
     ${CMAKE_CURRENT_LIST_DIR}/sections/objects
     ${CMAKE_CURRENT_LIST_DIR}/sections/slots
     ${CMAKE_CURRENT_LIST_DIR}/sections/components
+    ${CMAKE_CURRENT_LIST_DIR}/sections/entries
     ${CMAKE_CURRENT_LIST_DIR}/views
     ${CMAKE_CURRENT_LIST_DIR}/frontend
     ${CMAKE_CURRENT_LIST_DIR}/overlay
