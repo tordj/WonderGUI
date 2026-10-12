@@ -134,8 +134,8 @@ namespace wg
 		(*m_pEncoder) << (uint16_t) pInfo->nTransforms;
 		(*m_pEncoder) << (uint16_t) pInfo->nObjects;
 
-		(*m_pEncoder) << (uint16_t) pInfo->nShapeDraws;			// Since 3.3
-		(*m_pEncoder) << (uint16_t) pInfo->nShapeTints;
+		(*m_pEncoder) << (uint16_t) std::min(pInfo->nShapeDraws, 0xFFFF);			// Since 3.3
+		(*m_pEncoder) << (uint16_t) std::min(pInfo->nShapeTints, 0xFFFF);
 		(*m_pEncoder) << (int32_t) pInfo->nShapeSegments;
 
 		if( nUpdateRects > 0 )

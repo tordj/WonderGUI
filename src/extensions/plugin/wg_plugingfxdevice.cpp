@@ -692,11 +692,17 @@ namespace wg
 
 	void PluginGfxDevice::drawRing(const RingSpec& spec)
 	{
-		int nSlices = std::min(std::max(spec.nSlices, 0), maxRingSlices());
+		// Invalid slices are passed on for the host to report.
 
-		wg_ringSlice slices[c_maxRingSlices];
+		int nSlices = std::min(spec.nSlices, maxRingSlices());
+		int nCopied = spec.pSlices ? std::max(nSlices, 0) : 0;
 
-		for (int i = 0; i < nSlices; i++)
+		if ((int)m_ringSlices.size() < nCopied)
+			m_ringSlices.resize(nCopied);
+
+		wg_ringSlice* slices = m_ringSlices.data();
+
+		for (int i = 0; i < nCopied; i++)
 		{
 			slices[i].size = spec.pSlices[i].size;
 			slices[i].color = *(const wg_color*)&spec.pSlices[i].color;
@@ -710,7 +716,7 @@ namespace wg
 		ring.outline = spec.outline;
 		ring.start = spec.start;
 		ring.nSlices = nSlices;
-		ring.pSlices = slices;
+		ring.pSlices = spec.pSlices ? slices : nullptr;
 		ring.bSquare = spec.bSquare;
 		ring.outlineColor = *(const wg_color*)&spec.outlineColor;
 		ring.outlineTint = PluginCalls::_hostTint(spec.pOutlineTint);
@@ -723,7 +729,7 @@ namespace wg
 
 		auto release = [](wg_obj obj) { if (obj) PluginCalls::object->release(obj); };
 
-		for (int i = 0; i < nSlices; i++)
+		for (int i = 0; i < nCopied; i++)
 			release(slices[i].tint);
 
 		release(ring.outlineTint);

@@ -20,6 +20,7 @@
 
 =========================================================================*/
 #include <algorithm>
+#include <new>
 #include <cmath>
 #include <cstring>
 
@@ -1762,7 +1763,7 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 	if (bBack && spec.pBackTint)
 		flags |= GfxBackend::HasBackTint;
 
-	float start = spec.start - std::floor(spec.start);
+	float start = std::isfinite(spec.start) ? spec.start - std::floor(spec.start) : 0.f;
 
 	commands.pushUnchecked(rect);
 	commands.pushUnchecked(spec.thickness);
@@ -1778,7 +1779,7 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 	{
 		const RingSlice& slice = spec.pSlices[i];
 
-		float size = std::min(std::max(slice.size, 0.f), 1.f);
+		float size = slice.size > 0.f ? std::min(slice.size, 1.f) : 0.f;		// Also for NaN.
 		bool bDrawn = size > 0.f && isDrawn(slice.color);
 
 		uint16_t sliceFlags = 0;
@@ -3084,28 +3085,54 @@ void GfxDeviceGen2::flipDrawSegments(const RectSPX& dest, int nSegments, const H
 //____ drawElipse() ______________________________________________________
 /*
 	Deprecated, use drawRing(). Draws the largest circle centered in canvas: a ring of given
-	thickness with an outline of outlineThickness along both edges, or a disc with outline
-	if thickness and outlines reach the center.
+	thickness with an outline of outlineThickness along both edges. Edges reaching past the
+	center leave a disc of what is inside them.
 */
 
 void GfxDeviceGen2::drawElipse(const RectSPX& canvas, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor)
 {
-	RingSlice slice;
-	slice.size = 1.f;
-	slice.color = fillColor;
+	thickness = std::max(thickness, 0);
+	outlineThickness = std::max(outlineThickness, 0);
 
 	spx radius = std::min(canvas.w, canvas.h) / 2;
 	spx total = thickness + outlineThickness * 2;
 
+	if (total <= 0 || radius <= 0)
+		return;
+
+	RingSlice slice;
+	slice.size = 1.f;
+	slice.color = fillColor;
+
 	RingSpec ring;
 	ring.rect = canvas;
-	ring.thickness = total >= radius ? 0 : total;
-	ring.outline = outlineThickness;
 	ring.nSlices = 1;
 	ring.pSlices = &slice;
 	ring.outlineColor = outlineColor;
 
-	drawRing(ring);
+	if (total < radius || thickness + outlineThickness >= radius)
+	{
+		// Ring with outline along both edges, or disc with outline.
+
+		ring.thickness = total < radius ? total : 0;
+		ring.outline = outlineThickness;
+		drawRing(ring);
+	}
+	else
+	{
+		// Only the inner outline reaches the center: disc of outline color, fill on top.
+
+		slice.color = outlineColor;
+		drawRing(ring);
+
+		if (thickness > 0)
+		{
+			slice.color = fillColor;
+			ring.rect = RectSPX(canvas.x + outlineThickness, canvas.y + outlineThickness, canvas.w - outlineThickness * 2, canvas.h - outlineThickness * 2);
+			ring.thickness = thickness;
+			drawRing(ring);
+		}
+	}
 }
 
 //____ drawPieChart() _____________________________________________________
@@ -3120,13 +3147,11 @@ void GfxDeviceGen2::drawPieChart(const RectSPX& canvas, float start, int nSlices
 	if (nSlices < 0 || nSlices > c_maxRingSlices || (hubSize >= 1.f && !bRectangular))
 		return;
 
-	RingSlice slices[c_maxRingSlices];
+	int bufferSize = sizeof(RingSlice) * std::max(nSlices, 1);
+	auto slices = (RingSlice*) GfxBase::memStackAlloc(bufferSize);
 
 	for (int i = 0; i < nSlices; i++)
-	{
-		slices[i].size = pSliceSizes[i];
-		slices[i].color = pSliceColors[i];
-	}
+		new (&slices[i]) RingSlice{ pSliceSizes[i], pSliceColors[i], nullptr };
 
 	spx radius = std::min(canvas.w, canvas.h) / 2;
 
@@ -3143,6 +3168,8 @@ void GfxDeviceGen2::drawPieChart(const RectSPX& canvas, float start, int nSlices
 		ring.thickness = std::max(spx(radius * (1.f - std::min(hubSize, 1.f))), spx(1));
 
 	drawRing(ring);
+
+	GfxBase::memStackFree(bufferSize);
 }
 
 

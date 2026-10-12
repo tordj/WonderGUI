@@ -60,8 +60,9 @@ namespace wg
 	 *	  outline = outer - inner, so coverage of neighboring segments always adds up
 	 *	  to exactly the coverage of the shape.
 	 *
-	 * Everything is integer math, without divisions per pixel or row, so that it runs
-	 * well on CPUs without FPU.
+	 * Everything is integer math, so that it runs well on CPUs without FPU, and without
+	 * divisions per pixel or row except for the pixels of the three rows through the
+	 * center of a ring with slices, which need the angles of their corners.
 	 */
 
 	class SoftShapes

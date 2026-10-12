@@ -26,6 +26,7 @@
 #include <wg_geo.h>
 
 #include <wg_gfxdevice.h>
+#include <wg_c_gfxdevice.h>
 #include <wg_pluginsurfacefactory.h>
 #include <wg_pluginedgemapfactory.h>
 
@@ -200,6 +201,8 @@ namespace wg
 		};
 
         wg_obj  m_cDevice;
+
+		std::vector<wg_ringSlice>	m_ringSlices;		// Slices passed on by drawRing().
 		
 		wg_obj	m_hostBlurbrush = nullptr;
 		PluginSurfaceFactory_p	m_pSurfaceFactory;

@@ -21,7 +21,9 @@
 =========================================================================*/
 #include <wg_c_gfxdevice.h>
 #include <algorithm>
+#include <new>
 #include <wg_gfxdevice_gen2.h>
+#include <wg_gfxbase.h>
 
 #include <wg_c_blurbrush.h>
 
@@ -533,15 +535,18 @@ void wg_drawRoundedBox(wg_obj device, const wg_roundedBoxSpec* spec)
 
 void wg_drawRing(wg_obj device, const wg_ringSpec* spec)
 {
-	int nSlices = std::min(std::max(spec->nSlices, 0), GfxDevice::maxRingSlices());
+	// Invalid slices are passed on for GfxDevice to report.
 
-	RingSlice slices[GfxDevice::maxRingSlices()];
+	int nSlices = std::min(spec->nSlices, GfxDevice::maxRingSlices());
+	int nCopied = spec->pSlices ? std::max(nSlices, 0) : 0;
 
-	for (int i = 0; i < nSlices; i++)
+	int bufferSize = sizeof(RingSlice) * std::max(nCopied, 1);
+	auto slices = (RingSlice*) GfxBase::memStackAlloc(bufferSize);
+
+	for (int i = 0; i < nCopied; i++)
 	{
-		slices[i].size = spec->pSlices[i].size;
-		slices[i].color = *(const HiColor*)&spec->pSlices[i].color;
-		slices[i].pTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->pSlices[i].tint));
+		new (&slices[i]) RingSlice{ spec->pSlices[i].size, *(const HiColor*)&spec->pSlices[i].color,
+									static_cast<Tint*>(reinterpret_cast<Object*>(spec->pSlices[i].tint)) };
 	}
 
 	RingSpec ring;
@@ -551,7 +556,7 @@ void wg_drawRing(wg_obj device, const wg_ringSpec* spec)
 	ring.outline = spec->outline;
 	ring.start = spec->start;
 	ring.nSlices = nSlices;
-	ring.pSlices = slices;
+	ring.pSlices = spec->pSlices ? slices : nullptr;
 	ring.bSquare = spec->bSquare != 0;
 	ring.outlineColor = *(const HiColor*)&spec->outlineColor;
 	ring.pOutlineTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->outlineTint));
@@ -561,6 +566,8 @@ void wg_drawRing(wg_obj device, const wg_ringSpec* spec)
 	ring.pBackTint = static_cast<Tint*>(reinterpret_cast<Object*>(spec->backTint));
 
 	getPtr(device)->drawRing(ring);
+
+	GfxBase::memStackFree(bufferSize);
 }
 
 void wg_blitNinePatch(wg_obj device, const wg_rectSPX* dstRect, const wg_borderSPX* dstFrame, const wg_ninePatch* patch, int scale)
