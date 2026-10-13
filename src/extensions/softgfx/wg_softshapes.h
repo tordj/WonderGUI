@@ -268,6 +268,9 @@ namespace wg
 		void	_rasterize(Shape& shape, int nSegments, int rowBeg, int rowEnd, int clipBeg, int clipEnd, RowSink* pSink);
 
 		template<class Shape>
+		void	_rasterizeRow(Shape& shape, int row);
+
+		template<class Shape>
 		int		_subRowEdges(Shape& shape, int64_t ya, int64_t yb, Edge* pEdges);
 		void	_simpleRow(const Edge* pEdges, int nEdges, int h);
 		void	_generalRow(int nSubRows);
@@ -364,12 +367,35 @@ namespace wg
 		std::vector<Run>			m_runs;
 		std::vector<CoveragePixel>	m_pixels;
 
+		// Rows kept to be mirrored, see _rasterize().
+
+		struct KeptRow
+		{
+			int		firstRun, nRuns;
+			int		firstPixel;
+		};
+
+		static constexpr int		c_maxKeptPixels = 1 << 16;	// Also most runs.
+
+		std::vector<int>			m_keptIndex;		// Of rows in m_kept, -1 if not kept.
+		std::vector<KeptRow>		m_kept;
+		std::vector<Run>			m_keptRuns;
+		std::vector<CoveragePixel>	m_keptPixels;
+
 		RowSink*		m_pSink = nullptr;
 		int				m_clipBeg = 0;
 		int				m_clipEnd = 0;
 		int				m_row = 0;
 		int				m_nRuns = 0;
 		int				m_nPixels = 0;
+		int				m_splitHint = 0;		// Split after the last row done.
+		int				m_firstRun = 0;			// Of runs of row to emit, the ones before done for their mirror image.
+		int				m_firstPixel = 0;
+
+		bool			m_bMirror = false;		// Rows done up to the middle and mirrored, see _rasterize().
+		int				m_mirrorSum = 0;
+		int				m_outBeg = 0;			// Pixels of row to emit.
+		int				m_outEnd = 0;
 		int				m_nTouched = 0;
 		int				m_nPieces = 0;
 	};

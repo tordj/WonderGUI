@@ -165,8 +165,9 @@ namespace wg
 
 			Row after the rows from row on that are the same as row.
 
-		Shapes symmetric around a vertical axis can tell so, see bSymmetric. Edges and
-		segments right of the axis must then be the mirror image of those left of it.
+		Shapes symmetric around a vertical or horizontal axis can tell so, see bSymmetricX
+		and bSymmetricY. Edges and segments on one side of the axis must then be the mirror
+		image of those on the other.
 	*/
 
 	class SoftShapes::EdgeShape
@@ -177,8 +178,11 @@ namespace wg
 		int				maxEdges = 0;			// Most edges in a sub-row.
 		int				nIds = 0;				// Ids of edges are 0 up to nIds.
 
-		bool			bSymmetric = false;		// Rows are their own mirror images, x mirrored to
-		int64_t			symmetrySum = 0;		// symmetrySum - x.
+		bool			bSymmetricX = false;	// Rows are their own mirror images, x mirrored to
+		int64_t			symmetrySumX = 0;		// symmetrySumX - x.
+
+		bool			bSymmetricY = false;	// Shape is its own mirror image upside down, y mirrored
+		int64_t			symmetrySumY = 0;		// to symmetrySumY - y.
 	};
 
 	//____ splitPoint() _______________________________________________________
@@ -513,18 +517,19 @@ namespace wg
 		// flat colors, are done up to the middle and mirrored, from further left if clipped
 		// more on the right, so that pixels are the same however clipped.
 
-		bool bMirror = false;
-		int mirrorSum = 0;						// Pixel + its mirror image + 1.
+		m_bMirror = false;
+		m_outBeg = clipBeg;
+		m_outEnd = clipEnd;
 
-		if (bAllFlat && shape.bSymmetric && (shape.symmetrySum & 63) == 0)
+		if (bAllFlat && shape.bSymmetricX && (shape.symmetrySumX & 63) == 0)
 		{
-			const int sum = int(shape.symmetrySum >> 6);
+			const int sum = int(shape.symmetrySumX >> 6);
 			const int middle = (sum + 1) >> 1;	// Rounded up, also if negative.
 
 			if (clipEnd > middle)
 			{
-				bMirror = true;
-				mirrorSum = sum;
+				m_bMirror = true;
+				m_mirrorSum = sum;
 				m_clipBeg = std::min(clipBeg, sum - clipEnd);
 				m_clipEnd = middle;
 			}
@@ -561,95 +566,182 @@ namespace wg
 		if (m_pieces.size() < 64)
 			m_pieces.resize(64);
 
-		const int64_t* pSplits = shape.pSplits;
-		const int nSplits = shape.nSplits;
-		int splitIdx = 0;
+		m_splitHint = 0;
+
+		// Rows of shapes symmetric around a row boundary or the middle of a row, with flat
+		// colors, are done for the upper half and the lower half is their mirror image, also
+		// if the upper half is clipped. Upper rows are kept for it, as far as there is room.
+
+		bool bFlip = false;
+		int flipSum = 0;						// Row + its mirror image + 1.
+		int flipMiddle = 0;
+		int keptBeg = 0;						// Row of first entry of m_keptIndex.
+
+		if (bAllFlat && shape.bSymmetricY && (shape.symmetrySumY & 63) == 0)
+		{
+			flipSum = int(shape.symmetrySumY >> 6);
+			flipMiddle = (flipSum + 1) >> 1;
+
+			if (rowEnd > flipMiddle)
+			{
+				bFlip = true;
+				keptBeg = flipSum - rowEnd;
+				m_keptIndex.assign(rowEnd - std::max(rowBeg, flipMiddle), -1);
+				m_kept.clear();
+				m_keptRuns.clear();
+				m_keptPixels.clear();
+			}
+		}
+
+		auto emit = [&](int row, int rowsEnd, int nRuns, const Run* pRuns, const CoveragePixel* pPixels)
+		{
+			if (nRuns == 0)
+				return;
+
+			if (rowsEnd > row + 1)
+				pSink->rows(row, rowsEnd, nRuns, pRuns, pPixels);
+			else
+				pSink->row(row, nRuns, pRuns, pPixels);
+		};
 
 		for (int row = rowBeg; row < rowEnd; )
 		{
-			const int64_t y0 = int64_t(row) * 64;
-			const int64_t y1 = y0 + 64;
-
 			int rowsEnd = row + 1;
 			if (bAllFlat)
 				rowsEnd = std::max(row + 1, std::min(shape.uniformEnd(row), rowEnd));
 
-			m_row = row;
-
-			// Sub-rows, split where edges begin and end.
-
-			while (splitIdx < nSplits && pSplits[splitIdx] <= y0)
-				splitIdx++;
-
-			int splitEnd = splitIdx;
-			while (splitEnd < nSplits && pSplits[splitEnd] < y1)
-				splitEnd++;
-
-			const int nSubRows = splitEnd - splitIdx + 1;
-
-			if ((int)m_subRows.size() < nSubRows)
-				m_subRows.resize(nSubRows);
-
-			if ((int)m_edges.size() < nSubRows * shape.maxEdges)
-				m_edges.resize(nSubRows * shape.maxEdges);
-
-			m_nPieces = 0;
-			int nEdges = 0;
-
-			for (int k = 0; k < nSubRows; k++)
+			if (bFlip && row >= flipMiddle)
 			{
-				const int64_t ya = k == 0 ? y0 : pSplits[splitIdx + k - 1];
-				const int64_t yb = k == nSubRows - 1 ? y1 : pSplits[splitIdx + k];
+				const int source = flipSum - 1 - row;
+				const int k = source - keptBeg;
+				const int kept = (k >= 0 && k < (int)m_keptIndex.size()) ? m_keptIndex[k] : -1;
 
-				SubRow& subRow = m_subRows[k];
-				subRow.h = int(yb - ya);
-				subRow.first = nEdges;
-				subRow.n = _subRowEdges(shape, ya, yb, m_edges.data() + nEdges);
-				nEdges += subRow.n;
-			}
-
-			splitIdx = splitEnd;
-
-			// Runs
-
-			m_nRuns = 0;
-			m_nPixels = 0;
-
-			int nFilled = 0;
-			int filled = 0;
-
-			for (int k = 0; k < nSubRows; k++)
-				if (m_subRows[k].n > 0)
+				if (kept >= 0)
 				{
-					nFilled++;
-					filled = k;
+					const KeptRow& keptRow = m_kept[kept];
+					emit(row, rowsEnd, keptRow.nRuns, m_keptRuns.data() + keptRow.firstRun, m_keptPixels.data() + keptRow.firstPixel);
+				}
+				else
+				{
+					_rasterizeRow(shape, source);
+					emit(row, rowsEnd, m_nRuns - m_firstRun, m_runs.data() + m_firstRun, m_pixels.data() + m_firstPixel);
 				}
 
-			if (nFilled == 1)
-				_simpleRow(m_edges.data() + m_subRows[filled].first, m_subRows[filled].n, m_subRows[filled].h);
-			else if (nFilled > 0)
-				_generalRow(nSubRows);
+				row = rowsEnd;
+				continue;
+			}
 
-			int firstRun = 0;
-			int firstPixel = 0;
+			_rasterizeRow(shape, row);
 
-			if (bMirror)
-				_mirrorRuns(mirrorSum, clipBeg, clipEnd, firstRun, firstPixel);
+			const int nRuns = m_nRuns - m_firstRun;
+			const int nPixels = m_nPixels - m_firstPixel;
 
-			if (m_nRuns > firstRun)
+			emit(row, rowsEnd, nRuns, m_runs.data() + m_firstRun, m_pixels.data() + m_firstPixel);
+
+			// Kept for the rows mirroring them.
+
+			if (bFlip)
 			{
-				const int nRuns = m_nRuns - firstRun;
-				const Run* pRuns = m_runs.data() + firstRun;
-				const CoveragePixel* pPixels = m_pixels.data() + firstPixel;
+				const int keepBeg = std::max(row - keptBeg, 0);
+				const int keepEnd = std::min(std::min(rowsEnd, flipMiddle) - keptBeg, (int)m_keptIndex.size());
 
-				if (rowsEnd > row + 1)
-					pSink->rows(row, rowsEnd, nRuns, pRuns, pPixels);
-				else
-					pSink->row(row, nRuns, pRuns, pPixels);
+				if (keepBeg < keepEnd && (int)m_keptPixels.size() + nPixels <= c_maxKeptPixels && (int)m_keptRuns.size() + nRuns <= c_maxKeptPixels)
+				{
+					m_kept.push_back({ (int)m_keptRuns.size(), nRuns, (int)m_keptPixels.size() });
+					m_keptRuns.insert(m_keptRuns.end(), m_runs.begin() + m_firstRun, m_runs.begin() + m_nRuns);
+					m_keptPixels.insert(m_keptPixels.end(), m_pixels.begin() + m_firstPixel, m_pixels.begin() + m_nPixels);
+
+					for (int i = keepBeg; i < keepEnd; i++)
+						m_keptIndex[i] = (int)m_kept.size() - 1;
+				}
 			}
 
 			row = rowsEnd;
 		}
+	}
+
+	//____ _rasterizeRow() ____________________________________________________
+	// Runs of row in m_runs and m_pixels, from m_firstRun and m_firstPixel.
+
+	template<class Shape>
+	void SoftShapes::_rasterizeRow(Shape& shape, int row)
+	{
+		const int64_t y0 = int64_t(row) * 64;
+		const int64_t y1 = y0 + 64;
+
+		m_row = row;
+
+		// Sub-rows, split where edges begin and end.
+
+		const int64_t* pSplits = shape.pSplits;
+		const int nSplits = shape.nSplits;
+
+		// First split below top of row, from where the row before ended unless out of order.
+
+		int splitBeg = m_splitHint;
+
+		if (splitBeg > nSplits || (splitBeg > 0 && pSplits[splitBeg - 1] > y0))
+			splitBeg = int(std::upper_bound(pSplits, pSplits + nSplits, y0) - pSplits);
+		else
+		{
+			while (splitBeg < nSplits && pSplits[splitBeg] <= y0)
+				splitBeg++;
+		}
+
+		int splitEnd = splitBeg;
+		while (splitEnd < nSplits && pSplits[splitEnd] < y1)
+			splitEnd++;
+
+		m_splitHint = splitEnd;
+
+		const int nSubRows = splitEnd - splitBeg + 1;
+
+		if ((int)m_subRows.size() < nSubRows)
+			m_subRows.resize(nSubRows);
+
+		if ((int)m_edges.size() < nSubRows * shape.maxEdges)
+			m_edges.resize(nSubRows * shape.maxEdges);
+
+		m_nPieces = 0;
+		int nEdges = 0;
+
+		for (int k = 0; k < nSubRows; k++)
+		{
+			const int64_t ya = k == 0 ? y0 : pSplits[splitBeg + k - 1];
+			const int64_t yb = k == nSubRows - 1 ? y1 : pSplits[splitBeg + k];
+
+			SubRow& subRow = m_subRows[k];
+			subRow.h = int(yb - ya);
+			subRow.first = nEdges;
+			subRow.n = _subRowEdges(shape, ya, yb, m_edges.data() + nEdges);
+			nEdges += subRow.n;
+		}
+
+		// Runs
+
+		m_nRuns = 0;
+		m_nPixels = 0;
+
+		int nFilled = 0;
+		int filled = 0;
+
+		for (int k = 0; k < nSubRows; k++)
+			if (m_subRows[k].n > 0)
+			{
+				nFilled++;
+				filled = k;
+			}
+
+		if (nFilled == 1)
+			_simpleRow(m_edges.data() + m_subRows[filled].first, m_subRows[filled].n, m_subRows[filled].h);
+		else if (nFilled > 0)
+			_generalRow(nSubRows);
+
+		m_firstRun = 0;
+		m_firstPixel = 0;
+
+		if (m_bMirror)
+			_mirrorRuns(m_mirrorSum, m_outBeg, m_outEnd, m_firstRun, m_firstPixel);
 	}
 
 	//____ _split() ___________________________________________________________
@@ -1858,7 +1950,7 @@ namespace wg
 			}
 		}
 
-		// Symmetric if regular with the same corners on both sides.
+		// Symmetric if regular with the same corners on both sides, or top and bottom.
 
 		auto isSymmetric = [&](const BoxShape::Contour& c)
 		{
@@ -1867,8 +1959,19 @@ namespace wg
 
 		if (shape.bRegular && isSymmetric(shape.outer) && isSymmetric(shape.inner))
 		{
-			shape.bSymmetric = true;
-			shape.symmetrySum = shape.outer.left + shape.outer.right;
+			shape.bSymmetricX = true;
+			shape.symmetrySumX = shape.outer.left + shape.outer.right;
+		}
+
+		auto isSymmetricY = [&](const BoxShape::Contour& c)
+		{
+			return !c.bExists || (c.r[0] == c.r[3] && c.r[1] == c.r[2] && c.top + c.bottom == shape.outer.top + shape.outer.bottom);
+		};
+
+		if (shape.bRegular && isSymmetricY(shape.outer) && isSymmetricY(shape.inner))
+		{
+			shape.bSymmetricY = true;
+			shape.symmetrySumY = shape.outer.top + shape.outer.bottom;
 		}
 
 		m_splits.clear();
@@ -2477,12 +2580,20 @@ namespace wg
 			boundsBottom = cy + outerRadius;
 		}
 
-		// Symmetric without rays, if centered.
+		// Symmetric without rays, if centered, also upside down if the same above and below.
 
-		if (m_rays[0].empty() && m_rays[1].empty() && boundsLeft + boundsRight == 2 * cx)
+		const bool bNoRays = m_rays[0].empty() && m_rays[1].empty();
+
+		if (bNoRays && boundsLeft + boundsRight == 2 * cx)
 		{
-			shape.bSymmetric = true;
-			shape.symmetrySum = 2 * cx;
+			shape.bSymmetricX = true;
+			shape.symmetrySumX = 2 * cx;
+		}
+
+		if (bNoRays && shape.startSegment[0] == shape.startSegment[1] && boundsTop + boundsBottom == 2 * cy)
+		{
+			shape.bSymmetricY = true;
+			shape.symmetrySumY = 2 * cy;
 		}
 
 		int clipBeg = std::max(clip.x, floorPixel(boundsLeft));
