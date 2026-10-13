@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <climits>
+#include <cstring>
 
 namespace wg
 {
@@ -163,6 +164,9 @@ namespace wg
 		int		uniformEnd(int row) const
 
 			Row after the rows from row on that are the same as row.
+
+		Shapes symmetric around a vertical axis can tell so, see bSymmetric. Edges and
+		segments right of the axis must then be the mirror image of those left of it.
 	*/
 
 	class SoftShapes::EdgeShape
@@ -172,6 +176,9 @@ namespace wg
 		int				nSplits = 0;
 		int				maxEdges = 0;			// Most edges in a sub-row.
 		int				nIds = 0;				// Ids of edges are 0 up to nIds.
+
+		bool			bSymmetric = false;		// Rows are their own mirror images, x mirrored to
+		int64_t			symmetrySum = 0;		// symmetrySum - x.
 	};
 
 	//____ splitPoint() _______________________________________________________
@@ -196,6 +203,42 @@ namespace wg
 		}
 
 		return mid;
+	}
+
+	//____ _polylineX() _______________________________________________________
+	// x of polyline at y, between its first and last vertex.
+
+	inline int64_t SoftShapes::_polylineX(Polyline& polyline, int64_t y)
+	{
+		const int64_t* pY = polyline.pY;
+		int k = polyline.segment;
+
+		while (k > 0 && pY[k] > y)
+			k--;
+
+		while (k < polyline.n - 2 && pY[k + 1] < y)
+			k++;
+
+		polyline.segment = k;
+
+		const int64_t y1 = pY[k], y2 = pY[k + 1];
+		const int64_t x1 = polyline.pX[k], x2 = polyline.pX[k + 1];
+
+		if (y <= y1 || x1 == x2)
+			return x1;
+
+		if (y >= y2)
+			return x2;
+
+		// Weighted by distance to the other vertex, the same whichever vertex comes first,
+		// so that mirrored corners stay mirrored. Rounded to nearest. Segments of corners
+		// are short, divisions rare.
+
+		const int64_t base = std::min(x1, x2);
+		const int64_t h = y2 - y1;
+		const int64_t d = (x1 - base) * (y2 - y) + (x2 - base) * (y - y1);
+
+		return base + (h < 1024 ? (d * c_recipTable.v[h] + (int64_t(1) << 36)) >> 37 : (d + h / 2) / h);
 	}
 
 	//____ _area() ____________________________________________________________
@@ -242,6 +285,21 @@ namespace wg
 		int area = 0;
 		for (int i = 0; i < edge.n; i++)
 			area += pPiece[i].h * _rightOf(pPiece[i], pixel);
+
+		return area;
+	}
+
+	//____ _edgeLeftOf() ______________________________________________________
+	// _area() of all pieces of edge, weighted by their height. Pixels get the difference
+	// between their sides, rounded: (_edgeLeftOf(right side) - _edgeLeftOf(left side) + 32) >> 6.
+
+	inline int64_t SoftShapes::_edgeLeftOf(const Edge& edge, int64_t x) const
+	{
+		const Piece* pPiece = m_pieces.data() + edge.first;
+
+		int64_t area = 0;
+		for (int i = 0; i < edge.n; i++)
+			area += pPiece[i].h * _area(pPiece[i], x);
 
 		return area;
 	}
@@ -327,10 +385,74 @@ namespace wg
 			m_runs[m_nRuns++] = { beg, end, -1 };
 
 		CoveragePixel* pPixels = m_pixels.data() + m_nPixels;
-		for (int i = 0; i < end - beg; i++)
-			pPixels[i] = pixel;
+		const int n = end - beg;
 
-		m_nPixels += end - beg;
+		if (n <= 8)
+		{
+			for (int i = 0; i < n; i++)
+				pPixels[i] = pixel;
+		}
+		else
+		{
+			pPixels[0] = pixel;
+			for (int done = 1; done < n; done *= 2)
+				std::memcpy(pPixels + done, pPixels, sizeof(CoveragePixel) * std::min(done, n - done));
+		}
+
+		m_nPixels += n;
+	}
+
+	//____ _mirrorRuns() ______________________________________________________
+	/*
+		Adds the mirror image of the runs of a row done up to its middle, pixel x of it at
+		sum - 1 - x, as far as clipEnd. Runs left of clipBeg, done for their mirror image,
+		are skipped by starting at firstRun and firstPixel.
+	*/
+
+	void SoftShapes::_mirrorRuns(int sum, int clipBeg, int clipEnd, int& firstRun, int& firstPixel)
+	{
+		const int middle = m_clipEnd;
+		const int nRuns = m_nRuns;
+		int pixelEnd = m_nPixels;
+
+		for (int i = nRuns - 1; i >= 0; i--)
+		{
+			const Run run = m_runs[i];
+			const int beg = std::max(sum - run.end, std::max(middle, clipBeg));
+			const int end = std::min(sum - run.begin, clipEnd);
+
+			if (run.segment >= 0)
+			{
+				if (beg < end)
+					_fillRun(beg, end, run.segment);
+				continue;
+			}
+
+			const int pixelBeg = pixelEnd - (run.end - run.begin);
+
+			for (int x = beg; x < end; x++)
+				_mixedPixel(x) = m_pixels[pixelBeg + (sum - 1 - x - run.begin)];
+
+			pixelEnd = pixelBeg;
+		}
+
+		firstRun = 0;
+		firstPixel = 0;
+
+		while (firstRun < m_nRuns && m_runs[firstRun].end <= clipBeg)
+		{
+			const Run& run = m_runs[firstRun++];
+			if (run.segment < 0)
+				firstPixel += run.end - run.begin;
+		}
+
+		if (firstRun < m_nRuns && m_runs[firstRun].begin < clipBeg)
+		{
+			Run& run = m_runs[firstRun];
+			if (run.segment < 0)
+				firstPixel += clipBeg - run.begin;
+			run.begin = clipBeg;
+		}
 	}
 
 	//____ _accumulate() ______________________________________________________
@@ -387,7 +509,28 @@ namespace wg
 		if (!bAnyDrawn)
 			return;
 
-		const int width = clipEnd - clipBeg;
+		// Rows of shapes symmetric around a pixel boundary or the middle of a pixel, with
+		// flat colors, are done up to the middle and mirrored, from further left if clipped
+		// more on the right, so that pixels are the same however clipped.
+
+		bool bMirror = false;
+		int mirrorSum = 0;						// Pixel + its mirror image + 1.
+
+		if (bAllFlat && shape.bSymmetric && (shape.symmetrySum & 63) == 0)
+		{
+			const int sum = int(shape.symmetrySum >> 6);
+			const int middle = (sum + 1) >> 1;	// Rounded up, also if negative.
+
+			if (clipEnd > middle)
+			{
+				bMirror = true;
+				mirrorSum = sum;
+				m_clipBeg = std::min(clipBeg, sum - clipEnd);
+				m_clipEnd = middle;
+			}
+		}
+
+		const int width = clipEnd - m_clipBeg;
 
 		if ((int)m_runs.size() < width + 1)
 		{
@@ -408,6 +551,8 @@ namespace wg
 			m_edgeDefs.resize(shape.maxEdges);
 			m_edgeTop.resize(shape.maxEdges);
 			m_edgeBottom.resize(shape.maxEdges);
+			m_edgeLeftOf.resize(shape.maxEdges);
+			m_edgeTopSegment.resize(shape.maxEdges);
 		}
 
 		m_cacheY.assign(shape.nIds, INT64_MIN);
@@ -485,12 +630,22 @@ namespace wg
 			else if (nFilled > 0)
 				_generalRow(nSubRows);
 
-			if (m_nRuns > 0)
+			int firstRun = 0;
+			int firstPixel = 0;
+
+			if (bMirror)
+				_mirrorRuns(mirrorSum, clipBeg, clipEnd, firstRun, firstPixel);
+
+			if (m_nRuns > firstRun)
 			{
+				const int nRuns = m_nRuns - firstRun;
+				const Run* pRuns = m_runs.data() + firstRun;
+				const CoveragePixel* pPixels = m_pixels.data() + firstPixel;
+
 				if (rowsEnd > row + 1)
-					pSink->rows(row, rowsEnd, m_nRuns, m_runs.data(), m_pixels.data());
+					pSink->rows(row, rowsEnd, nRuns, pRuns, pPixels);
 				else
-					pSink->row(row, m_nRuns, m_runs.data(), m_pixels.data());
+					pSink->row(row, nRuns, pRuns, pPixels);
 			}
 
 			row = rowsEnd;
@@ -540,16 +695,31 @@ namespace wg
 
 		int64_t* pTop = m_edgeTop.data();
 		int64_t* pBottom = m_edgeBottom.data();
+		int* pTopSegment = m_edgeTopSegment.data();
 
 		for (int i = 0; i < nEdges; i++)
 		{
-			const int id = pDefs[i].id;
+			const EdgeDef& def = pDefs[i];
 
-			pTop[i] = _edgeX(shape, pDefs[i], ya);
-			pBottom[i] = _edgeX(shape, pDefs[i], yb);
+			if (def.mirror >= 0)
+			{
+				pTop[i] = def.mirrorSum - pTop[def.mirror];
+				pBottom[i] = def.mirrorSum - pBottom[def.mirror];
+			}
+			else if (def.pPolyline)
+			{
+				pTop[i] = _polylineX(*def.pPolyline, ya);
+				pTopSegment[i] = def.pPolyline->segment;
+				pBottom[i] = _polylineX(*def.pPolyline, yb);
+			}
+			else
+			{
+				pTop[i] = _edgeX(shape, def, ya);
+				pBottom[i] = _edgeX(shape, def, yb);
+			}
 
-			m_cacheY[id] = yb;
-			m_cacheX[id] = pBottom[i];
+			m_cacheY[def.id] = yb;
+			m_cacheX[def.id] = pBottom[i];
 		}
 
 		// Clamped edges between their neighbors.
@@ -578,6 +748,24 @@ namespace wg
 
 		Piece* pPieces = m_pieces.data();
 
+		auto addPiece = [&](Edge& edge, int64_t yTop, int64_t xTop, int64_t yBottom, int64_t xBottom)
+		{
+			Piece& piece = pPieces[m_nPieces++];
+
+			const int64_t lo = std::min(xTop, xBottom);
+			const int64_t hi = std::max(xTop, xBottom);
+
+			piece.lo = lo;
+			piece.hi = hi;
+			piece.h = int(yBottom - yTop);
+			piece.bandBeg = lo < clipBeg64 ? m_clipBeg - 1 : lo >= clipEnd64 ? m_clipEnd + 1 : int(lo >> 6);
+			piece.bandEnd = hi < clipBeg64 ? m_clipBeg - 1 : hi >= clipEnd64 ? m_clipEnd + 1 : int((hi + 63) >> 6);
+			piece.inv = (hi > lo && piece.bandEnd > m_clipBeg && piece.bandBeg < m_clipEnd) ? recip37(hi - lo) : 0;
+
+			edge.bandBeg = std::min(edge.bandBeg, piece.bandBeg);
+			edge.bandEnd = std::max(edge.bandEnd, piece.bandEnd);
+		};
+
 		for (int i = 0; i < nEdges; i++)
 		{
 			Edge& edge = pEdges[i];
@@ -585,6 +773,64 @@ namespace wg
 			edge.first = m_nPieces;
 			edge.bandBeg = INT_MAX;
 			edge.bandEnd = INT_MIN;
+
+			// Mirror of an edge before it, pieces mirrored.
+
+			if (pDefs[i].mirror >= 0)
+			{
+				const Edge& source = pEdges[pDefs[i].mirror];
+				const int64_t sum = pDefs[i].mirrorSum;
+
+				for (int k = 0; k < source.n; k++)
+				{
+					const Piece& from = pPieces[source.first + k];
+					Piece& piece = pPieces[m_nPieces++];
+
+					const int64_t lo = sum - from.hi;
+					const int64_t hi = sum - from.lo;
+
+					piece.lo = lo;
+					piece.hi = hi;
+					piece.h = from.h;
+					piece.inv = from.inv;
+					piece.bandBeg = lo < clipBeg64 ? m_clipBeg - 1 : lo >= clipEnd64 ? m_clipEnd + 1 : int(lo >> 6);
+					piece.bandEnd = hi < clipBeg64 ? m_clipBeg - 1 : hi >= clipEnd64 ? m_clipEnd + 1 : int((hi + 63) >> 6);
+
+					if (hi > lo && piece.inv == 0 && piece.bandEnd > m_clipBeg && piece.bandBeg < m_clipEnd)
+						piece.inv = recip37(hi - lo);
+
+					edge.bandBeg = std::min(edge.bandBeg, piece.bandBeg);
+					edge.bandEnd = std::max(edge.bandEnd, piece.bandEnd);
+				}
+
+				edge.n = m_nPieces - edge.first;
+				continue;
+			}
+
+			// Polyline, from top through its vertices to bottom.
+
+			if (pDefs[i].pPolyline)
+			{
+				const Polyline& polyline = *pDefs[i].pPolyline;
+
+				int64_t y = ya;
+				int64_t x = pTop[i];
+
+				for (int k = pTopSegment[i] + 1; k < polyline.n && polyline.pY[k] < yb; k++)
+				{
+					if (polyline.pY[k] > y)
+					{
+						addPiece(edge, y, x, polyline.pY[k], polyline.pX[k]);
+						y = polyline.pY[k];
+						x = polyline.pX[k];
+					}
+				}
+
+				addPiece(edge, y, x, yb, pBottom[i]);
+
+				edge.n = m_nPieces - edge.first;
+				continue;
+			}
 
 			// Vertices still to reach, last one first.
 
@@ -609,50 +855,17 @@ namespace wg
 					continue;
 				}
 
-				Piece& piece = pPieces[m_nPieces++];
-
-				const int64_t lo = std::min(x, x2);
-				const int64_t hi = std::max(x, x2);
-
-				piece.lo = lo;
-				piece.hi = hi;
-				piece.h = int(y2 - y);
-				piece.bandBeg = lo < clipBeg64 ? m_clipBeg - 1 : lo >= clipEnd64 ? m_clipEnd + 1 : int(lo >> 6);
-				piece.bandEnd = hi < clipBeg64 ? m_clipBeg - 1 : hi >= clipEnd64 ? m_clipEnd + 1 : int((hi + 63) >> 6);
-				piece.inv = (hi > lo && piece.bandEnd > m_clipBeg && piece.bandBeg < m_clipEnd) ? recip37(hi - lo) : 0;
-
-				edge.bandBeg = std::min(edge.bandBeg, piece.bandBeg);
-				edge.bandEnd = std::max(edge.bandEnd, piece.bandEnd);
+				addPiece(edge, y, x, y2, x2);
 
 				y = y2;
 				x = x2;
 				nStack--;
-
-				if (m_nPieces == (int)m_pieces.size())
-				{
-					m_pieces.resize(m_pieces.size() * 2);
-					pPieces = m_pieces.data();
-				}
 			}
 
 			edge.n = m_nPieces - edge.first;
 		}
 
 		return nEdges;
-	}
-
-	//____ _rightOfEdge() _____________________________________________________
-	// Coverage of pixel right of edge in a sub-row of height h, 64 * h if fully right.
-
-	inline int SoftShapes::_rightOfEdge(const Edge& edge, int pixel, int h) const
-	{
-		if (edge.n == 1)
-		{
-			int right = _rightOf(m_pieces[edge.first], pixel);
-			return h == 64 ? right : (right * h + 32) >> 6;
-		}
-
-		return (_edgeArea(edge, pixel) + 32) >> 6;
 	}
 
 	//____ _simpleRow() _______________________________________________________
@@ -728,7 +941,9 @@ namespace wg
 				const Piece& piece = m_pieces[edge.first];
 				const bool bStraight = edge.n == 1;
 
-				int64_t prevArea = bStraight ? _area(piece, int64_t(bandBeg) * 64) : 0;
+				// Area left of pixel boundaries, unweighted if straight.
+
+				int64_t prevArea = bStraight ? _area(piece, int64_t(bandBeg) * 64) : _edgeLeftOf(edge, int64_t(bandBeg) * 64);
 
 				for (int p = bandBeg; p < bandEnd; p++)
 				{
@@ -744,7 +959,11 @@ namespace wg
 							right = (right * h + 32) >> 6;
 					}
 					else
-						right = (_edgeArea(edge, p) + 32) >> 6;
+					{
+						int64_t area = _edgeLeftOf(edge, int64_t(p + 1) * 64);
+						right = int((area - prevArea + 32) >> 6);
+						prevArea = area;
+					}
 
 					if (right <= 0)
 					{
@@ -792,6 +1011,11 @@ namespace wg
 				// Several edges. Each segment gets the coverage right of the edge before it
 				// minus that right of the edge after it.
 
+				int64_t* pPrevArea = m_edgeLeftOf.data();
+
+				for (int i = k; i < j; i++)
+					pPrevArea[i - k] = _edgeLeftOf(pEdges[i], int64_t(bandBeg) * 64);
+
 				for (int p = bandBeg; p < bandEnd; p++)
 				{
 					int b = 0, g = 0, r = 0, a = 0, c = 0;
@@ -802,7 +1026,14 @@ namespace wg
 
 					for (int i = k; i <= j; i++)
 					{
-						int right = i < j ? std::min(std::max(_rightOfEdge(pEdges[i], p, h), 0), prevRight) : 0;
+						int right = 0;
+						if (i < j)
+						{
+							int64_t area = _edgeLeftOf(pEdges[i], int64_t(p + 1) * 64);
+							right = std::min(std::max(int((area - pPrevArea[i - k] + 32) >> 6), 0), prevRight);
+							pPrevArea[i - k] = area;
+						}
+
 						int coverage = prevRight - right;
 
 						if (coverage > 0 && segment >= 0)
@@ -1000,6 +1231,61 @@ namespace wg
 		}
 	}
 
+	//____ _quarter() _________________________________________________________
+	/*
+		Vertices of a quarter circle of radius r, as offsets from its center, from 12 o'clock
+		to 3 o'clock. Split evenly by angle into chords with a sagitta of at most
+		c_maxSagitta, straying at most half of that inside or outside the circle. Kept for
+		the last few radii, as boxes mostly have the same corners.
+	*/
+
+	const SoftShapes::Quarter& SoftShapes::_quarter(int64_t r)
+	{
+		for (const Quarter& quarter : m_quarters)
+			if (quarter.r == r)
+				return quarter;
+
+		Quarter& quarter = m_quarters[m_nextQuarter];
+		m_nextQuarter = (m_nextQuarter + 1) % c_quarters;
+
+		// Angle per chord, with sagitta r * (1 - cos(angle / 2)) ~ r * angle^2 / 8. Chords of
+		// large corners are longer than pixels, so they stray along more of them and get half
+		// the sagitta.
+
+		const int64_t halves = r >= 64 * 64 ? 2 : 1;
+
+		int n = int((isqrt(uint64_t(r * halves / c_maxSagitta)) * 569 + 1023) >> 10);	// pi/2 * sqrt(r / 8s)
+		n = std::max(n, 1);
+
+		quarter.r = r;
+		quarter.dx.resize(n + 1);
+		quarter.dy.resize(n + 1);
+
+		// Vertices between the ends are moved out by half the sagitta, 1/256 spx precision,
+		// so that chords stray as much outside as inside instead of always inside.
+
+		const int64_t cosHalfStep = _sin30(uint32_t((int64_t(1) << 29) / n) + 0x40000000);
+		const int64_t rOut = (r << 39) / ((int64_t(1) << 30) + cosHalfStep);		// 2r / (1 + cos(angle / 2))
+
+		for (int k = 0; k <= n; k++)
+		{
+			const uint32_t angle = uint32_t((int64_t(k) << 30) / n);
+
+			if (k == 0 || k == n)
+			{
+				quarter.dx[k] = (r * _sin30(angle) + (1 << 29)) >> 30;
+				quarter.dy[k] = (r * _sin30(angle + 0x40000000) + (1 << 29)) >> 30;
+			}
+			else
+			{
+				quarter.dx[k] = (rOut * _sin30(angle) + (int64_t(1) << 37)) >> 38;
+				quarter.dy[k] = (rOut * _sin30(angle + 0x40000000) + (int64_t(1) << 37)) >> 38;
+			}
+		}
+
+		return quarter;
+	}
+
 	//____ BoxShape ___________________________________________________________
 	/*
 		Box with rounded corners and an outline inside it, as two contours: the outer edge
@@ -1048,6 +1334,7 @@ namespace wg
 		Contour		inner;
 		bool		bOutline;
 		bool		bRegular;					// Inner contour stays inside outer and doesn't close, as with even outlines.
+		Polyline*	pPolylines[4] = { nullptr, nullptr, nullptr, nullptr };	// Edges flattened in advance, by id.
 
 		int			nEvents = 0;
 		int64_t		eventBeg[12], eventEnd[12];	// Where rows aren't all the same, see uniformEnd().
@@ -1092,6 +1379,53 @@ namespace wg
 				c.cx[i] = (i == 0 || i == 3) ? c.left + r : c.right - r;
 				c.cy[i] = (i == 0 || i == 1) ? c.top + r : c.bottom - r;
 			}
+		}
+
+		//____ flatten() ______________________________________________________
+		/*
+			Adds vertices of the left or right edge of a contour to y and x, from top to
+			bottom: the corner on top, the side and the corner at the bottom, corners as
+			from _quarter().
+		*/
+
+		static void flatten(SoftShapes& shapes, const Contour& c, bool bLeft, std::vector<int64_t>& vy, std::vector<int64_t>& vx)
+		{
+			const int top = bLeft ? 0 : 1;
+			const int bottom = bLeft ? 3 : 2;
+			const size_t first = vy.size();
+
+			auto add = [&](int64_t y, int64_t x)
+			{
+				if (vy.size() == first || y > vy.back())
+				{
+					vy.push_back(y);
+					vx.push_back(x);
+				}
+			};
+
+			auto corner = [&](int i, bool bTop)
+			{
+				const Quarter& quarter = shapes._quarter(c.r[i]);
+				const int n = (int)quarter.dx.size() - 1;
+
+				for (int j = 0; j <= n; j++)
+				{
+					const int k = bTop ? j : n - j;		// From 12 or 6 o'clock to the side.
+					add(bTop ? c.cy[i] - quarter.dy[k] : c.cy[i] + quarter.dy[k], bLeft ? c.cx[i] - quarter.dx[k] : c.cx[i] + quarter.dx[k]);
+				}
+			};
+
+			const int64_t side = bLeft ? c.left : c.right;
+
+			if (c.r[top] > 0)
+				corner(top, true);
+			else
+				add(c.top, side);
+
+			if (c.r[bottom] > 0)
+				corner(bottom, false);
+			else
+				add(c.bottom, side);
 		}
 
 		//____ addEvents() ____________________________________________________
@@ -1227,10 +1561,24 @@ namespace wg
 			{
 				edge(pEdges[n++], 2, 0);
 				edge(pEdges[n++], 3, 1);
+				mirror(pEdges[n - 1], inner, n - 2);
 			}
 
 			edge(pEdges[n++], 1, -1);
+			mirror(pEdges[n - 1], outer, 0);
 			return n;
+		}
+
+		// Right edge of a regular contour with corners the same as on the left is the mirror
+		// image of the left edge.
+
+		void mirror(EdgeDef& def, const Contour& c, int left) const
+		{
+			if (bRegular && c.r[0] == c.r[1] && c.r[3] == c.r[2])
+			{
+				def.mirror = left;
+				def.mirrorSum = c.left + c.right;
+			}
 		}
 
 		// Edge with where it goes from top corner to side and from side to bottom corner,
@@ -1242,6 +1590,8 @@ namespace wg
 			def.segment = segment;
 			def.bClamped = false;
 			def.bShapeSplit = !bRegular;
+			def.mirror = -1;
+			def.pPolyline = pPolylines[id] && pPolylines[id]->n > 0 ? pPolylines[id] : nullptr;
 
 			if (bRegular)
 			{
@@ -1470,6 +1820,55 @@ namespace wg
 		{
 			shape.inner.bExists = false;
 			shape.bRegular = true;
+		}
+
+		// Regular boxes have their edges flattened in advance, right edges mirrored from left
+		// if corners are the same.
+
+		Polyline polylines[4];
+
+		bool bFlatten = shape.bRegular;
+		for (int i = 0; i < 4; i++)
+			if (shape.outer.r[i] > c_maxFlatRadius)
+				bFlatten = false;
+
+		if (bFlatten)
+		{
+			m_polylineY.clear();
+			m_polylineX.clear();
+
+			int ofs[5] = { 0, 0, 0, 0, 0 };
+
+			for (int id = 0; id < 4; id++)
+			{
+				const BoxShape::Contour& c = id < 2 ? shape.outer : shape.inner;
+				const bool bLeft = (id & 1) == 0;
+				const bool bMirrored = !bLeft && c.r[0] == c.r[1] && c.r[3] == c.r[2];
+
+				if (c.bExists && !bMirrored)
+					BoxShape::flatten(*this, c, bLeft, m_polylineY, m_polylineX);
+
+				ofs[id + 1] = (int)m_polylineY.size();
+			}
+
+			for (int id = 0; id < 4; id++)
+			{
+				polylines[id] = { m_polylineY.data() + ofs[id], m_polylineX.data() + ofs[id], ofs[id + 1] - ofs[id], 0 };
+				shape.pPolylines[id] = &polylines[id];
+			}
+		}
+
+		// Symmetric if regular with the same corners on both sides.
+
+		auto isSymmetric = [&](const BoxShape::Contour& c)
+		{
+			return !c.bExists || (c.r[0] == c.r[1] && c.r[3] == c.r[2] && c.left + c.right == shape.outer.left + shape.outer.right);
+		};
+
+		if (shape.bRegular && isSymmetric(shape.outer) && isSymmetric(shape.inner))
+		{
+			shape.bSymmetric = true;
+			shape.symmetrySum = shape.outer.left + shape.outer.right;
 		}
 
 		m_splits.clear();
@@ -1771,16 +2170,29 @@ namespace wg
 
 			int n = 0;
 
+			int leftOfCircle[4] = { -1, -1, -1, -1 };		// Where left side of each circle is.
+
 			auto put = [&](int id, int segment)
 			{
 				const int i = id & 3;
-				const int64_t lim = (id < 8 && !(bSquare && i < 2)) ? limit[i] : 0;
-				pEdges[n++] = { id, segment, false, false, { INT64_MAX, INT64_MAX }, { lim, lim, lim } };
+				const bool bCircle = id < 8 && !(bSquare && i < 2);
+				const int64_t lim = bCircle ? limit[i] : 0;
+
+				int mirror = -1;
+				if (bCircle)
+				{
+					if (id < 4)
+						leftOfCircle[i] = n;
+					else
+						mirror = leftOfCircle[i];
+				}
+
+				pEdges[n++] = { id, segment, false, false, { INT64_MAX, INT64_MAX }, { lim, lim, lim }, mirror, cx * 2, nullptr };
 			};
 
 			auto putRay = [&](int i)
 			{
-				pEdges[n++] = { firstId + i, pRay[i].segment, true, false, { INT64_MAX, INT64_MAX }, { 0, 0, 0 } };
+				pEdges[n++] = { firstId + i, pRay[i].segment, true, false, { INT64_MAX, INT64_MAX }, { 0, 0, 0 }, -1, 0, nullptr };
 			};
 
 			// 0: beyond the slices, 1: between, 2: in the hole.
@@ -2063,6 +2475,14 @@ namespace wg
 			boundsTop = cy - outerRadius;
 			boundsRight = cx + outerRadius;
 			boundsBottom = cy + outerRadius;
+		}
+
+		// Symmetric without rays, if centered.
+
+		if (m_rays[0].empty() && m_rays[1].empty() && boundsLeft + boundsRight == 2 * cx)
+		{
+			shape.bSymmetric = true;
+			shape.symmetrySum = 2 * cx;
 		}
 
 		int clipBeg = std::max(clip.x, floorPixel(boundsLeft));

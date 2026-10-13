@@ -178,6 +178,13 @@ namespace
 		cases.push_back({ "circle", makeBox({ 64 * 3 + 10, 64 * 3 + 30, 64 * 31 + 20, 64 * 31 + 20 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100), 0.04 });
 		cases.push_back({ "tall pill, outline", makeBox({ 64 * 3 + 10, 64 * 3 + 30, 64 * 12 + 30, 64 * 40 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100, { 64 * 2 + 10, 64 * 2 + 10, 64 * 2 + 10, 64 * 2 + 10 }), 0.04 });
 
+		// Symmetric around a pixel boundary or the middle of a pixel, rows done half and mirrored.
+
+		cases.push_back({ "aligned, odd width, outline", makeBox({ 64 * 2, 64 * 2, 64 * 41, 64 * 30 }, 64 * 8, 64 * 8, 64 * 8, 64 * 8, { 64, 64, 64, 64 }), 0.04 });
+		cases.push_back({ "half pixel, outline", makeBox({ 64 * 2 + 32, 64 * 2 + 32, 64 * 40, 64 * 24 }, 64 * 6, 64 * 6, 64 * 6, 64 * 6, { 32, 32, 32, 32 }), 0.04 });
+		cases.push_back({ "aligned circle, odd width", makeBox({ 64 * 3, 64 * 3, 64 * 31, 64 * 31 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100), 0.04 });
+		cases.push_back({ "half pixel pill, outline", makeBox({ 64 * 3 + 32, 64 * 3, 64 * 40, 64 * 15 }, 64 * 100, 64 * 100, 64 * 100, 64 * 100, { 64 * 2, 64 * 2, 64 * 2, 64 * 2 }), 0.04 });
+
 		cases.push_back({ "rounded, 1px outline", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 120, 64 * 32 }, 64 * 6, 64 * 6, 64 * 6, 64 * 6, { 64, 64, 64, 64 }), 0.04 });
 		cases.push_back({ "rounded, subpixel outline", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40, 64 * 32 }, 64 * 6, 64 * 6, 64 * 6, 64 * 6, { 23, 23, 23, 23 }), 0.04 });
 		cases.push_back({ "rounded, per-side outline", makeBox({ 64 * 2 + 21, 64 * 2 + 50, 64 * 40, 64 * 32 }, 64 * 8, 64 * 8, 64 * 8, 64 * 8, { 64, 64 * 3 + 20, 64 * 4, 32 }), 0.04 });
@@ -496,6 +503,8 @@ namespace
 		cases.push_back({ "wide rect", { 64 * 2 + 9, 64 * 5 + 21, 64 * 70, 64 * 40 }, 64 * 6, 0, false, 0.85, { 0.4, 0.35 } });
 		cases.push_back({ "tiny pie", { 64 * 3 + 21, 64 * 3 + 40, 64 * 6 + 20, 64 * 6 + 20 }, 0, 0, false, 0.2, { 0.2, 0.3, 0.1, 0.2, 0.2 } });
 		cases.push_back({ "horizontal boundaries", { 64 * 4, 64 * 4, 64 * 50, 64 * 50 }, 0, 0, false, 0.25, { 0.5, 0.5 } });
+		cases.push_back({ "no slices, aligned, odd width", { 64 * 4, 64 * 3, 64 * 51, 64 * 51 }, 64 * 10, 64 * 2, false, 0.0, {} });
+		cases.push_back({ "square, half pixel", { 64 * 4 + 32, 64 * 3, 64 * 50, 64 * 40 }, 64 * 8, 64 + 20, true, 0.0, {} });
 		cases.push_back({ "256 slices", { 64 * 3 + 17, 64 * 2 + 45, 64 * 150, 64 * 150 }, 0, 0, false, 0.0, std::vector<double>(256, 1.0 / 256) });
 		cases.push_back({ "256 slices turned", { 64 * 3 + 17, 64 * 2 + 45, 64 * 150, 64 * 150 }, 64 * 40, 0, false, 0.37, std::vector<double>(256, 1.0 / 256) });
 

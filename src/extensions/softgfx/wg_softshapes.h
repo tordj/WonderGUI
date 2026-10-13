@@ -199,8 +199,19 @@ namespace wg
 
 		static constexpr int	c_maxSagitta = 1;		// Most a chord may stray from its circle, spx.
 		static constexpr int	c_maxVertices = 64;		// Most vertices of an edge in a sub-row, below 64 spx high.
+		static constexpr int	c_maxFlatRadius = 1 << 16;	// Largest corner flattened in advance, spx.
 
 	protected:
+
+		// Edge flattened in advance, with vertices in order of increasing y.
+
+		struct Polyline
+		{
+			const int64_t*	pY;
+			const int64_t*	pX;
+			int				n;
+			int				segment;		// Last segment used, from vertex segment to segment + 1.
+		};
 
 		// Edge of a shape crossing a sub-row, as given by the shape.
 
@@ -212,6 +223,9 @@ namespace wg
 			bool		bShapeSplit;		// Shape decides where to split edge, otherwise junction and limit do.
 			int64_t		junction[2];		// Where the edge changes, as from a corner to a side, INT64_MIN or INT64_MAX if not.
 			int64_t		limit[3];			// Most squared length of chord before, between and after junctions, 0 for straight.
+			int			mirror;				// Edge before it in the sub-row it mirrors, x = mirrorSum - x of that edge, or -1.
+			int64_t		mirrorSum;
+			Polyline*	pPolyline;			// Edge as polyline, instead of from x(), or null.
 		};
 
 		// Straight piece of an edge, part of a polyline from the top to the bottom of a sub-row.
@@ -265,7 +279,17 @@ namespace wg
 		template<class Shape>
 		inline bool				_split(Shape& shape, const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y);
 		inline int				_edgeArea(const Edge& edge, int pixel) const;
-		inline int				_rightOfEdge(const Edge& edge, int pixel, int h) const;
+		inline int64_t			_edgeLeftOf(const Edge& edge, int64_t x) const;
+
+		static inline int64_t	_polylineX(Polyline& polyline, int64_t y);
+
+		struct Quarter
+		{
+			int64_t					r = -1;
+			std::vector<int64_t>	dx, dy;
+		};
+
+		const Quarter&			_quarter(int64_t r);
 
 		static inline int64_t	_area(const Piece& piece, int64_t x);
 		static inline int		_rightOf(const Piece& piece, int pixel);
@@ -275,6 +299,7 @@ namespace wg
 		inline CoveragePixel&	_mixedPixel(int x);
 		inline void				_mixedRun(int beg, int end, const CoveragePixel& pixel);
 		inline void				_accumulate(int segment, int value);
+		void					_mirrorRuns(int sum, int clipBeg, int clipEnd, int& firstRun, int& firstPixel);
 
 		// Ring
 
@@ -320,8 +345,17 @@ namespace wg
 		std::vector<Piece>			m_pieces;
 		std::vector<int64_t>		m_edgeTop;			// x of each edge of a sub-row at top and bottom.
 		std::vector<int64_t>		m_edgeBottom;
+		std::vector<int>			m_edgeTopSegment;	// Segment of polyline at top of sub-row.
 		std::vector<int64_t>		m_cacheY;			// Last x computed for the bottom of a sub-row, for each edge id.
 		std::vector<int64_t>		m_cacheX;
+		std::vector<int64_t>		m_edgeLeftOf;		// Of edges of a sub-row at a pixel boundary.
+		std::vector<int64_t>		m_polylineY;		// Vertices of polylines of a shape.
+		std::vector<int64_t>		m_polylineX;
+
+		static constexpr int		c_quarters = 4;
+		Quarter						m_quarters[c_quarters];		// Recently used, see _quarter().
+		int							m_nextQuarter = 0;
+
 		std::vector<MixSource>		m_mix;
 		std::vector<int>			m_accumulated;		// Coverage of each segment in a pixel, weighted by height of sub-rows.
 		std::vector<int>			m_touched;			// Segments with coverage accumulated.
