@@ -162,24 +162,24 @@ namespace wg
 			Ring = 2
 		};
 
-		enum RingFlags : uint16_t
+		enum class RingFlags : uint16_t
 		{
 			Square			= 1,
-			HasRingOutline	= 1 << 1,
+			HasOutline		= 1 << 1,
 			HasHub			= 1 << 2,
 			HasBack			= 1 << 3,
-			HasRingOutlineTint	= 1 << 4,
+			HasOutlineTint	= 1 << 4,
 			HasHubTint		= 1 << 5,
 			HasBackTint		= 1 << 6
 		};
 
-		enum RingSliceFlags : uint16_t
+		enum class RingSliceFlags : uint16_t
 		{
-			SliceDrawn		= 1,
-			SliceTinted		= 1 << 1
+			Drawn			= 1,
+			Tinted			= 1 << 1
 		};
 
-		enum RoundedBoxFlags : uint16_t
+		enum class RoundedBoxFlags : uint16_t
 		{
 			HasFill			= 1,
 			HasOutline		= 1 << 1,

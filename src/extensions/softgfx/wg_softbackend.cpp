@@ -2371,16 +2371,17 @@ namespace wg
 			m_roundedBox.outline = { values[8], values[9], values[10], values[11] };
 
 			uint16_t flags = pPayload[26];
+			auto has = [flags](RoundedBoxFlags flag) { return (flags & uint16_t(flag)) != 0; };
 			const uint16_t* pTintWords = pPayload + 28;
 
-			HiColor fillColor = (flags & HasFill) ? *pColors++ : HiColor::Transparent;
-			HiColor outlineColor = (flags & HasOutline) ? *pColors++ : HiColor::Transparent;
+			HiColor fillColor = has(RoundedBoxFlags::HasFill) ? *pColors++ : HiColor::Transparent;
+			HiColor outlineColor = has(RoundedBoxFlags::HasOutline) ? *pColors++ : HiColor::Transparent;
 
 			if (m_shapeSegments.size() < 2)
 				m_shapeSegments.resize(2);
 
-			_setupShapeSegment(m_shapeSegments[0], (flags & HasFill) != 0, fillColor, (flags & HasFillTint) != 0, pTintWords, pColors);
-			_setupShapeSegment(m_shapeSegments[1], (flags & HasOutline) != 0, outlineColor, (flags & HasOutlineTint) != 0, pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[0], has(RoundedBoxFlags::HasFill), fillColor, has(RoundedBoxFlags::HasFillTint), pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[1], has(RoundedBoxFlags::HasOutline), outlineColor, has(RoundedBoxFlags::HasOutlineTint), pTintWords, pColors);
 		}
 		else
 		{
@@ -2388,6 +2389,7 @@ namespace wg
 			std::memcpy(values, pPayload, sizeof(values));
 
 			uint16_t flags = pPayload[14];
+			auto has = [flags](RingFlags flag) { return (flags & uint16_t(flag)) != 0; };
 			int nSlices = pPayload[15];
 
 			uint32_t start;
@@ -2396,8 +2398,8 @@ namespace wg
 			m_ring.rect = { values[0], values[1], values[2], values[3] };
 			m_ring.thickness = values[4];
 			m_ring.outline = values[5];
-			m_ring.bSquare = (flags & Square) != 0;
-			m_ring.bBack = (flags & HasBack) != 0;
+			m_ring.bSquare = has(RingFlags::Square);
+			m_ring.bBack = has(RingFlags::HasBack);
 			m_ring.start = start;
 			m_ring.nSlices = nSlices;
 
@@ -2415,32 +2417,32 @@ namespace wg
 
 			// Colors come first, then the colors of the tints, in the same order.
 
-			HiColor outlineColor = (flags & HasRingOutline) ? *pColors++ : HiColor::Transparent;
-			HiColor hubColor = (flags & HasHub) ? *pColors++ : HiColor::Transparent;
-			HiColor backColor = (flags & HasBack) ? *pColors++ : HiColor::Transparent;
+			HiColor outlineColor = has(RingFlags::HasOutline) ? *pColors++ : HiColor::Transparent;
+			HiColor hubColor = has(RingFlags::HasHub) ? *pColors++ : HiColor::Transparent;
+			HiColor backColor = has(RingFlags::HasBack) ? *pColors++ : HiColor::Transparent;
 
 			const HiColor* pSliceColors = pColors;
 
 			for (int i = 0; i < nSlices; i++)
-				if (pSlice[i * 4 + 2] & SliceDrawn)
+				if (pSlice[i * 4 + 2] & uint16_t(RingSliceFlags::Drawn))
 					pColors++;
 
 			int nSegments = SoftShapes::c_ringFirstSliceSegment + nSlices;
 			if ((int)m_shapeSegments.size() < nSegments)
 				m_shapeSegments.resize(nSegments);
 
-			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringOutlineSegment], (flags & HasRingOutline) != 0, outlineColor, (flags & HasRingOutlineTint) != 0, pTintWords, pColors);
-			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringHubSegment], (flags & HasHub) != 0, hubColor, (flags & HasHubTint) != 0, pTintWords, pColors);
-			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringBackSegment], (flags & HasBack) != 0, backColor, (flags & HasBackTint) != 0, pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringOutlineSegment], has(RingFlags::HasOutline), outlineColor, has(RingFlags::HasOutlineTint), pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringHubSegment], has(RingFlags::HasHub), hubColor, has(RingFlags::HasHubTint), pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringBackSegment], has(RingFlags::HasBack), backColor, has(RingFlags::HasBackTint), pTintWords, pColors);
 
 			for (int i = 0; i < nSlices; i++)
 			{
 				uint16_t sliceFlags = pSlice[i * 4 + 2];
-				bool bDrawn = (sliceFlags & SliceDrawn) != 0;
+				bool bDrawn = (sliceFlags & uint16_t(RingSliceFlags::Drawn)) != 0;
 
 				HiColor color = bDrawn ? *pSliceColors++ : HiColor::Transparent;
 
-				_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringFirstSliceSegment + i], bDrawn, color, (sliceFlags & SliceTinted) != 0, pTintWords, pColors);
+				_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringFirstSliceSegment + i], bDrawn, color, (sliceFlags & uint16_t(RingSliceFlags::Tinted)) != 0, pTintWords, pColors);
 			}
 		}
 

@@ -73,7 +73,7 @@ extern "C" {
 	typedef struct wg_ringSpec_struct
 	{
 		wg_rectSPX			rect;
-		wg_spx				thickness;		// Width of ring, outline included. 0 for a full pie or disc.
+		wg_spx				thickness;		// Width of ring, outline included. 0 or at least the radius for a full pie or disc.
 		wg_spx				outline;
 		float				start;			// Fraction of a turn clockwise from 12 o'clock.
 		int					nSlices;

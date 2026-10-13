@@ -458,12 +458,13 @@ namespace wg
 						spx v[13];
 						std::memcpy(v, pPayload, sizeof(v));
 						uint16_t flags = pPayload[26];
+						auto has = [flags](RoundedBoxFlags flag) { return (flags & uint16_t(flag)) != 0; };
 
 						*m_pOStream << "    DrawShape: RoundedBox " << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3]
 							<< " radius: " << v[4] << ", " << v[5] << ", " << v[6] << ", " << v[7]
 							<< " outline: " << v[8] << ", " << v[9] << ", " << v[10] << ", " << v[11]
-							<< (flags & HasFill ? " fill" : "") << (flags & HasOutline ? " outline" : "")
-							<< (flags & HasFillTint ? " fillTint" : "") << (flags & HasOutlineTint ? " outlineTint" : "")
+							<< (has(RoundedBoxFlags::HasFill) ? " fill" : "") << (has(RoundedBoxFlags::HasOutline) ? " outline" : "")
+							<< (has(RoundedBoxFlags::HasFillTint) ? " fillTint" : "") << (has(RoundedBoxFlags::HasOutlineTint) ? " outlineTint" : "")
 							<< " split into " << nRects << " rectangles." << std::endl;
 					}
 					else if (kind == ShapeKind::Ring)
@@ -471,6 +472,7 @@ namespace wg
 						spx v[7];
 						std::memcpy(v, pPayload, sizeof(v));
 						uint16_t flags = pPayload[14];
+						auto has = [flags](RingFlags flag) { return (flags & uint16_t(flag)) != 0; };
 						int nSlices = pPayload[15];
 						uint32_t start;
 						std::memcpy(&start, pPayload + 16, 4);
@@ -478,8 +480,8 @@ namespace wg
 						*m_pOStream << "    DrawShape: Ring " << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3]
 							<< " thickness: " << v[4] << " outline: " << v[5] << " start: " << start / double(0x80000000)
 							<< " slices: " << nSlices
-							<< (flags & Square ? " square" : "") << (flags & HasRingOutline ? " outline" : "")
-							<< (flags & HasHub ? " hub" : "") << (flags & HasBack ? " back" : "")
+							<< (has(RingFlags::Square) ? " square" : "") << (has(RingFlags::HasOutline) ? " outline" : "")
+							<< (has(RingFlags::HasHub) ? " hub" : "") << (has(RingFlags::HasBack) ? " back" : "")
 							<< " split into " << nRects << " rectangles." << std::endl;
 					}
 					else

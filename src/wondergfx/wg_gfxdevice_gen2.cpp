@@ -1569,13 +1569,13 @@ void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
 
 	uint16_t flags = 0;
 	if (bHasFill)
-		flags |= GfxBackend::HasFill;
+		flags |= uint16_t(GfxBackend::RoundedBoxFlags::HasFill);
 	if (bHasOutline)
-		flags |= GfxBackend::HasOutline;
+		flags |= uint16_t(GfxBackend::RoundedBoxFlags::HasOutline);
 	if (pTints[0])
-		flags |= GfxBackend::HasFillTint;
+		flags |= uint16_t(GfxBackend::RoundedBoxFlags::HasFillTint);
 	if (pTints[1])
-		flags |= GfxBackend::HasOutlineTint;
+		flags |= uint16_t(GfxBackend::RoundedBoxFlags::HasOutlineTint);
 
 	int nWords = 4 * 2 * 3 + 2 + 2 + nTintWords[0] + nTintWords[1];
 	int nColors = (bHasFill ? 1 : 0) + (bHasOutline ? 1 : 0) + nTintColors[0] + nTintColors[1];
@@ -1749,19 +1749,19 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 
 	uint16_t flags = 0;
 	if (spec.bSquare)
-		flags |= GfxBackend::Square;
+		flags |= uint16_t(GfxBackend::RingFlags::Square);
 	if (bOutline)
-		flags |= GfxBackend::HasRingOutline;
+		flags |= uint16_t(GfxBackend::RingFlags::HasOutline);
 	if (bHub)
-		flags |= GfxBackend::HasHub;
+		flags |= uint16_t(GfxBackend::RingFlags::HasHub);
 	if (bBack)
-		flags |= GfxBackend::HasBack;
+		flags |= uint16_t(GfxBackend::RingFlags::HasBack);
 	if (bOutline && spec.pOutlineTint)
-		flags |= GfxBackend::HasRingOutlineTint;
+		flags |= uint16_t(GfxBackend::RingFlags::HasOutlineTint);
 	if (bHub && spec.pHubTint)
-		flags |= GfxBackend::HasHubTint;
+		flags |= uint16_t(GfxBackend::RingFlags::HasHubTint);
 	if (bBack && spec.pBackTint)
-		flags |= GfxBackend::HasBackTint;
+		flags |= uint16_t(GfxBackend::RingFlags::HasBackTint);
 
 	float start = std::isfinite(spec.start) ? spec.start - std::floor(spec.start) : 0.f;
 
@@ -1784,9 +1784,9 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 
 		uint16_t sliceFlags = 0;
 		if (bDrawn)
-			sliceFlags |= GfxBackend::SliceDrawn;
+			sliceFlags |= uint16_t(GfxBackend::RingSliceFlags::Drawn);
 		if (bDrawn && slice.pTint)
-			sliceFlags |= GfxBackend::SliceTinted;
+			sliceFlags |= uint16_t(GfxBackend::RingSliceFlags::Tinted);
 
 		commands.pushUnchecked(uint32_t(double(size) * 2147483648.0));
 		commands.pushUnchecked(sliceFlags);
@@ -1824,11 +1824,11 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 		nTints++;
 	};
 
-	if (flags & GfxBackend::HasRingOutlineTint)
+	if (flags & uint16_t(GfxBackend::RingFlags::HasOutlineTint))
 		encodeTint(spec.pOutlineTint);
-	if (flags & GfxBackend::HasHubTint)
+	if (flags & uint16_t(GfxBackend::RingFlags::HasHubTint))
 		encodeTint(spec.pHubTint);
-	if (flags & GfxBackend::HasBackTint)
+	if (flags & uint16_t(GfxBackend::RingFlags::HasBackTint))
 		encodeTint(spec.pBackTint);
 
 	for (int i = 0; i < nSlices; i++)
