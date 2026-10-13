@@ -195,8 +195,6 @@ static void populateBody(wg_c_calls_body * pBody)
 	pBody->gfxDevice.setTintColor			= LOCKED(wg_setTintColor);
 	pBody->gfxDevice.clearTintColor			= LOCKED(wg_clearTintColor);
 	pBody->gfxDevice.hasTintColor			= LOCKED(wg_hasTintColor);
-	pBody->gfxDevice.drawRoundedBox			= LOCKED(wg_drawRoundedBox);
-	pBody->gfxDevice.drawRing				= LOCKED(wg_drawRing);
 	pBody->gfxDevice.getTintColor			= LOCKED(wg_getTintColor);
 
 	pBody->gfxDevice.setTintmap				= &stub_setTintmap;
@@ -270,6 +268,9 @@ static void populateBody(wg_c_calls_body * pBody)
 	pBody->gfxDevice.rotScaleBlur			= LOCKED(wg_rotScaleBlur);
 
 	pBody->gfxDevice.setBlurbrush			= LOCKED(wg_setBlurbrush);
+
+	pBody->gfxDevice.drawRoundedBox			= LOCKED(wg_drawRoundedBox);
+	pBody->gfxDevice.drawRing				= LOCKED(wg_drawRing);
 
 /*
 	pBody->streamBuffer.structSize				= sizeof(wg_streambuffer_calls);

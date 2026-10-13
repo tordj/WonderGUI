@@ -563,7 +563,7 @@ bool ShapeRenderTest::linearBackendTest(std::ostream& output)
 	std::vector<uint8_t> linearPixels(c_canvasSize.w * c_canvasSize.h * 4, 0);
 
 	auto pLinearBackend = LinearBackend::create(
-		WGBP(LinearBackend, _.mirrorBuffer = 256 * 1024, _.maxMirrorBuffer = 256 * 1024),
+		WGBP(LinearBackend, _.mirrorBuffer = SoftShapes::c_defaultMaxMirrorBuffer, _.maxMirrorBuffer = SoftShapes::c_defaultMaxMirrorBuffer),
 		[&](CanvasRef ref, int bytes)
 		{
 			return (void*)buffer.data();
@@ -793,13 +793,13 @@ bool ShapeRenderTest::ringTest(std::ostream& output)
 
 	uint32_t sizes[5];
 	for (int i = 0; i < 5; i++)
-		sizes[i] = uint32_t(double(slices[i].size) * 2147483648.0);
+		sizes[i] = uint32_t(double(slices[i].size) * GfxBackend::c_shapeFullTurn);
 
 	SoftShapes::Ring shape;
 	shape.rect = ring.rect;
 	shape.thickness = ring.thickness;
 	shape.outline = ring.outline;
-	shape.start = uint32_t(double(ring.start - std::floor(ring.start)) * 2147483648.0) % 0x80000000;
+	shape.start = uint32_t(double(ring.start - std::floor(ring.start)) * GfxBackend::c_shapeFullTurn) % GfxBackend::c_shapeFullTurn;
 	shape.nSlices = 5;
 	shape.pSliceSizes = sizes;
 
