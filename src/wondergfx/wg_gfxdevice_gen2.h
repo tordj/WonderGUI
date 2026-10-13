@@ -304,6 +304,8 @@ namespace wg
 		void _stretchBlitWithRigidPartX(const RectSPX& src, const RectSPX& dst, spx rigidPartOfs, spx rigidPartLength, spx rigidPartLengthDst);
 		void _stretchBlitWithRigidPartY(const RectSPX& src, const RectSPX& dst, spx rigidPartOfs, spx rigidPartLength, spx rigidPartLengthDst);
 
+		bool _isShapeColorDrawn(HiColor color) const;
+		int _addShapeClipRects(const RectSPX& area);
 
 		//
 

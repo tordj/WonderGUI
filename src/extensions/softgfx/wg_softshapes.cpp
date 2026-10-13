@@ -29,20 +29,22 @@
 
 namespace wg
 {
-	// Pixel index of spx value, rounded down or up, for values that can be far outside any canvas.
-
-	static inline int floorPixel(int64_t value)
-	{
-		int64_t pixel = value >> 6;
-		return int(pixel < -0x40000000 ? -0x40000000 : pixel > 0x40000000 ? 0x40000000 : pixel);
-	}
-
-	static inline int ceilPixel(int64_t value) { return floorPixel(value + 63); }
-
-	static const int64_t c_one = int64_t(1) << 32;			// 1.0 in 32.32 fixed point.
-
 	namespace
 	{
+		const int64_t c_one = int64_t(1) << 32;			// 1.0 in 32.32 fixed point.
+
+		const int16_t c_noColor[4] = { 0, 0, 0, 0 };
+
+		// Pixel index of spx value, rounded down or up, for values that can be far outside any canvas.
+
+		inline int floorPixel(int64_t value)
+		{
+			int64_t pixel = value >> 6;
+			return int(pixel < -0x40000000 ? -0x40000000 : pixel > 0x40000000 ? 0x40000000 : pixel);
+		}
+
+		inline int ceilPixel(int64_t value) { return floorPixel(value + 63); }
+
 		//____ Sine table _____________________________________________________
 		// sin(i/1024 * pi/2) in 2.30 fixed point, generated at compile time.
 
@@ -138,7 +140,29 @@ namespace wg
 			return ((value * int64_t(frac >> 16)) >> 16) + ((value * int64_t(frac & 0xFFFF)) >> 32);
 		}
 
-		const int16_t c_noColor[4] = { 0, 0, 0, 0 };
+		//____ splitPoint() ___________________________________________________
+		/*
+			Point strictly between a and b, which are at least 2 apart, where the most low
+			bits are zero. It is near the middle and, unlike the middle rounded down, where
+			the mirror image of the interval would be split, so that symmetric shapes stay
+			symmetric.
+		*/
+
+		inline int64_t splitPoint(int64_t a, int64_t b)
+		{
+			int bits = 0;
+			while ((int64_t(2) << bits) <= b - a)
+				bits++;
+
+			int64_t mid = ((a >> bits) + 1) << bits;
+			while (mid >= b)
+			{
+				bits--;
+				mid = ((a >> bits) + 1) << bits;
+			}
+
+			return mid;
+		}
 	}
 
 	//____ EdgeShape __________________________________________________________
@@ -185,37 +209,13 @@ namespace wg
 		int64_t			symmetrySumY = 0;		// to symmetrySumY - y.
 	};
 
-	//____ splitPoint() _______________________________________________________
-	/*
-		Point strictly between a and b, which are at least 2 apart, where the most low
-		bits are zero. It is near the middle and, unlike the middle rounded down, where
-		the mirror image of the interval would be split, so that symmetric shapes stay
-		symmetric.
-	*/
-
-	static inline int64_t splitPoint(int64_t a, int64_t b)
-	{
-		int bits = 0;
-		while ((int64_t(2) << bits) <= b - a)
-			bits++;
-
-		int64_t mid = ((a >> bits) + 1) << bits;
-		while (mid >= b)
-		{
-			bits--;
-			mid = ((a >> bits) + 1) << bits;
-		}
-
-		return mid;
-	}
-
 	//____ _polylineX() _______________________________________________________
 	// x of polyline at y, between its first and last vertex.
 
 	inline int64_t SoftShapes::_polylineX(Polyline& polyline, int64_t y)
 	{
 		const int64_t* pY = polyline.pY;
-		int k = polyline.segment;
+		int k = polyline.line;
 
 		while (k > 0 && pY[k] > y)
 			k--;
@@ -223,7 +223,7 @@ namespace wg
 		while (k < polyline.n - 2 && pY[k + 1] < y)
 			k++;
 
-		polyline.segment = k;
+		polyline.line = k;
 
 		const int64_t y1 = pY[k], y2 = pY[k + 1];
 		const int64_t x1 = polyline.pX[k], x2 = polyline.pX[k + 1];
@@ -235,8 +235,8 @@ namespace wg
 			return x2;
 
 		// Weighted by distance to the other vertex, the same whichever vertex comes first,
-		// so that mirrored corners stay mirrored. Rounded to nearest. Segments of corners
-		// are short, divisions rare.
+		// so that mirrored corners stay mirrored. Rounded to nearest. Lines of corners are
+		// short, divisions rare.
 
 		const int64_t base = std::min(x1, x2);
 		const int64_t h = y2 - y1;
@@ -265,32 +265,6 @@ namespace wg
 
 		int64_t d = x - piece.lo;
 		return (d * ((d * piece.inv) >> 5)) >> 27;			// d^2 * 32 / (hi - lo)
-	}
-
-	inline int SoftShapes::_rightOf(const Piece& piece, int pixel)
-	{
-		if (pixel < piece.bandBeg)
-			return 0;
-
-		if (pixel >= piece.bandEnd)
-			return c_fullCoverage;
-
-		int64_t x = int64_t(pixel) * 64;
-		return int(_area(piece, x + 64) - _area(piece, x));
-	}
-
-	//____ _edgeArea() ________________________________________________________
-	// Area of pixel right of edge, 4096 for each spx of height of the sub-row.
-
-	inline int SoftShapes::_edgeArea(const Edge& edge, int pixel) const
-	{
-		const Piece* pPiece = m_pieces.data() + edge.first;
-
-		int area = 0;
-		for (int i = 0; i < edge.n; i++)
-			area += pPiece[i].h * _rightOf(pPiece[i], pixel);
-
-		return area;
 	}
 
 	//____ _edgeLeftOf() ______________________________________________________
@@ -326,7 +300,7 @@ namespace wg
 	{
 		MixSource& mix = m_mix[segment];
 
-		if (mix.stride == 0)
+		if (mix.bFlat)
 			return mix.p;
 
 		if (mix.row != m_row)
@@ -410,48 +384,51 @@ namespace wg
 
 	void SoftShapes::setMirrorBuffer(int initialBytes, int maxBytes)
 	{
-		m_keptMax = std::min(std::max(maxBytes, 0), INT_MAX / 2);
-		initialBytes = std::min(std::max(initialBytes, 0), m_keptMax);
+		m_mirrorBufferMax = std::min(std::max(maxBytes, 0), INT_MAX / 2);
+		initialBytes = std::min(std::max(initialBytes, 0), m_mirrorBufferMax);
 
-		if (m_keptSize > m_keptMax || m_keptSize < initialBytes)
+		if (m_mirrorBufferSize > m_mirrorBufferMax || m_mirrorBufferSize < initialBytes)
 		{
-			m_pKept.reset(initialBytes > 0 ? new uint8_t[initialBytes] : nullptr);
-			m_keptSize = initialBytes;
-			m_keptUsed = 0;
+			m_pMirrorBuffer.reset(initialBytes > 0 ? new uint8_t[initialBytes] : nullptr);
+			m_mirrorBufferSize = initialBytes;
+			m_mirrorBufferUsed = 0;
 		}
 	}
 
-	//____ _reserveKept() _____________________________________________________
-	// Makes room for bytes of kept rows, keeping those used, unless above the most allowed.
+	//____ _reserveMirrorBuffer() _____________________________________________
+	// Makes room for bytes in the mirror buffer, keeping those used, unless above the most allowed.
 
-	bool SoftShapes::_reserveKept(int bytes)
+	bool SoftShapes::_reserveMirrorBuffer(int bytes)
 	{
-		if (bytes <= m_keptSize)
+		if (bytes <= m_mirrorBufferSize)
 			return true;
 
-		if (bytes > m_keptMax)
+		if (bytes > m_mirrorBufferMax)
 			return false;
 
-		const int size = std::min(std::max({ bytes, m_keptSize * 2, 4096 }), m_keptMax);
+		const int size = std::min(std::max({ bytes, m_mirrorBufferSize * 2, 4096 }), m_mirrorBufferMax);
 
 		uint8_t* p = new uint8_t[size];
-		if (m_keptUsed > 0)
-			std::memcpy(p, m_pKept.get(), m_keptUsed);
+		if (m_mirrorBufferUsed > 0)
+			std::memcpy(p, m_pMirrorBuffer.get(), m_mirrorBufferUsed);
 
-		m_pKept.reset(p);
-		m_keptSize = size;
+		m_pMirrorBuffer.reset(p);
+		m_mirrorBufferSize = size;
 		return true;
 	}
 
-	//____ _mirrorRuns() ______________________________________________________
+	//____ _mirrorRunsX() _____________________________________________________
 	/*
 		Adds the mirror image of the runs of a row done up to its middle, pixel x of it at
-		sum - 1 - x, as far as clipEnd. Runs left of clipBeg, done for their mirror image,
-		are skipped by starting at firstRun and firstPixel.
+		m_mirrorSumX - 1 - x, as far as m_outEnd. Runs left of m_outBeg, done for their
+		mirror image, are skipped by starting at m_firstRun and m_firstPixel.
 	*/
 
-	void SoftShapes::_mirrorRuns(int sum, int clipBeg, int clipEnd, int& firstRun, int& firstPixel)
+	void SoftShapes::_mirrorRunsX()
 	{
+		const int sum = m_mirrorSumX;
+		const int clipBeg = m_outBeg;
+		const int clipEnd = m_outEnd;
 		const int middle = m_clipEnd;
 		const int nRuns = m_nRuns;
 		int pixelEnd = m_nPixels;
@@ -477,8 +454,8 @@ namespace wg
 			pixelEnd = pixelBeg;
 		}
 
-		firstRun = 0;
-		firstPixel = 0;
+		int firstRun = 0;
+		int firstPixel = 0;
 
 		while (firstRun < m_nRuns && m_runs[firstRun].end <= clipBeg)
 		{
@@ -494,6 +471,9 @@ namespace wg
 				firstPixel += clipBeg - run.begin;
 			run.begin = clipBeg;
 		}
+
+		m_firstRun = firstRun;
+		m_firstPixel = firstPixel;
 	}
 
 	//____ _accumulate() ______________________________________________________
@@ -537,7 +517,7 @@ namespace wg
 			bool bFlat = true;
 			const int16_t* p = pSink->segmentColors(i, rowBeg, clipBeg, clipEnd, bFlat);
 
-			m_mix[i] = { p, (p && !bFlat) ? 4 : 0, rowBeg };
+			m_mix[i] = { p, !p || bFlat, rowBeg };
 
 			if (p)
 			{
@@ -554,7 +534,7 @@ namespace wg
 		// flat colors, are done up to the middle and mirrored, from further left if clipped
 		// more on the right, so that pixels are the same however clipped.
 
-		m_bMirror = false;
+		m_bMirrorX = false;
 		m_outBeg = clipBeg;
 		m_outEnd = clipEnd;
 
@@ -565,8 +545,8 @@ namespace wg
 
 			if (clipEnd > middle)
 			{
-				m_bMirror = true;
-				m_mirrorSum = sum;
+				m_bMirrorX = true;
+				m_mirrorSumX = sum;
 				m_clipBeg = std::min(clipBeg, sum - clipEnd);
 				m_clipEnd = middle;
 			}
@@ -584,8 +564,8 @@ namespace wg
 		{
 			m_accumulated.resize(nSegments, 0);
 			m_touched.resize(nSegments);
-			m_layerSegments.resize(nSegments);
-			m_layerCoverage.resize(nSegments);
+			m_pixelSegments.resize(nSegments);
+			m_pixelCoverage.resize(nSegments);
 		}
 
 		if ((int)m_edgeDefs.size() < shape.maxEdges)
@@ -594,7 +574,7 @@ namespace wg
 			m_edgeTop.resize(shape.maxEdges);
 			m_edgeBottom.resize(shape.maxEdges);
 			m_edgeLeftOf.resize(shape.maxEdges);
-			m_edgeTopSegment.resize(shape.maxEdges);
+			m_edgeTopLine.resize(shape.maxEdges);
 		}
 
 		m_cacheY.assign(shape.nIds, INT64_MIN);
@@ -610,33 +590,33 @@ namespace wg
 		// if the upper half is clipped. Upper rows are kept for it, as far as there is room
 		// in the mirror buffer, see setMirrorBuffer().
 
-		bool bFlip = false;
-		int flipSum = 0;						// Row + its mirror image + 1.
-		int flipMiddle = 0;
+		bool bMirrorY = false;
+		int mirrorSumY = 0;						// Row + its mirror image + 1.
+		int middleY = 0;
 		bool bKeep = false;
 		int keptBeg = 0;						// Row of first entry of index of kept rows...
 		int nKeptIndex = 0;						// ...and their number.
 
 		if (bAllFlat && shape.bSymmetricY && (shape.symmetrySumY & 63) == 0)
 		{
-			flipSum = int(shape.symmetrySumY >> 6);
-			flipMiddle = (flipSum + 1) >> 1;
+			mirrorSumY = int(shape.symmetrySumY >> 6);
+			middleY = (mirrorSumY + 1) >> 1;
 
-			if (rowEnd > flipMiddle)
+			if (rowEnd > middleY)
 			{
-				bFlip = true;
-				keptBeg = flipSum - rowEnd;
-				nKeptIndex = rowEnd - std::max(rowBeg, flipMiddle);
+				bMirrorY = true;
+				keptBeg = mirrorSumY - rowEnd;
+				nKeptIndex = rowEnd - std::max(rowBeg, middleY);
 
 				const int indexBytes = nKeptIndex * int(sizeof(int));
 
-				m_keptUsed = 0;
-				bKeep = _reserveKept(indexBytes);
+				m_mirrorBufferUsed = 0;
+				bKeep = _reserveMirrorBuffer(indexBytes);
 				if (bKeep)
 				{
-					int* pIndex = reinterpret_cast<int*>(m_pKept.get());
+					int* pIndex = reinterpret_cast<int*>(m_pMirrorBuffer.get());
 					std::fill(pIndex, pIndex + nKeptIndex, -1);
-					m_keptUsed = indexBytes;
+					m_mirrorBufferUsed = indexBytes;
 				}
 			}
 		}
@@ -658,15 +638,15 @@ namespace wg
 			if (bAllFlat)
 				rowsEnd = std::max(row + 1, std::min(shape.uniformEnd(row), rowEnd));
 
-			if (bFlip && row >= flipMiddle)
+			if (bMirrorY && row >= middleY)
 			{
-				const int source = flipSum - 1 - row;
+				const int source = mirrorSumY - 1 - row;
 				const int k = source - keptBeg;
-				const int kept = (bKeep && k >= 0 && k < nKeptIndex) ? reinterpret_cast<const int*>(m_pKept.get())[k] : -1;
+				const int kept = (bKeep && k >= 0 && k < nKeptIndex) ? reinterpret_cast<const int*>(m_pMirrorBuffer.get())[k] : -1;
 
 				if (kept >= 0)
 				{
-					const uint8_t* p = m_pKept.get() + kept;
+					const uint8_t* p = m_pMirrorBuffer.get() + kept;
 					const KeptRow& keptRow = *reinterpret_cast<const KeptRow*>(p);
 					const Run* pRuns = reinterpret_cast<const Run*>(p + sizeof(KeptRow));
 					const CoveragePixel* pPixels = reinterpret_cast<const CoveragePixel*>(p + sizeof(KeptRow) + keptRow.nRuns * sizeof(Run));
@@ -695,23 +675,23 @@ namespace wg
 			if (bKeep)
 			{
 				const int keepBeg = std::max(row - keptBeg, 0);
-				const int keepEnd = std::min(std::min(rowsEnd, flipMiddle) - keptBeg, nKeptIndex);
+				const int keepEnd = std::min(std::min(rowsEnd, middleY) - keptBeg, nKeptIndex);
 				const int runBytes = nRuns * int(sizeof(Run));
 				const int bytes = int(sizeof(KeptRow)) + runBytes + nPixels * int(sizeof(CoveragePixel));
 
-				if (keepBeg < keepEnd && _reserveKept(m_keptUsed + bytes))
+				if (keepBeg < keepEnd && _reserveMirrorBuffer(m_mirrorBufferUsed + bytes))
 				{
-					uint8_t* p = m_pKept.get() + m_keptUsed;
+					uint8_t* p = m_pMirrorBuffer.get() + m_mirrorBufferUsed;
 
 					*reinterpret_cast<KeptRow*>(p) = { nRuns, nPixels };
 					std::memcpy(p + sizeof(KeptRow), m_runs.data() + m_firstRun, runBytes);
 					std::memcpy(p + sizeof(KeptRow) + runBytes, m_pixels.data() + m_firstPixel, nPixels * sizeof(CoveragePixel));
 
-					int* pIndex = reinterpret_cast<int*>(m_pKept.get());
+					int* pIndex = reinterpret_cast<int*>(m_pMirrorBuffer.get());
 					for (int i = keepBeg; i < keepEnd; i++)
-						pIndex[i] = m_keptUsed;
+						pIndex[i] = m_mirrorBufferUsed;
 
-					m_keptUsed += bytes;
+					m_mirrorBufferUsed += bytes;
 				}
 			}
 
@@ -799,37 +779,8 @@ namespace wg
 		m_firstRun = 0;
 		m_firstPixel = 0;
 
-		if (m_bMirror)
-			_mirrorRuns(m_mirrorSum, m_outBeg, m_outEnd, m_firstRun, m_firstPixel);
-	}
-
-	//____ _split() ___________________________________________________________
-	// Tells if an edge must be split between (ya, xa) and (yb, xb), and where.
-
-	template<class Shape>
-	inline bool SoftShapes::_split(Shape& shape, const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y)
-	{
-		if (edge.bShapeSplit)
-			return shape.split(edge, ya, xa, yb, xb, y);
-
-		for (int i = 0; i < 2; i++)
-		{
-			if (edge.junction[i] > ya && edge.junction[i] < yb)
-			{
-				y = edge.junction[i];
-				return true;
-			}
-		}
-
-		const int region = ya >= edge.junction[1] ? 2 : ya >= edge.junction[0] ? 1 : 0;
-		const int64_t limit = edge.limit[region];
-		const int64_t h = yb - ya;
-
-		if (limit == 0 || h <= 4 || (xa - xb) * (xa - xb) + h * h <= limit)
-			return false;
-
-		y = splitPoint(ya, yb);
-		return true;
+		if (m_bMirrorX)
+			_mirrorRunsX();
 	}
 
 	//____ _subRowEdges() _____________________________________________________
@@ -846,7 +797,7 @@ namespace wg
 
 		int64_t* pTop = m_edgeTop.data();
 		int64_t* pBottom = m_edgeBottom.data();
-		int* pTopSegment = m_edgeTopSegment.data();
+		int* pTopLine = m_edgeTopLine.data();
 
 		for (int i = 0; i < nEdges; i++)
 		{
@@ -860,7 +811,7 @@ namespace wg
 			else if (def.pPolyline)
 			{
 				pTop[i] = _polylineX(*def.pPolyline, ya);
-				pTopSegment[i] = def.pPolyline->segment;
+				pTopLine[i] = def.pPolyline->line;
 				pBottom[i] = _polylineX(*def.pPolyline, yb);
 			}
 			else
@@ -967,7 +918,7 @@ namespace wg
 				int64_t y = ya;
 				int64_t x = pTop[i];
 
-				for (int k = pTopSegment[i] + 1; k < polyline.n && polyline.pY[k] < yb; k++)
+				for (int k = pTopLine[i] + 1; k < polyline.n && polyline.pY[k] < yb; k++)
 				{
 					if (polyline.pY[k] > y)
 					{
@@ -999,7 +950,7 @@ namespace wg
 				const int64_t x2 = stackX[nStack - 1];
 
 				int64_t ySplit;
-				if (!pDefs[i].bClamped && nStack < c_maxVertices && y2 - y > 1 && _split(shape, pDefs[i], y, x, y2, x2, ySplit))
+				if (!pDefs[i].bClamped && nStack < c_maxVertices && y2 - y > 1 && shape.split(pDefs[i], y, x, y2, x2, ySplit))
 				{
 					stackY[nStack] = ySplit;
 					stackX[nStack++] = shape.x(pDefs[i], ySplit);
@@ -1051,7 +1002,7 @@ namespace wg
 							 int16_t((pColor[3] * full) >> 12), int16_t(full), 0 };
 				};
 
-				if (m_mix[segment].stride == 0)
+				if (m_mix[segment].bFlat)
 					_mixedRun(beg, end, mixed(pColor));
 				else
 				{
@@ -1226,9 +1177,9 @@ namespace wg
 
 	//____ _generalRow() ______________________________________________________
 	/*
-		A row of several sub-rows, or with overlapping bands. Coverage of each pixel is
-		accumulated per segment over the sub-rows, weighted by their height. Stretches of
-		pixels outside all bands have the same coverage throughout.
+		A row where several sub-rows have edges. Coverage of each pixel is accumulated per
+		segment over the sub-rows, weighted by their height. Stretches of pixels outside all
+		bands have the same coverage throughout.
 	*/
 
 	void SoftShapes::_generalRow(int nSubRows)
@@ -1284,9 +1235,12 @@ namespace wg
 				int prevArea = subRow.h * c_fullCoverage;
 				int segment = subRow.segment;
 
+				const int64_t x64 = int64_t(x) * 64;
+
 				for (int i = subRow.next; i < end && pEdges[i].bandBeg <= x; i++)
 				{
-					int area = std::min(std::max(_edgeArea(pEdges[i], x), 0), prevArea);
+					const int right = int(_edgeLeftOf(pEdges[i], x64 + 64) - _edgeLeftOf(pEdges[i], x64));		// Area of pixel right of edge.
+					const int area = std::min(std::max(right, 0), prevArea);
 					_accumulate(segment, prevArea - area);
 					prevArea = area;
 					segment = pEdges[i].segment;
@@ -1308,10 +1262,10 @@ namespace wg
 
 	void SoftShapes::_emitAccumulated(int beg, int end)
 	{
-		int* pSegments = m_layerSegments.data();
-		int* pCoverage = m_layerCoverage.data();
+		int* pSegments = m_pixelSegments.data();
+		int* pCoverage = m_pixelCoverage.data();
 
-		int nLayers = 0;
+		int nSegments = 0;
 		int full = -1;
 		int total = 0;
 		int prev = 0;
@@ -1331,8 +1285,8 @@ namespace wg
 
 			if (coverage > 0)
 			{
-				pSegments[nLayers] = segment;
-				pCoverage[nLayers++] = coverage;
+				pSegments[nSegments] = segment;
+				pCoverage[nSegments++] = coverage;
 			}
 		}
 
@@ -1345,15 +1299,15 @@ namespace wg
 		}
 
 		bool bFlat = true;
-		for (int i = 0; i < nLayers; i++)
-			if (m_mix[pSegments[i]].stride != 0)
+		for (int i = 0; i < nSegments; i++)
+			if (!m_mix[pSegments[i]].bFlat)
 				bFlat = false;
 
 		for (int x = beg; x < end; x++)
 		{
 			int b = 0, g = 0, r = 0, a = 0, c = 0;
 
-			for (int i = 0; i < nLayers; i++)
+			for (int i = 0; i < nSegments; i++)
 			{
 				const int16_t* pColor = _mixColor(pSegments[i], x);
 				if (!pColor)
@@ -1442,15 +1396,20 @@ namespace wg
 		Box with rounded corners and an outline inside it, as two contours: the outer edge
 		and the inner edge of the outline.
 
-		Along a row, a contour reaches from its left edge, the rightmost of its left side and
-		the left corners whose quarter the row is in, to its right edge, the leftmost of its
-		right side and right corners. The fill reaches from the rightmost of the left edges
-		of both contours to the leftmost of their right edges, so where an inner corner
-		reaches past the outer edge, as with uneven outlines, the outline just gets thin.
-		Where left and right edge of a contour pass each other it is closed.
+		Regular boxes, where the inner contour stays inside the outer one and doesn't close,
+		as with even outlines, have their edges flattened into polylines in advance, the
+		corners as from _quarter(). Right edges with the same corners as the left are their
+		mirror images.
 
-		Edges are split where corners begin and end, and bisected where they bend too much
-		or kink, where another side or corner takes over or the contour closes.
+		Other boxes have edges evaluated row by row. Along a row, a contour reaches from its
+		left edge, the rightmost of its left side and the left corners whose quarter the row
+		is in, to its right edge, the leftmost of its right side and right corners. The fill
+		reaches from the rightmost of the left edges of both contours to the leftmost of
+		their right edges, so where an inner corner reaches past the outer edge, as with
+		uneven outlines, the outline just gets thin. Where left and right edge of a contour
+		pass each other it is closed. Edges are split where corners begin and end, and
+		bisected where they bend too much or kink, where another side or corner takes over
+		or the contour closes.
 
 		Edge ids: 0 outer left, 1 outer right, 2 inner left, 3 inner right.
 	*/
@@ -1490,25 +1449,14 @@ namespace wg
 		int			nEvents = 0;
 		int64_t		eventBeg[12], eventEnd[12];	// Where rows aren't all the same, see uniformEnd().
 
-		Eval		cache[4];
-		int			nextCache = 0;
-
-		struct Root
-		{
-			int64_t		y, cy, r;
-			int64_t		dx;						// Half width of circle at y.
-		};
-
-		static constexpr int	c_roots = 32;
-		Root		roots[c_roots];
+		static constexpr int	c_evals = 4;
+		Eval		evals[c_evals];				// Recently evaluated, see eval().
+		int			nextEval = 0;
 
 		BoxShape()
 		{
-			for (auto& eval : cache)
-				eval.y = INT64_MIN;
-
-			for (auto& root : roots)
-				root.y = INT64_MIN;
+			for (auto& e : evals)
+				e.y = INT64_MIN;
 		}
 
 		//____ setupContour() _________________________________________________
@@ -1582,12 +1530,6 @@ namespace wg
 		//____ addEvents() ____________________________________________________
 		// Splits where contours begin and end, events for uniformEnd().
 
-		void addEvent(int64_t beg, int64_t end)
-		{
-			eventBeg[nEvents] = beg;
-			eventEnd[nEvents++] = end;
-		}
-
 		void addEvents(const Contour& c, std::vector<int64_t>& splits)
 		{
 			if (!c.bExists)
@@ -1610,16 +1552,23 @@ namespace wg
 			}
 		}
 
+		void addEvent(int64_t beg, int64_t end)
+		{
+			eventBeg[nEvents] = beg;
+			eventEnd[nEvents++] = end;
+		}
+
 		//____ eval() _________________________________________________________
+		// Edges at y, kept for the last few y as edges are evaluated at the same y in turn.
 
 		const Eval& eval(int64_t y)
 		{
-			for (auto& e : cache)
+			for (auto& e : evals)
 				if (e.y == y)
 					return e;
 
-			Eval& e = cache[nextCache];
-			nextCache = (nextCache + 1) & 3;
+			Eval& e = evals[nextEval];
+			nextEval = (nextEval + 1) % c_evals;
 
 			e.y = y;
 			evalContour(outer, 0, y, e);
@@ -1693,11 +1642,6 @@ namespace wg
 			return true;
 		}
 
-		bool within(const Contour& c, int64_t ya, int64_t yb) const
-		{
-			return c.bExists && ya >= c.top && yb <= c.bottom;
-		}
-
 		//____ edges() ________________________________________________________
 
 		int edges(int64_t ya, int64_t yb, EdgeDef* pEdges) const
@@ -1732,116 +1676,31 @@ namespace wg
 			}
 		}
 
-		// Edge with where it goes from top corner to side and from side to bottom corner,
-		// unless the shape needs to split it.
+		bool within(const Contour& c, int64_t ya, int64_t yb) const
+		{
+			return c.bExists && ya >= c.top && yb <= c.bottom;
+		}
 
 		void edge(EdgeDef& def, int id, int segment) const
 		{
 			def.id = id;
 			def.segment = segment;
 			def.bClamped = false;
-			def.bShapeSplit = !bRegular;
 			def.mirror = -1;
 			def.pPolyline = pPolylines[id] && pPolylines[id]->n > 0 ? pPolylines[id] : nullptr;
-
-			if (bRegular)
-			{
-				const Contour& c = id < 2 ? outer : inner;
-				const bool bLeft = (id & 1) == 0;
-				const int top = bLeft ? 0 : 1;
-				const int bottom = bLeft ? 3 : 2;
-
-				def.junction[0] = c.r[top] > 0 ? c.cy[top] : INT64_MIN;
-				def.junction[1] = c.r[bottom] > 0 ? c.cy[bottom] : INT64_MAX;
-				def.limit[0] = c.limit[top];
-				def.limit[1] = 0;
-				def.limit[2] = c.limit[bottom];
-			}
 		}
 
 		//____ x() ____________________________________________________________
 
 		int64_t x(const EdgeDef& edge, int64_t y)
 		{
-			if (!bRegular)
-				return eval(y).x[edge.id];
-
-			// Side, or the corner whose quarter y is in.
-
-			const Contour& c = edge.id < 2 ? outer : inner;
-			const bool bLeft = (edge.id & 1) == 0;
-			const int top = bLeft ? 0 : 1;
-			const int bottom = bLeft ? 3 : 2;
-
-			int i;
-			if (c.r[top] > 0 && y < c.cy[top])
-				i = top;
-			else if (c.r[bottom] > 0 && y > c.cy[bottom])
-				i = bottom;
-			else
-				return bLeft ? c.left : c.right;
-
-			// Corners on either side are usually the same, so half width is kept for reuse.
-
-			const int64_t cy = c.cy[i];
-			const int64_t r = c.r[i];
-
-			Root& root = roots[(y + cy * 5) & (c_roots - 1)];
-			if (root.y != y || root.cy != cy || root.r != r)
-			{
-				int64_t dy = y - cy;
-				root = { y, cy, r, isqrt(c.r2[i] - uint64_t(dy * dy)) };
-			}
-
-			return bLeft ? c.cx[i] - root.dx : c.cx[i] + root.dx;
+			return eval(y).x[edge.id];
 		}
 
 		//____ split() ________________________________________________________
 
 		bool split(const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y)
 		{
-			if (bRegular)
-			{
-				// Where corners begin and end, and where they bend too much.
-
-				const Contour& c = edge.id < 2 ? outer : inner;
-				const bool bLeft = (edge.id & 1) == 0;
-				const int top = bLeft ? 0 : 1;
-				const int bottom = bLeft ? 3 : 2;
-
-				int i = -1;
-
-				if (c.r[top] > 0)
-				{
-					if (c.cy[top] > ya && c.cy[top] < yb)
-					{
-						y = c.cy[top];
-						return true;
-					}
-
-					if (yb <= c.cy[top])
-						i = top;
-				}
-
-				if (c.r[bottom] > 0)
-				{
-					if (c.cy[bottom] > ya && c.cy[bottom] < yb)
-					{
-						y = c.cy[bottom];
-						return true;
-					}
-
-					if (ya >= c.cy[bottom])
-						i = bottom;
-				}
-
-				if (i < 0 || yb - ya <= 4 || (xa - xb) * (xa - xb) + (yb - ya) * (yb - ya) <= c.limit[i])
-					return false;
-
-				y = splitPoint(ya, yb);
-				return true;
-			}
-
 			const int k = edge.id >> 1;				// Contour
 			const int side = edge.id & 1;
 			const bool bLeft = side == 0;
@@ -1973,8 +1832,8 @@ namespace wg
 			shape.bRegular = true;
 		}
 
-		// Regular boxes have their edges flattened in advance, right edges mirrored from left
-		// if corners are the same.
+		// Regular boxes have their edges flattened in advance, unless corners are too large,
+		// right edges mirrored from left if corners are the same.
 
 		Polyline polylines[4];
 
@@ -2011,12 +1870,12 @@ namespace wg
 
 		// Symmetric if regular with the same corners on both sides, or top and bottom.
 
-		auto isSymmetric = [&](const BoxShape::Contour& c)
+		auto isSymmetricX = [&](const BoxShape::Contour& c)
 		{
 			return !c.bExists || (c.r[0] == c.r[1] && c.r[3] == c.r[2] && c.left + c.right == shape.outer.left + shape.outer.right);
 		};
 
-		if (shape.bRegular && isSymmetric(shape.outer) && isSymmetric(shape.inner))
+		if (shape.bRegular && isSymmetricX(shape.outer) && isSymmetricX(shape.inner))
 		{
 			shape.bSymmetricX = true;
 			shape.symmetrySumX = shape.outer.left + shape.outer.right;
@@ -2255,8 +2114,8 @@ namespace wg
 		int			nRays[2];
 		int			startSegment[2];			// Segment at left end of rows above and below center.
 
-		int64_t		cacheY[4] = { INT64_MIN, INT64_MIN, INT64_MIN, INT64_MIN };
-		int64_t		cacheX[4];
+		int64_t		halfWidthY[4] = { INT64_MIN, INT64_MIN, INT64_MIN, INT64_MIN };	// Last half width of each circle and its y.
+		int64_t		lastHalfWidth[4];
 
 		static constexpr int	c_firstRayId = 10;
 
@@ -2264,15 +2123,20 @@ namespace wg
 
 		int64_t halfWidth(int i, int64_t y)
 		{
-			if (cacheY[i] != y)
+			if (halfWidthY[i] != y)
 			{
 				int64_t r = radius[i];
 				int64_t dy = y - cy;
-				cacheY[i] = y;
-				cacheX[i] = (dy <= -r || dy >= r) ? 0 : isqrt(radius2[i] - uint64_t(dy * dy));
+				halfWidthY[i] = y;
+				lastHalfWidth[i] = (dy <= -r || dy >= r) ? 0 : isqrt(radius2[i] - uint64_t(dy * dy));
 			}
 
-			return cacheX[i];
+			return lastHalfWidth[i];
+		}
+
+		bool isCircle(int id) const
+		{
+			return id < 8 && !(bSquare && (id & 3) < 2);
 		}
 
 		//____ x() ____________________________________________________________
@@ -2306,11 +2170,18 @@ namespace wg
 		int uniformEnd(int row) const { return row + 1; }
 
 		//____ split() ________________________________________________________
-		// Not used, circles are split by the limits given with their edges.
+		// Circles where chords get too long, everything else is straight.
 
-		bool split(const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y)
+		bool split(const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y) const
 		{
-			return false;
+			const int64_t lim = isCircle(edge.id) ? limit[edge.id & 3] : 0;
+			const int64_t h = yb - ya;
+
+			if (lim == 0 || h <= 4 || (xa - xb) * (xa - xb) + h * h <= lim)
+				return false;
+
+			y = splitPoint(ya, yb);
+			return true;
 		}
 
 		//____ edges() ________________________________________________________
@@ -2336,25 +2207,21 @@ namespace wg
 
 			auto put = [&](int id, int segment)
 			{
-				const int i = id & 3;
-				const bool bCircle = id < 8 && !(bSquare && i < 2);
-				const int64_t lim = bCircle ? limit[i] : 0;
-
 				int mirror = -1;
-				if (bCircle)
+				if (isCircle(id))
 				{
 					if (id < 4)
-						leftOfCircle[i] = n;
+						leftOfCircle[id & 3] = n;
 					else
-						mirror = leftOfCircle[i];
+						mirror = leftOfCircle[id & 3];
 				}
 
-				pEdges[n++] = { id, segment, false, false, { INT64_MAX, INT64_MAX }, { lim, lim, lim }, mirror, cx * 2, nullptr };
+				pEdges[n++] = { id, segment, false, mirror, cx * 2, nullptr };
 			};
 
 			auto putRay = [&](int i)
 			{
-				pEdges[n++] = { firstId + i, pRay[i].segment, true, false, { INT64_MAX, INT64_MAX }, { 0, 0, 0 }, -1, 0, nullptr };
+				pEdges[n++] = { firstId + i, pRay[i].segment, true, -1, 0, nullptr };
 			};
 
 			// 0: beyond the slices, 1: between, 2: in the hole.

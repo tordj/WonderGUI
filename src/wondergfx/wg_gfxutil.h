@@ -266,9 +266,17 @@ namespace wg
 			}
 		}
 
+		inline void clampCornerRadii(const SizeSPX& size, CornersSPX& radius)
+		{
+			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };
+			clampCornerRadii(size, r);
+			radius = CornersSPX(r[0], r[1], r[2], r[3]);
+		}
+
 		/**
-		 * Checks if a point is inside a box with rounded corners, with radii as given to
-		 * clampCornerRadii() (top-left, top-right, bottom-right, bottom-left), already clamped.
+		 * Checks if a point is inside a box with rounded corners. Radii are top-left, top-right,
+		 * bottom-right, bottom-left, each corner circular and touching the two sides meeting
+		 * there, as clamped by clampCornerRadii() for the box to look as drawn.
 		 */
 
 		inline bool isInsideRoundedBox(const CoordSPX& point, const RectSPX& box, const spx radius[4])
@@ -295,11 +303,18 @@ namespace wg
 					 outsideCorner(left + radius[3], bottom - radius[3], radius[3], true, false));
 		}
 
+		inline bool isInsideRoundedBox(const CoordSPX& point, const RectSPX& box, const CornersSPX& radius)
+		{
+			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };
+			return isInsideRoundedBox(point, box, r);
+		}
+
 		/**
 		 * Radii of the inner corners of an outline inside a box with the given (clamped)
-		 * corner radii: the radius minus the thicker of the two sides meeting there. With
-		 * uneven outlines they can be larger than the inside, but stay concentric with the
-		 * outer corners.
+		 * corner radii, as drawn by GfxDevice::drawRoundedBox(): the radius minus the thicker
+		 * of the two sides meeting there, circular and touching both sides of the inside.
+		 * With even outlines they are concentric with the outer corners. With uneven ones
+		 * they can be larger than the inside.
 		 */
 
 		inline void innerCornerRadii(const spx radius[4], const BorderSPX& outline, spx innerRadius[4])
@@ -310,17 +325,12 @@ namespace wg
 			innerRadius[3] = std::max(radius[3] - std::max(outline.bottom, outline.left), 0);
 		}
 
-		inline void clampCornerRadii(const SizeSPX& size, CornersSPX& radius)
+		inline CornersSPX innerCornerRadii(const CornersSPX& radius, const BorderSPX& outline)
 		{
 			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };
-			clampCornerRadii(size, r);
-			radius = CornersSPX(r[0], r[1], r[2], r[3]);
-		}
-
-		inline bool isInsideRoundedBox(const CoordSPX& point, const RectSPX& box, const CornersSPX& radius)
-		{
-			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };
-			return isInsideRoundedBox(point, box, r);
+			spx inner[4];
+			innerCornerRadii(r, outline, inner);
+			return CornersSPX(inner[0], inner[1], inner[2], inner[3]);
 		}
 
 		inline spx align(spx x)

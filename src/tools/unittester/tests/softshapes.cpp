@@ -5,7 +5,6 @@
 
 #include <cmath>
 #include <cstdlib>
-#include <iostream>
 #include <climits>
 #include <algorithm>
 
@@ -146,7 +145,13 @@ namespace
 		const char*				name;
 		SoftShapes::RoundedBox	box;
 		double					tolerance;			// Max difference from reference, 0.0 -> 1.0.
+		RectI					area = {};			// Pixels to check, all of box if empty.
 	};
+
+	RectI caseArea(const BoxCase& c)
+	{
+		return c.area.w > 0 ? c.area : pixelBounds(c.box.rect, 1);
+	}
 
 	SoftShapes::RoundedBox makeBox(RectSPX rect, spx r0, spx r1, spx r2, spx r3, BorderSPX outline = {})
 	{
@@ -203,6 +208,14 @@ namespace
 
 		cases.push_back({ "thick outline on one side", makeBox({ 64 * 2, 64 * 2, 64 * 30, 64 * 100 }, 0, 0, 64 * 30, 0, { 64, 64, 64, 64 * 10 + 32 }), 0.04 });
 
+		// Corners too large to be flattened in advance, checked around part of a corner.
+
+		const SoftShapes::RoundedBox huge = makeBox({ 64 * 1 + 21, 64 * 1 + 50, 64 * 2300, 64 * 2200 }, 64 * 1080, 64 * 1080, 64 * 1080, 64 * 1080, { 64 * 3, 64 * 3, 64 * 3, 64 * 3 });
+
+		cases.push_back({ "huge corners, diagonal", huge, 0.04, { 150, 150, 360, 360 } });
+		cases.push_back({ "huge corners, top", huge, 0.04, { 900, 0, 400, 40 } });
+		cases.push_back({ "huge mixed corners", makeBox({ 64 * 2 + 5, 64 * 2 + 33, 64 * 2400, 64 * 2300 }, 64 * 1100, 64 * 1500, 64 * 1030, 64 * 1200), 0.04, { 1800, 300, 300, 300 } });
+
 		return cases;
 	}
 }
@@ -235,7 +248,7 @@ bool SoftShapesTest::roundedBoxCoverageTest(std::ostream& output)
 
 	for (auto& c : boxCases())
 	{
-		RectI area = pixelBounds(c.box.rect, 1);
+		RectI area = caseArea(c);
 		CoverageGrid grid(area);
 		grid.rasterize(shapes, c.box, area);
 
@@ -277,9 +290,6 @@ bool SoftShapesTest::roundedBoxCoverageTest(std::ostream& output)
 			}
 		}
 
-		if (std::getenv("WG_VERBOSE_TESTS"))
-			std::cout << "      " << c.name << ": worst difference " << worst << " (" << worstWhat << " of pixel " << worstX << "," << worstY << ")" << std::endl;
-
 		if (worst > c.tolerance)
 		{
 			output << c.name << ": " << worstWhat << " of pixel " << worstX << "," << worstY << " is " << worstGot
@@ -301,9 +311,15 @@ bool SoftShapesTest::roundedBoxSeamTest(std::ostream& output)
 
 	for (auto& c : boxCases())
 	{
-		RectI area = pixelBounds(c.box.rect, 1);
+		RectI area = caseArea(c);
 		CoverageGrid grid(area);
 		grid.rasterize(shapes, c.box, area);
+
+		if (grid.hasError())
+		{
+			output << c.name << ": " << grid.error() << std::endl;
+			return false;
+		}
 
 		RefBox ref = makeReference(c.box);
 
@@ -348,6 +364,12 @@ bool SoftShapesTest::roundedBoxSymmetryTest(std::ostream& output)
 		CoverageGrid grid(area);
 		grid.rasterize(shapes, box, area);
 
+		if (grid.hasError())
+		{
+			output << grid.error() << std::endl;
+			return false;
+		}
+
 		for (int y = 0; y < 48; y++)
 		{
 			for (int x = 0; x < 64; x++)
@@ -380,7 +402,7 @@ bool SoftShapesTest::roundedBoxClipTest(std::ostream& output)
 
 	for (auto& c : boxCases())
 	{
-		RectI area = pixelBounds(c.box.rect, 1);
+		RectI area = caseArea(c);
 
 		CoverageGrid whole(area);
 		whole.rasterize(shapes, c.box, area);
@@ -466,13 +488,12 @@ namespace
 		void rasterize(SoftShapes& shapes, const SoftShapes::Ring& ring, const RectI& clip)
 		{
 			m_coverage.collect([&](SoftShapes::RowSink* pSink) { shapes.rasterizeRing(ring, clip, pSink); });
-			if (m_coverage.hasError())
-				m_error = m_coverage.error();
 		}
 
 		int coverage(int segment, int x, int y) const { return m_coverage.coverage(segment, x, y); }
 
-		std::string		m_error;
+		bool			hasError() const { return m_coverage.hasError(); }
+		std::string		error() const { return m_coverage.error(); }
 
 	private:
 		ShapeCoverage	m_coverage;
@@ -606,9 +627,9 @@ bool SoftShapesTest::ringCoverageTest(std::ostream& output)
 		SegmentGrid grid(area, nSegments);
 		grid.rasterize(shapes, makeRing(c, sizes), area);
 
-		if (!grid.m_error.empty())
+		if (grid.hasError())
 		{
-			output << c.name << ": " << grid.m_error << std::endl;
+			output << c.name << ": " << grid.error() << std::endl;
 			return false;
 		}
 
@@ -665,9 +686,6 @@ bool SoftShapesTest::ringCoverageTest(std::ostream& output)
 			}
 		}
 
-		if (std::getenv("WG_VERBOSE_TESTS"))
-			std::cout << "      " << c.name << ": worst difference " << worst << " (segment " << worstSegment << " of pixel " << worstX << "," << worstY << ")" << std::endl;
-
 		if (worst > 0.08)
 		{
 			output << c.name << ": segment " << worstSegment << " of pixel " << worstX << "," << worstY << " is " << grid.coverage(worstSegment, worstX, worstY) / 4096.0
@@ -699,6 +717,13 @@ bool SoftShapesTest::ringClipTest(std::ostream& output)
 		for (int ty = area.y; ty < area.y + area.h; ty += 5)
 			for (int tx = area.x; tx < area.x + area.w; tx += 7)
 				tiled.rasterize(shapes, makeRing(c, sizes), RectI::overlap(RectI(tx, ty, 7, 5), area));
+
+		for (const SegmentGrid* pGrid : { &whole, &tiled })
+			if (pGrid->hasError())
+			{
+				output << c.name << ": " << pGrid->error() << std::endl;
+				return false;
+			}
 
 		for (int y = area.y; y < area.y + area.h; y++)
 			for (int x = area.x; x < area.x + area.w; x++)
@@ -738,6 +763,13 @@ bool SoftShapesTest::ringWithoutBackTest(std::ostream& output)
 		SegmentGrid withoutBack(area, nSegments);
 		withoutBack.rasterize(shapes, ring, area);
 
+		for (const SegmentGrid* pGrid : { &withBack, &withoutBack })
+			if (pGrid->hasError())
+			{
+				output << c.name << ": " << pGrid->error() << std::endl;
+				return false;
+			}
+
 		double sliceSum = 0;
 		for (double size : c.slices)
 			sliceSum += size;
@@ -772,25 +804,32 @@ bool SoftShapesTest::ringWithoutBackTest(std::ostream& output)
 
 bool SoftShapesTest::mirrorBufferTest(std::ostream& output)
 {
-	struct Size { int initial, max; };
-	const Size sizes[] = { { 0, 0 }, { 200, 200 }, { 0, 3000 }, { 2000, 2000 }, { 256 * 1024, 256 * 1024 } };
+	struct BufferSize { int initial, max; };
+	const int large = SoftShapes::c_defaultMaxMirrorBuffer;
+	const BufferSize sizes[] = { { 0, 0 }, { 200, 200 }, { 0, 3000 }, { 2000, 2000 }, { large, large } };
 
 	SoftShapes reference;
 
 	for (auto& c : boxCases())
 	{
-		RectI area = pixelBounds(c.box.rect, 1);
+		RectI area = caseArea(c);
 
 		CoverageGrid wanted(area);
 		wanted.rasterize(reference, c.box, area);
 
-		for (const Size& size : sizes)
+		for (const BufferSize& size : sizes)
 		{
 			SoftShapes shapes;
 			shapes.setMirrorBuffer(size.initial, size.max);
 
 			CoverageGrid grid(area);
 			grid.rasterize(shapes, c.box, area);
+
+			if (grid.hasError())
+			{
+				output << c.name << ", mirror buffer " << size.initial << "/" << size.max << ": " << grid.error() << std::endl;
+				return false;
+			}
 
 			for (int y = area.y; y < area.y + area.h; y++)
 				for (int x = area.x; x < area.x + area.w; x++)
@@ -813,13 +852,19 @@ bool SoftShapesTest::mirrorBufferTest(std::ostream& output)
 		SegmentGrid wanted(area, nSegments);
 		wanted.rasterize(reference, makeRing(c, sliceSizes), area);
 
-		for (const Size& size : sizes)
+		for (const BufferSize& size : sizes)
 		{
 			SoftShapes shapes;
 			shapes.setMirrorBuffer(size.initial, size.max);
 
 			SegmentGrid grid(area, nSegments);
 			grid.rasterize(shapes, makeRing(c, sliceSizes), area);
+
+			if (grid.hasError())
+			{
+				output << c.name << ", mirror buffer " << size.initial << "/" << size.max << ": " << grid.error() << std::endl;
+				return false;
+			}
 
 			for (int y = area.y; y < area.y + area.h; y++)
 				for (int x = area.x; x < area.x + area.w; x++)

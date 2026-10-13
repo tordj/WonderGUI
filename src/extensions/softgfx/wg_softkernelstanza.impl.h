@@ -2548,6 +2548,7 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* WG_RESTRICT pStripStar
 }
 
 //____ _limit4096() _______________________________________________________
+// Clamps to 0 -> 4096, like SoftBackend::s_limit4096Tab but for any value.
 
 static inline int _limit4096(int value)
 {
@@ -2556,7 +2557,8 @@ static inline int _limit4096(int value)
 
 //____ _draw_coverage_span() _______________________________________________
 //
-// Blends a horizontal span of partly covered pixels, see SoftBackend::CoveragePixel.
+// Blends a span of partly covered pixels, pixelPitch bytes apart, along a row or down
+// a column, see SoftBackend::CoveragePixel.
 // Each pixel is blended with the blend mode as if fully covered and the result
 // mixed with the original pixel by the coverage:
 //

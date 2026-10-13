@@ -59,11 +59,9 @@ namespace wg
 		m_blendMode		= bp.blendMode;
 
 		for (int i = 0; i < 4; i++)
-		{
 			m_cornerRadius[i] = std::max(bp.cornerRadius[i], pts(0));
-			if (m_cornerRadius[i] > 0)
-				m_bRounded = true;
-		}
+
+		m_bRounded = !m_cornerRadius.isEmpty();
 
 		// Generate lists of states that affects shift, color and surface.
 
@@ -280,7 +278,8 @@ namespace wg
 		
 		int opacity;
 
-		RectSPX center = canvas - align(ptsToSpx(m_outline,scale));
+		BorderSPX outline = align(ptsToSpx(m_outline,scale));
+		RectSPX center = canvas - outline;
 
 		if( m_bRounded )
 		{
@@ -291,12 +290,7 @@ namespace wg
 			if( !Util::isInsideRoundedBox(ofs, canvas, radius) )
 				return false;
 
-			BorderSPX o = align(ptsToSpx(m_outline,scale));
-			spx outerRadius[4] = { radius[0], radius[1], radius[2], radius[3] };
-			spx innerRadius[4];
-			Util::innerCornerRadii(outerRadius, o, innerRadius);
-
-			if( Util::isInsideRoundedBox(ofs, center, innerRadius) )
+			if( Util::isInsideRoundedBox(ofs, center, Util::innerCornerRadii(radius, outline)) )
 				opacity = _getFillColor(state).a;
 			else
 				opacity = _getOutlineColor(state).a;

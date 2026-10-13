@@ -206,18 +206,19 @@ namespace wg
 		 * as needed up to maxBytes. Rows that don't fit are rasterized again instead, which
 		 * gives the same pixels, only slower. Setting both the same allocates it once.
 		 *
-		 * Rows of a 2000 pixel high disc take about 150 KB, those of a button about 1 KB.
+		 * Rows of a 2000 pixel high disc take about 100 KB, about twice that with an outline,
+		 * and those of a button about 1 KB.
 		 */
 
 		void	setMirrorBuffer(int initialBytes, int maxBytes);
 
-		static constexpr int	c_defaultMirrorBufferMax = 256 * 1024;
-
-		static constexpr int	c_maxSagitta = 1;		// Most a chord may stray from its circle, spx.
-		static constexpr int	c_maxVertices = 64;		// Most vertices of an edge in a sub-row, below 64 spx high.
-		static constexpr int	c_maxFlatRadius = 1 << 16;	// Largest corner flattened in advance, spx.
+		static constexpr int	c_defaultMaxMirrorBuffer = 256 * 1024;
 
 	protected:
+
+		static constexpr int	c_maxSagitta = 1;			// Most a chord may stray from its circle, spx.
+		static constexpr int	c_maxVertices = 64;			// Most vertices of an edge in a sub-row, below 64 spx high.
+		static constexpr int	c_maxFlatRadius = 1 << 16;	// Largest corner flattened in advance, spx.
 
 		// Edge flattened in advance, with vertices in order of increasing y.
 
@@ -226,7 +227,7 @@ namespace wg
 			const int64_t*	pY;
 			const int64_t*	pX;
 			int				n;
-			int				segment;		// Last segment used, from vertex segment to segment + 1.
+			int				line;			// Line last used, from vertex line to line + 1.
 		};
 
 		// Edge of a shape crossing a sub-row, as given by the shape.
@@ -236,9 +237,6 @@ namespace wg
 			int			id;					// Which of the edges of the shape, see EdgeShape.
 			int			segment;			// Segment right of the edge, -1 for none.
 			bool		bClamped;			// Straight edge kept between its neighbors where rounding makes them cross.
-			bool		bShapeSplit;		// Shape decides where to split edge, otherwise junction and limit do.
-			int64_t		junction[2];		// Where the edge changes, as from a corner to a side, INT64_MIN or INT64_MAX if not.
-			int64_t		limit[3];			// Most squared length of chord before, between and after junctions, 0 for straight.
 			int			mirror;				// Edge before it in the sub-row it mirrors, x = mirrorSum - x of that edge, or -1.
 			int64_t		mirrorSum;
 			Polyline*	pPolyline;			// Edge as polyline, instead of from x(), or null.
@@ -272,7 +270,7 @@ namespace wg
 		struct MixSource
 		{
 			const int16_t*	p;				// Colors of segment from RowSink::segmentColors(), null if not drawn.
-			int				stride;			// 0 if flat, otherwise 4, refetched each row.
+			bool			bFlat;			// Same for all pixels, otherwise refetched each row.
 			int				row;
 		};
 
@@ -295,9 +293,6 @@ namespace wg
 		template<class Shape>
 		inline int64_t			_edgeX(Shape& shape, const EdgeDef& edge, int64_t y);
 
-		template<class Shape>
-		inline bool				_split(Shape& shape, const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y);
-		inline int				_edgeArea(const Edge& edge, int pixel) const;
 		inline int64_t			_edgeLeftOf(const Edge& edge, int64_t x) const;
 
 		static inline int64_t	_polylineX(Polyline& polyline, int64_t y);
@@ -311,16 +306,18 @@ namespace wg
 		const Quarter&			_quarter(int64_t r);
 
 		static inline int64_t	_area(const Piece& piece, int64_t x);
-		static inline int		_rightOf(const Piece& piece, int pixel);
 
 		inline const int16_t*	_mixColor(int segment, int x);
 		inline void				_fillRun(int beg, int end, int segment);
 		inline CoveragePixel&	_mixedPixel(int x);
 		inline void				_mixedRun(int beg, int end, const CoveragePixel& pixel);
 		inline void				_accumulate(int segment, int value);
-		void					_mirrorRuns(int sum, int clipBeg, int clipEnd, int& firstRun, int& firstPixel);
+		void					_mirrorRunsX();
 
 		// Ring
+
+		// Angles of boundaries are 2^32 to a turn, twice the scale of Ring, so that they
+		// wrap around by themselves.
 
 		struct Boundary
 		{
@@ -352,8 +349,8 @@ namespace wg
 		std::vector<Boundary>		m_boundaries;		// Sorted by angle.
 		std::vector<int>			m_elementSegments;	// Segment of each element.
 		std::vector<uint64_t>		m_elementStarts;
-		std::vector<int>			m_crossings[2];		// Boundaries crossing rows above and below center, in order along x.
-		std::vector<Ray>			m_rays[2];			// The same as rays.
+		std::vector<int>			m_crossings[2];		// Boundaries crossing rows above and below center, in order along x...
+		std::vector<Ray>			m_rays[2];			// ...as rays.
 
 		// Rasterization
 
@@ -364,7 +361,7 @@ namespace wg
 		std::vector<Piece>			m_pieces;
 		std::vector<int64_t>		m_edgeTop;			// x of each edge of a sub-row at top and bottom.
 		std::vector<int64_t>		m_edgeBottom;
-		std::vector<int>			m_edgeTopSegment;	// Segment of polyline at top of sub-row.
+		std::vector<int>			m_edgeTopLine;		// Line of polyline at top of sub-row.
 		std::vector<int64_t>		m_cacheY;			// Last x computed for the bottom of a sub-row, for each edge id.
 		std::vector<int64_t>		m_cacheX;
 		std::vector<int64_t>		m_edgeLeftOf;		// Of edges of a sub-row at a pixel boundary.
@@ -378,14 +375,14 @@ namespace wg
 		std::vector<MixSource>		m_mix;
 		std::vector<int>			m_accumulated;		// Coverage of each segment in a pixel, weighted by height of sub-rows.
 		std::vector<int>			m_touched;			// Segments with coverage accumulated.
-		std::vector<int>			m_layerSegments;
-		std::vector<int>			m_layerCoverage;
+		std::vector<int>			m_pixelSegments;	// Segments covering a pixel and their coverage, see _emitAccumulated().
+		std::vector<int>			m_pixelCoverage;
 		std::vector<Run>			m_runs;
 		std::vector<CoveragePixel>	m_pixels;
 
-		// Rows kept to be mirrored, see _rasterize(). The buffer holds the offset of each
-		// kept row by row, -1 if not kept, followed by the rows: each a KeptRow, its runs
-		// and its pixels.
+		// Mirror buffer, rows of the upper half kept to be mirrored into the lower half, see
+		// _rasterize(). Holds the offset of each kept row by row, -1 if not kept, followed by
+		// the rows: each a KeptRow, its runs and its pixels.
 
 		struct KeptRow
 		{
@@ -393,12 +390,12 @@ namespace wg
 			int		nPixels;
 		};
 
-		bool	_reserveKept(int bytes);
+		bool	_reserveMirrorBuffer(int bytes);
 
-		std::unique_ptr<uint8_t[]>	m_pKept;
-		int							m_keptSize = 0;			// Bytes allocated.
-		int							m_keptMax = c_defaultMirrorBufferMax;
-		int							m_keptUsed = 0;
+		std::unique_ptr<uint8_t[]>	m_pMirrorBuffer;
+		int							m_mirrorBufferSize = 0;			// Bytes allocated...
+		int							m_mirrorBufferMax = c_defaultMaxMirrorBuffer;
+		int							m_mirrorBufferUsed = 0;			// ...and used.
 
 		RowSink*		m_pSink = nullptr;
 		int				m_clipBeg = 0;
@@ -410,8 +407,8 @@ namespace wg
 		int				m_firstRun = 0;			// Of runs of row to emit, the ones before done for their mirror image.
 		int				m_firstPixel = 0;
 
-		bool			m_bMirror = false;		// Rows done up to the middle and mirrored, see _rasterize().
-		int				m_mirrorSum = 0;
+		bool			m_bMirrorX = false;		// Rows done up to the middle and mirrored, see _rasterize().
+		int				m_mirrorSumX = 0;
 		int				m_outBeg = 0;			// Pixels of row to emit.
 		int				m_outEnd = 0;
 		int				m_nTouched = 0;

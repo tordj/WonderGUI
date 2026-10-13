@@ -1456,6 +1456,43 @@ void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thic
 	m_pActiveCanvas->sessionInfo.nLineCoords+=2;
 }
 
+//____ _isShapeColorDrawn() __________________________________________________
+// Undefined colors are not drawn. Like fill(), transparent colors draw nothing in Blend mode.
+
+bool GfxDeviceGen2::_isShapeColorDrawn(HiColor color) const
+{
+	return !color.isUndefined() && !(color.a == 0 && m_renderState.blendMode == BlendMode::Blend);
+}
+
+//____ _addShapeClipRects() __________________________________________________
+// Adds the clip rectangles within the pixels touched by area, so that they stay
+// pixel aligned. Returns their number.
+
+int GfxDeviceGen2::_addShapeClipRects(const RectSPX& area)
+{
+	RectSPX bounds;
+	bounds.x = area.x & ~63;
+	bounds.y = area.y & ~63;
+	bounds.w = ((area.x + area.w + 63) & ~63) - bounds.x;
+	bounds.h = ((area.y + area.h + 63) & ~63) - bounds.y;
+
+	int nRects = 0;
+	auto& rects = m_pActiveLayer->rects;
+
+	for (int i = 0; i < m_pActiveClipList->nRects; i++)
+	{
+		RectSPX clipped = RectSPX::overlap(m_pActiveClipList->pRects[i], bounds);
+
+		if (!clipped.isEmpty())
+		{
+			rects.emplace_back(clipped);
+			nRects++;
+		}
+	}
+
+	return nRects;
+}
+
 //____ drawRoundedBox() ______________________________________________________
 
 void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
@@ -1473,8 +1510,6 @@ void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
 	if (rect.w <= 0 || rect.h <= 0 || !rect.isOverlapping(m_pActiveClipList->bounds))
 		return;
 
-	BlendMode blendMode = m_renderState.blendMode;
-
 	BorderSPX outline = {	std::max(spec.outline.top, 0), std::max(spec.outline.right, 0),
 							std::max(spec.outline.bottom, 0), std::max(spec.outline.left, 0) };
 
@@ -1483,12 +1518,8 @@ void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
 
 	bool bInner = innerRect.w > 0 && innerRect.h > 0;
 
-	// Undefined colors are not drawn. Like fill(), transparent colors draw nothing in Blend mode.
-
-	auto isDrawn = [blendMode](HiColor color) { return !color.isUndefined() && !(color.a == 0 && blendMode == BlendMode::Blend); };
-
-	bool bHasOutline = (outline.top | outline.right | outline.bottom | outline.left) != 0 && isDrawn(spec.outlineColor);
-	bool bHasFill = bInner && isDrawn(spec.fillColor);
+	bool bHasOutline = (outline.top | outline.right | outline.bottom | outline.left) != 0 && _isShapeColorDrawn(spec.outlineColor);
+	bool bHasFill = bInner && _isShapeColorDrawn(spec.fillColor);
 
 	if (!bHasFill && !bHasOutline)
 		return;
@@ -1524,27 +1555,7 @@ void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
 		return;
 	}
 
-	// Clip against the pixels touched by the box, so that clip rectangles stay pixel aligned.
-
-	RectSPX bounds;
-	bounds.x = rect.x & ~63;
-	bounds.y = rect.y & ~63;
-	bounds.w = ((rect.x + rect.w + 63) & ~63) - bounds.x;
-	bounds.h = ((rect.y + rect.h + 63) & ~63) - bounds.y;
-
-	int nRects = 0;
-	auto& rects = m_pActiveLayer->rects;
-
-	for (int i = 0; i < m_pActiveClipList->nRects; i++)
-	{
-		RectSPX clipped = RectSPX::overlap(m_pActiveClipList->pRects[i], bounds);
-
-		if (!clipped.isEmpty())
-		{
-			rects.emplace_back(clipped);
-			nRects++;
-		}
-	}
+	int nRects = _addShapeClipRects(rect);
 
 	if (nRects == 0)
 		return;
@@ -1577,7 +1588,7 @@ void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
 	if (pTints[1])
 		flags |= uint16_t(GfxBackend::RoundedBoxFlags::HasOutlineTint);
 
-	int nWords = 4 * 2 * 3 + 2 + 2 + nTintWords[0] + nTintWords[1];
+	int nWords = GfxBackend::c_roundedBoxPayloadWords + nTintWords[0] + nTintWords[1];
 	int nColors = (bHasFill ? 1 : 0) + (bHasOutline ? 1 : 0) + nTintColors[0] + nTintColors[1];
 
 	// Write command, aligned to 32 bits.
@@ -1668,10 +1679,7 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 		nSlices = c_maxRingSlices;
 	}
 
-	// Undefined colors are not drawn. Like fill(), transparent colors draw nothing in Blend mode.
-
-	BlendMode blendMode = m_renderState.blendMode;
-	auto isDrawn = [blendMode](HiColor color) { return !color.isUndefined() && !(color.a == 0 && blendMode == BlendMode::Blend); };
+	auto isDrawn = [this](HiColor color) { return _isShapeColorDrawn(color); };
 
 	spx radius = std::min(rect.w, rect.h) / 2;
 	spx outline = std::max(spec.outline, 0);
@@ -1689,32 +1697,14 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 	if (!bAnySlice && !bOutline && !bHub && !bBack)
 		return;
 
-	// Clip against the pixels touched, the circle if nothing is drawn outside it.
+	// Clip against the circle if nothing is drawn outside it.
 
 	RectSPX area = rect;
 
 	if (!bBack && !spec.bSquare)
 		area = RectSPX(rect.x + rect.w / 2 - radius, rect.y + rect.h / 2 - radius, radius * 2, radius * 2);
 
-	RectSPX bounds;
-	bounds.x = area.x & ~63;
-	bounds.y = area.y & ~63;
-	bounds.w = ((area.x + area.w + 63) & ~63) - bounds.x;
-	bounds.h = ((area.y + area.h + 63) & ~63) - bounds.y;
-
-	int nRects = 0;
-	auto& rects = m_pActiveLayer->rects;
-
-	for (int i = 0; i < m_pActiveClipList->nRects; i++)
-	{
-		RectSPX clipped = RectSPX::overlap(m_pActiveClipList->pRects[i], bounds);
-
-		if (!clipped.isEmpty())
-		{
-			rects.emplace_back(clipped);
-			nRects++;
-		}
-	}
+	int nRects = _addShapeClipRects(area);
 
 	if (nRects == 0)
 		return;
@@ -1727,7 +1717,7 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 	auto& commands = m_pActiveLayer->commands;
 	auto& colors = m_pActiveLayer->colors;
 
-	commands.secureSpace((GfxBackend::c_drawShapeHeaderWords + 18 + nSlices * 4 + 1) * 2);
+	commands.secureSpace((GfxBackend::c_drawShapeHeaderWords + GfxBackend::c_ringPayloadWords + nSlices * GfxBackend::c_ringSliceWords + 1) * 2);
 
 	if (commands.size() % 4 != 0)
 		commands.pushUnchecked(uint16_t(Command::None));
@@ -1771,7 +1761,7 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 	commands.pushUnchecked(spx(0));								// Softness, reserved.
 	commands.pushUnchecked(flags);
 	commands.pushUnchecked(uint16_t(nSlices));
-	commands.pushUnchecked(uint32_t(double(start) * 2147483648.0) % 0x80000000);
+	commands.pushUnchecked(uint32_t(double(start) * GfxBackend::c_shapeFullTurn) % GfxBackend::c_shapeFullTurn);
 
 	int nTints = 0;
 
@@ -1788,7 +1778,7 @@ void GfxDeviceGen2::drawRing(const RingSpec& spec)
 		if (bDrawn && slice.pTint)
 			sliceFlags |= uint16_t(GfxBackend::RingSliceFlags::Tinted);
 
-		commands.pushUnchecked(uint32_t(double(size) * 2147483648.0));
+		commands.pushUnchecked(uint32_t(double(size) * GfxBackend::c_shapeFullTurn));
 		commands.pushUnchecked(sliceFlags);
 		commands.pushUnchecked(uint16_t(0));
 	}
@@ -3144,7 +3134,14 @@ void GfxDeviceGen2::drawElipse(const RectSPX& canvas, spx thickness, HiColor fil
 
 void GfxDeviceGen2::drawPieChart(const RectSPX& canvas, float start, int nSlices, const float* pSliceSizes, const HiColor* pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
 {
-	if (nSlices < 0 || nSlices > c_maxRingSlices || (hubSize >= 1.f && !bRectangular))
+	if (nSlices < 0 || (nSlices > 0 && (!pSliceSizes || !pSliceColors)))
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Invalid slices.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	if (hubSize >= 1.f && !bRectangular)			// Hub covering all, nothing drawn as before.
 		return;
 
 	int bufferSize = sizeof(RingSlice) * std::max(nSlices, 1);

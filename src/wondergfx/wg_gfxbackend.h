@@ -116,7 +116,8 @@ namespace wg
 
 			The command starts at a 32-bit boundary (padded with Command::None if needed), so
 			32-bit values in the payload are aligned. Backends that don't support a kind of
-			shape can skip it using nWords, nRects and nColors.
+			shape can skip it using nWords, nRects and nColors. Payloads can be decoded with
+			decodeRoundedBox() and decodeRing().
 
 			ShapeKind::RoundedBox payload:
 
@@ -137,14 +138,14 @@ namespace wg
 			ShapeKind::Ring payload:
 
 			  spx		rect x, y, w, h
-			  spx		thickness		Width of ring, outline included. 0 for no hole.
+			  spx		thickness		Width of ring, outline included. 0 or at least the radius for no hole.
 			  spx		outline
 			  spx		softness		Reserved, always 0 for now.
 			  uint16	flags			See RingFlags.
 			  uint16	nSlices
-			  uint32	start			Clockwise from 12 o'clock, 0x80000000 is a full turn.
+			  uint32	start			Clockwise from 12 o'clock, c_shapeFullTurn is a full turn.
 			  per slice:
-			    uint32	size			0x80000000 is a full turn.
+			    uint32	size			c_shapeFullTurn is a full turn.
 			    uint16	flags			See RingSliceFlags.
 			    uint16	padding
 			  ...		tints			Encoded as by TintTools::encodeTint(), placed in rect: outline, hub, back
@@ -187,7 +188,42 @@ namespace wg
 			HasOutlineTint	= 1 << 3
 		};
 
-		static const int	c_drawShapeHeaderWords = 6;
+		static const int		c_drawShapeHeaderWords = 6;
+		static const int		c_roundedBoxPayloadWords = 28;		// RoundedBox payload before its tints.
+		static const int		c_ringPayloadWords = 18;			// Ring payload before its slices...
+		static const int		c_ringSliceWords = 4;				// ...and the words of each.
+		static const uint32_t	c_shapeFullTurn = 0x80000000;		// Angles and slice sizes of Ring.
+
+		// Decoded DrawShape payloads, see decodeRoundedBox() and decodeRing().
+
+		struct RoundedBoxPayload
+		{
+			RectSPX			rect;
+			spx				radius[4];				// Top-left, top-right, bottom-right, bottom-left.
+			BorderSPX		outline;
+			spx				softness;
+			uint16_t		flags;					// See RoundedBoxFlags.
+			const uint16_t*	pTints;					// Encoded tints.
+		};
+
+		struct RingPayload
+		{
+			RectSPX			rect;
+			spx				thickness;
+			spx				outline;
+			spx				softness;
+			uint16_t		flags;					// See RingFlags.
+			int				nSlices;
+			uint32_t		start;
+			const uint16_t*	pSlices;				// See sliceSize() and sliceFlags().
+			const uint16_t*	pTints;					// Encoded tints.
+
+			uint32_t		sliceSize(int slice) const;
+			uint16_t		sliceFlags(int slice) const;	// See RingSliceFlags.
+		};
+
+		static RoundedBoxPayload	decodeRoundedBox(const uint16_t* pPayload);
+		static RingPayload			decodeRing(const uint16_t* pPayload);
 
 		enum class StateChange : uint8_t
 		{

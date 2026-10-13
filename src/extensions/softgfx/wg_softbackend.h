@@ -68,7 +68,7 @@ namespace wg
 			// allocate it once.
 
 			int			mirrorBuffer = 0;
-			int			maxMirrorBuffer = SoftShapes::c_defaultMirrorBufferMax;
+			int			maxMirrorBuffer = SoftShapes::c_defaultMaxMirrorBuffer;
 		};
 
 		//.____ Creation __________________________________________
@@ -314,7 +314,6 @@ namespace wg
 		{
 			bool		bActive;				// Segment is drawn.
 			bool		bFlat;					// Same color everywhere, including device tint.
-			HiColor		flatColor;				// Linear color with tints, if bFlat.
 			SoftTint	tint;					// Color and tint of segment, without device tint.
 
 			// Prepared for drawing.
@@ -322,7 +321,7 @@ namespace wg
 			FillOp_p	pFillOp;				// Fully covered runs, if tint is flat. Device tint applied by kernel.
 			bool		bFillRuns;				// pFillOp draws runs of device tint colors.
 			HiColor		fillColor;				// Color for pFillOp.
-			int16_t		mix[4];					// flatColor as b, g, r, a for coverage pixels, premultiplied for alpha weighted blend modes. If bFlat.
+			int16_t		mix[4];					// Color with tints as b, g, r, a for coverage pixels, weighted by alpha for alpha weighted blend modes. If bFlat.
 		};
 
 		class ShapeSink : public SoftShapes::RowSink
@@ -407,8 +406,7 @@ namespace wg
 		std::vector<uint32_t>		m_ringSliceSizes;
 		GfxBackend::ShapeKind		m_shapeKind;
 		std::vector<ShapeSegment>	m_shapeSegments;
-		BlendMode					m_shapeBlendMode;				// Blend mode for runs of opaque segments.
-		std::vector<HiColor>		m_shapeBuffers[3];
+		std::vector<HiColor>		m_shapeBuffers[2];				// Colors of a segment (0) and the device tint (1) along a row.
 		std::vector<std::vector<int16_t>>	m_shapeMixBuffers;		// Colors of segments that aren't flat, for coverage pixels.
 		std::vector<CoveragePixel>	m_coverageColumn;
 		CoverageOp_p				m_pShapeCoverageOp = nullptr;

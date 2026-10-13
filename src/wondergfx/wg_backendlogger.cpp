@@ -455,33 +455,28 @@ namespace wg
 
 					if (kind == ShapeKind::RoundedBox)
 					{
-						spx v[13];
-						std::memcpy(v, pPayload, sizeof(v));
-						uint16_t flags = pPayload[26];
-						auto has = [flags](RoundedBoxFlags flag) { return (flags & uint16_t(flag)) != 0; };
+						const RoundedBoxPayload box = decodeRoundedBox(pPayload);
+						auto has = [&box](RoundedBoxFlags flag) { return (box.flags & uint16_t(flag)) != 0; };
 
-						*m_pOStream << "    DrawShape: RoundedBox " << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3]
-							<< " radius: " << v[4] << ", " << v[5] << ", " << v[6] << ", " << v[7]
-							<< " outline: " << v[8] << ", " << v[9] << ", " << v[10] << ", " << v[11]
+						*m_pOStream << "    DrawShape: RoundedBox " << box.rect.x << ", " << box.rect.y << ", " << box.rect.w << ", " << box.rect.h
+							<< " radius: " << box.radius[0] << ", " << box.radius[1] << ", " << box.radius[2] << ", " << box.radius[3]
+							<< " outline: " << box.outline.top << ", " << box.outline.right << ", " << box.outline.bottom << ", " << box.outline.left
 							<< (has(RoundedBoxFlags::HasFill) ? " fill" : "") << (has(RoundedBoxFlags::HasOutline) ? " outline" : "")
 							<< (has(RoundedBoxFlags::HasFillTint) ? " fillTint" : "") << (has(RoundedBoxFlags::HasOutlineTint) ? " outlineTint" : "")
 							<< " split into " << nRects << " rectangles." << std::endl;
 					}
 					else if (kind == ShapeKind::Ring)
 					{
-						spx v[7];
-						std::memcpy(v, pPayload, sizeof(v));
-						uint16_t flags = pPayload[14];
-						auto has = [flags](RingFlags flag) { return (flags & uint16_t(flag)) != 0; };
-						int nSlices = pPayload[15];
-						uint32_t start;
-						std::memcpy(&start, pPayload + 16, 4);
+						const RingPayload ring = decodeRing(pPayload);
+						auto has = [&ring](RingFlags flag) { return (ring.flags & uint16_t(flag)) != 0; };
 
-						*m_pOStream << "    DrawShape: Ring " << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3]
-							<< " thickness: " << v[4] << " outline: " << v[5] << " start: " << start / double(0x80000000)
-							<< " slices: " << nSlices
+						*m_pOStream << "    DrawShape: Ring " << ring.rect.x << ", " << ring.rect.y << ", " << ring.rect.w << ", " << ring.rect.h
+							<< " thickness: " << ring.thickness << " outline: " << ring.outline << " start: " << ring.start / double(c_shapeFullTurn)
+							<< " slices: " << ring.nSlices
 							<< (has(RingFlags::Square) ? " square" : "") << (has(RingFlags::HasOutline) ? " outline" : "")
 							<< (has(RingFlags::HasHub) ? " hub" : "") << (has(RingFlags::HasBack) ? " back" : "")
+							<< (has(RingFlags::HasOutlineTint) ? " outlineTint" : "") << (has(RingFlags::HasHubTint) ? " hubTint" : "")
+							<< (has(RingFlags::HasBackTint) ? " backTint" : "")
 							<< " split into " << nRects << " rectangles." << std::endl;
 					}
 					else

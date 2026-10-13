@@ -28,8 +28,8 @@
 #include <wg_gfxbase.h>
 #include <cstring>
 
-// Prefetch of memory about to be written, nothing where not supported. GCC drops calls to
-// functions doing nothing but prefetching, so it must be used in code that does more.
+// Prefetches memory about to be written, nothing where not supported. Keep it in code doing
+// more than prefetching, compilers may drop calls to functions that don't.
 
 #if defined(__GNUC__) || defined(__clang__)
 #	define WG_PREFETCH_FOR_WRITE(p)	__builtin_prefetch((p), 1)
@@ -2360,19 +2360,19 @@ namespace wg
 
 		if (kind == ShapeKind::RoundedBox)
 		{
-			spx values[13];
-			std::memcpy(values, pPayload, sizeof(values));
+			const RoundedBoxPayload box = decodeRoundedBox(pPayload);
+			auto has = [&box](RoundedBoxFlags flag) { return (box.flags & uint16_t(flag)) != 0; };
 
-			m_roundedBox.rect = { values[0], values[1], values[2], values[3] };
+			m_roundedBox.rect = box.rect;
 
 			for (int i = 0; i < 4; i++)
-				m_roundedBox.radius[i] = values[4 + i];
+				m_roundedBox.radius[i] = box.radius[i];
 
-			m_roundedBox.outline = { values[8], values[9], values[10], values[11] };
+			m_roundedBox.outline = box.outline;
 
-			uint16_t flags = pPayload[26];
-			auto has = [flags](RoundedBoxFlags flag) { return (flags & uint16_t(flag)) != 0; };
-			const uint16_t* pTintWords = pPayload + 28;
+			// Colors come first, then the colors of the tints, in the same order.
+
+			const uint16_t* pTintWords = box.pTints;
 
 			HiColor fillColor = has(RoundedBoxFlags::HasFill) ? *pColors++ : HiColor::Transparent;
 			HiColor outlineColor = has(RoundedBoxFlags::HasOutline) ? *pColors++ : HiColor::Transparent;
@@ -2385,37 +2385,28 @@ namespace wg
 		}
 		else
 		{
-			spx values[7];
-			std::memcpy(values, pPayload, sizeof(values));
+			const RingPayload ring = decodeRing(pPayload);
+			auto has = [&ring](RingFlags flag) { return (ring.flags & uint16_t(flag)) != 0; };
+			auto sliceHas = [&ring](int slice, RingSliceFlags flag) { return (ring.sliceFlags(slice) & uint16_t(flag)) != 0; };
 
-			uint16_t flags = pPayload[14];
-			auto has = [flags](RingFlags flag) { return (flags & uint16_t(flag)) != 0; };
-			int nSlices = pPayload[15];
-
-			uint32_t start;
-			std::memcpy(&start, pPayload + 16, 4);
-
-			m_ring.rect = { values[0], values[1], values[2], values[3] };
-			m_ring.thickness = values[4];
-			m_ring.outline = values[5];
-			m_ring.bSquare = has(RingFlags::Square);
-			m_ring.bBack = has(RingFlags::HasBack);
-			m_ring.start = start;
-			m_ring.nSlices = nSlices;
+			const int nSlices = ring.nSlices;
 
 			m_ringSliceSizes.resize(nSlices);
-
-			const uint16_t* pSlice = pPayload + 18;
 			for (int i = 0; i < nSlices; i++)
-			{
-				std::memcpy(&m_ringSliceSizes[i], pSlice + i * 4, 4);
-			}
+				m_ringSliceSizes[i] = ring.sliceSize(i);
 
+			m_ring.rect = ring.rect;
+			m_ring.thickness = ring.thickness;
+			m_ring.outline = ring.outline;
+			m_ring.bSquare = has(RingFlags::Square);
+			m_ring.bBack = has(RingFlags::HasBack);
+			m_ring.start = ring.start;
+			m_ring.nSlices = nSlices;
 			m_ring.pSliceSizes = m_ringSliceSizes.data();
 
-			const uint16_t* pTintWords = pSlice + nSlices * 4;
-
 			// Colors come first, then the colors of the tints, in the same order.
+
+			const uint16_t* pTintWords = ring.pTints;
 
 			HiColor outlineColor = has(RingFlags::HasOutline) ? *pColors++ : HiColor::Transparent;
 			HiColor hubColor = has(RingFlags::HasHub) ? *pColors++ : HiColor::Transparent;
@@ -2424,7 +2415,7 @@ namespace wg
 			const HiColor* pSliceColors = pColors;
 
 			for (int i = 0; i < nSlices; i++)
-				if (pSlice[i * 4 + 2] & uint16_t(RingSliceFlags::Drawn))
+				if (sliceHas(i, RingSliceFlags::Drawn))
 					pColors++;
 
 			int nSegments = SoftShapes::c_ringFirstSliceSegment + nSlices;
@@ -2437,12 +2428,10 @@ namespace wg
 
 			for (int i = 0; i < nSlices; i++)
 			{
-				uint16_t sliceFlags = pSlice[i * 4 + 2];
-				bool bDrawn = (sliceFlags & uint16_t(RingSliceFlags::Drawn)) != 0;
-
+				const bool bDrawn = sliceHas(i, RingSliceFlags::Drawn);
 				HiColor color = bDrawn ? *pSliceColors++ : HiColor::Transparent;
 
-				_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringFirstSliceSegment + i], bDrawn, color, (sliceFlags & uint16_t(RingSliceFlags::Tinted)) != 0, pTintWords, pColors);
+				_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringFirstSliceSegment + i], bDrawn, color, sliceHas(i, RingSliceFlags::Tinted), pTintWords, pColors);
 			}
 		}
 
@@ -2489,7 +2478,6 @@ namespace wg
 		if (seg.bFlat)
 		{
 			const HiColor c = seg.tint.flatColor() * m_softTint.flatColor();
-			seg.flatColor = c;
 
 			bool bAlphaWeighted = isCoverageAlphaWeighted(m_blendMode);
 			seg.mix[0] = int16_t(bAlphaWeighted ? (c.b * c.a) >> 12 : c.b);
@@ -2608,8 +2596,6 @@ namespace wg
 				// Run of fully covered pixels.
 
 				ShapeSegment& seg = m_shapeSegments[run.segment];
-				if (!seg.bActive)
-					continue;
 
 				if (seg.tint.isFlat())
 				{
@@ -2733,24 +2719,17 @@ namespace wg
 	}
 
 	//____ _shapeSegmentColors() _______________________________________________
-	// Colors of a segment, including the device tint, for a row of pixels.
+	// Colors of a segment that isn't flat, including the device tint, for a row of pixels.
 
 	void SoftBackend::_shapeSegmentColors(int segment, int x, int y, int length, HiColor* pOutput)
 	{
 		ShapeSegment& seg = m_shapeSegments[segment];
 
-		if (seg.bFlat)
-		{
-			for (int i = 0; i < length; i++)
-				pOutput[i] = seg.flatColor;
-			return;
-		}
-
 		seg.tint.generate(x, y, 1, 0, length, pOutput);
 
 		if (!m_softTint.isFlat())
 		{
-			HiColor* pDevice = _shapeBuffer(2, length);
+			HiColor* pDevice = _shapeBuffer(1, length);
 			m_softTint.generate(x, y, 1, 0, length, pDevice);
 
 			for (int i = 0; i < length; i++)
