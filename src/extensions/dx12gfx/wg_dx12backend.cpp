@@ -1490,20 +1490,15 @@ namespace wg
 
 				case Command::DrawShape:
 				{
-					// Not supported yet, stepped over.
-
-					static bool bReported = false;
-					if (!bReported)
-					{
-						GfxBase::throwError(ErrorLevel::Warning, ErrorCode::Other, "DX12Backend doesn't support DrawShape yet, shapes are not drawn.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-						bReported = true;
-					}
-
+					auto kind = ShapeKind(p[0]);
 					int nRects = p[1];
 					int nColors = p[2];
 					int nWords = p[3];
+					const uint16_t* pPayload = p + c_drawShapeHeaderWords - 1;
 
-					p += c_drawShapeHeaderWords - 1 + nWords;
+					_drawShape(kind, pPayload, pRects, nRects, pColors);
+
+					p = pPayload + nWords;
 					pRects += nRects;
 					pColors += nColors;
 					break;
@@ -2776,6 +2771,135 @@ namespace wg
 		m_commandList->DrawInstanced(nRects * 6, 1, firstVertex, 0);
 	}
 
+	//____ _drawShape() ________________________________________________________
+	//
+	// A shape, drawn by the shape shaders from the entries GpuShapes makes of it, with
+	// the colors and tint blocks of its segments in the color buffer. Its segment
+	// colors are written as given, the tint color comes with the white color of the
+	// vertices, as for edgemaps.
+
+	void DX12Backend::_drawShape(ShapeKind kind, const uint16_t* pPayload, const RectSPX* pRects, int nRects, const HiColor* pColors)
+	{
+		int maxEntries, nSegments;
+		GpuShapes::measure(kind, pPayload, maxEntries, nSegments);
+
+		if (maxEntries == 0)
+		{
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, "Failed DrawShape operation. Unsupported kind of shape.",
+				this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		ID3D12PipelineState* pPipeline = _pipeline(m_activeBlendMode, PipelineKind::Shape);
+
+		if (!pPipeline || !m_pVertexPtr || !m_pColorPtr || !m_pExtrasPtr)
+			return;
+
+		auto bufferFull = [this](const char* pBuffer)
+		{
+			static bool bReported = false;
+			if (!bReported && _blameSessionInfo())
+			{
+				char buffer[256];
+				sprintf_s(buffer, "%s buffer full, shapes dropped. SessionInfo underestimated what the session needs.", pBuffer);
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::ResourceExhausted, buffer, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				bReported = true;
+			}
+		};
+
+		if (m_pExtrasEnd - m_pExtrasPtr < maxEntries)
+			return bufferFull("Extras");
+
+		if (m_pVertexEnd - m_pVertexPtr < nRects * 6)
+			return bufferFull("Vertex");
+
+		// _addColor() multiplies by the tint color, so white is what gets it applied
+		// exactly once.
+
+		int colorOfs = _addColor(HiColor::White);
+		if (colorOfs < 0)
+			return;
+
+		if ((int)m_shapeSegments.size() < nSegments)
+			m_shapeSegments.resize(nSegments);
+
+		ExtrasDX12* pEntries = m_pExtrasPtr;
+		int nEntries = GpuShapes::write(kind, pPayload, pColors, (float*) pEntries, m_shapeSegments.data());
+
+		static_assert(sizeof(ExtrasDX12) == 4 * sizeof(float), "Shape entries are written as float4.");
+
+		// Colors and tint blocks of drawn segments, their offsets in the entries of the
+		// segments.
+
+		for (int i = 0; i < nSegments; i++)
+		{
+			const GpuShapes::Segment& seg = m_shapeSegments[i];
+
+			if (!seg.bDrawn)
+				continue;
+
+			if (m_pColorPtr == m_pColorEnd)
+				return bufferFull("Color");
+
+			ExtrasDX12& entry = pEntries[seg.entry];
+
+			entry.x = float(m_pColorPtr - m_pColorBeg);
+			seg.color.toLinearFloat(&m_pColorPtr->r);
+			m_pColorPtr++;
+
+			if (seg.pTint)
+			{
+				TintTools::DecodedTint tint;
+				const HiColor* pTintColors = seg.pTintColors;
+				TintTools::decodeTint(seg.pTint, pTintColors, tint);
+
+				int blockSize = TintTools::gpuTintBlockSize(tint);
+				if (m_pColorEnd - m_pColorPtr < blockSize)
+					return bufferFull("Color");
+
+				entry.y = float(m_pColorPtr - m_pColorBeg);
+				TintTools::writeGpuTintBlock(tint, (float*) m_pColorPtr);
+				m_pColorPtr += blockSize;
+			}
+		}
+
+		int extrasOfs = int(pEntries - m_pExtrasBeg);
+		m_pExtrasPtr += nEntries;
+
+		// A quad for each clip rectangle.
+
+		int firstVertex = int(m_pVertexPtr - m_pVertexBeg);
+
+		for (int i = 0; i < nRects; i++)
+		{
+			RectI patch = pRects[i] / 64;
+
+			const float coords[4][2] = { { float(patch.x), float(patch.y) }, { float(patch.x + patch.w), float(patch.y) },
+										 { float(patch.x + patch.w), float(patch.y + patch.h) }, { float(patch.x), float(patch.y + patch.h) } };
+
+			const int corners[6] = { 0, 1, 2, 0, 2, 3 };
+
+			for (int vertex = 0; vertex < 6; vertex++)
+			{
+				int corner = corners[vertex];
+
+				m_pVertexPtr->x = coords[corner][0];
+				m_pVertexPtr->y = coords[corner][1];
+				m_pVertexPtr->colorOfs = (uint32_t) colorOfs;
+				m_pVertexPtr->extrasOfs = (uint32_t) extrasOfs;
+				m_pVertexPtr->u = 0.f;
+				m_pVertexPtr->v = 0.f;
+
+				m_pVertexPtr++;
+			}
+		}
+
+		if (!_setPipeline(pPipeline) || !m_bCommandListOpen)
+			return;
+
+		m_commandList->DrawInstanced(nRects * 6, 1, firstVertex, 0);
+	}
+
 	//____ _setPipeline() ______________________________________________________
 
 	bool DX12Backend::_setPipeline(ID3D12PipelineState* pPipeline)
@@ -3037,8 +3161,11 @@ namespace wg
 	//             besides its colors, at most c_tintBlockOverhead entries, and
 	//             any state change may carry a tint.
 	//   Extras:   two per rect (blits need two, subpixel fills and patches
-	//             fewer), one per line, 18 per blur for its brush and one per
-	//             edgemap draw.
+	//             fewer), one per line, 18 per blur for its brush, one per
+	//             edgemap draw and the entries of shapes, see GpuShapes.
+	//
+	//   Shapes also add a white color per draw, for the tint color, and a tint
+	//   block overhead per tinted segment.
 
 	void DX12Backend::_reserveBuffers(const SessionInfo* pInfo)
 	{
@@ -3054,9 +3181,9 @@ namespace wg
 			const int c_maxTintStops = Tint::c_maxMixComponents * Tint::c_maxStops;
 			const int c_tintBlockOverhead = TintTools::gpuTintBlockMaxSize(Tint::c_maxMixComponents, c_maxTintStops) - c_maxTintStops;
 
-			nColors = pInfo->nColors + pInfo->nBlit + pInfo->nBlur + pInfo->nEdgemapDraws
-					+ pInfo->nStateChanges * c_tintBlockOverhead;
-			nExtras = pInfo->nRects * 2 + nLines + pInfo->nBlur * 18 + pInfo->nEdgemapDraws;
+			nColors = pInfo->nColors + pInfo->nBlit + pInfo->nBlur + pInfo->nEdgemapDraws + pInfo->nShapeDraws
+					+ (pInfo->nStateChanges + pInfo->nShapeTints) * c_tintBlockOverhead;
+			nExtras = pInfo->nRects * 2 + nLines + pInfo->nBlur * 18 + pInfo->nEdgemapDraws + GpuShapes::maxSessionEntries(*pInfo);
 		}
 		else
 		{
@@ -3231,6 +3358,7 @@ namespace wg
 			{ PipelineKind::PaletteBlur, g_blitVS, g_paletteBlurPS },
 			{ PipelineKind::Line,	g_lineVS,	g_linePS },
 			{ PipelineKind::Segments, g_segmentsVS, g_segmentsPS },
+			{ PipelineKind::Shape,	g_shapeVS,	g_shapePS },
 		};
 
 		// Compiled by the first backend, reused by the rest. Opening a window
