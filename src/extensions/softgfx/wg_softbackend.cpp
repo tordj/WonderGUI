@@ -93,10 +93,24 @@ namespace wg
 		return SoftBackend_p(new SoftBackend());
 	}
 
+	SoftBackend_p SoftBackend::create( const Blueprint& blueprint )
+	{
+		return SoftBackend_p(new SoftBackend(blueprint));
+	}
+
 	//____ constructor _____________________________________________
 
-	SoftBackend::SoftBackend()
+	SoftBackend::SoftBackend() : SoftBackend(Blueprint())
 	{
+	}
+
+	SoftBackend::SoftBackend( const Blueprint& blueprint )
+	{
+		if (blueprint.finalizer)
+			setFinalizer(blueprint.finalizer);
+
+		m_shapes.setMirrorBuffer(blueprint.mirrorBuffer, blueprint.maxMirrorBuffer);
+
 		_initTables();
 
 		// clear kernel tables

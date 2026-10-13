@@ -56,9 +56,25 @@ namespace wg
 		friend class LinearBackend;
 	public:
 
+		//.____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			Finalizer_p	finalizer = nullptr;
+
+			// Buffer for rows of shapes symmetric upside down, kept to draw their lower half
+			// mirrored, see SoftShapes::setMirrorBuffer(). Allocated to mirrorBuffer bytes on
+			// creation and later as needed up to maxMirrorBuffer. Make them the same to
+			// allocate it once.
+
+			int			mirrorBuffer = 0;
+			int			maxMirrorBuffer = SoftShapes::c_defaultMirrorBufferMax;
+		};
+
 		//.____ Creation __________________________________________
 
 		static SoftBackend_p	create();
+		static SoftBackend_p	create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
@@ -231,6 +247,7 @@ namespace wg
 
 	protected:
 		SoftBackend();
+		SoftBackend( const Blueprint& blueprint );
 		virtual ~SoftBackend();
 
 		void _initTables();

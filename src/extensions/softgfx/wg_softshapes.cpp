@@ -406,6 +406,43 @@ namespace wg
 		m_nPixels += n;
 	}
 
+	//____ setMirrorBuffer() _________________________________________________
+
+	void SoftShapes::setMirrorBuffer(int initialBytes, int maxBytes)
+	{
+		m_keptMax = std::min(std::max(maxBytes, 0), INT_MAX / 2);
+		initialBytes = std::min(std::max(initialBytes, 0), m_keptMax);
+
+		if (m_keptSize > m_keptMax || m_keptSize < initialBytes)
+		{
+			m_pKept.reset(initialBytes > 0 ? new uint8_t[initialBytes] : nullptr);
+			m_keptSize = initialBytes;
+			m_keptUsed = 0;
+		}
+	}
+
+	//____ _reserveKept() _____________________________________________________
+	// Makes room for bytes of kept rows, keeping those used, unless above the most allowed.
+
+	bool SoftShapes::_reserveKept(int bytes)
+	{
+		if (bytes <= m_keptSize)
+			return true;
+
+		if (bytes > m_keptMax)
+			return false;
+
+		const int size = std::min(std::max({ bytes, m_keptSize * 2, 4096 }), m_keptMax);
+
+		uint8_t* p = new uint8_t[size];
+		if (m_keptUsed > 0)
+			std::memcpy(p, m_pKept.get(), m_keptUsed);
+
+		m_pKept.reset(p);
+		m_keptSize = size;
+		return true;
+	}
+
 	//____ _mirrorRuns() ______________________________________________________
 	/*
 		Adds the mirror image of the runs of a row done up to its middle, pixel x of it at
@@ -570,12 +607,15 @@ namespace wg
 
 		// Rows of shapes symmetric around a row boundary or the middle of a row, with flat
 		// colors, are done for the upper half and the lower half is their mirror image, also
-		// if the upper half is clipped. Upper rows are kept for it, as far as there is room.
+		// if the upper half is clipped. Upper rows are kept for it, as far as there is room
+		// in the mirror buffer, see setMirrorBuffer().
 
 		bool bFlip = false;
 		int flipSum = 0;						// Row + its mirror image + 1.
 		int flipMiddle = 0;
-		int keptBeg = 0;						// Row of first entry of m_keptIndex.
+		bool bKeep = false;
+		int keptBeg = 0;						// Row of first entry of index of kept rows...
+		int nKeptIndex = 0;						// ...and their number.
 
 		if (bAllFlat && shape.bSymmetricY && (shape.symmetrySumY & 63) == 0)
 		{
@@ -586,10 +626,18 @@ namespace wg
 			{
 				bFlip = true;
 				keptBeg = flipSum - rowEnd;
-				m_keptIndex.assign(rowEnd - std::max(rowBeg, flipMiddle), -1);
-				m_kept.clear();
-				m_keptRuns.clear();
-				m_keptPixels.clear();
+				nKeptIndex = rowEnd - std::max(rowBeg, flipMiddle);
+
+				const int indexBytes = nKeptIndex * int(sizeof(int));
+
+				m_keptUsed = 0;
+				bKeep = _reserveKept(indexBytes);
+				if (bKeep)
+				{
+					int* pIndex = reinterpret_cast<int*>(m_pKept.get());
+					std::fill(pIndex, pIndex + nKeptIndex, -1);
+					m_keptUsed = indexBytes;
+				}
 			}
 		}
 
@@ -614,12 +662,16 @@ namespace wg
 			{
 				const int source = flipSum - 1 - row;
 				const int k = source - keptBeg;
-				const int kept = (k >= 0 && k < (int)m_keptIndex.size()) ? m_keptIndex[k] : -1;
+				const int kept = (bKeep && k >= 0 && k < nKeptIndex) ? reinterpret_cast<const int*>(m_pKept.get())[k] : -1;
 
 				if (kept >= 0)
 				{
-					const KeptRow& keptRow = m_kept[kept];
-					emit(row, rowsEnd, keptRow.nRuns, m_keptRuns.data() + keptRow.firstRun, m_keptPixels.data() + keptRow.firstPixel);
+					const uint8_t* p = m_pKept.get() + kept;
+					const KeptRow& keptRow = *reinterpret_cast<const KeptRow*>(p);
+					const Run* pRuns = reinterpret_cast<const Run*>(p + sizeof(KeptRow));
+					const CoveragePixel* pPixels = reinterpret_cast<const CoveragePixel*>(p + sizeof(KeptRow) + keptRow.nRuns * sizeof(Run));
+
+					emit(row, rowsEnd, keptRow.nRuns, pRuns, pPixels);
 				}
 				else
 				{
@@ -640,19 +692,26 @@ namespace wg
 
 			// Kept for the rows mirroring them.
 
-			if (bFlip)
+			if (bKeep)
 			{
 				const int keepBeg = std::max(row - keptBeg, 0);
-				const int keepEnd = std::min(std::min(rowsEnd, flipMiddle) - keptBeg, (int)m_keptIndex.size());
+				const int keepEnd = std::min(std::min(rowsEnd, flipMiddle) - keptBeg, nKeptIndex);
+				const int runBytes = nRuns * int(sizeof(Run));
+				const int bytes = int(sizeof(KeptRow)) + runBytes + nPixels * int(sizeof(CoveragePixel));
 
-				if (keepBeg < keepEnd && (int)m_keptPixels.size() + nPixels <= c_maxKeptPixels && (int)m_keptRuns.size() + nRuns <= c_maxKeptPixels)
+				if (keepBeg < keepEnd && _reserveKept(m_keptUsed + bytes))
 				{
-					m_kept.push_back({ (int)m_keptRuns.size(), nRuns, (int)m_keptPixels.size() });
-					m_keptRuns.insert(m_keptRuns.end(), m_runs.begin() + m_firstRun, m_runs.begin() + m_nRuns);
-					m_keptPixels.insert(m_keptPixels.end(), m_pixels.begin() + m_firstPixel, m_pixels.begin() + m_nPixels);
+					uint8_t* p = m_pKept.get() + m_keptUsed;
 
+					*reinterpret_cast<KeptRow*>(p) = { nRuns, nPixels };
+					std::memcpy(p + sizeof(KeptRow), m_runs.data() + m_firstRun, runBytes);
+					std::memcpy(p + sizeof(KeptRow) + runBytes, m_pixels.data() + m_firstPixel, nPixels * sizeof(CoveragePixel));
+
+					int* pIndex = reinterpret_cast<int*>(m_pKept.get());
 					for (int i = keepBeg; i < keepEnd; i++)
-						m_keptIndex[i] = (int)m_kept.size() - 1;
+						pIndex[i] = m_keptUsed;
+
+					m_keptUsed += bytes;
 				}
 			}
 

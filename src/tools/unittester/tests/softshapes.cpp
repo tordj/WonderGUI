@@ -219,6 +219,7 @@ SoftShapesTest::SoftShapesTest()
 	ADD_TEST(ringCoverageTest);
 	ADD_TEST(ringClipTest);
 	ADD_TEST(ringWithoutBackTest);
+	ADD_TEST(mirrorBufferTest);
 }
 
 SoftShapesTest::~SoftShapesTest()
@@ -759,6 +760,77 @@ bool SoftShapesTest::ringWithoutBackTest(std::ostream& output)
 						return false;
 					}
 				}
+	}
+
+	return true;
+}
+
+//____ mirrorBufferTest() _____________________________________________________
+// Rows kept for the mirrored lower half of shapes symmetric upside down only save
+// time, pixels are the same whatever the size of the buffer, also when only some rows
+// fit or it grows while rasterizing.
+
+bool SoftShapesTest::mirrorBufferTest(std::ostream& output)
+{
+	struct Size { int initial, max; };
+	const Size sizes[] = { { 0, 0 }, { 200, 200 }, { 0, 3000 }, { 2000, 2000 }, { 256 * 1024, 256 * 1024 } };
+
+	SoftShapes reference;
+
+	for (auto& c : boxCases())
+	{
+		RectI area = pixelBounds(c.box.rect, 1);
+
+		CoverageGrid wanted(area);
+		wanted.rasterize(reference, c.box, area);
+
+		for (const Size& size : sizes)
+		{
+			SoftShapes shapes;
+			shapes.setMirrorBuffer(size.initial, size.max);
+
+			CoverageGrid grid(area);
+			grid.rasterize(shapes, c.box, area);
+
+			for (int y = area.y; y < area.y + area.h; y++)
+				for (int x = area.x; x < area.x + area.w; x++)
+					if (grid.fill(x, y) != wanted.fill(x, y) || grid.outline(x, y) != wanted.outline(x, y))
+					{
+						output << c.name << ", mirror buffer " << size.initial << "/" << size.max << ": pixel " << x << "," << y << " is "
+							   << grid.fill(x, y) << "/" << grid.outline(x, y) << ", expected " << wanted.fill(x, y) << "/" << wanted.outline(x, y) << "." << std::endl;
+						return false;
+					}
+		}
+	}
+
+	std::vector<uint32_t> sliceSizes;
+
+	for (auto& c : ringCases())
+	{
+		RectI area = pixelBounds(c.rect, 1);
+		int nSegments = SoftShapes::c_ringFirstSliceSegment + (int)c.slices.size();
+
+		SegmentGrid wanted(area, nSegments);
+		wanted.rasterize(reference, makeRing(c, sliceSizes), area);
+
+		for (const Size& size : sizes)
+		{
+			SoftShapes shapes;
+			shapes.setMirrorBuffer(size.initial, size.max);
+
+			SegmentGrid grid(area, nSegments);
+			grid.rasterize(shapes, makeRing(c, sliceSizes), area);
+
+			for (int y = area.y; y < area.y + area.h; y++)
+				for (int x = area.x; x < area.x + area.w; x++)
+					for (int s = 0; s < nSegments; s++)
+						if (grid.coverage(s, x, y) != wanted.coverage(s, x, y))
+						{
+							output << c.name << ", mirror buffer " << size.initial << "/" << size.max << ": segment " << s << " of pixel " << x << "," << y
+								   << " is " << grid.coverage(s, x, y) << ", expected " << wanted.coverage(s, x, y) << "." << std::endl;
+							return false;
+						}
+		}
 	}
 
 	return true;

@@ -41,10 +41,25 @@ namespace wg
 		return LinearBackend_p(new LinearBackend(beginCanvasRender, endCanvasRender));
 	}
 
+	LinearBackend_p LinearBackend::create(const Blueprint& blueprint,
+										std::function<void*(CanvasRef ref, int nBytes)> beginCanvasRender,
+										std::function<void(CanvasRef ref, int nSegments, const Segment * pSegments)> endCanvasRender)
+	{
+		return LinearBackend_p(new LinearBackend(blueprint, beginCanvasRender, endCanvasRender));
+	}
+
 	//____ constructor _____________________________________________
 
 	LinearBackend::LinearBackend(std::function<void*(CanvasRef ref, int nBytes)> beginCanvasRender,
 								 std::function<void(CanvasRef ref, int nSegments, const Segment * pSegments)> endCanvasRender)
+		: LinearBackend(Blueprint(), beginCanvasRender, endCanvasRender)
+	{
+	}
+
+	LinearBackend::LinearBackend(const Blueprint& blueprint,
+								 std::function<void*(CanvasRef ref, int nBytes)> beginCanvasRender,
+								 std::function<void(CanvasRef ref, int nSegments, const Segment * pSegments)> endCanvasRender)
+		: SoftBackend(blueprint)
 	{
 		m_beginCanvasRenderCallback = beginCanvasRender;
 		m_endCanvasRenderCallback 	= endCanvasRender;

@@ -27,6 +27,7 @@
 #include <wg_gfxtypes.h>
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 namespace wg
@@ -196,6 +197,21 @@ namespace wg
 		 */
 
 		void	rasterizeRing(const Ring& ring, const RectI& clip, RowSink* pSink);
+
+		//.____ Buffers ___________________________________________________________
+
+		/**
+		 * Sets the size of the buffer for rows of shapes symmetric upside down, kept to
+		 * draw their lower half mirrored. Allocated to initialBytes right away, and later
+		 * as needed up to maxBytes. Rows that don't fit are rasterized again instead, which
+		 * gives the same pixels, only slower. Setting both the same allocates it once.
+		 *
+		 * Rows of a 2000 pixel high disc take about 150 KB, those of a button about 1 KB.
+		 */
+
+		void	setMirrorBuffer(int initialBytes, int maxBytes);
+
+		static constexpr int	c_defaultMirrorBufferMax = 256 * 1024;
 
 		static constexpr int	c_maxSagitta = 1;		// Most a chord may stray from its circle, spx.
 		static constexpr int	c_maxVertices = 64;		// Most vertices of an edge in a sub-row, below 64 spx high.
@@ -367,20 +383,22 @@ namespace wg
 		std::vector<Run>			m_runs;
 		std::vector<CoveragePixel>	m_pixels;
 
-		// Rows kept to be mirrored, see _rasterize().
+		// Rows kept to be mirrored, see _rasterize(). The buffer holds the offset of each
+		// kept row by row, -1 if not kept, followed by the rows: each a KeptRow, its runs
+		// and its pixels.
 
 		struct KeptRow
 		{
-			int		firstRun, nRuns;
-			int		firstPixel;
+			int		nRuns;
+			int		nPixels;
 		};
 
-		static constexpr int		c_maxKeptPixels = 1 << 16;	// Also most runs.
+		bool	_reserveKept(int bytes);
 
-		std::vector<int>			m_keptIndex;		// Of rows in m_kept, -1 if not kept.
-		std::vector<KeptRow>		m_kept;
-		std::vector<Run>			m_keptRuns;
-		std::vector<CoveragePixel>	m_keptPixels;
+		std::unique_ptr<uint8_t[]>	m_pKept;
+		int							m_keptSize = 0;			// Bytes allocated.
+		int							m_keptMax = c_defaultMirrorBufferMax;
+		int							m_keptUsed = 0;
 
 		RowSink*		m_pSink = nullptr;
 		int				m_clipBeg = 0;

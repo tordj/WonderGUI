@@ -556,12 +556,14 @@ bool ShapeRenderTest::linearBackendTest(std::ostream& output)
 
 	auto softPixels = canvas.read();
 
-	// Same with LinearBackend, rendered in two update rectangles.
+	// Same with LinearBackend, rendered in two update rectangles, created from a blueprint
+	// with the mirror buffer allocated up front.
 
 	std::vector<uint8_t> buffer(c_canvasSize.w * c_canvasSize.h * 4 * 2);
 	std::vector<uint8_t> linearPixels(c_canvasSize.w * c_canvasSize.h * 4, 0);
 
 	auto pLinearBackend = LinearBackend::create(
+		WGBP(LinearBackend, _.mirrorBuffer = 256 * 1024, _.maxMirrorBuffer = 256 * 1024),
 		[&](CanvasRef ref, int bytes)
 		{
 			return (void*)buffer.data();

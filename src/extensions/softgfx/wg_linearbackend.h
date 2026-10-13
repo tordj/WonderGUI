@@ -52,6 +52,10 @@ namespace wg
 		static LinearBackend_p	create(std::function<void*(CanvasRef ref, int nBytes)> beginCanvasRender,
 									   std::function<void(CanvasRef ref, int nSegments, const Segment * pSegments)> endCanvasRender);
 
+		static LinearBackend_p	create(const Blueprint& blueprint,
+									   std::function<void*(CanvasRef ref, int nBytes)> beginCanvasRender,
+									   std::function<void(CanvasRef ref, int nSegments, const Segment * pSegments)> endCanvasRender);
+
 		//.____ Identification __________________________________________
 
 		const TypeInfo& typeInfo(void) const override;
@@ -83,6 +87,10 @@ namespace wg
 
 	protected:
 		LinearBackend(std::function<void*(CanvasRef ref, int nBytes)> beginCanvasRender,
+					  std::function<void(CanvasRef ref, int nSegments, const Segment * pSegments)> endCanvasRender);
+
+		LinearBackend(const Blueprint& blueprint,
+					  std::function<void*(CanvasRef ref, int nBytes)> beginCanvasRender,
 					  std::function<void(CanvasRef ref, int nSegments, const Segment * pSegments)> endCanvasRender);
 		
 		virtual ~LinearBackend();
