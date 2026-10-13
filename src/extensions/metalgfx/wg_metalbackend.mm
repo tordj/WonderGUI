@@ -297,6 +297,15 @@ MetalBackend::~MetalBackend()
 		}
 	}
 
+	for( int tint = 0 ; tint < 2 ; tint++ )
+	{
+		for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+		{
+			for( int format = 0 ; format < 5 ; format++ )
+				[m_shapePipelines[tint][blendMode][format] release];
+		}
+	}
+
 	for( auto& entry : m_mipmapPipelines )
 		[entry.second release];
 
@@ -504,6 +513,23 @@ id<MTLRenderPipelineState> MetalBackend::_compileSegmentsPipeline( int shaderInd
 	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat );
 }
 
+//____ _compileShapePipeline() ________________________________________________
+
+id<MTLRenderPipelineState> MetalBackend::_compileShapePipeline( bool bTintmap, BlendMode blendMode, DestFormat canvasFormat )
+{
+	bool        isAlpha8    = (canvasFormat == DestFormat::Alpha_8);
+
+	NSString* vertexShader = @"shapeVertexShader";
+
+	NSString* fragmentShader = [NSString stringWithFormat:@"shape%@FragmentShader%@",
+								 bTintmap ? @"Tintmap" : @"", isAlpha8 ? @"_A8" : @""];
+
+	NSString* label = [NSString stringWithFormat:@"Shape Pipeline (format=%s, blendMode=%s, tintmap=%s)",
+						_destFormatName(canvasFormat), toString(blendMode), bTintmap ? "true" : "false"];
+
+	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat );
+}
+
 
 //____ typeInfo() _________________________________________________________
 
@@ -647,7 +673,7 @@ void MetalBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, 
 	const int maxTintStops = Tint::c_maxMixComponents * Tint::c_maxStops;
 	const int tintBlockOverhead = TintTools::gpuTintBlockMaxSize(Tint::c_maxMixComponents, maxTintStops) - maxTintStops;
 
-	int nColors = pInfo->nColors + 1 + pInfo->nStateChanges * tintBlockOverhead;
+	int nColors = pInfo->nColors + 1 + (pInfo->nStateChanges + pInfo->nShapeTints) * tintBlockOverhead;
 
 	m_colorBufferId = [s_metalDevice newBufferWithLength:nColors*sizeof(ColorMTL) options:MTLResourceStorageModeShared];
 	m_pColorBuffer = (ColorMTL *)[m_colorBufferId contents];
@@ -667,7 +693,8 @@ void MetalBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, 
 	pInfo->nBlit * 8
 	+ pInfo->nBlur * 8
 	+ pInfo->nLineCoords/2 * 4
-	+ pInfo->nRects * 4;			// This is for possible subpixel fills. We have no way of knowing exactly how much is needed.
+	+ pInfo->nRects * 4			// This is for possible subpixel fills. We have no way of knowing exactly how much is needed.
+	+ GpuShapes::maxSessionEntries(*pInfo) * 4;
 
 	m_extrasBufferId = [s_metalDevice newBufferWithLength:nExtrasFloats*sizeof(float) options:MTLResourceStorageModeShared];
 	m_pExtrasBuffer = (float *)[m_extrasBufferId contents];
@@ -1350,22 +1377,95 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 
 			case Command::DrawShape:
 			{
-				// Not supported yet, stepped over.
-
-				static bool bReported = false;
-				if (!bReported)
-				{
-					GfxBase::throwError(ErrorLevel::Warning, ErrorCode::Other, "MetalBackend doesn't support DrawShape yet, shapes are not drawn.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-					bReported = true;
-				}
-
+				auto kind = ShapeKind(p[0]);
 				int nRects = p[1];
 				int nColors = p[2];
 				int nWords = p[3];
+				const uint16_t* pPayload = p + c_drawShapeHeaderWords - 1;
+				p = pPayload + nWords;
 
-				p += c_drawShapeHeaderWords - 1 + nWords;
+				const RectSPX* pShapeRects = pRects;
+				const HiColor* pShapeColors = pColors;
 				pRects += nRects;
 				pColors += nColors;
+
+				int maxEntries, nSegments;
+				GpuShapes::measure(kind, pPayload, maxEntries, nSegments);
+
+				if (maxEntries == 0)
+				{
+					GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, "Failed DrawShape operation. Unsupported kind of shape.",
+						this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					break;
+				}
+
+				// Shape data in extras buffer, read by the shader.
+
+				if ((int)m_shapeSegments.size() < nSegments)
+					m_shapeSegments.resize(nSegments);
+
+				int extrasOfs = int(pExtrasMTL - m_pExtrasBuffer) / 4;
+				int nEntries = GpuShapes::write(kind, pPayload, pShapeColors, pExtrasMTL, m_shapeSegments.data());
+
+				// Colors and tint blocks of drawn segments in color buffer, their offsets in the
+				// entries of the segments. Tint color and tint are applied by the shader.
+
+				for (int i = 0; i < nSegments; i++)
+				{
+					const GpuShapes::Segment& seg = m_shapeSegments[i];
+
+					if (!seg.bDrawn)
+						continue;
+
+					float* pEntry = pExtrasMTL + seg.entry * 4;
+
+					pEntry[0] = float(pColorMTL - m_pColorBuffer);
+					seg.color.toLinearFloat(&pColorMTL->r);
+					pColorMTL++;
+
+					if (seg.pTint)
+					{
+						TintTools::DecodedTint tint;
+						const HiColor* pTintColors = seg.pTintColors;
+						TintTools::decodeTint(seg.pTint, pTintColors, tint);
+
+						pEntry[1] = float(pColorMTL - m_pColorBuffer);
+						TintTools::writeGpuTintBlock(tint, (float*) pColorMTL);
+						pColorMTL += TintTools::gpuTintBlockSize(tint);
+					}
+				}
+
+				pExtrasMTL += nEntries * 4;
+
+				// Vertices, a quad for each clip rectangle.
+
+				int vertexOfs = int(pVertexMTL - m_pVertexBuffer);
+				const simd_float2 noUV = { 0.f, 0.f };
+
+				for (int i = 0; i < nRects; i++)
+				{
+					RectI patch = pShapeRects[i] / 64;
+
+					CoordI corners[6] = {	{ patch.x, patch.y }, { patch.x + patch.w, patch.y }, { patch.x + patch.w, patch.y + patch.h },
+											{ patch.x, patch.y }, { patch.x + patch.w, patch.y + patch.h }, { patch.x, patch.y + patch.h } };
+
+					for (auto& corner : corners)
+					{
+						pVertexMTL->coord = corner;
+						pVertexMTL->colorsOfs = 0;
+						pVertexMTL->extrasOfs = extrasOfs;
+						pVertexMTL->uv = noUV;
+						pVertexMTL->tintOfs = m_tintOfs;
+						pVertexMTL++;
+					}
+				}
+
+				auto& pipeline = m_shapePipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat];
+				if( pipeline == nil )
+					pipeline = _compileShapePipeline(m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat);
+
+				[m_renderEncoder setRenderPipelineState:pipeline];
+				[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nRects*6];
 				break;
 			}
 

@@ -1823,6 +1823,319 @@ fragment float4 segmentsTintmapFragmentShader15_A8(SegmentsFragInput in [[stage_
 	return segFragShaderCore_A8<15>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
 };
 
+//____ Shapes ______________________________________________________________
+//
+// Shapes (Command::DrawShape), see GpuShapes for the entries read from the extras buffer.
+// The coverage of each pixel by each segment is worked out from the geometry. Partly covered
+// pixels get the colors of the drawn segments covering them mixed, weighted by coverage and
+// alpha, like edgemaps. Pixels not covered by any drawn segment are left alone.
+
+typedef struct
+{
+	float4	position [[position]];
+	float4	color;						// Tint color.
+	int		shapeOfs [[flat]];			// Entry of shape in extras buffer.
+	int		tintOfs [[flat]];			// Device tint block in color buffer, -1 for none.
+} ShapeFragInput;
+
+vertex ShapeFragInput
+shapeVertexShader(uint vertexID [[vertex_id]],
+				  constant Vertex *pVertices [[buffer(0)]],
+				  constant vector_float4  *pColor [[buffer(1)]],
+				  constant vector_float4  *pExtras [[buffer(2)]],
+				  constant Uniform * pUniform[[buffer(3)]])
+{
+	ShapeFragInput out;
+
+	float2 pos = (vector_float2) pVertices[vertexID].coord.xy;
+
+	vector_float2 canvasSize = pUniform->canvasDim;
+
+	out.position = vector_float4(0.0, 0.0, 0.0, 1.0);
+	out.position.x = pos.x*2 / canvasSize.x - 1.0;
+	out.position.y = (pUniform->canvasYOfs + pUniform->canvasYMul*pos.y)*2 / canvasSize.y - 1.0;
+
+	out.color = pUniform->flatTint;
+	out.shapeOfs = pVertices[vertexID].extrasOfs;
+	out.tintOfs = pVertices[vertexID].tintOfs;
+	return out;
+}
+
+inline float spanCoverage(float a, float b, float p)
+{
+	return clamp(min(p + 0.5f, b) - max(p - 0.5f, a), 0.f, 1.f);
+}
+
+inline float rectCoverage(float4 r, float2 p)
+{
+	return spanCoverage(r.x, r.z, p.x) * spanCoverage(r.y, r.w, p.y);
+}
+
+// Part of a pixel inside a straight edge, s from the pixel center along its normal n.
+
+inline float halfPlaneCoverage(float s, float2 n)
+{
+	float2 an = abs(n);
+	float a = max(an.x, an.y);
+	float b = min(an.x, an.y);
+
+	if( b < 0.001f )
+		return clamp(s + 0.5f, 0.f, 1.f);
+
+	float t = s + 0.5f * (a + b);
+
+	if( t <= 0.f )
+		return 0.f;
+	if( t >= a + b )
+		return 1.f;
+	if( t < b )
+		return t * t / (2.f * a * b);
+	if( t > a )
+		return 1.f - (a + b - t) * (a + b - t) / (2.f * a * b);
+	return (t - 0.5f * b) / a;
+}
+
+// Part of a pixel inside a circle, v from its center to the pixel center and d its length.
+
+inline float circleCoverage(float radius, float2 v, float d)
+{
+	if( radius <= 0.f )
+		return 0.f;
+
+	return d > 0.001f ? halfPlaneCoverage(radius - d, v / d) : clamp(radius + 0.5f, 0.f, 1.f);
+}
+
+inline float roundedRectCoverage(float4 r, float4 radii, float2 p)
+{
+	float c = rectCoverage(r, p);
+
+	float2 center;
+	float radius;
+
+	if( p.x < r.x + radii.x && p.y < r.y + radii.x )
+	{
+		radius = radii.x;
+		center = float2(r.x + radius, r.y + radius);
+	}
+	else if( p.x > r.z - radii.y && p.y < r.y + radii.y )
+	{
+		radius = radii.y;
+		center = float2(r.z - radius, r.y + radius);
+	}
+	else if( p.x > r.z - radii.z && p.y > r.w - radii.z )
+	{
+		radius = radii.z;
+		center = float2(r.z - radius, r.w - radius);
+	}
+	else if( p.x < r.x + radii.w && p.y > r.w - radii.w )
+	{
+		radius = radii.w;
+		center = float2(r.x + radius, r.w - radius);
+	}
+	else
+		return c;
+
+	float2 v = p - center;
+	return min(c, circleCoverage(radius, v, length(v)));
+}
+
+// Adds a segment covering c of the pixel, if drawn: color times alpha and alpha weighted
+// by coverage to acc, coverage to covered.
+
+inline void addSegment(constant float4 * pShape, constant float4 * pColor, int seg, float c, float2 p, thread float4& acc, thread float& covered)
+{
+	if( c <= 0.f )
+		return;
+
+	float4 s = pShape[seg];
+	if( s.x < 0.f )
+		return;
+
+	float4 col = pColor[int(s.x)];
+	if( s.y >= 0.f )
+		col *= evalTint(pColor, int(s.y), p);
+
+	acc += float4(col.rgb * col.a, col.a) * c;
+	covered += c;
+}
+
+inline void boxCoverage(constant float4 * pShape, constant float4 * pColor, int ofs, float2 p, thread float4& acc, thread float& covered)
+{
+	float outer = roundedRectCoverage(pShape[ofs + 1], pShape[ofs + 2], p);
+	float fill = outer;
+
+	if( (int(pShape[ofs].y) & 1) != 0 )
+		fill = min(outer, roundedRectCoverage(pShape[ofs + 3], pShape[ofs + 4], p));
+
+	addSegment(pShape, pColor, ofs + 5, fill, p, acc, covered);
+	addSegment(pShape, pColor, ofs + 6, outer - fill, p, acc, covered);
+}
+
+// Splits band, the coverage of the slice area, between the elements: those whose boundaries
+// pass through the pixel get the part between them, the element at the pixel center the rest.
+
+inline void ringElements(constant float4 * pShape, constant float4 * pColor, int ofs, int n, int base, float band, float2 p, float2 v, float d, thread float4& acc, thread float& covered)
+{
+	if( n == 1 )
+	{
+		addSegment(pShape, pColor, ofs + int(pShape[base].y), band, p, acc, covered);
+		return;
+	}
+
+	float theta = d > 0.0001f ? fract(atan2(v.x, -v.y) * 0.15915494f) : 0.f;
+
+	int lo = 0;
+	int hi = n;
+	while( lo < hi )
+	{
+		int mid = (lo + hi) / 2;
+		if( pShape[base + mid].x <= theta )
+			lo = mid + 1;
+		else
+			hi = mid;
+	}
+
+	int first = lo > 0 ? lo - 1 : n - 1;
+	float w = min(0.25f, 0.70710678f / (6.2831853f * max(d, 0.0001f)));
+	float behind = fract(theta - pShape[base + first].x);
+
+	for( int i = 0 ; i < n - 1 && behind < w ; i++ )
+	{
+		int prev = first > 0 ? first - 1 : n - 1;
+		behind += fract(pShape[base + first].x - pShape[base + prev].x);
+		first = prev;
+	}
+
+	float g = 1.f;
+	float ahead = -behind;
+	int k = first;
+	float4 element = pShape[base + k];
+
+	for( int i = 0 ; i < n ; i++ )
+	{
+		int next = k + 1 < n ? k + 1 : 0;
+		float4 nextElement = pShape[base + next];
+		ahead += fract(nextElement.x - element.x);
+
+		float gEnd = 0.f;
+		if( i < n - 1 && ahead < w )
+		{
+			float a = 6.2831853f * nextElement.x;
+			gEnd = min(g, halfPlaneCoverage(-d * sin(6.2831853f * ahead), float2(cos(a), sin(a))));
+		}
+
+		addSegment(pShape, pColor, ofs + int(element.y), band * (g - gEnd), p, acc, covered);
+
+		if( gEnd <= 0.f )
+			break;
+
+		g = gEnd;
+		k = next;
+		element = nextElement;
+	}
+}
+
+inline void ringCoverage(constant float4 * pShape, constant float4 * pColor, int ofs, float2 p, thread float4& acc, thread float& covered)
+{
+	float4 head = pShape[ofs];
+	int flags = int(head.y);
+	float4 circles = pShape[ofs + 1];
+	float4 inner = pShape[ofs + 2];
+	float4 rect = pShape[ofs + 3];
+
+	float2 v = p - circles.xy;
+	float d = length(v);
+	bool bSquare = (flags & 1) != 0;
+
+	float c0 = bSquare ? rectCoverage(rect, p) : circleCoverage(circles.z, v, d);
+	float c1 = min(bSquare ? rectCoverage(pShape[ofs + 4], p) : circleCoverage(circles.w, v, d), c0);
+	float c2 = min(circleCoverage(inner.x, v, d), c1);
+	float c3 = min(circleCoverage(inner.y, v, d), c2);
+
+	float back = (flags & 2) != 0 ? max(rectCoverage(rect, p) - c0, 0.f) : 0.f;
+	float outline = c0 - c1 + c2 - c3;
+	float band = c1 - c2;
+
+	if( (flags & 16) == 0 )
+	{
+		outline += band;
+		band = 0.f;
+	}
+
+	addSegment(pShape, pColor, ofs + 5, back, p, acc, covered);
+	addSegment(pShape, pColor, ofs + 6, outline, p, acc, covered);
+	addSegment(pShape, pColor, ofs + 7, (flags & 4) != 0 ? c3 : 0.f, p, acc, covered);
+
+	if( band > 0.f )
+		ringElements(pShape, pColor, ofs, int(head.z), ofs + int(head.w), band, p, v, d, acc, covered);
+}
+
+// Coverage of the drawn segments of a shape at a pixel center, their colors in acc.
+
+inline float shapeCoverage(constant float4 * pShape, constant float4 * pColor, int ofs, float2 p, thread float4& acc)
+{
+	acc = float4(0.f);
+	float covered = 0.f;
+
+	int kind = int(pShape[ofs].x);
+	if( kind == 1 )
+		boxCoverage(pShape, pColor, ofs, p, acc, covered);
+	else if( kind == 2 )
+		ringCoverage(pShape, pColor, ofs, p, acc, covered);
+
+	return covered;
+}
+
+inline float4 shapeColor(float4 acc)
+{
+	return float4(acc.a > 0.f ? acc.rgb / acc.a : float3(0.f), acc.a);
+}
+
+fragment float4 shapeFragmentShader(ShapeFragInput in [[stage_in]],
+									constant float4 *pColor [[buffer(0)]],
+									constant float4 *pExtras [[buffer(1)]])
+{
+	float4 acc;
+	if( shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc) < 1.f / 256.f )
+		discard_fragment();
+
+	return shapeColor(acc) * in.color;
+}
+
+fragment float4 shapeFragmentShader_A8(ShapeFragInput in [[stage_in]],
+									   constant float4 *pColor [[buffer(0)]],
+									   constant float4 *pExtras [[buffer(1)]])
+{
+	float4 acc;
+	if( shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc) < 1.f / 256.f )
+		discard_fragment();
+
+	return { acc.a * in.color.a, 0.0, 0.0, 0.0 };
+}
+
+fragment float4 shapeTintmapFragmentShader(ShapeFragInput in [[stage_in]],
+										   constant float4 *pColor [[buffer(0)]],
+										   constant float4 *pExtras [[buffer(1)]])
+{
+	float4 acc;
+	if( shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc) < 1.f / 256.f )
+		discard_fragment();
+
+	return shapeColor(acc) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
+}
+
+fragment float4 shapeTintmapFragmentShader_A8(ShapeFragInput in [[stage_in]],
+											  constant float4 *pColor [[buffer(0)]],
+											  constant float4 *pExtras [[buffer(1)]])
+{
+	float4 acc;
+	if( shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc) < 1.f / 256.f )
+		discard_fragment();
+
+	return { acc.a * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 0.0, 0.0, 0.0 };
+}
+
+
 //____ Mipmap generation ______________________________________________________
 //
 // Draws a mip level from the one above it, see MetalBackend::_generateMipmaps().
