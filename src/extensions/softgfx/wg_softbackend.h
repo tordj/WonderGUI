@@ -318,12 +318,13 @@ namespace wg
 			SoftBackend*	pBackend;
 			uint8_t*		pOrigin;
 			int				pitch;
+			int				rowEnd;				// Row below the clip rectangle.
 		};
 
 		bool	_beginShape(GfxBackend::ShapeKind kind, const uint16_t* pPayload, const HiColor* pColors);
 		void	_setupShapeSegment(ShapeSegment& seg, bool bActive, HiColor color, bool bTint, const uint16_t*& pTintWords, const HiColor*& pTintColors);
 		void	_drawShape(const RectI& clip, uint8_t* pOrigin, int pitch);
-		void	_drawShapeRuns(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels);
+		void	_drawShapeRuns(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels, int prefetchRow);
 		void	_shapeSegmentColors(int segment, int x, int y, int length, HiColor* pOutput);
 		HiColor* _shapeBuffer(int index, int length);
 

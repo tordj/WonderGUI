@@ -28,6 +28,18 @@
 #include <wg_gfxbase.h>
 #include <cstring>
 
+// Prefetch of memory about to be written, nothing where not supported. GCC drops calls to
+// functions doing nothing but prefetching, so it must be used in code that does more.
+
+#if defined(__GNUC__) || defined(__clang__)
+#	define WG_PREFETCH_FOR_WRITE(p)	__builtin_prefetch((p), 1)
+#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_IX86))
+#	include <xmmintrin.h>
+#	define WG_PREFETCH_FOR_WRITE(p)	_mm_prefetch((const char*)(p), _MM_HINT_T0)
+#else
+#	define WG_PREFETCH_FOR_WRITE(p)	((void)0)
+#endif
+
 
 using namespace std;
 
@@ -2429,6 +2441,7 @@ namespace wg
 		sink.pBackend = this;
 		sink.pOrigin = pOrigin;
 		sink.pitch = pitch;
+		sink.rowEnd = clip.y + clip.h;
 
 		if (m_shapeKind == ShapeKind::RoundedBox)
 			m_shapes.rasterizeRoundedBox(m_roundedBox, clip, &sink);
@@ -2542,14 +2555,14 @@ namespace wg
 
 	void SoftBackend::ShapeSink::row(int y, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels)
 	{
-		pBackend->_drawShapeRuns(pOrigin, pitch, y, y + 1, nRuns, pRuns, pPixels);
+		pBackend->_drawShapeRuns(pOrigin, pitch, y, y + 1, nRuns, pRuns, pPixels, y + 1 < rowEnd ? y + 1 : -1);
 	}
 
 	//____ ShapeSink::rows() ___________________________________________________
 
 	void SoftBackend::ShapeSink::rows(int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels)
 	{
-		pBackend->_drawShapeRuns(pOrigin, pitch, yBeg, yEnd, nRuns, pRuns, pPixels);
+		pBackend->_drawShapeRuns(pOrigin, pitch, yBeg, yEnd, nRuns, pRuns, pPixels, yEnd < rowEnd ? yEnd : -1);
 	}
 
 	//____ _drawShapeRuns() ____________________________________________________
@@ -2557,9 +2570,13 @@ namespace wg
 		Draws the same runs on rows yBeg up to yEnd. Fully covered runs are drawn with
 		the fill kernels, tinted like fills. Partly covered pixels, with colors already
 		mixed, are drawn with the coverage kernels.
+
+		The span of the runs on prefetchRow, the row likely drawn next, is then prefetched,
+		unless -1, to arrive while that row is rasterized. Without it, shapes drawn where
+		the canvas isn't in cache spend much of their time waiting for it.
 	*/
 
-	void SoftBackend::_drawShapeRuns(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels)
+	void SoftBackend::_drawShapeRuns(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels, int prefetchRow)
 	{
 		auto pKernels = m_pKernels[(int)m_canvasSoftFormat];
 		const int pixelBytes = m_canvasPixelBytes;
@@ -2684,6 +2701,18 @@ namespace wg
 					}
 				}
 			}
+		}
+
+		if (prefetchRow >= 0 && nRuns > 0)
+		{
+			const uint8_t* pRow = pOrigin + prefetchRow * pitch;
+			const int beg = pRuns[0].begin * pixelBytes;
+			const int end = pRuns[nRuns - 1].end * pixelBytes;
+
+			for (int ofs = beg; ofs < end; ofs += int(kCacheLineSize))
+				WG_PREFETCH_FOR_WRITE(pRow + ofs);
+
+			WG_PREFETCH_FOR_WRITE(pRow + end - 1);
 		}
 	}
 
