@@ -188,11 +188,11 @@ namespace wg
 			HasOutlineTint	= 1 << 3
 		};
 
-		static const int		c_drawShapeHeaderWords = 6;
-		static const int		c_roundedBoxPayloadWords = 28;		// RoundedBox payload before its tints.
-		static const int		c_ringPayloadWords = 18;			// Ring payload before its slices...
-		static const int		c_ringSliceWords = 4;				// ...and the words of each.
-		static const uint32_t	c_shapeFullTurn = 0x80000000;		// Angles and slice sizes of Ring.
+		static constexpr int		c_drawShapeHeaderWords = 6;
+		static constexpr int		c_roundedBoxPayloadWords = 28;		// RoundedBox payload before its tints.
+		static constexpr int		c_ringPayloadWords = 18;			// Ring payload before its slices...
+		static constexpr int		c_ringSliceWords = 4;				// ...and the words of each.
+		static constexpr uint32_t	c_shapeFullTurn = 0x80000000;		// Angles and slice sizes of Ring.
 
 		// Decoded DrawShape payloads, see decodeRoundedBox() and decodeRing().
 

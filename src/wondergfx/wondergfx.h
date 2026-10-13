@@ -58,6 +58,7 @@
 #include <wg_spxcompression.h>
 #include <wg_tint.h>
 #include <wg_tinttools.h>
+#include <wg_gpushapes.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
 #include <wg_surfacefileheader.h>
