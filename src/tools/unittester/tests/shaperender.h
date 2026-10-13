@@ -18,6 +18,7 @@ private:
 	bool clipListTest(std::ostream& output);
 	bool linearBackendTest(std::ostream& output);
 	bool streamTest(std::ostream& output);
+	bool cApiTest(std::ostream& output);
 	bool alignedBoxTest(std::ostream& output);
 	bool boxSkinTest(std::ostream& output);
 	bool ringTest(std::ostream& output);

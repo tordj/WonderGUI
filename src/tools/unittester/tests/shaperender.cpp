@@ -3,6 +3,7 @@
 
 #include <wondergui.h>
 #include <wg_gfxdevice_gen2.h>
+#include <wg_c_gfxdevice.h>
 #include <wg_gfxutil.h>
 #include <wg_softbackend.h>
 #include <wg_linearbackend.h>
@@ -224,6 +225,7 @@ ShapeRenderTest::ShapeRenderTest()
 	ADD_TEST(clipListTest);
 	ADD_TEST(linearBackendTest);
 	ADD_TEST(streamTest);
+	ADD_TEST(cApiTest);
 	ADD_TEST(alignedBoxTest);
 	ADD_TEST(boxSkinTest);
 	ADD_TEST(ringTest);
@@ -489,7 +491,63 @@ bool ShapeRenderTest::clipListTest(std::ostream& output)
 
 namespace
 {
-	void drawScene(GfxDevice* pDevice)
+	// Shapes drawn directly or through the C API, which plugins draw through.
+
+	void drawRoundedBox(GfxDevice* pDevice, const RoundedBoxSpec& spec, bool bCApi)
+	{
+		if (!bCApi)
+		{
+			pDevice->drawRoundedBox(spec);
+			return;
+		}
+
+		wg_roundedBoxSpec box;
+		box.rect = *(const wg_rectSPX*)&spec.rect;
+
+		for (int i = 0; i < 4; i++)
+			box.radius[i] = spec.radius[i];
+
+		box.outline = *(const wg_borderSPX*)&spec.outline;
+		box.fillColor = *(const wg_color*)&spec.fillColor;
+		box.outlineColor = *(const wg_color*)&spec.outlineColor;
+		box.fillTint = static_cast<Object*>(spec.pFillTint);
+		box.outlineTint = static_cast<Object*>(spec.pOutlineTint);
+
+		wg_drawRoundedBox(static_cast<Object*>(pDevice), &box);
+	}
+
+	void drawRing(GfxDevice* pDevice, const RingSpec& spec, bool bCApi)
+	{
+		if (!bCApi)
+		{
+			pDevice->drawRing(spec);
+			return;
+		}
+
+		std::vector<wg_ringSlice> slices(spec.nSlices);
+
+		for (int i = 0; i < spec.nSlices; i++)
+			slices[i] = { spec.pSlices[i].size, *(const wg_color*)&spec.pSlices[i].color, static_cast<Object*>(spec.pSlices[i].pTint) };
+
+		wg_ringSpec ring;
+		ring.rect = *(const wg_rectSPX*)&spec.rect;
+		ring.thickness = spec.thickness;
+		ring.outline = spec.outline;
+		ring.start = spec.start;
+		ring.nSlices = spec.nSlices;
+		ring.pSlices = slices.data();
+		ring.bSquare = spec.bSquare;
+		ring.outlineColor = *(const wg_color*)&spec.outlineColor;
+		ring.outlineTint = static_cast<Object*>(spec.pOutlineTint);
+		ring.hubColor = *(const wg_color*)&spec.hubColor;
+		ring.hubTint = static_cast<Object*>(spec.pHubTint);
+		ring.backColor = *(const wg_color*)&spec.backColor;
+		ring.backTint = static_cast<Object*>(spec.pBackTint);
+
+		wg_drawRing(static_cast<Object*>(pDevice), &ring);
+	}
+
+	void drawScene(GfxDevice* pDevice, bool bCApi = false)
 	{
 		pDevice->setBlendMode(BlendMode::Replace);
 		pDevice->fill(c_background);
@@ -503,7 +561,7 @@ namespace
 		spec.pOutlineTint = pTint;
 
 		pDevice->setBlendMode(BlendMode::Blend);
-		pDevice->drawRoundedBox(spec);
+		drawRoundedBox(pDevice, spec, bCApi);
 
 		RoundedBoxSpec pill;
 		pill.rect = { 64 * 2 + 10, 64 * 30 + 50, 64 * 50, 64 * 12 + 20 };
@@ -511,12 +569,12 @@ namespace
 		pill.fillColor = HiColor(4096, 4096, 0, 2048);
 
 		pDevice->setBlendMode(BlendMode::Replace);
-		pDevice->drawRoundedBox(pill);
+		drawRoundedBox(pDevice, pill, bCApi);
 
 		pDevice->setBlendMode(BlendMode::Add);
 		pDevice->setTintColor(HiColor(2048, 4096, 4096, 4096));
 		pill.rect.y -= 64 * 20 + 13;
-		pDevice->drawRoundedBox(pill);
+		drawRoundedBox(pDevice, pill, bCApi);
 		pDevice->clearTintColor();
 
 		auto pSliceTint = Tint::create(HiColor(4096, 4096, 4096, 4096), HiColor(0, 0, 0, 4096), { 0.f, 0.f }, { 1.f, 1.f });
@@ -536,7 +594,7 @@ namespace
 		ring.backColor = HiColor(0, 0, 0, 1500);
 
 		pDevice->setBlendMode(BlendMode::Blend);
-		pDevice->drawRing(ring);
+		drawRing(pDevice, ring, bCApi);
 	}
 }
 
@@ -651,6 +709,41 @@ bool ShapeRenderTest::streamTest(std::ostream& output)
 			int pixel = int(i / 4);
 			output << "Pixel " << pixel % c_canvasSize.w << "," << pixel / c_canvasSize.w << " channel " << i % 4
 				   << " is " << int(streamedPixels[i]) << " streamed, " << int(directPixels[i]) << " direct." << std::endl;
+			return false;
+		}
+	}
+
+	return true;
+}
+
+//____ cApiTest() _____________________________________________________________
+// Shapes drawn through the C API, as plugins do, must draw exactly as directly.
+
+bool ShapeRenderTest::cApiTest(std::ostream& output)
+{
+	auto pDevice = createSoftDevice();
+	std::vector<uint8_t> pixels[2];
+
+	for (int i = 0; i < 2; i++)
+	{
+		Canvas canvas;
+
+		pDevice->beginRender();
+		pDevice->beginCanvasUpdate(canvas.surface);
+		drawScene(pDevice, i == 1);
+		pDevice->endCanvasUpdate();
+		pDevice->endRender();
+
+		pixels[i] = canvas.read();
+	}
+
+	for (size_t i = 0; i < pixels[0].size(); i++)
+	{
+		if (pixels[0][i] != pixels[1][i])
+		{
+			int pixel = int(i / 4);
+			output << "Pixel " << pixel % c_canvasSize.w << "," << pixel / c_canvasSize.w << " channel " << i % 4
+				   << " is " << int(pixels[1][i]) << " through the C API, " << int(pixels[0][i]) << " direct." << std::endl;
 			return false;
 		}
 	}
