@@ -49,13 +49,15 @@ One rule holds for all modes: **the color of a fully transparent pixel never aff
 | **Replace** | Cs | αs |
 | **Blend** | (Cs · αs + Cb · αb · (1 − αs)) / out.α | αs + αb · (1 − αs) |
 | **BlendFixedColor** | As Blend, with the fixed blend color in place of the canvas pixel. | |
-| **Morph** | *See open decisions.* | |
+| **Morph** | (Cb · αb · (1 − m) + Cs · αs · m) / out.α | αb · (1 − m) + αs · m |
 | **Ignore** | Cb | αb |
 | **Undefined** | Treated as Blend. | |
 
 **Blend** is Porter-Duff *over*. On an opaque canvas pixel it is the familiar `Cs · αs + Cb · (1 − αs)`. The division matters where the canvas is transparent: drawing onto a transparent surface and blending that surface onto a background gives the same result as drawing directly onto the background.
 
 **Replace** writes the source as it is, alpha included. It can make the canvas transparent.
+
+**Morph** cross-fades from the canvas to the source by the morph factor m, alpha included. It mixes premultiplied colors, so when one side is transparent the other side simply fades out instead of being darkened by the color of the transparent side.
 
 
 
@@ -73,7 +75,7 @@ out.α   = αb
 | **Add** | Cb + Cs | Cb + αs · Cs | Light shining on the paint. |
 | **Subtract** | Cb − Cs | Cb − αs · Cs | Light taken away. |
 | **Multiply** | Cb · Cs | Cb · mix(1, Cs, αs) | A filter. A transparent source is a clear filter. |
-| **Invert** | Cs · (1 − Cb) + Cb · (1 − Cs) | Cb + αs · Cs · (1 − 2 · Cb) | Inverts the canvas, Cs gives the amount for each channel. |
+| **Invert** | Cs · (1 − Cb) + Cb · (1 − Cs) | Cb + αs · Cs · (1 − 2 · Cb) | Inverts the canvas, each channel by the amount given by Cs. |
 | **Min** | min(Cb, Cs) | *See open decisions.* | Darkens to the source. |
 | **Max** | max(Cb, Cs) | *See open decisions.* | Lightens to the source. |
 
@@ -139,10 +141,14 @@ That can't hold for effect modes, by their nature: an effect changes what is bel
 
 ## Open decisions
 
-1. **Min and Max.** Either the rule as written, `mix(Cb, min(Cb, Cs), αs)`, which GPUs can't do with fixed-function blending, or a transparent source fading towards the mode's neutral value, `min(Cb, mix(1, Cs, αs))` and `max(Cb, αs · Cs)`, which they can. The two are equal for opaque and fully transparent sources.
-2. **Invert.** The documentation of BlendMode says Invert ignores the source color and uses its alpha. The backends use the source color as the amount for each channel and ignore alpha. This page assumes the latter, with alpha as strength.
-3. **Morph.** Proposed as a cross-fade between canvas and source, including alpha, taken on premultiplied colors so that a transparent side doesn't darken the other: `out.α = mix(αb, αs, m)`, `out.rgb = mix(Cb · αb, Cs · αs, m) / out.α`.
-4. **Alpha-only canvases.** Keep the exception above?
+1. **Min and Max.** There are two ways to let the transparency of the source control them:
+
+   - *Transparency weakens the effect:* `mix(Cb, min(Cb, Cs), αs)` and `mix(Cb, max(Cb, Cs), αs)`, the general rule as written.
+   - *Transparency fades the source towards the neutral value of the mode* (white for Min, black for Max): `min(Cb, mix(1, Cs, αs))` and `max(Cb, αs · Cs)`. This is how Add already reads ("add the light after multiplying it with its alpha").
+
+   For Add, Subtract, Multiply and Invert the two readings give the same result, since those modes are linear in the source. For Min and Max they only agree when the source is opaque or fully transparent. The first is what anti-aliasing by area needs, but GPUs can't do it with fixed-function blending. The second is exact on every backend at no cost, with coverage then also fading the source towards the neutral value.
+
+2. **Alpha-only canvases.** Strictly by the glass model, effect modes would do nothing on an Alpha_8 canvas, since they never change alpha. Instead they do arithmetic on alpha, as described above, which is what building masks needs and what all backends do today. Keeping this exception, the remaining question is anti-aliasing: since GPUs fold coverage into alpha, the edges of Multiply and Min (intersections) currently come out as if the uncovered part of the pixel was 0. With the source alpha as the value and coverage as the strength, Multiply becomes `αb · mix(1, αs, coverage)` at its edges, which GPUs can do. The alternative is to drop the exception and add paint modes for masks (Porter-Duff destination-out and destination-in, to cut and intersect).
 
 
 
