@@ -97,11 +97,27 @@ public:
 		return true;
 	}
 
+	// The fills are drawn onto stripes of their own, since on a black background Subtract,
+	// Multiply and Min have nothing to darken and Add and Max give the same result. Channels
+	// are not only 0 and 255 either, since Multiply and Min (or Add and Max) give the same
+	// result for those. The last fill is semi-transparent, to show how alpha controls the
+	// strength of the effect.
+
 	bool draw(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		pDevice->fill( RectSPX(100, 100, 100, 100)*64, Color8(255, 0, 0, 255));
-		pDevice->fill( RectSPX(150, 100, 100, 100)*64, Color8(0, 255, 0, 255));
-		pDevice->fill( RectSPX(100, 150, 100, 100)*64, Color8(0, 0, 255, 255));
+		HiColor stripes[6] = { Color8(0, 0, 0), Color8(96, 96, 96), Color8(200, 200, 200),
+							   Color8(255, 255, 255), Color8(220, 60, 40), Color8(40, 90, 210) };
+
+		BlendMode mode = pDevice->blendMode();
+		pDevice->setBlendMode(BlendMode::Replace);
+		for (int i = 0; i < 6; i++)
+			pDevice->fill( RectSPX(80 + i * 35, 80, 35, 215)*64, stripes[i]);
+		pDevice->setBlendMode(mode);
+
+		pDevice->fill( RectSPX(100, 100, 100, 100)*64, Color8(255, 128, 64, 255));
+		pDevice->fill( RectSPX(150, 100, 100, 100)*64, Color8(64, 255, 128, 255));
+		pDevice->fill( RectSPX(100, 150, 100, 100)*64, Color8(128, 64, 255, 255));
+		pDevice->fill( RectSPX(175, 175, 100, 100)*64, Color8(192, 160, 32, 128));
 		return true;
 	}
 
