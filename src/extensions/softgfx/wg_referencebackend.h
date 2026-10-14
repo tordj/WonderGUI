@@ -54,8 +54,15 @@ namespace wg
 	 * - Coverage of anti-aliased edges is the exact area of the pixel that is covered. A pixel
 	 *   partially covered by a shape gets the area weighted average of the operation's result
 	 *   for the covered part and the original pixel for the rest, averaged as premultiplied
-	 *   colors. On an opaque canvas and with BlendMode::Blend this is the same as multiplying
-	 *   the alpha of the color with the coverage.
+	 *   colors. With BlendMode::Blend this is the same as multiplying the alpha of the color
+	 *   with the coverage.
+	 *
+	 * - BlendMode::Blend is Porter-Duff 'over', also onto transparent pixels. Drawing onto a
+	 *   transparent surface and blending that onto a background gives the same result as
+	 *   drawing directly onto the background.
+	 *
+	 * - Bilinear sampling interpolates premultiplied colors, so transparent pixels don't bleed
+	 *   their color into their neighbours.
 	 *
 	 * - Tints are evaluated at the center of every pixel, without lookup tables.
 	 *
@@ -172,6 +179,9 @@ namespace wg
 
 		Color	_blend(const Color& src, const Color& dst) const;
 		Color	_average(int nColors, const Color* pColors, const double* pAreas) const;
+
+		static Color	_over(const Color& src, const Color& dst);
+		static Color	_averageColors(int nColors, const Color* pColors, const double* pWeights, bool bPremultiplied);
 		Color	_blendAlphaOnly(const Color& src, const Color& dst) const;
 
 		// Pixels of the blit source

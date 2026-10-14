@@ -35,6 +35,7 @@
 #include "testsuites/blursourcetests.h"
 #include "testsuites/readbacktests.h"
 #include "testsuites/edgemaptinttests.h"
+#include "testsuites/layerroundtriptests.h"
 
 
 using namespace wg;
@@ -196,6 +197,7 @@ void GfxDeviceTester2::setup_tests()
 	add([]() { return new BlurSourceTests(); });
 	add([]() { return new ReadbackTests(); });
 	add([]() { return new EdgemapTintTests(); });
+	add([]() { return new LayerRoundTripTests(); });
 }
 
 //____ add_testsuite() ________________________________________________________

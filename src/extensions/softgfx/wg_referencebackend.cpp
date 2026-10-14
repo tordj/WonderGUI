@@ -857,36 +857,48 @@ namespace wg
 
 	//____ _average() _____________________________________________________________
 	/*
-		Average of colors covering parts of a pixel, weighted by the area (0.0 -> 1.0) they cover.
+		Average of colors covering parts of a canvas pixel, weighted by the area (0.0 -> 1.0) they cover.
 
-		Colors with alpha are averaged as premultiplied colors, so that the more transparent a
-		part is, the less its color counts and a fully transparent part only makes the pixel more
-		transparent. The canvas might not have alpha though, in which case everything we write
-		is opaque and the colors are averaged as they are.
+		Colors with alpha are averaged as premultiplied colors, see _averageColors(). The canvas
+		might not have alpha though, in which case everything we write is opaque and the colors are
+		averaged as they are.
 	*/
 
 	ReferenceBackend::Color ReferenceBackend::_average(int nColors, const Color* pColors, const double* pAreas) const
 	{
+		return _averageColors(nColors, pColors, pAreas, m_bCanvasHasAlpha);
+	}
+
+	//____ _averageColors() _______________________________________________________
+	/*
+		Weighted average of colors. If bPremultiplied is set, colors are averaged as premultiplied
+		colors: each color also counts by its alpha, so the more transparent it is, the less its color
+		counts and a fully transparent color only makes the result more transparent. Otherwise the
+		color channels are averaged as they are.
+	*/
+
+	ReferenceBackend::Color ReferenceBackend::_averageColors(int nColors, const Color* pColors, const double* pWeights, bool bPremultiplied)
+	{
 		Color sum;
-		double weightSum = 0.0;
+		double colorWeightSum = 0.0;
 
 		for (int i = 0; i < nColors; i++)
 		{
-			double weight = m_bCanvasHasAlpha ? pAreas[i] * pColors[i].a : pAreas[i];
+			double colorWeight = bPremultiplied ? pWeights[i] * pColors[i].a : pWeights[i];
 
-			sum.r += pColors[i].r * weight;
-			sum.g += pColors[i].g * weight;
-			sum.b += pColors[i].b * weight;
-			sum.a += pColors[i].a * pAreas[i];
+			sum.r += pColors[i].r * colorWeight;
+			sum.g += pColors[i].g * colorWeight;
+			sum.b += pColors[i].b * colorWeight;
+			sum.a += pColors[i].a * pWeights[i];
 
-			weightSum += weight;
+			colorWeightSum += colorWeight;
 		}
 
-		if (weightSum > 0.0)
+		if (colorWeightSum > 0.0)
 		{
-			sum.r /= weightSum;
-			sum.g /= weightSum;
-			sum.b /= weightSum;
+			sum.r /= colorWeightSum;
+			sum.g /= colorWeightSum;
+			sum.b /= colorWeightSum;
 		}
 
 		return sum;
@@ -913,16 +925,10 @@ namespace wg
 
 			case BlendMode::Undefined:					// Undefined is treated as Blend.
 			case BlendMode::Blend:
-				return { _mix(dst.r, src.r, src.a), _mix(dst.g, src.g, src.a), _mix(dst.b, src.b, src.a),
-						 src.a + dst.a * (1.0 - src.a) };
+				return _over(src, dst);
 
 			case BlendMode::BlendFixedColor:			// As Blend, but onto the fixed blend color instead of the canvas.
-			{
-				const Color& fixed = m_fixedBlendColor;
-
-				return { _mix(fixed.r, src.r, src.a), _mix(fixed.g, src.g, src.a), _mix(fixed.b, src.b, src.a),
-						 src.a + fixed.a * (1.0 - src.a) };
-			}
+				return _over(src, m_fixedBlendColor);
 
 			case BlendMode::Add:
 				return { _clamp01(dst.r + src.r * src.a), _clamp01(dst.g + src.g * src.a), _clamp01(dst.b + src.b * src.a), dst.a };
@@ -951,6 +957,25 @@ namespace wg
 			default:
 				return dst;
 		}
+	}
+
+	//____ _over() ________________________________________________________________
+	/*
+		Porter-Duff 'over': src placed on top of dst. Where dst is transparent, more of src shows
+		through, so drawing onto a transparent surface and then blending that surface onto a
+		background gives the same result as drawing directly onto the background.
+
+		This is the same as averaging the colors of src and dst as premultiplied colors, with src
+		weighted by its alpha and dst by its alpha times what src leaves uncovered. When dst is
+		opaque it is the familiar src * src.a + dst * (1 - src.a).
+	*/
+
+	ReferenceBackend::Color ReferenceBackend::_over(const Color& src, const Color& dst)
+	{
+		Color colors[2] = { src, dst };
+		double weights[2] = { 1.0, 1.0 - src.a };
+
+		return _averageColors(2, colors, weights, true);
 	}
 
 	//____ _blendAlphaOnly() ______________________________________________________
@@ -1012,7 +1037,8 @@ namespace wg
 		Reads the blit source at position x, y, where pixel (x,y) covers x -> x+1 and y -> y+1.
 
 		Nearest sampling gives the pixel the position is in. Bilinear sampling interpolates between
-		the four pixels with their centers closest to the position.
+		the four pixels with their centers closest to the position, as premultiplied colors so that
+		the color of transparent pixels doesn't bleed into their neighbours.
 	*/
 
 	ReferenceBackend::Color ReferenceBackend::_sampleSource(double x, double y, EdgeMode edgeMode) const
@@ -1031,10 +1057,13 @@ namespace wg
 		double fracX = cx - x0;
 		double fracY = cy - y0;
 
-		Color top = _sourcePixel(x0, y0, edgeMode) * (1.0 - fracX) + _sourcePixel(x0 + 1, y0, edgeMode) * fracX;
-		Color bottom = _sourcePixel(x0, y0 + 1, edgeMode) * (1.0 - fracX) + _sourcePixel(x0 + 1, y0 + 1, edgeMode) * fracX;
+		Color pixels[4] = { _sourcePixel(x0, y0, edgeMode), _sourcePixel(x0 + 1, y0, edgeMode),
+							_sourcePixel(x0, y0 + 1, edgeMode), _sourcePixel(x0 + 1, y0 + 1, edgeMode) };
 
-		return top * (1.0 - fracY) + bottom * fracY;
+		double weights[4] = { (1.0 - fracX) * (1.0 - fracY), fracX * (1.0 - fracY),
+							  (1.0 - fracX) * fracY, fracX * fracY };
+
+		return _averageColors(4, pixels, weights, true);
 	}
 
 	//____ _sampleBlurred() _______________________________________________________

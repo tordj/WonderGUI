@@ -22,6 +22,7 @@ set( SOURCES
 	testsuites/edgemaptinttests.h
 	testsuites/edgemaptoolstests.h
 	testsuites/filltests.h
+	testsuites/layerroundtriptests.h
 	testsuites/linetests.h
 	testsuites/mipmaptests.h
 	testsuites/paletteblittests.h
