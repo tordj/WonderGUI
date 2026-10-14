@@ -189,6 +189,7 @@ namespace wg
 		alignas(kCacheLineSize) static int16_t s_limit4096Tab[4097 * 3];
 
 		const static int	c_maxSegments = 16;
+		const static int	c_maxEdgemapBand = 64;			// Max height of bands edgemaps are drawn in. Taller patches are split.
 
 
 		//.____ Control ______________________________________________________
@@ -263,6 +264,11 @@ namespace wg
 		void	_flattenEdgemapTinting(SoftEdgemap* pEdgemap, int nSegments, EdgemapTinting& tinting, CoordI canvasCenter);
 
 		void	_drawEdgemapPatch(SoftEdgemap* pEdgemap, bool bTile, const RectI& patch, const RectI& dest, CoordI start,
+								  const int simpleTransform[2][2], uint8_t* pBase, CoordI baseCoord, int xPitch, int yPitch,
+								  int nSegments, EdgemapTinting& tinting, SegmentOp_p pOp);
+		static int	_edgemapBandHeight(int pitch);
+
+		void	_drawEdgemapColumns(SoftEdgemap* pEdgemap, bool bTile, const RectI& patch, const RectI& dest, CoordI start,
 								  const int simpleTransform[2][2], uint8_t* pBase, CoordI baseCoord, int xPitch, int yPitch,
 								  int nSegments, EdgemapTinting& tinting, SegmentOp_p pOp);
 

@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <wg_gfxbase.h>
 #include <cstring>
+#include <numeric>
 
 
 using namespace std;
@@ -2040,7 +2041,8 @@ namespace wg
 
 	//____ _drawEdgemapPatch() ________________________________________________
 	/*
-		Draws the part of an edgemap that is within patch, one column of the edgemap at the time.
+		Draws the part of an edgemap that is within patch, one column of the edgemap at the time,
+		in horizontal bands if the columns are tall.
 
 		dest is the edgemap rectangle on the canvas and start the canvas pixel of the edgemap's
 		first sample column and row, see simpleTransform in _tintEdgemapColumn(). When tiling,
@@ -2056,6 +2058,58 @@ namespace wg
 	*/
 
 	void SoftBackend::_drawEdgemapPatch(SoftEdgemap* pEdgemap, bool bTile, const RectI& patch, const RectI& dest, CoordI start,
+									   const int simpleTransform[2][2], uint8_t* pBase, CoordI baseCoord, int xPitch, int yPitch,
+									   int nSegments, EdgemapTinting& tinting, SegmentOp_p pOp)
+	{
+		// A column of a tall edgemap that isn't rotated runs down the canvas, touching one cache line per row.
+		// When a whole column doesn't fit in the L1 cache, the next column has to fetch the same lines again,
+		// so we draw such patches in horizontal bands that fit.
+
+		if (simpleTransform[0][0] != 0 && patch.h > c_maxEdgemapBand)
+		{
+			int bandHeight = _edgemapBandHeight(yPitch);
+
+			for (int y = patch.y; y < patch.y + patch.h; y += bandHeight)
+			{
+				RectI band = { patch.x, y, patch.w, std::min(bandHeight, patch.y + patch.h - y) };
+				_drawEdgemapColumns(pEdgemap, bTile, band, dest, start, simpleTransform, pBase, baseCoord, xPitch, yPitch, nSegments, tinting, pOp);
+			}
+		}
+		else
+			_drawEdgemapColumns(pEdgemap, bTile, patch, dest, start, simpleTransform, pBase, baseCoord, xPitch, yPitch, nSegments, tinting, pOp);
+	}
+
+	//____ _edgemapBandHeight() _______________________________________________
+	/*
+		Number of canvas rows, with the given pitch, that a column of pixels can span and still
+		fit in the L1 cache. Rows whose addresses differ by a multiple of 4096 bytes compete for the
+		same cache set (64 byte lines, 64 sets, true for most current CPUs), so a pitch that is a
+		multiple of a large power of two (like 4096 for a 1024 pixels wide canvas) leaves room for
+		far fewer rows. We assume 8 ways per set, rounded down to a power of two and kept within 8 to
+		c_maxEdgemapBand rows.
+	*/
+
+	int SoftBackend::_edgemapBandHeight(int pitch)
+	{
+		int setSpan = 4096;
+		int sharedFactor = std::gcd(std::abs(pitch), setSpan);		// Power of two, 1 -> 4096.
+
+		int rows = 8 * (setSpan / std::max(sharedFactor, 1));
+
+		int band = 8;
+		while (band * 2 <= rows && band < c_maxEdgemapBand)
+			band *= 2;
+
+		return band;
+	}
+
+	//____ _drawEdgemapColumns() ______________________________________________
+	/*
+		Draws the part of an edgemap that is within patch, one column of the edgemap at the time.
+		See _drawEdgemapPatch().
+	*/
+
+	void SoftBackend::_drawEdgemapColumns(SoftEdgemap* pEdgemap, bool bTile, const RectI& patch, const RectI& dest, CoordI start,
 									   const int simpleTransform[2][2], uint8_t* pBase, CoordI baseCoord, int xPitch, int yPitch,
 									   int nSegments, EdgemapTinting& tinting, SegmentOp_p pOp)
 	{
