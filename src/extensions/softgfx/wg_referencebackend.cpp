@@ -204,7 +204,6 @@ namespace wg
 		m_tintColor = { 1, 1, 1, 1 };
 		m_tint.nLayers = 0;
 		m_morphFactor = 0.5;
-		m_fixedBlendColor = { 1, 1, 1, 1 };
 
 		m_blurRadius = s_defaultBlurRadius / 64.0;
 		for (int color = 0; color < 3; color++)
@@ -388,7 +387,7 @@ namespace wg
 			m_morphFactor = *p++ / 4096.0;
 
 		if (statesChanged & int(StateChange::FixedBlendColor))
-			m_fixedBlendColor = _toLinear(*m_pColorsPtr++);
+			m_pColorsPtr++;						// Not needed, BlendFixedColor is drawn as Blend.
 
 		if (statesChanged & int(StateChange::Blur))
 		{
@@ -903,6 +902,8 @@ namespace wg
 		"Blending and transparency".
 
 		Paint modes (Replace, Blend, BlendFixedColor and Morph) put paint on the canvas.
+		BlendFixedColor is Blend, made faster where the canvas is known to be the fixed blend
+		color, so we draw it as Blend.
 
 		Effect modes (Add, Subtract, Multiply, Invert, Min and Max) change the colors already on the
 		canvas and keep its alpha. The alpha of the source is the strength of the effect: it fades the
@@ -938,11 +939,8 @@ namespace wg
 
 			case BlendMode::Undefined:					// Undefined is treated as Blend.
 			case BlendMode::Blend:
+			case BlendMode::BlendFixedColor:
 				result = _over(src, dst);
-				break;
-
-			case BlendMode::BlendFixedColor:			// As Blend, but onto the fixed blend color instead of the canvas.
-				result = _over(src, m_fixedBlendColor);
 				break;
 
 			case BlendMode::Morph:
@@ -1034,9 +1032,8 @@ namespace wg
 				return src;
 			case BlendMode::Undefined:
 			case BlendMode::Blend:
-				return src + dst * (1.0 - src);
 			case BlendMode::BlendFixedColor:
-				return src + m_fixedBlendColor.a * (1.0 - src);
+				return src + dst * (1.0 - src);
 			case BlendMode::Morph:
 				return _mix(dst, src, m_morphFactor);
 			case BlendMode::Add:

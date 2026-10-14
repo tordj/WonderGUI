@@ -242,7 +242,6 @@ namespace wg
 		Color				m_tintColor;					// Flat tint color, linear.
 		TintTools::DecodedTint	m_tint;						// Tint over the canvas, nLayers is 0 if none.
 		double				m_morphFactor = 0.5;
-		Color				m_fixedBlendColor;				// Linear.
 
 		double				m_blurRadius = 0;				// In pixels.
 		double				m_blurWeights[3][9];			// Red, green and blue weights for the 3x3 samples.

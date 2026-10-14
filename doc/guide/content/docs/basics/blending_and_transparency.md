@@ -49,7 +49,7 @@ In both groups, the alpha of the source always means **how much**: a fully trans
 |---|---|---|
 | **Replace** | Cs | αs |
 | **Blend** | (Cs · αs + Cb · αb · (1 − αs)) / out.α | αs + αb · (1 − αs) |
-| **BlendFixedColor** | As Blend, with the fixed blend color in place of the canvas pixel. | |
+| **BlendFixedColor** | As Blend. | |
 | **Morph** | (Cb · αb · (1 − m) + Cs · αs · m) / out.α | αb · (1 − m) + αs · m |
 | **Ignore** | Cb | αb |
 | **Undefined** | Treated as Blend. | |
@@ -57,6 +57,8 @@ In both groups, the alpha of the source always means **how much**: a fully trans
 **Blend** is Porter-Duff *over*. On an opaque canvas pixel it is the familiar `Cs · αs + Cb · (1 − αs)`. The division matters where the canvas is transparent: drawing onto a transparent surface and blending that surface onto a background gives the same result as drawing directly onto the background.
 
 **Replace** writes the source as it is, alpha included. It can make the canvas transparent.
+
+**BlendFixedColor** is an optimization of Blend for software rendering where the canvas already is a flat area of one color, the fixed blend color: the source is blended onto that color instead of the canvas pixels being read. Any backend may draw it as Blend, which gives the same result there.
 
 **Morph** cross-fades from the canvas to the source by the morph factor m, alpha included. It mixes premultiplied colors, so when one side is transparent the other side simply fades out instead of being darkened by the color of the transparent side.
 
@@ -111,7 +113,7 @@ Outside the source of a ClipBlit is transparent. That has no effect in any effec
 
 ## Canvases without alpha
 
-A canvas without alpha simply doesn't store the alpha of the result, its pixels stay opaque. That only concerns paint modes that can give a result that isn't opaque: Replace writes the color of the source, whatever its alpha, and so do Morph and BlendFixedColor with the colors they result in.
+A canvas without alpha simply doesn't store the alpha of the result, its pixels stay opaque. That only concerns paint modes that can give a result that isn't opaque: Replace writes the color of the source, whatever its alpha, and so does Morph with the color it results in.
 
 This is the one exception to the rule that the color of a fully transparent pixel never matters: a transparent Replace onto a canvas without alpha writes the color the transparent pixel has.
 
