@@ -12,11 +12,13 @@
 #include <wg_softedgemapfactory.h>
 #include <wg_softkernels_default.h>
 #include <wg_softshapes.h>
+#include <wg_referencebackend.h>
 #include <wg_streambackend.h>
 #include <wg_streamplayer.h>
 #include <wg_streamencoder.h>
 
 #include <algorithm>
+#include <cmath>
 #include <functional>
 
 using namespace wg;
@@ -231,6 +233,7 @@ ShapeRenderTest::ShapeRenderTest()
 	ADD_TEST(ringTest);
 	ADD_TEST(undefinedColorTest);
 	ADD_TEST(elipseTest);
+	ADD_TEST(referenceCoverageTest);
 }
 
 ShapeRenderTest::~ShapeRenderTest()
@@ -1076,4 +1079,181 @@ bool ShapeRenderTest::elipseTest(std::ostream& output)
 	}
 
 	return true;
+}
+
+//____ referenceCoverageTest() ________________________________________________
+// ReferenceBackend draws shapes by the exact area of each pixel that is covered. Opaque white
+// shapes drawn with Blend onto a transparent canvas leave that area in the alpha of the pixels
+// and keep their color white, also where only partly covered. The area is checked against one
+// worked out on its own here, from the span of the shape along vertical lines across the canvas.
+
+namespace
+{
+	// Span from top to bottom of a shape along the vertical line at u, false if none.
+
+	using Span = std::function<bool(double u, double& top, double& bottom)>;
+
+	// Coverage of each pixel, integrated across it by the midpoint rule.
+
+	std::vector<double> spanCoverage(const Span& span)
+	{
+		const int steps = 1024;
+		std::vector<double> coverage(c_canvasSize.w * c_canvasSize.h, 0.0);
+
+		for (int i = 0; i < c_canvasSize.w * steps; i++)
+		{
+			double top, bottom;
+			if (!span((i + 0.5) / steps, top, bottom))
+				continue;
+
+			int x = i / steps;
+			for (int y = std::max(0, int(std::floor(top))); y < std::min(c_canvasSize.h, int(std::ceil(bottom))); y++)
+				coverage[y * c_canvasSize.w + x] += std::max(0.0, std::min(bottom, y + 1.0) - std::max(top, double(y))) / steps;
+		}
+
+		return coverage;
+	}
+
+	std::vector<uint8_t> renderWithReference(const std::function<void(GfxDevice* pDevice)>& draw)
+	{
+		Canvas canvas;
+		auto pDevice = GfxDeviceGen2::create(ReferenceBackend::create());
+
+		pDevice->beginRender();
+		pDevice->beginCanvasUpdate(canvas.surface);
+		pDevice->setBlendMode(BlendMode::Replace);
+		pDevice->fill(HiColor::Transparent);
+		pDevice->setBlendMode(BlendMode::Blend);
+		draw(pDevice);
+		pDevice->endCanvasUpdate();
+		pDevice->endRender();
+
+		return canvas.read();
+	}
+}
+
+bool ShapeRenderTest::referenceCoverageTest(std::ostream& output)
+{
+	auto check = [&output](const char* pWhat, const std::vector<uint8_t>& pixels, const Span& span)
+	{
+		std::vector<double> coverage = spanCoverage(span);
+
+		for (int y = 0; y < c_canvasSize.h; y++)
+		{
+			for (int x = 0; x < c_canvasSize.w; x++)
+			{
+				int alpha = byteAt(pixels, x, y, 3);
+				int wanted = int(std::lround(coverage[y * c_canvasSize.w + x] * 255));
+
+				if (std::abs(alpha - wanted) > 1)
+				{
+					output << pWhat << ": alpha of pixel " << x << "," << y << " is " << alpha << ", expected " << wanted << "." << std::endl;
+					return false;
+				}
+
+				for (int ch = 0; ch < 3 && alpha > 0; ch++)
+				{
+					if (byteAt(pixels, x, y, ch) != 255)
+					{
+						output << pWhat << ": pixel " << x << "," << y << " isn't white." << std::endl;
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
+	};
+
+	// Rounded box, with an uneven outline. Fill and outline together cover the box.
+
+	RoundedBoxSpec box = testBox();
+	box.outline = { 64 * 2 + 13, 64 * 3 + 40, 64 + 5, 64 * 4 + 22 };
+	box.fillColor = HiColor::White;
+	box.outlineColor = HiColor::White;
+
+	auto boxPixels = renderWithReference([&](GfxDevice* pDevice) { pDevice->drawRoundedBox(box); });
+
+	bool bBoxOk = check("Rounded box", boxPixels, [&box](double u, double& top, double& bottom)
+	{
+		double left = box.rect.x / 64.0;
+		double right = (box.rect.x + box.rect.w) / 64.0;
+
+		if (u < left || u >= right)
+			return false;
+
+		top = box.rect.y / 64.0;
+		bottom = (box.rect.y + box.rect.h) / 64.0;
+
+		// How far in from the side a corner of radius r reaches at u, d from the side.
+
+		auto corner = [](double r, double d) { return d < r ? r - std::sqrt(r * r - (r - d) * (r - d)) : 0.0; };
+
+		top += std::max(corner(box.radius[0] / 64.0, u - left), corner(box.radius[1] / 64.0, right - u));
+		bottom -= std::max(corner(box.radius[3] / 64.0, u - left), corner(box.radius[2] / 64.0, right - u));
+		return true;
+	});
+
+	if (!bBoxOk)
+		return false;
+
+	// Ring with outline, hub and slices all white, which together cover a disc.
+
+	const RectSPX ringRect = { 64 * 6 + 13, 64 * 4 + 40, 64 * 50 + 7, 64 * 39 + 50 };
+
+	const double centerX = (ringRect.x + ringRect.w / 2.0) / 64.0;
+	const double centerY = (ringRect.y + ringRect.h / 2.0) / 64.0;
+	const double radius = std::min(ringRect.w, ringRect.h) / 128.0;
+
+	auto disc = [=](double u, double& top, double& bottom)
+	{
+		double dx = u - centerX;
+		if (std::abs(dx) >= radius)
+			return false;
+
+		double half = std::sqrt(radius * radius - dx * dx);
+		top = centerY - half;
+		bottom = centerY + half;
+		return true;
+	};
+
+	RingSlice slices[3] = { { 0.25f }, { 0.375f }, { 0.375f } };
+
+	RingSpec ring;
+	ring.rect = ringRect;
+	ring.thickness = 64 * 7 + 20;
+	ring.outline = 64 + 50;
+	ring.start = 0.37f;
+	ring.nSlices = 3;
+	ring.pSlices = slices;
+	ring.outlineColor = HiColor::White;
+	ring.hubColor = HiColor::White;
+
+	auto ringPixels = renderWithReference([&](GfxDevice* pDevice) { pDevice->drawRing(ring); });
+
+	if (!check("Ring", ringPixels, disc))
+		return false;
+
+	// A quarter of a pie facing 3 o'clock, between edges at 45 degrees.
+
+	RingSlice quarter = { 0.25f };
+
+	RingSpec pie;
+	pie.rect = ringRect;
+	pie.start = 0.125f;
+	pie.nSlices = 1;
+	pie.pSlices = &quarter;
+
+	auto piePixels = renderWithReference([&](GfxDevice* pDevice) { pDevice->drawRing(pie); });
+
+	return check("Pie", piePixels, [&](double u, double& top, double& bottom)
+	{
+		double dx = u - centerX;
+		if (dx <= 0.0 || !disc(u, top, bottom))
+			return false;
+
+		top = std::max(top, centerY - dx);
+		bottom = std::min(bottom, centerY + dx);
+		return true;
+	});
 }

@@ -24,4 +24,5 @@ private:
 	bool ringTest(std::ostream& output);
 	bool undefinedColorTest(std::ostream& output);
 	bool elipseTest(std::ostream& output);
+	bool referenceCoverageTest(std::ostream& output);
 };
