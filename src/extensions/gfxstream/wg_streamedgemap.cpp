@@ -61,7 +61,7 @@ StreamEdgemap_p StreamEdgemap::create(StreamEncoder* pEncoder, const Edgemap::Bl
 
 	auto p = StreamEdgemap_p(new StreamEdgemap(pEncoder, blueprint));
 
-	p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w + 1, edgePitch, samplePitch);
+	p->_importSamples(origo, pSamples, 0, edges, 0, p->samples(), edgePitch, samplePitch);
 	p->m_nbRenderSegments = edges + 1;
 	pEncoder->flush();
 	return p;
@@ -81,7 +81,7 @@ StreamEdgemap_p StreamEdgemap::create(StreamEncoder* pEncoder, const Edgemap::Bl
 
 	auto p = StreamEdgemap_p(new StreamEdgemap(pEncoder, blueprint));
 
-	p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w + 1, edgePitch, samplePitch);
+	p->_importSamples(origo, pSamples, 0, edges, 0, p->samples(), edgePitch, samplePitch);
 	p->m_nbRenderSegments = edges + 1;
 	pEncoder->flush();
 	return p;
@@ -138,6 +138,12 @@ bool StreamEdgemap::setRenderSegments(int nSegments)
 
 void StreamEdgemap::_samplesUpdated(int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd)
 {
+	// Mirrored first column of a tiling edgemap. Not visible through the API,
+	// the receiving edgemap mirrors its first column itself.
+
+	if (sampleBegin >= samples())
+		return;
+
 	{
 		// Stream header
 
@@ -228,7 +234,7 @@ void StreamEdgemap::_colorsUpdated(int beginSegment, int endSegment)
 
 void StreamEdgemap::_sendCreateEdgemap( StreamEncoder* pEncoder )
 {
-	int blockSize = 12;
+	int blockSize = 14;
 	
 	auto& encoder = * m_pEncoder;
 	
@@ -236,6 +242,7 @@ void StreamEdgemap::_sendCreateEdgemap( StreamEncoder* pEncoder )
 	encoder << m_inStreamId;
 	encoder << m_size;
 	encoder << (uint16_t) m_nbSegments;
+	encoder << (uint16_t) m_bTiling;
 	
 	_colorsUpdated(0, m_nbSegments);
 }

@@ -39,6 +39,11 @@ wg_sizeI wg_edgemapPixelSize(wg_obj edgemap)
 	return { sz.w,sz.h };
 }
 
+int wg_edgemapIsTiling(wg_obj edgemap)
+{
+	return getPtr(edgemap)->isTiling();
+}
+
 
 int wg_setRenderSegments(wg_obj edgemap, int nSegments)
 {

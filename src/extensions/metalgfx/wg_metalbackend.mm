@@ -1375,6 +1375,25 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				break;
 			}
 
+			case Command::TileEdgemap:
+			{
+				// Not supported yet. Step over the command, same parameters as DrawEdgemap.
+
+				int32_t nRects = *p++;
+				p += 6;							// flip, padding and origo.
+
+				pObjects++;
+				pRects += nRects;
+
+				static bool bReported = false;
+				if (!bReported)
+				{
+					GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, "MetalBackend doesn't support tiling of edgemaps yet, TileEdgemap ignored.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					bReported = true;
+				}
+				break;
+			}
+
 			case Command::DrawShape:
 			{
 				auto kind = ShapeKind(p[0]);

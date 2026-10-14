@@ -679,8 +679,10 @@ namespace wg
 
 
 			case Command::DrawEdgemap:
+			case Command::TileEdgemap:
 			{
 				auto pEdgemap = static_cast<SoftEdgemap*>(*pObjects++);
+				bool bTile = (cmd == Command::TileEdgemap);		// Origo is for one of the copies, rects give area to fill.
 
 				int32_t nRects = *p++;
 				int32_t	flip = *p++;
@@ -699,8 +701,6 @@ namespace wg
 				
 				int nEdgeStrips = pEdgemap->m_size.w + 1;
 
-				int edgeStripPitch = pEdgemap->m_nbSegments - 1;
-
 				//TODO: Proper 26:6 support
 
 
@@ -714,8 +714,6 @@ namespace wg
 				};
 
 				RectI dest = _dest;
-
-				SegmentEdge edges[c_maxSegments - 1];
 
 				// We need to modify our transform since we are moving the destination pointer, not the source pointer, according to the transform.
 
@@ -781,7 +779,12 @@ namespace wg
 				EdgemapTinting tinting;
 				_beginEdgemapTinting(pEdgemap, nSegments, tinting, simpleTransform);
 
-				bool* transparentSegments = tinting.transparent;
+				// Copies of a tiled edgemap get different colors from a device tint that isn't flat,
+				// so colors generated for one column can't be reused for all.
+
+				if (bTile && !m_softTint.isFlat())
+					tinting.bColumnInvariant = false;
+
 				bool* opaqueSegments = tinting.opaque;
 
 				// Modify opaqueSegments if our state isn't blend
@@ -833,9 +836,10 @@ namespace wg
 
 				for (int patchIdx = 0; patchIdx < nRects; patchIdx++)
 				{
-					// Clip patch
+					RectI patch = pMyRects[patchIdx] / 64;
+					if (!bTile)
+						patch = RectI::overlap(dest, patch);
 
-					RectI patch = RectI::overlap(dest, pMyRects[patchIdx] / 64);
 					if (patch.w == 0 || patch.h == 0)
 						continue;
 
@@ -849,108 +853,10 @@ namespace wg
 							pSegment = pSegBeg;
 					}
 
-					// Calculate pitches and origo
+					auto& seg = * pSegment;
 
-					auto seg = * pSegment;
-
-					int xPitch = m_canvasPixelBytes;
-					int yPitch = seg.pitch;
-
-					int colPitch = simpleTransform[0][0] * xPitch + simpleTransform[0][1] * yPitch;
-					int rowPitch = simpleTransform[1][0] * xPitch + simpleTransform[1][1] * yPitch;
-
-					uint8_t* pOrigo = seg.pBuffer - seg.rect.y * yPitch - seg.rect.x * xPitch + start.y * yPitch + start.x * xPitch;
-
-
-					// Calculate stripstart, clipBeg/clipEnd and first edge for patch
-
-					int columnOfs;
-					int rowOfs;
-
-					int columns;
-					int rows;
-
-					if (bHorizontalColumns)
-					{
-						columnOfs = colPitch > 0 ? patch.x - dest.x : dest.right() - patch.right();
-						rowOfs = rowPitch > 0 ? patch.y - dest.y : dest.bottom() - patch.bottom();
-
-						columns = patch.w;
-						rows = patch.h;
-					}
-					else
-					{
-						columnOfs = colPitch > 0 ? patch.y - dest.y : dest.bottom() - patch.bottom();
-						rowOfs = rowPitch > 0 ? patch.x - dest.x : dest.right() - patch.right();
-
-						columns = patch.h;
-						rows = patch.w;
-					}
-
-					
-					pEdgemap->samples();
-
-					const int* pEdgeStrips = pEdgemap->m_pSamples + columnOfs * edgeStripPitch;
-					uint8_t* pStripStart = pOrigo + columnOfs * colPitch;
-
-					int clipBeg = rowOfs * 256;
-					int clipEnd = clipBeg + (rows * 256);
-
-					for (int x = 0; x < columns; x++)
-					{
-						int nEdges = 0;
-						int skippedSegments = 0;
-
-						for (int y = 0; y < nSegments - 1; y++)
-						{
-							int beg = pEdgeStrips[y] * 4;
-							int end = pEdgeStrips[y + edgeStripPitch] * 4;
-
-							if (beg > end)
-								swap(beg, end);
-
-							if (beg >= clipEnd)
-								break;
-
-							if (end > clipBeg)
-							{
-								int coverageInc = (end == beg) ? 0 : (65536 * 256) / (end - beg);
-								int coverage = 0;
-
-								if (beg < clipBeg)
-								{
-									int cut = clipBeg - beg;
-									beg = clipBeg;
-									coverage += (coverageInc * cut) >> 8;
-								}
-
-								if (end > clipEnd)
-									end = clipEnd;
-
-
-								edges[nEdges].begin = beg;
-								edges[nEdges].end = end;
-								edges[nEdges].coverage = coverage;
-								edges[nEdges].coverageInc = coverageInc;
-								nEdges++;
-							}
-							else
-								skippedSegments++;
-						}
-
-						// Generate colors for column if tint varies over edgemap
-
-						_tintEdgemapColumn(pEdgemap, nSegments, tinting, columnOfs, rowOfs, rowOfs + rows, pEdgeStrips, start, simpleTransform);
-
-						const int16_t* pColors = &tinting.colors[skippedSegments][0];
-
-						//
-
-						pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, tinting.pColumns + skippedSegments * tinting.pitch, tinting.pitch, transparentSegments + skippedSegments, opaqueSegments + skippedSegments, m_colTrans);
-						pEdgeStrips += edgeStripPitch;
-						pStripStart += colPitch;
-						columnOfs++;
-					}
+					_drawEdgemapPatch(pEdgemap, bTile, patch, dest, start, simpleTransform, seg.pBuffer, seg.rect.pos(),
+									  m_canvasPixelBytes, seg.pitch, nSegments, tinting, pOp);
 				}
 
 				// Free what we have reserved on the memStack.

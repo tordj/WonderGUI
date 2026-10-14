@@ -204,6 +204,9 @@ namespace wg
 		void	drawEdgemap(CoordSPX dest, Edgemap* pEdgemap) override;
 		void	flipDrawEdgemap(CoordSPX dest, Edgemap* pEdgemap, GfxFlip flip) override;
 
+		void	tileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, CoordSPX shift = { 0,0 }) override;
+		void	flipTileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
+
 
 		// Special draw/blit methods
 
@@ -300,6 +303,8 @@ namespace wg
 
 		void _transformBlitSimple(const RectSPX& _dest, CoordSPX src, int transformOfs, Command cmd);
 		void _transformBlitComplex(const RectSPX& _dest, CoordI _src, const Transform& matrix, Command cmd);
+
+		void _encodeEdgemapDraw(const RectSPX& area, CoordSPX origo, Edgemap* pEdgemap, GfxFlip flip, Command cmd);
 
 		void _stretchBlitWithRigidPartX(const RectSPX& src, const RectSPX& dst, spx rigidPartOfs, spx rigidPartLength, spx rigidPartLengthDst);
 		void _stretchBlitWithRigidPartY(const RectSPX& src, const RectSPX& dst, spx rigidPartOfs, spx rigidPartLength, spx rigidPartLengthDst);

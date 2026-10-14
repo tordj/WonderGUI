@@ -67,7 +67,7 @@ namespace wg
 			int		nFill;
 			int		nBlit;				// Includes Blit, ClipBlit och Tile.
 			int		nBlur;
-			int		nEdgemapDraws;
+			int		nEdgemapDraws;		// Includes DrawEdgemap and TileEdgemap.
 			int		nLineCoords;		// Total number of coordinates for line commands (=total lines in line commands *2)
 
 			// Total content of coord buffers
@@ -99,6 +99,7 @@ namespace wg
 			Tile,
 			Blur,
 			DrawEdgemap,
+			TileEdgemap,				// Same parameters as DrawEdgemap, but edgemap is repeated over the rects.
 			DrawShape					// See below.
 		};
 

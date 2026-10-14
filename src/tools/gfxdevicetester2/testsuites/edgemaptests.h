@@ -27,6 +27,11 @@ public:
 		addTest("Edgemap global tint", &EdgemapTests::globalTint);
 		addTest("Edgemap global flat tint", &EdgemapTests::globalFlatTint);
 
+		addTest("Edgemap tile", &EdgemapTests::tile);
+		addTest("Edgemap tile rot90 shifted", &EdgemapTests::tileRot90Shifted);
+		addTest("Edgemap tile gradients XY", &EdgemapTests::tileGradientsXY);
+		addTest("Edgemap tile global tint", &EdgemapTests::tileGlobalTint);
+
 	}
 
 
@@ -87,6 +92,27 @@ public:
 
 		m_pGlobalTint = Tint::create(HiColor::TransparentWhite, HiColor::White, {0,0}, {0,1});
 
+		// Tiling edgemaps. Samples wrap around horizontally, so there is one sample per pixel of width.
+
+		const int tileW = 64;
+		const int tileH = 40;
+
+		spx tileSamples[3][tileW];
+
+		for (int spl = 0; spl < tileW; spl++)
+		{
+			double a = spl * 2 * 3.14159265 / tileW;
+			tileSamples[0][spl] = (int)((6 + sin(a) * 4) * 64);
+			tileSamples[1][spl] = (int)((20 + sin(a * 2) * 8) * 64);
+			tileSamples[2][spl] = (int)((32 + cos(a * 3) * 5) * 64);
+		}
+
+		m_pTilingEdgemap = pFactory->createEdgemap(WGBP(Edgemap, _.colors = m_rainbowColors, _.size = {tileW, tileH}, _.segments = 4, _.tiling = true),
+			SampleOrigo::Top, tileSamples[0], 3 );
+
+		m_pTilingEdgemapGradientXY = pFactory->createEdgemap(WGBP(Edgemap, _.tints = tintsXY, _.size = {tileW, tileH}, _.segments = 4, _.tiling = true),
+			SampleOrigo::Top, tileSamples[0], 3 );
+
 		return true;
 	}
 
@@ -113,6 +139,32 @@ public:
 		pDevice->setTintColor( HiColor{4096,4096,4096,1024} );
 		pDevice->drawEdgemap(CoordSPX(100, 50) * 64, m_pSmallEdgemap);
 		pDevice->clearTintColor();
+		return true;
+	}
+
+	bool tile(GfxDevice* pDevice, const RectI& canvas)
+	{
+		pDevice->tileEdgemap(canvas, m_pTilingEdgemap);
+		return true;
+	}
+
+	bool tileRot90Shifted(GfxDevice* pDevice, const RectI& canvas)
+	{
+		pDevice->flipTileEdgemap(canvas, m_pTilingEdgemap, GfxFlip::Rot90, CoordSPX(13, -7) * 64);
+		return true;
+	}
+
+	bool tileGradientsXY(GfxDevice* pDevice, const RectI& canvas)
+	{
+		pDevice->tileEdgemap(canvas, m_pTilingEdgemapGradientXY, CoordSPX(-20, 15) * 64);
+		return true;
+	}
+
+	bool tileGlobalTint(GfxDevice* pDevice, const RectI& canvas)
+	{
+		pDevice->setTint(canvas, m_pGlobalTint);
+		pDevice->flipTileEdgemap(canvas, m_pTilingEdgemap, GfxFlip::FlipY);
+		pDevice->clearTint();
 		return true;
 	}
 
@@ -203,6 +255,9 @@ private:
 	Edgemap_p	m_pEdgemapSPXGradientXY;
 
 	Edgemap_p	m_pSmallEdgemap;
+
+	Edgemap_p	m_pTilingEdgemap;
+	Edgemap_p	m_pTilingEdgemapGradientXY;
 
 	HiColor	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, Color( 255,255,255,128 ) };
 };

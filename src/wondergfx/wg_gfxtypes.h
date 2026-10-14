@@ -124,23 +124,23 @@ namespace wg
 							///< This value is used internally to distinguish undefined values from an explicitly set ignore,
 		Ignore,				///< Blitting: No blitting performed.
 							///< Color Blending: DstRGBA = DstRGBA
-		Replace,			///< Blitting: Completely opaque blitting, ignoring alpha of source and tint-color.
+		Replace,			///< Blitting: Replaces destination with source, alpha included.
 							///< Color Blending: DstRGBA = SrcRGBA
-		Blend,				///< Blitting: Normal mode, alpha of source and tint-color is taken into account.
+		Blend,				///< Blitting: Normal mode, source is placed over destination (Porter-Duff over).
 							///< Color Blending: DstA = SrcA, DstRGB = SrcRGB + ((TintRGB-SrcRGB)*TintA/255)
-		Add,				///< Blitting: RGB Additive, alpha of source and tint-color is taken into account.
+		Add,				///< Blitting: Adds source RGB to destination RGB. Alpha of source and tint-color controls the strength. Destination alpha is kept.
 							///< Color Blending: DstRGBA = SrcRGBA + TintRGBA
-		Subtract,			///< Blitting: RGB Subtractive, alpha is ignored.
+		Subtract,			///< Blitting: Subtracts source RGB from destination RGB. Alpha of source and tint-color controls the strength. Destination alpha is kept.
 							///< Color Blending: DstRGBA = SrcRGBA - TintRGBA
-		Multiply,			///< Blitting: RGB Multiply, alpha is ignored.
+		Multiply,			///< Blitting: Multiplies destination RGB with source RGB. Alpha of source and tint-color controls the strength. Destination alpha is kept.
 							///< Color Blending: DstRGB = SrcRGBA * TintRGBA/255
-		Invert,				///< Blitting: Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
+		Invert,				///< Blitting: Inverts destination RGB, each channel by the amount given by the same channel of source and tint-color. Alpha of source and tint-color controls the strength. Destination alpha is kept.
 							///< Color Blending: DstA = SrcA, DstRGB = ((255 - SrcRGB)*TintA + SrcRGB*(255-TintA))/255
-		Min,				///< Blitting: Minimum value of each RGB component, alpha is ignored.
+		Min,				///< Blitting: Limits each RGB channel of destination to at most source. Alpha of source and tint-color controls the strength. Destination alpha is kept.
 							///< Color Blending: DstRGBA = min(SrcRGBA,DstRGBA)
-		Max,				///< Blitting: Maximum value of each RGB component, alpha is ignored.
+		Max,				///< Blitting: Raises each RGB channel of destination to at least source. Alpha of source and tint-color controls the strength. Destination alpha is kept.
 							///< Color Blending: DstRGBA = max(SrcRGBA,DstRGBA)
-		Morph,				///< Blitting: Transition RGBA into source by morph factor.
+		Morph,				///< Blitting: Cross-fades destination RGBA into source RGBA by morph factor, as premultiplied colors.
 							///< Color Blending: A 50% mix of the two colors.
 		BlendFixedColor		///< Blitting: Blend source against fixed color and replace destination with result.
 							///< Color Blending: Same as Blend

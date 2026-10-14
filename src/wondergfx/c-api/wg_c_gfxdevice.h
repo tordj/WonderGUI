@@ -219,6 +219,8 @@ extern "C" {
 
 	WG_EXPORT void			wg_drawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap);
 	WG_EXPORT void			wg_flipDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap, wg_gfxFlip flip);
+	WG_EXPORT void			wg_tileEdgemap(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_coordSPX shift);
+	WG_EXPORT void			wg_flipTileEdgemap(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_gfxFlip flip, wg_coordSPX shift);
 
 	// Special draw/blit methods
 

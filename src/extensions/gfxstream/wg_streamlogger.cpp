@@ -460,14 +460,17 @@ namespace wg
 				uint16_t	edgemapId;
 				SizeI		size;
 				uint16_t	nbSegments;
+				uint16_t	tiling;
 
 				decoder >> edgemapId;
 				decoder >> size;
 				decoder >> nbSegments;
+				decoder >> tiling;
 
 				m_charStream << "    edgemapId   = " << edgemapId << std::endl;
 				m_charStream << "    size        = " << size.w << ", " << size.h << std::endl;
 				m_charStream << "    segments    = " << nbSegments << std::endl;
+				m_charStream << "    tiling      = " << (tiling ? "true" : "false") << std::endl;
 				break;
 			}
 

@@ -111,6 +111,7 @@ namespace wg
 		m_cBP.segments = cppBP.segments;
 		m_cBP.size.w = cppBP.size.w;
 		m_cBP.size.h = cppBP.size.h;
+		m_cBP.tiling = cppBP.tiling ? 1 : 0;
 		m_cBP.tints = nullptr;
 
 		for( int i = 0 ; i < Edgemap::maxSegments ; i++ )

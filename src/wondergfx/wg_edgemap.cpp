@@ -30,12 +30,12 @@ namespace wg
 
 	const TypeInfo Edgemap::TYPEINFO = { "Edgemap", &Object::TYPEINFO };
 
-	Edgemap::Edgemap(const Blueprint& bp) : m_size(bp.size), m_nbSegments(bp.segments), m_nbRenderSegments(bp.segments)
+	Edgemap::Edgemap(const Blueprint& bp) : m_size(bp.size), m_bTiling(bp.tiling), m_nbSegments(bp.segments), m_nbRenderSegments(bp.segments)
 	{
 		if (bp.finalizer)
 			setFinalizer(bp.finalizer);
 
-		// Setup buffers
+		// Setup buffers. We always store m_size.w + 1 columns, see _mirrorFirstColumn().
 
 		int sampleArraySize = (bp.size.w + 1) * bp.segments * sizeof(spx);
 		int flatColorsSize = bp.segments * sizeof(HiColor);
@@ -164,7 +164,7 @@ namespace wg
 	bool Edgemap::importSamples(SampleOrigo origo, const spx* pSource, int edgeBegin, int edgeEnd,
 		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
 	{
-		if (pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments - 1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > (m_size.w + 1))
+		if (pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments - 1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > samples())
 			return false;
 
 		_importSamples(origo, pSource, edgeBegin, edgeEnd, sampleBegin, sampleEnd, edgePitch, samplePitch);
@@ -174,7 +174,7 @@ namespace wg
 	bool Edgemap::importSamples(SampleOrigo origo, const float* pSource, int edgeBegin, int edgeEnd,
 		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
 	{
-		if (pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments - 1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > (m_size.w + 1))
+		if (pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments - 1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > samples())
 			return false;
 
 		_importSamples(origo, pSource, edgeBegin, edgeEnd, sampleBegin, sampleEnd, edgePitch, samplePitch);
@@ -319,6 +319,7 @@ namespace wg
 		}
 
 		_samplesUpdated(edgeBegin, edgeEnd, sampleBegin, sampleEnd);
+		_mirrorFirstColumn(edgeBegin, edgeEnd, sampleBegin);
 	}
 
 	void Edgemap::_importSamples(SampleOrigo origo, const float* pSource, int edgeBegin, int edgeEnd,
@@ -362,6 +363,33 @@ namespace wg
 		}
 
 		_samplesUpdated(edgeBegin, edgeEnd, sampleBegin, sampleEnd);
+		_mirrorFirstColumn(edgeBegin, edgeEnd, sampleBegin);
+	}
+
+	//____ _mirrorFirstColumn() __________________________________________________
+	/*
+		A tiling Edgemap wraps around horizontally, its last interval running from the last
+		sample back to the first. We store the first column once more after the last, so that
+		everything reading the samples can treat it like an ordinary Edgemap of m_size.w + 1
+		columns. Called after samples starting at sampleBegin have been imported.
+
+		The mirrored column is reported through _samplesUpdated() as a separate update
+		of sample m_size.w, which lies outside the samples visible through the API.
+	*/
+
+	void Edgemap::_mirrorFirstColumn(int edgeBegin, int edgeEnd, int sampleBegin)
+	{
+		if (!m_bTiling || sampleBegin != 0 || edgeBegin == edgeEnd)
+			return;
+
+		int nEdges = m_nbSegments - 1;
+		spx* pFirst = m_pSamples + edgeBegin;
+		spx* pMirror = m_pSamples + m_size.w * nEdges + edgeBegin;
+
+		for (int edge = edgeBegin; edge < edgeEnd; edge++)
+			*pMirror++ = *pFirst++;
+
+		_samplesUpdated(edgeBegin, edgeEnd, m_size.w, m_size.w + 1);
 	}
 
 	//____ _validateBlueprint() __________________________________________________

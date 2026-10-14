@@ -49,7 +49,7 @@ SoftEdgemap_p SoftEdgemap::create( const Blueprint& blueprint, SampleOrigo origo
 
 	auto p = SoftEdgemap_p( new SoftEdgemap(blueprint) );
 
-	p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w+1, edgePitch, samplePitch);
+	p->_importSamples(origo, pSamples, 0, edges, 0, p->samples(), edgePitch, samplePitch);
 	p->m_nbRenderSegments = edges+1;
 	
 	return p;
@@ -65,7 +65,7 @@ SoftEdgemap_p SoftEdgemap::create( const Blueprint& blueprint, SampleOrigo origo
 	
 	auto p = SoftEdgemap_p( new SoftEdgemap(blueprint) );
 
-	p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w+1, edgePitch, samplePitch);
+	p->_importSamples(origo, pSamples, 0, edges, 0, p->samples(), edgePitch, samplePitch);
 	p->m_nbRenderSegments = edges+1;
 	
 	return p;

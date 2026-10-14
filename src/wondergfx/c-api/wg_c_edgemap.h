@@ -41,6 +41,7 @@ extern "C" {
 		int					segments;
 		wg_sizeI			size;
 		const wg_obj * 		tints;					// One Tint per segment if any. Null entries use colors.
+		int					tiling;					// Edgemap can be tiled. Has one sample less per edge if set.
 
 	} wg_edgemapBP;
 
@@ -48,6 +49,7 @@ extern "C" {
 	//.____ Geometry ______________________________________________________
 
 	WG_EXPORT wg_sizeI		wg_edgemapPixelSize(wg_obj edgemap);
+	WG_EXPORT int			wg_edgemapIsTiling(wg_obj edgemap);
 
 	//.____ Appearance ____________________________________________________
 

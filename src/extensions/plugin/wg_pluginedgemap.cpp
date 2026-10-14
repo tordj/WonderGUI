@@ -47,6 +47,7 @@ namespace wg
 
 		wg_sizeI pixSize	= PluginCalls::edgemap->edgemapPixelSize(object);
 		m_size				= *(SizeI*)&pixSize;
+		m_bTiling			= PluginCalls::edgemap->edgemapIsTiling(object) != 0;
 		m_nbSegments		= PluginCalls::edgemap->edgemapSegments(object);
 		m_nbRenderSegments  = PluginCalls::edgemap->getRenderSegments(object);
 

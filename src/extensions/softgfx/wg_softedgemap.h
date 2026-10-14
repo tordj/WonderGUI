@@ -37,6 +37,7 @@ namespace wg
 {
 	friend class SoftBackend;
 	friend class LinearBackend;
+	friend class ReferenceBackend;
 
 public:
 	

@@ -54,7 +54,7 @@ MetalEdgemap_p MetalEdgemap::create( const Edgemap::Blueprint& blueprint, Sample
 
 	auto p = MetalEdgemap_p( new MetalEdgemap(blueprint) );
 
-	p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w+1, edgePitch, samplePitch);
+	p->_importSamples(origo, pSamples, 0, edges, 0, p->samples(), edgePitch, samplePitch);
 	p->m_nbRenderSegments = edges+1;
 	
 	return p;
@@ -70,7 +70,7 @@ MetalEdgemap_p MetalEdgemap::create( const Edgemap::Blueprint& blueprint, Sample
 	
 	auto p = MetalEdgemap_p( new MetalEdgemap(blueprint) );
 
-	p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w+1, edgePitch, samplePitch);
+	p->_importSamples(origo, pSamples, 0, edges, 0, p->samples(), edgePitch, samplePitch);
 	p->m_nbRenderSegments = edges+1;
 	
 	return p;

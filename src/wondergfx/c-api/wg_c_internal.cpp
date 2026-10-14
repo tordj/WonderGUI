@@ -51,6 +51,7 @@ void convertEdgemapBlueprint(Edgemap::Blueprint* pDest, const wg_edgemapBP* pSou
 	pDest->colors		= (HiColor*) pSource->colors;
 	pDest->segments		= pSource->segments;
 	pDest->size			= { pSource->size.w, pSource->size.h };
+	pDest->tiling		= pSource->tiling != 0;
 
 	if( pSource->tints != nullptr )
 	{
