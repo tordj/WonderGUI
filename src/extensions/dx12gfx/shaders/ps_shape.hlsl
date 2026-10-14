@@ -31,6 +31,9 @@ float rectCoverage(float4 r, float2 p)
 }
 
 
+// Functions below return once, at their end. FXC can take an early return from a
+// function as leaving its result uninitialized (warning X4000).
+
 // Part of a pixel inside a straight edge, s from the pixel center along its normal n.
 
 float halfPlaneCoverage(float s, float2 n)
@@ -38,21 +41,25 @@ float halfPlaneCoverage(float s, float2 n)
     float2 an = abs(n);
     float a = max(an.x, an.y);
     float b = min(an.x, an.y);
-
-    if (b < 0.001f)
-        return clamp(s + 0.5f, 0.0f, 1.0f);
-
     float t = s + 0.5f * (a + b);
 
-    if (t <= 0.0f)
-        return 0.0f;
-    if (t >= a + b)
-        return 1.0f;
-    if (t < b)
-        return t * t / (2.0f * a * b);
-    if (t > a)
-        return 1.0f - (a + b - t) * (a + b - t) / (2.0f * a * b);
-    return (t - 0.5f * b) / a;
+    float c = 0.0f;                                     // Outside, t <= 0.
+
+    if (b < 0.001f)
+        c = clamp(s + 0.5f, 0.0f, 1.0f);
+    else if (t >= a + b)
+        c = 1.0f;
+    else if (t > 0.0f)
+    {
+        if (t < b)
+            c = t * t / (2.0f * a * b);
+        else if (t > a)
+            c = 1.0f - (a + b - t) * (a + b - t) / (2.0f * a * b);
+        else
+            c = (t - 0.5f * b) / a;
+    }
+
+    return c;
 }
 
 
@@ -60,19 +67,22 @@ float halfPlaneCoverage(float s, float2 n)
 
 float circleCoverage(float radius, float2 v, float d)
 {
-    if (radius <= 0.0f)
-        return 0.0f;
+    float c = 0.0f;
 
-    return d > 0.001f ? halfPlaneCoverage(radius - d, v / d) : clamp(radius + 0.5f, 0.0f, 1.0f);
+    if (radius > 0.0f)
+        c = d > 0.001f ? halfPlaneCoverage(radius - d, v / d) : clamp(radius + 0.5f, 0.0f, 1.0f);
+
+    return c;
 }
 
 
 float roundedRectCoverage(float4 r, float4 radii, float2 p)
 {
-    float c = rectCoverage(r, p);
+    // The corner, if any, whose rounding the pixel center is in.
 
-    float2 center;
-    float radius;
+    bool bCorner = true;
+    float2 center = float2(0.0f, 0.0f);
+    float radius = 0.0f;
 
     if (p.x < r.x + radii.x && p.y < r.y + radii.x)
     {
@@ -95,10 +105,17 @@ float roundedRectCoverage(float4 r, float4 radii, float2 p)
         center = float2(r.x + radius, r.w - radius);
     }
     else
-        return c;
+        bCorner = false;
 
-    float2 v = p - center;
-    return min(c, circleCoverage(radius, v, length(v)));
+    float c = rectCoverage(r, p);
+
+    if (bCorner)
+    {
+        float2 v = p - center;
+        c = min(c, circleCoverage(radius, v, length(v)));
+    }
+
+    return c;
 }
 
 
@@ -153,20 +170,20 @@ void ringElements(uint ofs, int n, uint base, float band, float2 p, float2 v, fl
 
     float theta = d > 0.0001f ? frac(atan2(v.x, -v.y) * 0.15915494f) : 0.0f;
 
-    int lo = 0;
-    int hi = n;
+    uint lo = 0;                                        // Unsigned, FXC warns of slow signed divides.
+    uint hi = uint(n);
 
     [loop]
     while (lo < hi)
     {
-        int mid = (lo + hi) / 2;
-        if (extras[base + uint(mid)].x <= theta)
+        uint mid = (lo + hi) / 2;
+        if (extras[base + mid].x <= theta)
             lo = mid + 1;
         else
             hi = mid;
     }
 
-    int first = lo > 0 ? lo - 1 : n - 1;
+    int first = lo > 0 ? int(lo) - 1 : n - 1;
     float w = min(0.25f, 0.70710678f / (6.2831853f * max(d, 0.0001f)));
     float behind = frac(theta - extras[base + uint(first)].x);
 
