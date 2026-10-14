@@ -903,10 +903,12 @@ namespace wg
 			uint16_t	objectId;
 			SizeI		size;
 			uint16_t	nbSegments;
+			uint16_t	tiling;
 
 			decoder >> objectId;
 			decoder >> size;
 			decoder >> nbSegments;
+			decoder >> tiling;
 
 			if (objectId >= m_vObjects.size() )
 				m_vObjects.resize(objectId + 16, nullptr);
@@ -919,6 +921,7 @@ namespace wg
 			
 			bp.size = size;
 			bp.segments = nbSegments;
+			bp.tiling = (tiling != 0);
 			
 			m_vObjects[objectId] = m_pEdgemapFactory->createEdgemap(bp);
 			break;

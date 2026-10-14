@@ -290,6 +290,9 @@ typedef struct wg_gfxdevice_calls_struct
 	void				(*clearTintColor)(wg_obj device);
 	int					(*hasTintColor)(wg_obj device);
 
+	void				(*tileEdgemap)(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_coordSPX shift);
+	void				(*flipTileEdgemap)(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_gfxFlip flip, wg_coordSPX shift);
+
 } wg_gfxdevice_calls;
 
 /*
@@ -475,6 +478,8 @@ typedef struct wg_edgemap_calls_struct
 
 	int					(*setEdgemapTints)(wg_obj edgemap, int begin, int end, const wg_obj * pTints );
 	wg_obj				(*edgemapTint)(wg_obj edgemap, int segment);
+
+	int					(*edgemapIsTiling)(wg_obj edgemap);
 } wg_edgemap_calls;
 
 

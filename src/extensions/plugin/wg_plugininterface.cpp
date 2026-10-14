@@ -254,6 +254,8 @@ static void populateBody(wg_c_calls_body * pBody)
 	pBody->gfxDevice.flipDrawSegments		= LOCKED(wg_flipDrawSegments);
 	pBody->gfxDevice.drawEdgemap			= LOCKED(wg_drawEdgemap);
 	pBody->gfxDevice.flipDrawEdgemap		= LOCKED(wg_flipDrawEdgemap);
+	pBody->gfxDevice.tileEdgemap			= LOCKED(wg_tileEdgemap);
+	pBody->gfxDevice.flipTileEdgemap		= LOCKED(wg_flipTileEdgemap);
 	pBody->gfxDevice.blitNinePatch			= LOCKED(wg_blitNinePatch);
 
 	pBody->gfxDevice.setBlurMatrices		= LOCKED(wg_setBlurMatrices);
@@ -390,6 +392,7 @@ static void populateBody(wg_c_calls_body * pBody)
 
 	pBody->edgemap.edgemapSegments			= LOCKED(wg_edgemapSegments);
 	pBody->edgemap.edgemapSamples			= LOCKED(wg_edgemapSamples);
+	pBody->edgemap.edgemapIsTiling			= LOCKED(wg_edgemapIsTiling);
 	pBody->edgemap.importSpxSamples			= LOCKED(wg_importSpxSamples);
 	pBody->edgemap.importFloatSamples		= LOCKED(wg_importFloatSamples);
 	pBody->edgemap.exportSpxSamples			= LOCKED(wg_exportSpxSamples);

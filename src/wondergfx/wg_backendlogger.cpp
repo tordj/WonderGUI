@@ -420,6 +420,7 @@ namespace wg
 				}
 
 				case Command::DrawEdgemap:
+				case Command::TileEdgemap:
 				{
 					int32_t	nRects = *p++;
 					int32_t transform = *p++;
@@ -433,7 +434,7 @@ namespace wg
 
 					Object * pObj = *pObjects++;
 
-					*m_pOStream << "    DrawEdgemap: " << pObj << " at: " << destX << ", " << destY << ", with transform: " << transform
+					*m_pOStream << (cmd == Command::TileEdgemap ? "    TileEdgemap: " : "    DrawEdgemap: ") << pObj << " at: " << destX << ", " << destY << ", with transform: " << transform
 						<< " split into " << nRects << " rectangles." << std::endl;
 
 					_printRects(*m_pOStream, nRects, pRects);

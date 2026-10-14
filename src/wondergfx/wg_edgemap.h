@@ -52,6 +52,11 @@ namespace wg
 		//
 		// In the blueprint, 'tints' take precedence over 'colors' for segments that have a
 		// Tint. Segments without either are transparent.
+		//
+		// A tiling Edgemap can be tiled both horizontally and vertically. Horizontally it wraps
+		// around, its last interval running from its last sample back to its first. It therefore
+		// has one sample per pixel of width, while a non-tiling Edgemap has one more sample than
+		// pixels of width.
 
 		struct Blueprint
 		{
@@ -60,6 +65,7 @@ namespace wg
 			int					segments	= 0;				// Mandatory.
 			SizeI				size;							// Mandatory.
 			const Tint_p * 		tints		= nullptr;			// One Tint per segment. Nullptr entries use colors.
+			bool				tiling		= false;			// Edgemap can be tiled. See above.
 		};
 
 
@@ -71,6 +77,7 @@ namespace wg
 		//.____ Geometry ______________________________________________________
 
 		inline SizeI	pixelSize() const { return m_size; }
+		inline bool		isTiling() const { return m_bTiling; }
 
 		//.____ Appearance ____________________________________________________
 
@@ -88,7 +95,7 @@ namespace wg
 
 		inline int		segments() const { return m_nbSegments; }
 
-		inline int		samples() const { return m_size.w + 1; }
+		inline int		samples() const { return m_bTiling ? m_size.w : m_size.w + 1; }		// Samples per edge.
 
 		bool 			importSamples( SampleOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 );
@@ -113,6 +120,8 @@ namespace wg
 
 		static bool	_validateBlueprint(const Blueprint& bp);
 
+		void			_mirrorFirstColumn(int edgeBegin, int edgeEnd, int sampleBegin);
+
 		virtual void 	_importSamples(SampleOrigo origo, const spx* pSource, int edgeBegin, int edgeEnd,
 									   int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
 
@@ -120,11 +129,14 @@ namespace wg
 									   int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
 
 		// Typically these two methods is all that you need to override when subclassing.
+		// For a tiling Edgemap, _samplesUpdated() is also called for sample m_size.w (outside the
+		// samples visible through the API) when the first column is updated. See _mirrorFirstColumn().
 
 		virtual void	_samplesUpdated(int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd) = 0;
 		virtual void	_colorsUpdated(int beginSegment, int endSegment) = 0;		// Flat colors and/or tints of segments have changed.
 
 		SizeI       m_size;
+		bool		m_bTiling = false;
 		int			m_nbSegments;
 		int			m_nbRenderSegments;
 
@@ -133,6 +145,7 @@ namespace wg
 
 		char* m_pBuffer = nullptr;
 		spx* m_pSamples = nullptr;						// Stored vertically, e.g. samples for first column for all edges before samples for second column etc
+														// Always m_size.w + 1 columns. For a tiling Edgemap the last column is a copy of the first.
 
 		HiColor*	m_pFlatColors = nullptr;	// Flat color for each segment.
 		Tint_p*		m_pTints = nullptr;			// Tint for each segment, nullptr for flat.

@@ -179,6 +179,9 @@ namespace wg
         void	drawEdgemap(CoordSPX dest, Edgemap* pEdgemap) override;
         void	flipDrawEdgemap(CoordSPX dest, Edgemap* pEdgemap, GfxFlip flip) override;
 
+        void	tileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, CoordSPX shift = { 0,0 }) override;
+        void	flipTileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
+
         // Special draw/blit methods
 
         void    blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale) override;

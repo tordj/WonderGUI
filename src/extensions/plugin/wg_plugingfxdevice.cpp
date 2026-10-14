@@ -658,6 +658,20 @@ namespace wg
         PluginCalls::gfxDevice->flipDrawEdgemap(m_cDevice, { dest.x,dest.y }, static_cast<PluginEdgemap*>(pEdgemap)->cObject(), (wg_gfxFlip) flip);
     }
 
+    //____ tileEdgemap() _____________________________________________________
+
+    void PluginGfxDevice::tileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, CoordSPX shift)
+    {
+        PluginCalls::gfxDevice->tileEdgemap(m_cDevice, (const wg_rectSPX*)&dest, static_cast<PluginEdgemap*>(pEdgemap)->cObject(), { shift.x,shift.y });
+    }
+
+    //____ flipTileEdgemap() _________________________________________________
+
+    void PluginGfxDevice::flipTileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, GfxFlip flip, CoordSPX shift)
+    {
+        PluginCalls::gfxDevice->flipTileEdgemap(m_cDevice, (const wg_rectSPX*)&dest, static_cast<PluginEdgemap*>(pEdgemap)->cObject(), (wg_gfxFlip) flip, { shift.x,shift.y });
+    }
+
     //.____ blitNinePatch() ___________________________________________________
 
     void PluginGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)

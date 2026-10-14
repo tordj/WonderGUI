@@ -232,6 +232,9 @@ namespace wg
 		virtual void	drawEdgemap(CoordSPX dest, Edgemap * pEdgemap ) = 0;
 		virtual void	flipDrawEdgemap(CoordSPX dest, Edgemap * pEdgemap, GfxFlip flip) = 0;
 
+		virtual void	tileEdgemap(const RectSPX& dest, Edgemap * pEdgemap, CoordSPX shift = { 0,0 }) = 0;
+		virtual void	flipTileEdgemap(const RectSPX& dest, Edgemap * pEdgemap, GfxFlip flip, CoordSPX shift = { 0,0 }) = 0;
+
 				
 
 		// Special draw/blit methods

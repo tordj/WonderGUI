@@ -511,6 +511,16 @@ void wg_flipDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap, wg_gfxF
 	getPtr(device)->flipDrawEdgemap({ dest.x, dest.y }, getEdgemapPtr(edgemap), (GfxFlip) flip );
 }
 
+void wg_tileEdgemap(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_coordSPX shift)
+{
+	getPtr(device)->tileEdgemap(*(const RectSPX*)dest, getEdgemapPtr(edgemap), { shift.x, shift.y });
+}
+
+void wg_flipTileEdgemap(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_gfxFlip flip, wg_coordSPX shift)
+{
+	getPtr(device)->flipTileEdgemap(*(const RectSPX*)dest, getEdgemapPtr(edgemap), (GfxFlip) flip, { shift.x, shift.y });
+}
+
 
 void wg_blitNinePatch(wg_obj device, const wg_rectSPX* dstRect, const wg_borderSPX* dstFrame, const wg_ninePatch* patch, int scale)
 {

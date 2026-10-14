@@ -2536,13 +2536,69 @@ void GfxDeviceGen2::flipDrawEdgemap(CoordSPX dest, Edgemap* pEdgemap, GfxFlip fl
 	rect.w = edgemapSize.w * abs(transform[0][0]) + edgemapSize.h * abs(transform[1][0]);
 	rect.h = edgemapSize.w * abs(transform[0][1]) + edgemapSize.h * abs(transform[1][1]);
 
+	_encodeEdgemapDraw(rect, dest, pEdgemap, flip, Command::DrawEdgemap);
+}
 
+//____ tileEdgemap() ___________________________________________________________
+
+void GfxDeviceGen2::tileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, CoordSPX shift)
+{
+	flipTileEdgemap(dest, pEdgemap, GfxFlip::None, shift);
+}
+
+//____ flipTileEdgemap() _______________________________________________________
+/**
+ * @brief Fill a rectangle with an edgemap, repeated horizontally and vertically.
+ *
+ * The edgemap is flipped/rotated before it is repeated. The top-left corner of
+ * one copy of the flipped edgemap is placed at dest.pos() - shift, so shift is given
+ * in canvas space and moves the pattern the opposite way, like scrolling.
+ *
+ * The edgemap needs to be tiling, see Edgemap::Blueprint::tiling.
+ */
+
+void GfxDeviceGen2::flipTileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, GfxFlip flip, CoordSPX shift)
+{
+	if(!pEdgemap)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Null edgemap pointer passed to tileEdgemap.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	if (!m_pActiveCanvas)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "No active canvas to tile edgemap to.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+
+		return;
+	}
+
+	if (!pEdgemap->isTiling())
+	{
+		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling edgemap",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	_encodeEdgemapDraw(dest, dest.pos() - shift, pEdgemap, flip, Command::TileEdgemap);
+}
+
+//____ _encodeEdgemapDraw() ____________________________________________________
+/*
+	Encodes a DrawEdgemap or TileEdgemap command for the parts of area that are
+	within the clip rectangles. Origo is the top-left corner of the (flipped)
+	edgemap, or of one of the copies when tiling.
+*/
+
+void GfxDeviceGen2::_encodeEdgemapDraw(const RectSPX& area, CoordSPX origo, Edgemap* pEdgemap, GfxFlip flip, Command cmd)
+{
 	int nRects = 0;
 	auto& rects = m_pActiveLayer->rects;
 
 	for (int i = 0; i < m_pActiveClipList->nRects; i++)
 	{
-		RectSPX clipped = RectSPX::overlap(m_pActiveClipList->pRects[i], rect);
+		RectSPX clipped = RectSPX::overlap(m_pActiveClipList->pRects[i], area);
 
 		if (!clipped.isEmpty())
 		{
@@ -2556,15 +2612,15 @@ void GfxDeviceGen2::flipDrawEdgemap(CoordSPX dest, Edgemap* pEdgemap, GfxFlip fl
 		if (m_stateChanges != 0)
 			_encodeStateChanges();
 
-		m_pActiveLayer->latestCommand = Command::DrawEdgemap;
+		m_pActiveLayer->latestCommand = cmd;
 
 		m_pActiveLayer->commands.secureSpace(16);
 
-		m_pActiveLayer->commands.pushUnchecked(uint16_t(Command::DrawEdgemap));
+		m_pActiveLayer->commands.pushUnchecked(uint16_t(cmd));
 		m_pActiveLayer->commands.pushUnchecked(uint16_t(nRects));
 		m_pActiveLayer->commands.pushUnchecked(uint16_t(flip));
 		m_pActiveLayer->commands.pushUnchecked(uint16_t(0));									// padding
-		m_pActiveLayer->commands.pushUnchecked(dest);
+		m_pActiveLayer->commands.pushUnchecked(origo);
 
 		m_pActiveLayer->objects.push_back(pEdgemap);
 		pEdgemap->retain();

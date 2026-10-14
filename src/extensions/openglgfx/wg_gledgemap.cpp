@@ -50,7 +50,7 @@ namespace wg
 
 		auto p = GlEdgemap_p(new GlEdgemap(blueprint));
 
-		p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w + 1, edgePitch, samplePitch);
+		p->_importSamples(origo, pSamples, 0, edges, 0, p->samples(), edgePitch, samplePitch);
 		p->m_nbRenderSegments = edges + 1;
 
 		return p;
@@ -66,7 +66,7 @@ namespace wg
 
 		auto p = GlEdgemap_p(new GlEdgemap(blueprint));
 
-		p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w + 1, edgePitch, samplePitch);
+		p->_importSamples(origo, pSamples, 0, edges, 0, p->samples(), edgePitch, samplePitch);
 		p->m_nbRenderSegments = edges + 1;
 
 		return p;
