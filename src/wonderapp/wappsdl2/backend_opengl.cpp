@@ -162,22 +162,13 @@ void SDLWindowGL::render()
 	g_pBackend->setDefaultCanvas( m_pRootPanel->canvasSize(), m_scale);
 	m_pRootPanel->render();
 
+	// The window is single-buffered, so there is no SDL_GL_SwapWindow() to end the
+	// frame, and drivers that throttle and free released resources (such as the
+	// window's framebuffer for an earlier size) at swap never get to do so. While a
+	// window is resized we render once per intermediate size, nothing holds the CPU
+	// back and memory keeps growing. Waiting for the GPU bounds this to one frame.
 
-	const RectSPX* pUpdatedRects = m_pRootPanel->firstUpdatedRect();
-	SDL_Rect* pSDLRects = (SDL_Rect*)Base::memStackAlloc(sizeof(SDL_Rect) * nRects);
-
-	for (int i = 0; i < nRects; i++)
-	{
-		pSDLRects[i].x = pUpdatedRects[i].x / 64;
-		pSDLRects[i].y = pUpdatedRects[i].y / 64;
-		pSDLRects[i].w = pUpdatedRects[i].w / 64;
-		pSDLRects[i].h = pUpdatedRects[i].h / 64;
-	}
-
-	SDL_UpdateWindowSurfaceRects(m_pSDLWindow, pSDLRects, nRects);
-
-	Base::memStackFree(sizeof(SDL_Rect) * nRects);
-
+	g_pBackend->waitForCompletion();
 }
 
 //____ onWindowSizeUpdated() __________________________________________________
