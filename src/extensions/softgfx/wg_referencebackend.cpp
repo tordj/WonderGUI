@@ -446,7 +446,8 @@ namespace wg
 
 		Each pixel is covered by the overlap of the pixel and the column of color.
 
-		Lines are tinted by the tint color, but not by the Tint.
+		Lines are tinted like everything else, by the tint color and the Tint at the center of
+		each pixel.
 	*/
 
 	void ReferenceBackend::_drawLine(CoordSPX _begin, CoordSPX _end, spx thickness, const Color& color, int nClipRects, const RectSPX* pClipRects)
@@ -477,8 +478,6 @@ namespace wg
 		double slope = double(minorEnd - minorBegin) / length;
 		double columnThickness = (thickness / 64.0) * std::sqrt(1.0 + slope * slope);
 
-		Color lineColor = color * m_tintColor;
-
 		for (int major = majorBegin; major < majorEnd; major++)
 		{
 			double center = minorBegin + 0.5 + slope * (major - majorBegin);
@@ -497,7 +496,7 @@ namespace wg
 					bInside = _pixelRect(pClipRects[i]).contains(CoordI(x, y));
 
 				if (bInside)
-					_plotPixel(x, y, lineColor, _overlap(minor, minor + 1, columnBegin, columnEnd));
+					_plotPixel(x, y, color * _deviceTint(x, y), _overlap(minor, minor + 1, columnBegin, columnEnd));
 			}
 		}
 	}
