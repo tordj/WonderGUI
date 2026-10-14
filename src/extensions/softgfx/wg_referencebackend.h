@@ -52,9 +52,10 @@ namespace wg
 	 *   rounded once, when the result is written to the canvas.
 	 *
 	 * - Coverage of anti-aliased edges is the exact area of the pixel that is covered. A pixel
-	 *   partially covered by a shape is blended as if the alpha of the source was multiplied
-	 *   with the coverage. Where several segments of an edgemap cover a pixel, their colors are
-	 *   first averaged by area, as premultiplied colors.
+	 *   partially covered by a shape is drawn as if the canvas had a much higher resolution,
+	 *   the shape was drawn there without anti-aliasing and the subpixels were then averaged:
+	 *   the area weighted average of the operation's result for the covered part and the
+	 *   original pixel for the rest, averaged as premultiplied colors.
 	 *
 	 * - Blend modes follow the definitions in the guide ("Blending and transparency"). Paint
 	 *   modes put paint on the canvas, with BlendMode::Blend being Porter-Duff 'over', also onto
@@ -179,8 +180,8 @@ namespace wg
 		void	_setCanvasPixel(int x, int y, const Color& color);
 		void	_plotPixel(int x, int y, const Color& color, double coverage);
 
-		Color	_blend(const Color& src, const Color& dst, double coverage) const;
-		double	_blendAlphaOnly(double src, double dst, double coverage) const;
+		Color	_blend(const Color& src, const Color& dst) const;
+		double	_blendAlphaOnly(double src, double dst) const;
 
 		static Color	_over(const Color& src, const Color& dst);
 		static Color	_averageColors(int nColors, const Color* pColors, const double* pWeights, bool bPremultiplied);

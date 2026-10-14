@@ -8,11 +8,12 @@
 // - Effect modes (Add, Subtract, Multiply, Invert, Min, Max) keep the alpha of the canvas and
 //   use the alpha of the source as the strength of the effect.
 // - Morph cross-fades premultiplied colors, so a transparent side just fades out.
-// - Coverage of anti-aliased edges works as if the alpha of the source was multiplied by it.
+// - A partially covered pixel is drawn as if the canvas had a much higher resolution, the shape
+//   was drawn there without anti-aliasing and the subpixels were then averaged.
 // - Outside the source of a ClipBlit is transparent, which has no effect in any effect mode.
 // - An Alpha_8 canvas is a one-channel image, on which effect modes do arithmetic with the
 //   alpha of the source as the value.
-// - A canvas without alpha can't become transparent.
+// - A canvas without alpha doesn't store the alpha of the result.
 
 class BlendRuleTests : public TestSuite
 {
@@ -27,6 +28,7 @@ public:
 		addTest("AlphaCanvasEffects", &BlendRuleTests::alphaCanvasEffects);
 		addTest("ClipBlitOutside", &BlendRuleTests::clipBlitOutside);
 		addTest("CanvasWithoutAlpha", &BlendRuleTests::canvasWithoutAlpha);
+		addTest("PaintEdges", &BlendRuleTests::paintEdges);
 	}
 
 	bool init(GfxDevice * pDevice, const RectSPX& canvas, wapp::API * pAppAPI)
@@ -279,8 +281,8 @@ public:
 		return true;
 	}
 
-	// Paint modes onto an XRGB_8 canvas. Results that aren't opaque show the pixel that was
-	// there, so a transparent Replace leaves the canvas as it was.
+	// Paint modes onto an XRGB_8 canvas, which doesn't store the alpha of the result. Edges
+	// are still mixed with what was there.
 
 	bool canvasWithoutAlpha(GfxDevice * pDevice, const RectSPX& canvas)
 	{
@@ -314,6 +316,51 @@ public:
 		pDevice->setBlitSource(m_pOpaqueCanvas);
 		pDevice->blit({ 0,0 });
 		pDevice->setBlendMode(BlendMode::Blend);
+		return true;
+	}
+
+	// Edges of paint modes that don't look at the canvas (Replace, BlendFixedColor and Morph),
+	// on a layer that is half opaque red and half transparent. The covered part of an edge pixel
+	// is replaced, the rest keeps what was there. The layer is shown on a checkerboard.
+
+	bool paintEdges(GfxDevice * pDevice, const RectSPX& canvas)
+	{
+		pDevice->beginCanvasUpdate(m_pLayer);
+		pDevice->setBlendMode(BlendMode::Replace);
+		pDevice->fill(HiColor::Transparent);
+		pDevice->fill(RectSPX(0, 0, canvas.w, canvas.h / 2), HiColor(Color8(220, 30, 30)));
+
+		pDevice->setFixedBlendColor(HiColor(Color8(20, 20, 200, 128)));
+
+		BlendMode modes[3] = { BlendMode::Replace, BlendMode::BlendFixedColor, BlendMode::Morph };
+		HiColor colors[3] = { HiColor(Color8(0, 0, 0, 128)), HiColor(Color8(250, 200, 40, 200)), HiColor::Transparent };
+
+		spx columnWidth = canvas.w / 3;
+
+		for (int i = 0; i < 3; i++)
+		{
+			spx x = i * columnWidth;
+
+			pDevice->setBlendMode(modes[i]);
+
+			// Fills covering a quarter, half and three quarters of the pixels at their edges.
+
+			for (int j = 0; j < 3; j++)
+			{
+				spx y = canvas.h / 2 - 150 * 64 + j * 100 * 64;
+				pDevice->fill(RectSPX(x + 20 * 64 + 16 * (j + 1), y + 16 * (j + 1), 60 * 64, 80 * 64 + 16), colors[i]);
+			}
+
+			pDevice->drawLine({ x + 100 * 64, canvas.h / 2 - 160 * 64 }, { x + columnWidth - 10 * 64, canvas.h / 2 + 160 * 64 }, colors[i], 4 * 64 + 20);
+			pDevice->drawEdgemap({ x + 10 * 64, canvas.h / 2 - 22 * 64 }, m_pEdgemap);
+		}
+
+		pDevice->setBlendMode(BlendMode::Blend);
+		pDevice->endCanvasUpdate();
+
+		drawCheckerboard(pDevice, canvas);
+		pDevice->setBlitSource(m_pLayer);
+		pDevice->blit({ 0,0 });
 		return true;
 	}
 

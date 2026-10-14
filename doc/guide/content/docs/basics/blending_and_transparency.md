@@ -17,7 +17,7 @@ Pixels are stored with **straight alpha**, e.g. the color channels are not multi
 
 - A missing color is white. An Alpha_8 surface used as a blit source is white with the alpha of the surface.
 - A missing alpha is opaque. A surface without alpha (XRGB_8, RGB_565, BGR_565) is always opaque.
-- **The color of a fully transparent pixel never matters.** It can't be seen and it doesn't bleed into anything else, whether through blending, filtering or anti-aliasing.
+- **The color of a fully transparent pixel never matters.** It can't be seen and it doesn't bleed into anything else, whether through blending, filtering or anti-aliasing. The one exception is Replace onto a canvas without alpha, see below.
 
 In the formulas below:
 
@@ -85,11 +85,19 @@ Since the canvas alpha is kept, an effect mode has no visible effect on fully tr
 
 ## Anti-aliasing
 
-Edges of fills, lines and edgemaps are anti-aliased by the exact area of each pixel that is covered. **A partially covered pixel is drawn as if the alpha of the source was multiplied by the coverage.** Coverage and source alpha therefore always behave the same.
+Edges of fills, lines and edgemaps are anti-aliased by the exact area of each pixel that is covered. **A partially covered pixel is drawn as if the canvas had a much higher resolution, the shape was drawn there without anti-aliasing and the subpixels were then averaged.** That is the average of what the blend mode gives the covered part and the original pixel for the rest, weighted by their areas:
 
-Where several segments of an edgemap cover the same pixel, their colors are first averaged into one source color, weighted by the area each segment covers and as premultiplied colors. That color then covers the whole pixel.
+```
+out = average( op(source, canvas) weighted by coverage,  canvas weighted by (1 − coverage) )
+```
 
-Replace and BlendFixedColor don't look at the canvas, so their edges aren't mixed with what was there. The edges of a Replace become partially transparent, the edges of a BlendFixedColor show the fixed blend color.
+A pixel crossed by several segments of an edgemap gets the average of what each segment gives its part of the pixel.
+
+Averages of colors are taken as **premultiplied colors**: each color counts by its alpha as well as by its area, so that a transparent part only makes the pixel more transparent and doesn't darken it.
+
+For example: a quarter of an opaque red pixel is covered by a Replace with black at 50% alpha. Three quarters of the pixel stay opaque red and one quarter becomes half transparent black, which averages to alpha 0.875 and a color of 86% red.
+
+For Blend, Multiply and Invert, and for Add and Subtract as long as they don't saturate, this is the same as multiplying the alpha of the source by the coverage. For them, coverage and source alpha behave the same.
 
 
 
@@ -103,13 +111,11 @@ Outside the source of a ClipBlit is transparent. That has no effect in any effec
 
 ## Canvases without alpha
 
-A canvas without alpha can't become transparent. Where a result isn't opaque, the pixel that was there shows through, as if the result was blended onto it. That only concerns paint modes, so on such a canvas:
+A canvas without alpha simply doesn't store the alpha of the result, its pixels stay opaque. That only concerns paint modes that can give a result that isn't opaque: Replace writes the color of the source, whatever its alpha, and so do Morph and BlendFixedColor with the colors they result in.
 
-- Replace is the same as Blend. A transparent Replace leaves the canvas as it was.
-- Morph is the same as Blend with the alpha of the source multiplied by the morph factor.
-- BlendFixedColor with a fixed blend color that isn't opaque is blended onto the canvas.
+This is the one exception to the rule that the color of a fully transparent pixel never matters: a transparent Replace onto a canvas without alpha writes the color the transparent pixel has.
 
-The anti-aliased edges of a Replace are therefore mixed with what was there, just like those of a Blend.
+Anti-aliased edges are not affected, they are mixed with what was there as on any other canvas.
 
 
 
@@ -120,15 +126,15 @@ An Alpha_8 canvas is the one exception to the glass model. It has no color, so i
 - **Paint modes** work on alpha as on any other canvas.
 - **Effect modes** would do nothing if they kept alpha. Instead they work on alpha with the alpha of the source as the value: Add grows the mask, Subtract cuts holes in it, Multiply and Min intersect and Max unites.
 
-Coverage fades the value of the source towards the value that has no effect, 1.0 for Multiply and Min and 0.0 for the others, just like alpha does on canvases with color. Paint modes multiply the alpha of the source with the coverage as usual.
+Anti-aliasing works as on any other canvas, by averaging the result and the original value by area.
 
-| BlendMode | out.α, with v = mix(neutral, αs, coverage) |
+| BlendMode | out.α |
 |---|---|
-| Add | αb + v |
-| Subtract | αb − v |
-| Multiply | αb · v |
-| Invert | v · (1 − αb) + αb · (1 − v) |
-| Min, Max | min(αb, v), max(αb, v) |
+| Add | αb + αs |
+| Subtract | αb − αs |
+| Multiply | αb · αs |
+| Invert | αs · (1 − αb) + αb · (1 − αs) |
+| Min, Max | min(αb, αs), max(αb, αs) |
 
 
 
@@ -154,7 +160,11 @@ Neither standard has a mode that takes away alpha by the alpha of the source, li
 
 ReferenceBackend and the software backends can follow these definitions exactly everywhere.
 
-GPU backends can follow them exactly with fixed-function blending, provided that canvases with alpha store premultiplied colors. The exception is semi-transparent pixels of canvases with alpha, where Invert, Min, Max and an Add that saturates are approximated. Canvases without alpha are exact in all modes.
+GPU backends can follow them exactly with fixed-function blending, provided that canvases with alpha store premultiplied colors and dual-source blending is used (available in OpenGL 3.3, Metal and DirectX 12). The exceptions are approximated:
+
+- Invert, Min, Max and an Add that saturates, on semi-transparent pixels of canvases with alpha.
+- Anti-aliased edges of Min and Max, since blending by min/max can't be weighted by coverage. Fills and blits on whole pixels are exact.
+- Anti-aliased edges of an Add or Subtract that saturates, by a level or two.
 
 
 
@@ -164,11 +174,11 @@ GPU backends can follow them exactly with fixed-function blending, provided that
 |---|---|---|---|
 | Blend as Porter-Duff over | Yes | Only onto opaque pixels | Only onto opaque pixels |
 | Source alpha as strength of effect modes | All | Add, Subtract | Add, Subtract |
-| Coverage as strength of effect modes | All | Add, Subtract | Add, Subtract |
+| Anti-aliasing as average of subpixels | All modes | Replace, Blend, Add, Subtract, and between edgemap segments | Blend, Add, Subtract |
+| Subpixels averaged as premultiplied colors | Yes | Edgemaps with Replace only | Edgemaps only |
 | Morph as premultiplied cross-fade | Yes | No | No |
 | Premultiplied bilinear sampling | Yes | No | No |
 | Transparent outside of ClipBlit has no effect | Yes | Add, Subtract | Add, Subtract |
-| Canvases without alpha: results that aren't opaque blended onto the canvas | Yes | No | No |
-| Alpha_8: coverage fades the value towards the neutral one | Yes | Add, Subtract, Invert | Add, Subtract, Invert |
+| Alpha_8: anti-aliasing as average of subpixels | Yes | Add, Subtract, Invert | Add, Subtract, Invert |
 
 GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests.

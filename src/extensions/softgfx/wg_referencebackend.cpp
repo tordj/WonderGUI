@@ -662,10 +662,9 @@ namespace wg
 
 	//____ _drawEdgemapPixel() ____________________________________________________
 	/*
-		Draws the pixel at column, row of the edgemap onto the canvas pixel. The colors of the
-		segments are first averaged into one color, weighted by how much of the pixel each segment
-		covers and as premultiplied colors. That color is then blended onto the canvas pixel, which
-		it covers fully.
+		Draws the pixel at column, row of the edgemap onto the canvas pixel. The pixel gets the
+		average of what each segment would give the whole pixel, weighted by how much of the pixel
+		the segment covers and averaged as premultiplied colors.
 	*/
 
 	void ReferenceBackend::_drawEdgemapPixel(SoftEdgemap* pEdgemap, int column, int row, CoordI canvasPixel)
@@ -690,12 +689,19 @@ namespace wg
 
 		//
 
-		Color colors[Edgemap::maxSegments];
+		if (!_isInsideCanvas(canvasPixel.x, canvasPixel.y))
+			return;
+
+		Color dst = _canvasPixel(canvasPixel.x, canvasPixel.y);
+		Color results[Edgemap::maxSegments];
 
 		for (int seg = 0; seg < nSegments; seg++)
-			colors[seg] = _segmentColor(pEdgemap, seg, column, row) * _deviceTint(canvasPixel.x, canvasPixel.y);
+		{
+			Color color = _segmentColor(pEdgemap, seg, column, row) * _deviceTint(canvasPixel.x, canvasPixel.y);
+			results[seg] = _blend(color, dst);
+		}
 
-		_plotPixel(canvasPixel.x, canvasPixel.y, _averageColors(nSegments, colors, coverage, true), 1.0);
+		_setCanvasPixel(canvasPixel.x, canvasPixel.y, _averageColors(nSegments, results, coverage, true));
 	}
 
 	//____ _segmentCoverage() _____________________________________________________
@@ -829,6 +835,11 @@ namespace wg
 	//____ _plotPixel() ___________________________________________________________
 	/*
 		Blends color into a pixel of the canvas, where it covers coverage (0.0 -> 1.0) of the pixel.
+
+		A partially covered pixel is drawn as if the canvas had a much higher resolution, the shape
+		was drawn there without anti-aliasing and the subpixels were then averaged. That is the
+		average of the blended color for the covered part and the original color for the rest,
+		weighted by their areas and averaged as premultiplied colors.
 	*/
 
 	void ReferenceBackend::_plotPixel(int x, int y, const Color& color, double coverage)
@@ -837,7 +848,17 @@ namespace wg
 			return;
 
 		Color dst = _canvasPixel(x, y);
-		_setCanvasPixel(x, y, _blend(color, dst, coverage));
+		Color result = _blend(color, dst);
+
+		if (coverage < 1.0)
+		{
+			Color colors[2] = { dst, result };
+			double areas[2] = { 1.0 - coverage, coverage };
+
+			result = _averageColors(2, colors, areas, true);
+		}
+
+		_setCanvasPixel(x, y, result);
 	}
 
 	//____ _averageColors() _______________________________________________________
@@ -877,11 +898,9 @@ namespace wg
 
 	//____ _blend() _______________________________________________________________
 	/*
-		Blends a source color, covering coverage (0.0 -> 1.0) of the pixel, with the destination color
-		of the canvas, according to the blend mode. These are the definitions of the blend modes, which
-		are explained in the guide under "Blending and transparency".
-
-		A partially covered pixel is blended as if the alpha of the source was multiplied by the coverage.
+		Blends a source color with the destination color of the canvas, according to the blend mode.
+		These are the definitions of the blend modes, which are explained in the guide under
+		"Blending and transparency".
 
 		Paint modes (Replace, Blend, BlendFixedColor and Morph) put paint on the canvas.
 
@@ -891,13 +910,10 @@ namespace wg
 		and white for Multiply and Min.
 	*/
 
-	ReferenceBackend::Color ReferenceBackend::_blend(const Color& source, const Color& dst, double coverage) const
+	ReferenceBackend::Color ReferenceBackend::_blend(const Color& src, const Color& dst) const
 	{
 		if (m_bAlphaOnlyCanvas)
-			return { 1.0, 1.0, 1.0, _blendAlphaOnly(source.a, dst.a, coverage) };
-
-		Color src = source;
-		src.a *= coverage;
+			return { 1.0, 1.0, 1.0, _blendAlphaOnly(src.a, dst.a) };
 
 		double s = src.a;					// Strength of effect modes.
 
@@ -969,12 +985,11 @@ namespace wg
 				break;
 		}
 
-		// A canvas without alpha can't become transparent. Where the result isn't opaque, the pixel
-		// that was there shows through, as if the result was blended onto it. Only paint modes can
-		// give a result that isn't opaque here.
+		// A canvas without alpha just doesn't store the alpha of the result, its pixels stay opaque.
+		// Only paint modes can give a result that isn't opaque here.
 
 		if (!m_bCanvasHasAlpha)
-			result = _over(result, dst);
+			result.a = 1.0;
 
 		return result;
 	}
@@ -1000,49 +1015,42 @@ namespace wg
 
 	//____ _blendAlphaOnly() ______________________________________________________
 	/*
-		Blends the alpha of a source, covering coverage (0.0 -> 1.0) of the pixel, with the alpha of
-		a canvas with alpha only (Alpha_8). Returns the new alpha of the canvas.
+		Blends the alpha of a source with the alpha of a canvas with alpha only (Alpha_8). Returns
+		the new alpha of the canvas.
 
 		Such a canvas is a one-channel image and its alpha is its value. Paint modes work on alpha
-		just like on any other canvas, with the alpha of the source multiplied by the coverage.
-
-		Effect modes would have nothing to work on if they kept alpha. Instead they work on the alpha
-		of the canvas with the alpha of the source as their value. Coverage fades that value towards
-		the value that has no effect: 1.0 for Multiply and Min, 0.0 for the others.
+		just like on any other canvas. Effect modes would have nothing to work on if they kept
+		alpha. Instead they work on the alpha of the canvas with the alpha of the source as their
+		value.
 	*/
 
-	double ReferenceBackend::_blendAlphaOnly(double src, double dst, double coverage) const
+	double ReferenceBackend::_blendAlphaOnly(double src, double dst) const
 	{
-		double paint = src * coverage;
-
-		bool bNeutralIsOne = (m_blendMode == BlendMode::Multiply || m_blendMode == BlendMode::Min);
-		double value = _mix(bNeutralIsOne ? 1.0 : 0.0, src, coverage);
-
 		switch (m_blendMode)
 		{
 			case BlendMode::Ignore:
 				return dst;
 			case BlendMode::Replace:
-				return paint;
+				return src;
 			case BlendMode::Undefined:
 			case BlendMode::Blend:
-				return paint + dst * (1.0 - paint);
+				return src + dst * (1.0 - src);
 			case BlendMode::BlendFixedColor:
-				return paint + m_fixedBlendColor.a * (1.0 - paint);
+				return src + m_fixedBlendColor.a * (1.0 - src);
 			case BlendMode::Morph:
-				return _mix(dst, paint, m_morphFactor);
+				return _mix(dst, src, m_morphFactor);
 			case BlendMode::Add:
-				return _clamp01(dst + value);
+				return _clamp01(dst + src);
 			case BlendMode::Subtract:
-				return _clamp01(dst - value);
+				return _clamp01(dst - src);
 			case BlendMode::Multiply:
-				return dst * value;
+				return dst * src;
 			case BlendMode::Invert:
-				return value * (1.0 - dst) + dst * (1.0 - value);
+				return src * (1.0 - dst) + dst * (1.0 - src);
 			case BlendMode::Min:
-				return std::min(dst, value);
+				return std::min(dst, src);
 			case BlendMode::Max:
-				return std::max(dst, value);
+				return std::max(dst, src);
 			default:
 				return dst;
 		}
