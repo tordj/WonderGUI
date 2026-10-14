@@ -1791,44 +1791,75 @@ void GfxDeviceGen2::precisionBlit(const RectSPX& _dest, const RectF& src)
 	if (dest.w == 0 || dest.h == 0 || src.w <= 0 || src.h <= 0)
 		return;
 
+	// The source rectangle is mapped linearly onto the destination. That keeps blits of
+	// adjacent parts of a source consistent with each other, so a stretched image can be
+	// drawn piece by piece.
+
 	Transform	mtx;
 	CoordF		srcPos = { src.x / 64.f, src.y / 64.f };		// In pixels.
 
+	mtx.xx = src.w / dest.w;
 	mtx.xy = 0;
 	mtx.yx = 0;
+	mtx.yy = src.h / dest.h;
 
-	if (m_renderState.blitSource->sampleMethod() == SampleMethod::Bilinear)
+	if (m_renderState.blitSource->sampleMethod() != SampleMethod::Bilinear)
 	{
-		// A bilinear sample also reads the next pixel, so samples need to stay at least
-		// a little bit before the last pixel of the source surface. Like stretchBlit(),
-		// first and last pixel are sampled at the start of the source rectangle and just
-		// inside its last pixel, which keeps them inside a rectangle of whole pixels.
-		// A rectangle that starts partway into a pixel can still reach the edge, so the
-		// samples are also clamped to it.
+		_transformBlitComplex(dest, { int(srcPos.x*1024), int(srcPos.y*1024) }, mtx, Command::Blit);
+		return;
+	}
 
-		SizeI surfSize = m_renderState.blitSource->pixelSize();
+	// A bilinear sample also reads the next pixel, so samples need to stay at least a little
+	// bit before the last pixel of the source surface. Destination pixels whose samples would
+	// reach beyond that are drawn with the edge of the source instead, as a separate blit
+	// with no scale in that direction. So along each axis there are one or two parts.
 
-		auto range = [](float begin, float end, int surfPixels, int destPixels, float& pos, float& scale)
+	struct Part
+	{
+		spx		destBegin;
+		spx		destLength;
+		float	srcPos;				// In pixels.
+		float	scale;
+	};
+
+	auto split = [](float pos, float scale, int surfPixels, spx destBegin, int destPixels, Part* pParts) -> int
+	{
+		float max = std::max(surfPixels - 1 - 1/64.f, 0.f);
+
+		pos = std::clamp(pos, 0.f, max);
+
+		int inside = destPixels;					// Destination pixels with samples inside the source.
+		while (inside > 1 && pos + scale * (inside - 1) > max)
+			inside--;
+
+		pParts[0] = { destBegin, inside * 64, pos, scale };
+
+		if (inside == destPixels)
+			return 1;
+
+		pParts[1] = { destBegin + inside * 64, (destPixels - inside) * 64, max, 0.f };
+		return 2;
+	};
+
+	SizeI surfSize = m_renderState.blitSource->pixelSize();
+
+	Part	partsX[2], partsY[2];
+	int		nPartsX = split(srcPos.x, mtx.xx, surfSize.w, dest.x, dest.w / 64, partsX);
+	int		nPartsY = split(srcPos.y, mtx.yy, surfSize.h, dest.y, dest.h / 64, partsY);
+
+	for (int y = 0; y < nPartsY; y++)
+	{
+		for (int x = 0; x < nPartsX; x++)
 		{
-			float max = std::max(surfPixels - 1 - 1/64.f, 0.f);
+			const Part& px = partsX[x];
+			const Part& py = partsY[y];
 
-			begin = std::clamp(begin, 0.f, max);
-			end = std::clamp(end, begin, max);
+			mtx.xx = px.scale;
+			mtx.yy = py.scale;
 
-			pos = begin;
-			scale = destPixels == 1 ? 0.f : (end - begin) / (destPixels - 1);
-		};
-
-		range(srcPos.x, (src.x + src.w - 65.f) / 64.f, surfSize.w, dest.w / 64, srcPos.x, mtx.xx);
-		range(srcPos.y, (src.y + src.h - 65.f) / 64.f, surfSize.h, dest.h / 64, srcPos.y, mtx.yy);
+			_transformBlitComplex({ px.destBegin, py.destBegin, px.destLength, py.destLength }, { int(px.srcPos*1024), int(py.srcPos*1024) }, mtx, Command::Blit);
+		}
 	}
-	else
-	{
-		mtx.xx = src.w / dest.w;
-		mtx.yy = src.h / dest.h;
-	}
-
-	_transformBlitComplex(dest, { int(srcPos.x*1024), int(srcPos.y*1024) }, mtx, Command::Blit);
 }
 
 //____ transformBlit() ________________________________________________
