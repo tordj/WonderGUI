@@ -662,9 +662,10 @@ namespace wg
 
 	//____ _drawEdgemapPixel() ____________________________________________________
 	/*
-		Draws the pixel at column, row of the edgemap onto the canvas pixel. The pixel gets the
-		average of what each segment would give the whole pixel, weighted by how much of the pixel
-		the segment covers.
+		Draws the pixel at column, row of the edgemap onto the canvas pixel. The colors of the
+		segments are first averaged into one color, weighted by how much of the pixel each segment
+		covers and as premultiplied colors. That color is then blended onto the canvas pixel, which
+		it covers fully.
 	*/
 
 	void ReferenceBackend::_drawEdgemapPixel(SoftEdgemap* pEdgemap, int column, int row, CoordI canvasPixel)
@@ -689,16 +690,12 @@ namespace wg
 
 		//
 
-		Color dst = _canvasPixel(canvasPixel.x, canvasPixel.y);
-		Color results[Edgemap::maxSegments];
+		Color colors[Edgemap::maxSegments];
 
 		for (int seg = 0; seg < nSegments; seg++)
-		{
-			Color color = _segmentColor(pEdgemap, seg, column, row) * _deviceTint(canvasPixel.x, canvasPixel.y);
-			results[seg] = _blend(color, dst);
-		}
+			colors[seg] = _segmentColor(pEdgemap, seg, column, row) * _deviceTint(canvasPixel.x, canvasPixel.y);
 
-		_setCanvasPixel(canvasPixel.x, canvasPixel.y, _average(nSegments, results, coverage));
+		_plotPixel(canvasPixel.x, canvasPixel.y, _averageColors(nSegments, colors, coverage, true), 1.0);
 	}
 
 	//____ _segmentCoverage() _____________________________________________________
@@ -831,9 +828,7 @@ namespace wg
 
 	//____ _plotPixel() ___________________________________________________________
 	/*
-		Blends color into a pixel of the canvas, where it covers coverage (0.0 -> 1.0) of the
-		pixel. The pixel gets the area weighted average of the blended color for the covered
-		part and the original color for the rest.
+		Blends color into a pixel of the canvas, where it covers coverage (0.0 -> 1.0) of the pixel.
 	*/
 
 	void ReferenceBackend::_plotPixel(int x, int y, const Color& color, double coverage)
@@ -842,31 +837,7 @@ namespace wg
 			return;
 
 		Color dst = _canvasPixel(x, y);
-		Color result = _blend(color, dst);
-
-		if (coverage < 1.0)
-		{
-			Color colors[2] = { dst, result };
-			double areas[2] = { 1.0 - coverage, coverage };
-
-			result = _average(2, colors, areas);
-		}
-
-		_setCanvasPixel(x, y, result);
-	}
-
-	//____ _average() _____________________________________________________________
-	/*
-		Average of colors covering parts of a canvas pixel, weighted by the area (0.0 -> 1.0) they cover.
-
-		Colors with alpha are averaged as premultiplied colors, see _averageColors(). The canvas
-		might not have alpha though, in which case everything we write is opaque and the colors are
-		averaged as they are.
-	*/
-
-	ReferenceBackend::Color ReferenceBackend::_average(int nColors, const Color* pColors, const double* pAreas) const
-	{
-		return _averageColors(nColors, pColors, pAreas, m_bCanvasHasAlpha);
+		_setCanvasPixel(x, y, _blend(color, dst, coverage));
 	}
 
 	//____ _averageColors() _______________________________________________________
@@ -906,57 +877,106 @@ namespace wg
 
 	//____ _blend() _______________________________________________________________
 	/*
-		Blends a source color with the destination color of the canvas, according to the blend
-		mode. These are the definitions of the blend modes.
+		Blends a source color, covering coverage (0.0 -> 1.0) of the pixel, with the destination color
+		of the canvas, according to the blend mode. These are the definitions of the blend modes, which
+		are explained in the guide under "Blending and transparency".
+
+		A partially covered pixel is blended as if the alpha of the source was multiplied by the coverage.
+
+		Paint modes (Replace, Blend, BlendFixedColor and Morph) put paint on the canvas.
+
+		Effect modes (Add, Subtract, Multiply, Invert, Min and Max) change the colors already on the
+		canvas and keep its alpha. The alpha of the source is the strength of the effect: it fades the
+		source towards the color that has no effect, which is black for Add, Subtract, Invert and Max
+		and white for Multiply and Min.
 	*/
 
-	ReferenceBackend::Color ReferenceBackend::_blend(const Color& src, const Color& dst) const
+	ReferenceBackend::Color ReferenceBackend::_blend(const Color& source, const Color& dst, double coverage) const
 	{
 		if (m_bAlphaOnlyCanvas)
-			return _blendAlphaOnly(src, dst);
+			return { 1.0, 1.0, 1.0, _blendAlphaOnly(source.a, dst.a, coverage) };
+
+		Color src = source;
+		src.a *= coverage;
+
+		double s = src.a;					// Strength of effect modes.
+
+		// Applies an effect to each color channel of the canvas, keeping its alpha.
+
+		auto effect = [&](auto func) -> Color
+		{
+			return { _clamp01(func(dst.r, src.r)), _clamp01(func(dst.g, src.g)), _clamp01(func(dst.b, src.b)), dst.a };
+		};
+
+		Color result;
 
 		switch (m_blendMode)
 		{
 			case BlendMode::Ignore:
-				return dst;
+				result = dst;
+				break;
 
 			case BlendMode::Replace:
-				return src;
+				result = src;
+				break;
 
 			case BlendMode::Undefined:					// Undefined is treated as Blend.
 			case BlendMode::Blend:
-				return _over(src, dst);
+				result = _over(src, dst);
+				break;
 
 			case BlendMode::BlendFixedColor:			// As Blend, but onto the fixed blend color instead of the canvas.
-				return _over(src, m_fixedBlendColor);
-
-			case BlendMode::Add:
-				return { _clamp01(dst.r + src.r * src.a), _clamp01(dst.g + src.g * src.a), _clamp01(dst.b + src.b * src.a), dst.a };
-
-			case BlendMode::Subtract:
-				return { _clamp01(dst.r - src.r * src.a), _clamp01(dst.g - src.g * src.a), _clamp01(dst.b - src.b * src.a), dst.a };
-
-			case BlendMode::Multiply:
-				return { dst.r * src.r, dst.g * src.g, dst.b * src.b, dst.a };
-
-			case BlendMode::Invert:
-			{
-				auto invert = [](double s, double d) { return s * (1.0 - d) + d * (1.0 - s); };
-				return { invert(src.r, dst.r), invert(src.g, dst.g), invert(src.b, dst.b), dst.a };
-			}
-
-			case BlendMode::Min:
-				return { std::min(dst.r, src.r), std::min(dst.g, src.g), std::min(dst.b, src.b), dst.a };
-
-			case BlendMode::Max:
-				return { std::max(dst.r, src.r), std::max(dst.g, src.g), std::max(dst.b, src.b), dst.a };
+				result = _over(src, m_fixedBlendColor);
+				break;
 
 			case BlendMode::Morph:
-				return dst * (1.0 - m_morphFactor) + src * m_morphFactor;
+			{
+				// Cross-fade from the canvas to the source, as premultiplied colors.
+
+				Color colors[2] = { dst, src };
+				double weights[2] = { 1.0 - m_morphFactor, m_morphFactor };
+
+				result = _averageColors(2, colors, weights, true);
+				break;
+			}
+
+			case BlendMode::Add:
+				result = effect([s](double b, double c) { return b + s * c; });
+				break;
+
+			case BlendMode::Subtract:
+				result = effect([s](double b, double c) { return b - s * c; });
+				break;
+
+			case BlendMode::Multiply:
+				result = effect([s](double b, double c) { return b * _mix(1.0, c, s); });
+				break;
+
+			case BlendMode::Invert:						// Each channel inverted by the amount given by the source.
+				result = effect([s](double b, double c) { return b + s * c * (1.0 - 2.0 * b); });
+				break;
+
+			case BlendMode::Min:
+				result = effect([s](double b, double c) { return std::min(b, _mix(1.0, c, s)); });
+				break;
+
+			case BlendMode::Max:
+				result = effect([s](double b, double c) { return std::max(b, s * c); });
+				break;
 
 			default:
-				return dst;
+				result = dst;
+				break;
 		}
+
+		// A canvas without alpha can't become transparent. Where the result isn't opaque, the pixel
+		// that was there shows through, as if the result was blended onto it. Only paint modes can
+		// give a result that isn't opaque here.
+
+		if (!m_bCanvasHasAlpha)
+			result = _over(result, dst);
+
+		return result;
 	}
 
 	//____ _over() ________________________________________________________________
@@ -980,56 +1000,52 @@ namespace wg
 
 	//____ _blendAlphaOnly() ______________________________________________________
 	/*
-		Blending onto a canvas with alpha only (Alpha_8), where the blend modes are applied to
-		alpha as if it was a color channel.
+		Blends the alpha of a source, covering coverage (0.0 -> 1.0) of the pixel, with the alpha of
+		a canvas with alpha only (Alpha_8). Returns the new alpha of the canvas.
+
+		Such a canvas is a one-channel image and its alpha is its value. Paint modes work on alpha
+		just like on any other canvas, with the alpha of the source multiplied by the coverage.
+
+		Effect modes would have nothing to work on if they kept alpha. Instead they work on the alpha
+		of the canvas with the alpha of the source as their value. Coverage fades that value towards
+		the value that has no effect: 1.0 for Multiply and Min, 0.0 for the others.
 	*/
 
-	ReferenceBackend::Color ReferenceBackend::_blendAlphaOnly(const Color& src, const Color& dst) const
+	double ReferenceBackend::_blendAlphaOnly(double src, double dst, double coverage) const
 	{
-		double a;
+		double paint = src * coverage;
+
+		bool bNeutralIsOne = (m_blendMode == BlendMode::Multiply || m_blendMode == BlendMode::Min);
+		double value = _mix(bNeutralIsOne ? 1.0 : 0.0, src, coverage);
 
 		switch (m_blendMode)
 		{
 			case BlendMode::Ignore:
-				a = dst.a;
-				break;
+				return dst;
 			case BlendMode::Replace:
-				a = src.a;
-				break;
+				return paint;
 			case BlendMode::Undefined:
 			case BlendMode::Blend:
-				a = src.a + dst.a * (1.0 - src.a);
-				break;
+				return paint + dst * (1.0 - paint);
 			case BlendMode::BlendFixedColor:
-				a = src.a + m_fixedBlendColor.a * (1.0 - src.a);
-				break;
-			case BlendMode::Add:
-				a = _clamp01(dst.a + src.a);
-				break;
-			case BlendMode::Subtract:
-				a = _clamp01(dst.a - src.a);
-				break;
-			case BlendMode::Multiply:
-				a = dst.a * src.a;
-				break;
-			case BlendMode::Invert:
-				a = src.a * (1.0 - dst.a) + dst.a * (1.0 - src.a);
-				break;
-			case BlendMode::Min:
-				a = std::min(dst.a, src.a);
-				break;
-			case BlendMode::Max:
-				a = std::max(dst.a, src.a);
-				break;
+				return paint + m_fixedBlendColor.a * (1.0 - paint);
 			case BlendMode::Morph:
-				a = _mix(dst.a, src.a, m_morphFactor);
-				break;
+				return _mix(dst, paint, m_morphFactor);
+			case BlendMode::Add:
+				return _clamp01(dst + value);
+			case BlendMode::Subtract:
+				return _clamp01(dst - value);
+			case BlendMode::Multiply:
+				return dst * value;
+			case BlendMode::Invert:
+				return value * (1.0 - dst) + dst * (1.0 - value);
+			case BlendMode::Min:
+				return std::min(dst, value);
+			case BlendMode::Max:
+				return std::max(dst, value);
 			default:
-				a = dst.a;
-				break;
+				return dst;
 		}
-
-		return { 1.0, 1.0, 1.0, a };
 	}
 
 	//____ _sampleSource() ________________________________________________________

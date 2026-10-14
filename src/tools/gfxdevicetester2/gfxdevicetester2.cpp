@@ -36,6 +36,7 @@
 #include "testsuites/readbacktests.h"
 #include "testsuites/edgemaptinttests.h"
 #include "testsuites/layerroundtriptests.h"
+#include "testsuites/blendruletests.h"
 
 
 using namespace wg;
@@ -198,6 +199,7 @@ void GfxDeviceTester2::setup_tests()
 	add([]() { return new ReadbackTests(); });
 	add([]() { return new EdgemapTintTests(); });
 	add([]() { return new LayerRoundTripTests(); });
+	add([]() { return new BlendRuleTests(); });
 }
 
 //____ add_testsuite() ________________________________________________________

@@ -13,7 +13,11 @@ weight: 25
 
 Blending happens in **linear light**, with every channel going from 0.0 to 1.0. Colors given to GfxDevice (HiColor) are sRGB and pixels of sRGB surfaces are converted to linear before blending and back again afterwards. Mixing of colors in Tint gradients is the exception, it happens in sRGB before the result is converted to linear.
 
-Pixels are stored with **straight alpha**, e.g. the color channels are not multiplied with alpha. A surface without alpha (XRGB_8, RGB_565, BGR_565) is always opaque. An Alpha_8 surface used as a blit source is white with the alpha of the surface.
+Pixels are stored with **straight alpha**, e.g. the color channels are not multiplied with alpha.
+
+- A missing color is white. An Alpha_8 surface used as a blit source is white with the alpha of the surface.
+- A missing alpha is opaque. A surface without alpha (XRGB_8, RGB_565, BGR_565) is always opaque.
+- **The color of a fully transparent pixel never matters.** It can't be seen and it doesn't bleed into anything else, whether through blending, filtering or anti-aliasing.
 
 In the formulas below:
 
@@ -21,7 +25,6 @@ In the formulas below:
 |---|---|
 | Cb, αb | Color and alpha of the canvas pixel (b as in backdrop). |
 | Cs, αs | Color and alpha of what we draw (s as in source), with the tint color and Tint already multiplied in. |
-| B(Cb, Cs) | The effect of a blend mode at full strength. |
 | mix(a, b, t) | a + (b − a) · t |
 
 Color formulas apply to each of the color channels separately. All results are clamped to 0.0 -> 1.0.
@@ -36,9 +39,7 @@ Think of a transparent canvas as a perfect, non-reflective sheet of glass that w
 
 **Effect modes** don't add any paint. They change the paint that is already on the glass, like shining a light on it (Add), filtering it (Multiply) or inverting it (Invert). Transparent parts of the glass just let the light through, opaque paint catches it fully and semi-transparent paint changes its hue just like opaque paint does, but stays as transparent as it was. The alpha of the canvas is never changed by an effect mode.
 
-The transparency of the source controls the *strength* of an effect. An alpha-only surface with a soft round shape, blitted with BlendMode::Add and a tint color, works as a point light shining on the canvas.
-
-One rule holds for all modes: **the color of a fully transparent pixel never affects the result**. It can't be seen and it doesn't bleed into anything else, whether through blending, filtering or anti-aliasing.
+In both groups, the alpha of the source always means **how much**: a fully transparent source has no effect at all.
 
 
 
@@ -63,21 +64,20 @@ One rule holds for all modes: **the color of a fully transparent pixel never aff
 
 ## Effect modes
 
-All effect modes follow the same rule:
+The alpha of the source is the strength of the effect. It fades the source towards the color that has no effect: black for Add, Subtract, Invert and Max, white for Multiply and Min.
 
-```
-out.rgb = clamp( Cb + αs · (B(Cb, Cs) − Cb) )
-out.α   = αb
-```
+| BlendMode | out.rgb | Meaning |
+|---|---|---|
+| **Add** | Cb + αs · Cs | Light shining on the paint. |
+| **Subtract** | Cb − αs · Cs | Light taken away. |
+| **Multiply** | Cb · mix(1, Cs, αs) | A filter. A transparent source is a clear filter. |
+| **Invert** | Cb + αs · Cs · (1 − 2 · Cb) | Inverts the canvas, each channel by the amount given by Cs. |
+| **Min** | min(Cb, mix(1, Cs, αs)) | Limits the canvas to at most Cs. |
+| **Max** | max(Cb, αs · Cs) | Raises the canvas to at least Cs. |
 
-| BlendMode | B(Cb, Cs) | out.rgb | Meaning |
-|---|---|---|---|
-| **Add** | Cb + Cs | Cb + αs · Cs | Light shining on the paint. |
-| **Subtract** | Cb − Cs | Cb − αs · Cs | Light taken away. |
-| **Multiply** | Cb · Cs | Cb · mix(1, Cs, αs) | A filter. A transparent source is a clear filter. |
-| **Invert** | Cs · (1 − Cb) + Cb · (1 − Cs) | Cb + αs · Cs · (1 − 2 · Cb) | Inverts the canvas, each channel by the amount given by Cs. |
-| **Min** | min(Cb, Cs) | *See open decisions.* | Darkens to the source. |
-| **Max** | max(Cb, Cs) | *See open decisions.* | Lightens to the source. |
+out.α is always αb.
+
+An alpha-only surface with a soft round shape, blitted with Add and a tint color, works as a point light shining on the canvas. Blitted with Min and a dark tint color it caps the brightness like a shadow, with Max and a light tint color it raises the brightness like a fill light.
 
 Since the canvas alpha is kept, an effect mode has no visible effect on fully transparent parts of the canvas. To light up an empty layer, draw the light onto it with Blend and let the layer be blended onto the canvas below with Add (see Layers below).
 
@@ -85,43 +85,50 @@ Since the canvas alpha is kept, an effect mode has no visible effect on fully tr
 
 ## Anti-aliasing
 
-Edges of fills, lines and edgemaps are anti-aliased by the exact area of each pixel that is covered. A partially covered pixel gets the area weighted average of what the operation gives the covered part and the original pixel for the rest:
+Edges of fills, lines and edgemaps are anti-aliased by the exact area of each pixel that is covered. **A partially covered pixel is drawn as if the alpha of the source was multiplied by the coverage.** Coverage and source alpha therefore always behave the same.
 
-```
-out = average( op(source, canvas) weighted by coverage,  canvas weighted by (1 − coverage) )
-```
+Where several segments of an edgemap cover the same pixel, their colors are first averaged into one source color, weighted by the area each segment covers and as premultiplied colors. That color then covers the whole pixel.
 
-Averages of colors are taken as **premultiplied colors**: each color counts by its alpha as well as by its area, so that a transparent part only makes the pixel more transparent and doesn't darken it. On a canvas without alpha everything is opaque and colors are simply averaged.
-
-For Blend and all effect modes this is the same as multiplying αs with the coverage, so coverage and source alpha behave the same.
-
-A pixel crossed by several segments of an edgemap gets the area weighted average of what each segment gives the whole pixel.
+Replace and BlendFixedColor don't look at the canvas, so their edges aren't mixed with what was there. The edges of a Replace become partially transparent, the edges of a BlendFixedColor show the fixed blend color.
 
 
 
 ## Sampling
 
-Bilinear sampling interpolates premultiplied colors, so transparent pixels don't bleed their color into their neighbours. This includes the transparent black outside the source of a ClipBlit, which otherwise would give dark edges. Mipmaps should be generated the same way.
+Bilinear sampling interpolates premultiplied colors, so transparent pixels don't bleed their color into their neighbours. Mipmaps should be generated the same way.
+
+Outside the source of a ClipBlit is transparent. That has no effect in any effect mode and doesn't darken the edges of a bilinear blit.
+
+
+
+## Canvases without alpha
+
+A canvas without alpha can't become transparent. Where a result isn't opaque, the pixel that was there shows through, as if the result was blended onto it. That only concerns paint modes, so on such a canvas:
+
+- Replace is the same as Blend. A transparent Replace leaves the canvas as it was.
+- Morph is the same as Blend with the alpha of the source multiplied by the morph factor.
+- BlendFixedColor with a fixed blend color that isn't opaque is blended onto the canvas.
+
+The anti-aliased edges of a Replace are therefore mixed with what was there, just like those of a Blend.
 
 
 
 ## Alpha-only canvases
 
-An Alpha_8 canvas has no color, so it works as a mask and is an exception to the glass model. Paint modes work as on any other canvas. Effect modes, which would do nothing if they kept alpha, instead do arithmetic on alpha with the alpha of the source as the value: Add grows the mask, Subtract cuts holes in it, Multiply and Min intersect and Max unites.
+An Alpha_8 canvas is the one exception to the glass model. It has no color, so it is a one-channel image and its alpha is its value.
 
-There is no separate strength, but coverage works as everywhere else: a partially covered pixel gets the area weighted average of the result and its original value. At the anti-aliased edge of a Multiply, for example, that is `αb · mix(1, αs, coverage)`.
+- **Paint modes** work on alpha as on any other canvas.
+- **Effect modes** would do nothing if they kept alpha. Instead they work on alpha with the alpha of the source as the value: Add grows the mask, Subtract cuts holes in it, Multiply and Min intersect and Max unites.
 
-| BlendMode | out.α |
+Coverage fades the value of the source towards the value that has no effect, 1.0 for Multiply and Min and 0.0 for the others, just like alpha does on canvases with color. Paint modes multiply the alpha of the source with the coverage as usual.
+
+| BlendMode | out.α, with v = mix(neutral, αs, coverage) |
 |---|---|
-| Replace | αs |
-| Blend | αs + αb · (1 − αs) |
-| BlendFixedColor | αs + αfixed · (1 − αs) |
-| Add | αb + αs |
-| Subtract | αb − αs |
-| Multiply | αb · αs |
-| Invert | αs · (1 − αb) + αb · (1 − αs) |
-| Min, Max | min(αb, αs), max(αb, αs) |
-| Morph | mix(αb, αs, morph factor) |
+| Add | αb + v |
+| Subtract | αb − v |
+| Multiply | αb · v |
+| Invert | v · (1 − αb) + αb · (1 − v) |
+| Min, Max | min(αb, v), max(αb, v) |
 
 
 
@@ -135,20 +142,19 @@ That can't hold for effect modes, by their nature: an effect changes what is bel
 
 ## Relation to other standards
 
-*Porter-Duff compositing* (1984) defines how the coverage of two images combines. Blend is its *over* operator. The effect modes resemble its *atop* operator, which keeps the alpha of the destination, but apply B(Cb, Cs) instead of the source color.
+*Porter-Duff compositing* (1984) defines how the coverage of two images combines. Blend is its *over* operator. The effect modes resemble its *atop* operator, which keeps the alpha of the destination, but change the destination instead of placing the source on it.
 
-*W3C Compositing and Blending* (used by CSS, SVG, PDF and HTML canvas) treats blend modes as paint: `Cs' = (1 − αb) · Cs + αb · B(Cb, Cs)` is composited with *over*. A blend mode there paints normally onto transparent parts of the canvas and makes the canvas more opaque, and its effect is weakened by the alpha of the canvas. Multiply, Min, Max and Invert correspond to W3C's multiply, darken, lighten and exclusion, applied as effects instead of paint. Add corresponds most closely to the compositing operator plus-lighter, which also adds alpha.
+*W3C Compositing and Blending* (used by CSS, SVG, PDF and HTML canvas) treats blend modes as paint: the blended color is composited with *over*, so a blend mode paints normally onto transparent parts of the canvas and makes the canvas more opaque. Multiply, Min, Max and Invert correspond to W3C's multiply, darken, lighten and exclusion, applied as effects instead of paint. Add corresponds most closely to the compositing operator plus-lighter, which also adds alpha.
+
+Neither standard has a mode that takes away alpha by the alpha of the source, like Porter-Duff *destination-in* does. That could be added as a separate paint mode if it is needed for masking.
 
 
 
-## Open decisions
+## Exactness
 
-1. **Min and Max.** There are two ways to let the transparency of the source control them:
+ReferenceBackend and the software backends can follow these definitions exactly everywhere.
 
-   - *Transparency weakens the effect:* `mix(Cb, min(Cb, Cs), αs)` and `mix(Cb, max(Cb, Cs), αs)`, the general rule as written.
-   - *Transparency fades the source towards the neutral value of the mode* (white for Min, black for Max): `min(Cb, mix(1, Cs, αs))` and `max(Cb, αs · Cs)`. This is how Add already reads ("add the light after multiplying it with its alpha").
-
-   For Add, Subtract, Multiply and Invert the two readings give the same result, since those modes are linear in the source. For Min and Max they only agree when the source is opaque or fully transparent. The first is what anti-aliasing by area needs, but GPUs can't do it with fixed-function blending. The second is exact on every backend at no cost, with coverage then also fading the source towards the neutral value.
+GPU backends can follow them exactly with fixed-function blending, provided that canvases with alpha store premultiplied colors. The exception is semi-transparent pixels of canvases with alpha, where Invert, Min, Max and an Add that saturates are approximated. Canvases without alpha are exact in all modes.
 
 
 
@@ -157,9 +163,12 @@ That can't hold for effect modes, by their nature: an effect changes what is bel
 | | ReferenceBackend | SoftBackend, LinearBackend | OpenGL, Metal, DirectX 12 |
 |---|---|---|---|
 | Blend as Porter-Duff over | Yes | Only onto opaque pixels | Only onto opaque pixels |
-| Premultiplied anti-aliasing | Yes | Edgemaps with Replace only | Edgemaps only |
+| Source alpha as strength of effect modes | All | Add, Subtract | Add, Subtract |
+| Coverage as strength of effect modes | All | Add, Subtract | Add, Subtract |
+| Morph as premultiplied cross-fade | Yes | No | No |
 | Premultiplied bilinear sampling | Yes | No | No |
-| Effect modes with source alpha as strength | Add, Subtract | Add, Subtract | Add, Subtract |
-| Effect modes with coverage as strength | All | Add, Subtract. The others only at edges between edgemap segments. | Add, Subtract |
-| Morph as premultiplied cross-fade | No | No | No |
-| Alpha_8: coverage as area average for effect modes | Yes | Add, Subtract, Invert | Add, Subtract, Invert |
+| Transparent outside of ClipBlit has no effect | Yes | Add, Subtract | Add, Subtract |
+| Canvases without alpha: results that aren't opaque blended onto the canvas | Yes | No | No |
+| Alpha_8: coverage fades the value towards the neutral one | Yes | Add, Subtract, Invert | Add, Subtract, Invert |
+
+GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests.
