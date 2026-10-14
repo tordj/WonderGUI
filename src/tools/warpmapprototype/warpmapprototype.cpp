@@ -264,6 +264,26 @@ static EdgemapSrc makeProgressEdgemap(int w, int h)
 	return e;
 }
 
+static EdgemapSrc makeFilledDiscEdgemap(int w, int h, float innerEdge)
+{
+	// Full disc with an opaque center: the first segment is filled, the lowest edge at 'innerEdge'
+	// (0..1 of the height, which is the radius when warped into a disc).
+	EdgemapSrc e;
+	e.w = w; e.h = h; e.nEdges = 3; e.tiling = true;
+	e.s.resize((w + 1) * e.nEdges);
+	for (int c = 0; c <= w; c++)
+	{
+		int cs = (c == w) ? 0 : c;
+		float a = float(cs) / w * 2 * float(M_PI);
+		float* p = &e.s[c * e.nEdges];
+		p[0] = h * innerEdge;
+		p[1] = h * (0.55f + 0.12f * std::sin(a * 6));
+		p[2] = h * (0.88f + 0.04f * std::sin(a * 40));
+	}
+	e.colors = { {0.20f,0.45f,0.85f,1}, {0.95f,0.95f,0.95f,1}, {0.98f,0.55f,0.10f,1}, {0,0,0,0} };
+	return e;
+}
+
 struct EdgemapRenderStats { long long cells = 0, solidCells = 0, skippedCells = 0, pixelsShaded = 0; };
 
 // Per pixel shading. Returns premultiplied color.
@@ -724,6 +744,36 @@ int main()
 			float eRad2, eTan2, eMean2;
 			gridError(m, disc, 2.f * cell / 240.f, 1.f, eRad2, eTan2, eMean2);
 			printf("== Disc, cell %2d: max position error %.2f px radial, %.2f px tangential; outside r > 2 cells: %.3f / %.3f\n", cell, eRad, eTan, eRad2, eTan2);
+		}
+	}
+
+	// Full disc with filled center, edges kept away from the center.
+	{
+		Polar disc{ S / 2.f, S / 2.f, 0.f, 240.f, 0.f, float(2 * M_PI) };
+		printf("\n== Filled disc (no hole), radius 240\n");
+		for (float innerEdge : { 0.05f, 0.14f, 0.25f })
+		{
+			EdgemapSrc filled = makeFilledDiscEdgemap(360, 48, innerEdge);
+			Image ex(S, S, clear);
+			renderEdgemapExact(ex, disc, filled);
+			{
+				char name[64];
+				snprintf(name, sizeof(name), "filleddisc_%02d_exact.ppm", int(innerEdge * 100 + 0.5f));
+				ex.savePPM(name);
+			}
+			for (int cell : { 8, 16 })
+			{
+				Warpmap m = makePolarWarpmap(S, S, cell, disc);
+				Image img(S, S, clear);
+				renderEdgemapGrid(img, m, filled, true, true, nullptr);
+				char name[64];
+				snprintf(name, sizeof(name), "filleddisc_%02d_grid%d.ppm", int(innerEdge * 100 + 0.5f), cell);
+				img.savePPM(name);
+				float maxD, meanD; long long nOver;
+				imageDiff(img, ex, maxD, meanD, nOver);
+				printf("lowest edge at r = %3.0f px (%.1f cells), cell %2d: vs exact max %5.1f, mean %.3f, pixels > 2/255: %lld\n",
+					   innerEdge * 240, innerEdge * 240 / cell, cell, maxD, meanD, nOver);
+			}
 		}
 	}
 
