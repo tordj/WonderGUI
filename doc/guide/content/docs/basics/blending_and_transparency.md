@@ -107,7 +107,9 @@ Bilinear sampling interpolates premultiplied colors, so transparent pixels don't
 
 ## Alpha-only canvases
 
-An Alpha_8 canvas has no color, so here the blend modes work on alpha as if it was a color channel. This is how masks are built, for example by adding and subtracting shapes. *See open decisions.*
+An Alpha_8 canvas has no color, so it works as a mask and is an exception to the glass model. Paint modes work as on any other canvas. Effect modes, which would do nothing if they kept alpha, instead do arithmetic on alpha with the alpha of the source as the value: Add grows the mask, Subtract cuts holes in it, Multiply and Min intersect and Max unites.
+
+There is no separate strength, but coverage works as everywhere else: a partially covered pixel gets the area weighted average of the result and its original value. At the anti-aliased edge of a Multiply, for example, that is `αb · mix(1, αs, coverage)`.
 
 | BlendMode | out.α |
 |---|---|
@@ -148,8 +150,6 @@ That can't hold for effect modes, by their nature: an effect changes what is bel
 
    For Add, Subtract, Multiply and Invert the two readings give the same result, since those modes are linear in the source. For Min and Max they only agree when the source is opaque or fully transparent. The first is what anti-aliasing by area needs, but GPUs can't do it with fixed-function blending. The second is exact on every backend at no cost, with coverage then also fading the source towards the neutral value.
 
-2. **Alpha-only canvases.** Strictly by the glass model, effect modes would do nothing on an Alpha_8 canvas, since they never change alpha. Instead they do arithmetic on alpha, as described above, which is what building masks needs and what all backends do today. Keeping this exception, the remaining question is anti-aliasing: since GPUs fold coverage into alpha, the edges of Multiply and Min (intersections) currently come out as if the uncovered part of the pixel was 0. With the source alpha as the value and coverage as the strength, Multiply becomes `αb · mix(1, αs, coverage)` at its edges, which GPUs can do. The alternative is to drop the exception and add paint modes for masks (Porter-Duff destination-out and destination-in, to cut and intersect).
-
 
 
 ## Implementation status
@@ -162,3 +162,4 @@ That can't hold for effect modes, by their nature: an effect changes what is bel
 | Effect modes with source alpha as strength | Add, Subtract | Add, Subtract | Add, Subtract |
 | Effect modes with coverage as strength | All | Add, Subtract. The others only at edges between edgemap segments. | Add, Subtract |
 | Morph as premultiplied cross-fade | No | No | No |
+| Alpha_8: coverage as area average for effect modes | Yes | Add, Subtract, Invert | Add, Subtract, Invert |
