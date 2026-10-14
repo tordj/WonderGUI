@@ -1379,22 +1379,22 @@ const char GlBackend::shapeVertexShader[] =
 "	float c = rectCoverage(r, p);													" \
 "	vec2 center;																	" \
 "	float radius;																	" \
-"	if (p.x < r.x + radii.x && p.y < r.y + radii.x)									" \
+"	if (radii.x > 0.0 && p.x < r.x + radii.x && p.y < r.y + radii.x)				" \
 "	{																				" \
 "		radius = radii.x;															" \
 "		center = vec2(r.x + radius, r.y + radius);									" \
 "	}																				" \
-"	else if (p.x > r.z - radii.y && p.y < r.y + radii.y)							" \
+"	else if (radii.y > 0.0 && p.x > r.z - radii.y && p.y < r.y + radii.y)			" \
 "	{																				" \
 "		radius = radii.y;															" \
 "		center = vec2(r.z - radius, r.y + radius);									" \
 "	}																				" \
-"	else if (p.x > r.z - radii.z && p.y > r.w - radii.z)							" \
+"	else if (radii.z > 0.0 && p.x > r.z - radii.z && p.y > r.w - radii.z)			" \
 "	{																				" \
 "		radius = radii.z;															" \
 "		center = vec2(r.z - radius, r.w - radius);									" \
 "	}																				" \
-"	else if (p.x < r.x + radii.w && p.y > r.w - radii.w)							" \
+"	else if (radii.w > 0.0 && p.x < r.x + radii.w && p.y > r.w - radii.w)			" \
 "	{																				" \
 "		radius = radii.w;															" \
 "		center = vec2(r.x + radius, r.w - radius);									" \

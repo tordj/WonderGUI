@@ -78,28 +78,29 @@ float circleCoverage(float radius, float2 v, float d)
 
 float roundedRectCoverage(float4 r, float4 radii, float2 p)
 {
-    // The corner, if any, whose rounding the pixel center is in.
+    // The rounded corner, if any, whose rounding the pixel center is in. Square corners are
+    // left to rectCoverage(), which also covers the pixels just outside them partly.
 
     bool bCorner = true;
     float2 center = float2(0.0f, 0.0f);
     float radius = 0.0f;
 
-    if (p.x < r.x + radii.x && p.y < r.y + radii.x)
+    if (radii.x > 0.0f && p.x < r.x + radii.x && p.y < r.y + radii.x)
     {
         radius = radii.x;
         center = float2(r.x + radius, r.y + radius);
     }
-    else if (p.x > r.z - radii.y && p.y < r.y + radii.y)
+    else if (radii.y > 0.0f && p.x > r.z - radii.y && p.y < r.y + radii.y)
     {
         radius = radii.y;
         center = float2(r.z - radius, r.y + radius);
     }
-    else if (p.x > r.z - radii.z && p.y > r.w - radii.z)
+    else if (radii.z > 0.0f && p.x > r.z - radii.z && p.y > r.w - radii.z)
     {
         radius = radii.z;
         center = float2(r.z - radius, r.w - radius);
     }
-    else if (p.x < r.x + radii.w && p.y > r.w - radii.w)
+    else if (radii.w > 0.0f && p.x < r.x + radii.w && p.y > r.w - radii.w)
     {
         radius = radii.w;
         center = float2(r.x + radius, r.w - radius);

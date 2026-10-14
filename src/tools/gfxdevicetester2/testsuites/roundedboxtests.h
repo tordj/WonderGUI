@@ -15,6 +15,7 @@ public:
 		addTest("Radii", &RoundedBoxTests::radii);
 		addTest("Outlines", &RoundedBoxTests::outlines);
 		addTest("SubpixelSteps", &RoundedBoxTests::subpixelSteps);
+		addTest("SquareCorners", &RoundedBoxTests::squareCorners);
 		addTest("Tinted", &RoundedBoxTests::tinted);
 		addTest("BlendModes", &RoundedBoxTests::blendModes);
 		addTest("Clipped", &RoundedBoxTests::clipped);
@@ -108,6 +109,30 @@ public:
 			spx y = 64 * 10 + (i / 8) * 64 * 60 + i * 8;
 
 			pDevice->drawRoundedBox(box(x, y, 64 * 40 + i * 3, 64 * 40 + i * 5, 64 * 12, 64 + i, HiColor(4096, 4096, 4096, 4096), HiColor::Black));
+		}
+		return true;
+	}
+
+	// Square corners at subpixel positions, where pixels just outside a corner are partly
+	// covered. Every other box has two rounded corners, one of them with a square inner corner
+	// as its outline is thicker than its radius.
+
+	bool squareCorners(GfxDevice * pDevice, const RectI& canvas)
+	{
+		for (int i = 0; i < 20; i++)
+		{
+			spx x = 64 * 10 + (i % 5) * 64 * 96 + i * 11;
+			spx y = 64 * 10 + (i / 5) * 64 * 110 + i * 13;
+
+			RoundedBoxSpec spec = box(x, y, 64 * 70 + i * 7, 64 * 80 + i * 5, 0, (i % 4) * 64 + i * 5, HiColor(1000, 2000, 4096, 4096), HiColor::Black);
+
+			if (i % 2 == 1)
+			{
+				spec.radius[0] = 64 * 2;
+				spec.radius[2] = 64 * 16;
+			}
+
+			pDevice->drawRoundedBox(spec);
 		}
 		return true;
 	}
