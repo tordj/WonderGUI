@@ -2,8 +2,7 @@
 #include <cmath>
 
 #include <wondergfx.h>
-#include <wg_softbackend.h>
-#include <wg_softkernels_default.h>
+#include <wg_referencebackend.h>
 #include <wg_softsurface.h>
 
 #include "gfxdevicetester2.h"
@@ -147,13 +146,12 @@ void GfxDeviceTester2::setup_backends()
 		m_backends[TESTEE] = { name, pDevice, Base::defaultSurfaceFactory()->createSurface(canvasBP) };
 	}
 
-	// Reference: GfxDeviceGen2 with SoftBackend.
+	// Reference: GfxDeviceGen2 with ReferenceBackend.
 
 	{
-		auto pBackend = SoftBackend::create();
-		addDefaultSoftKernels(pBackend);
+		auto pBackend = ReferenceBackend::create();
 
-		m_backends[REFERENCE] = { "Software (GfxDeviceGen2 + SoftBackend)", GfxDeviceGen2::create(pBackend), SoftSurface::create(canvasBP) };
+		m_backends[REFERENCE] = { "Reference (GfxDeviceGen2 + ReferenceBackend)", GfxDeviceGen2::create(pBackend), SoftSurface::create(canvasBP) };
 	}
 
 	// Both canvases are read back to ARGB_8 in the color space of the reference canvas

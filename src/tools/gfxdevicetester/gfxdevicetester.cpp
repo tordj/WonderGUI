@@ -8,6 +8,7 @@
 #include <wg_softbackend.h>
 #include <wg_softkernels_default.h>
 #include <wg_linearbackend.h>
+#include <wg_referencebackend.h>
 
 //#include <wg_glbackend.h>
 
@@ -174,6 +175,21 @@ void GfxDeviceTester::setup_testdevices()
 									   _.size = {512,512},
 									   _.canvas = true );
 
+	// The first device is the reference, the second the testee.
+
+	// Gen2 with ReferenceBackend
+
+	{
+		auto pReferenceBackend = ReferenceBackend::create();
+
+		auto pGen2GfxDevice = GfxDeviceGen2::create( pReferenceBackend );
+
+		auto pCanvasSurface = SoftSurface::create(canvasBP);
+		auto pReferenceDevice = Device::create("Gen2 Reference (ReferenceBackend)", pGen2GfxDevice, CanvasRef::None, pCanvasSurface );
+
+		g_testdevices.push_back(pReferenceDevice);
+	}
+
 	// Gen2 with SoftBackend
 
 	{
@@ -188,7 +204,7 @@ void GfxDeviceTester::setup_testdevices()
 		auto pGen2CanvasSurface = SoftSurface::create(canvasBP);
 		auto pGen2SoftDevice = Device::create("Gen2 Software (SoftBackend)", pGen2GfxDevice, CanvasRef::None, pGen2CanvasSurface );
 
-		g_testdevices.push_back(pGen2SoftDevice);
+//		g_testdevices.push_back(pGen2SoftDevice);
 
 	}
 
@@ -420,7 +436,7 @@ void GfxDeviceTester::refresh_performance_display()
 			auto pValueTestee = TextDisplay::create({ .display = {.layout = g_pPerformanceValueMapper, .style = wkit::TextStyles::Default, .text = value } });
 
 
-			snprintf(value, 128, " %.1f + %.1f = %.1f ms", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000, (t.devices[REFERENCE].render_time + t.devices[REFERENCE].stalling_time) * 1000 );
+			snprintf(value, 128, " not timed");
 
 			auto pValueRef = TextDisplay::create({ .display = {.layout = g_pPerformanceValueMapper, .style = wkit::TextStyles::Default, .text = value } });
 
@@ -541,8 +557,9 @@ void GfxDeviceTester::refresh_performance_measurements()
 	{
 		if (test.bActive)
 		{
+			// The reference (ReferenceBackend) is made for correctness, not speed, so it isn't timed.
+
 			clock_test(&test.devices[TESTEE], 1000, g_pTesteeDevice);
-			clock_test(&test.devices[REFERENCE], 1000, g_pReferenceDevice);
 		}
 	}
 }
@@ -867,7 +884,7 @@ bool GfxDeviceTester::add_testsuite( const std::function<TestSuite*()>& testSuit
 	se.pTesteeSuite		= testSuiteFactory();
 	se.nbTests 			= (int)se.pReferenceSuite->tests.size();
 
-	auto pBackend = SoftBackend::create();
+	auto pBackend = ReferenceBackend::create();
 	auto pTempDevice = GfxDeviceGen2::create(pBackend);
 	bool bWorking = se.pReferenceSuite->init(pTempDevice, g_canvasSize*64, m_pAPI);
 	se.pReferenceSuite->exit(pTempDevice, g_canvasSize*64);

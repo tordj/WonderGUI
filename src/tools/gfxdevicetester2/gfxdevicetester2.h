@@ -18,7 +18,7 @@ using namespace std;
 	Runs the test suites on two backends and compares them:
 
 		Testee		- The native GfxDevice provided by the WonderApp framework.
-		Reference	- GfxDeviceGen2 with SoftBackend, our reference implementation.
+		Reference	- GfxDeviceGen2 with ReferenceBackend, which renders everything by the book.
 
 	The window has three views:
 
