@@ -1426,6 +1426,17 @@ const char GlBackend::shapeVertexShader[] =
 "	addSegment(ofs + 5, fill, p, acc, covered);										" \
 "	addSegment(ofs + 6, outer - fill, p, acc, covered);								" \
 "}																					" \
+"float turnsFromTop(vec2 v)															" \
+"{																					" \
+"	vec2 a = abs(v);																" \
+"	float t = a.x <= a.y ? atan(a.x / max(a.y, 1e-20)) : 1.5707963 - atan(a.y / max(a.x, 1e-20));	" \
+"	t *= 0.15915494;																" \
+"	if (v.y >= 0.0)																	" \
+"		t = 0.5 - t;																" \
+"	if (v.x < 0.0)																	" \
+"		t = 1.0 - t;																" \
+"	return fract(t);																" \
+"}																					" \
 "void ringElements(int ofs, int n, int base, float band, vec2 p, vec2 v, float d, inout vec4 acc, inout float covered)	" \
 "{																					" \
 "	if (n == 1)																		" \
@@ -1433,7 +1444,7 @@ const char GlBackend::shapeVertexShader[] =
 "		addSegment(ofs + int(shapeEntry(base).y), band, p, acc, covered);			" \
 "		return;																		" \
 "	}																				" \
-"	float theta = d > 0.0001 ? fract(atan(v.x, -v.y) * 0.15915494) : 0.0;			" \
+"	float theta = d > 0.0001 ? turnsFromTop(v) : 0.0;								" \
 "	int lo = 0;																		" \
 "	int hi = n;																		" \
 "	while (lo < hi)																	" \
