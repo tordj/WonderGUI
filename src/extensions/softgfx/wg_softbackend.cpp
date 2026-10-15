@@ -53,6 +53,7 @@ namespace wg
 	alignas(kCacheLineSize) int SoftBackend::s_mulTab[256];
 
 	alignas(kCacheLineSize) int16_t SoftBackend::s_limit4096Tab[4097 * 3];
+	alignas(kCacheLineSize) uint32_t SoftBackend::s_reciprocalTab[4097];
 	alignas(kCacheLineSize) uint8_t SoftBackend::s_round_channel_5[256];
 	alignas(kCacheLineSize) uint8_t SoftBackend::s_round_channel_6[256];
 
@@ -2462,6 +2463,12 @@ namespace wg
 			for (int i = 0; i < 256; i++)
 				s_mulTab[i] = 65536 * i / 255;
 
+			// Init reciprocalTab
+
+			s_reciprocalTab[0] = 0;
+			for (int i = 1; i <= 4096; i++)
+				s_reciprocalTab[i] = 0xFFFFFFFFu / i;
+
 			// Init line thickness table
 
 			for (int i = 0; i < 17; i++)
@@ -2953,6 +2960,22 @@ namespace wg
 		}
 	}
 
+	//____ _coveragePixel() _____________________________________________________
+	// A pixel for the coverage kernel, covered by coverage (0 -> 4096) of color.
+
+	SoftBackend::CoveragePixel SoftBackend::_coveragePixel(const HiColor& color, int coverage)
+	{
+		int alpha = (color.a * coverage) >> 12;
+
+		CoveragePixel pixel;
+		pixel.b = int16_t((color.b * alpha) >> 12);
+		pixel.g = int16_t((color.g * alpha) >> 12);
+		pixel.r = int16_t((color.r * alpha) >> 12);
+		pixel.a = int16_t(alpha);
+		pixel.coverage = int16_t(coverage);
+		return pixel;
+	}
+
 	//____ _drawCoverageEdge() __________________________________________________
 	// Draws a row or column of pixels, all covered by coverage (0 -> 4096) of color, with the
 	// coverage kernel. The tint is applied as the fill kernels do. Pixel (x,y) is at
@@ -2966,36 +2989,24 @@ namespace wg
 		bool bRow = rect.h == 1;
 		int length = bRow ? rect.w : rect.h;
 
-		HiColor* pColors = _shapeBuffer(0, length);
-
-		if (!m_softTint.isFlat())
-		{
-			m_softTint.generate(rect.x, rect.y, bRow ? 1 : 0, bRow ? 0 : 1, length, pColors);
-			for (int i = 0; i < length; i++)
-				pColors[i] = pColors[i] * color;
-		}
-		else
-		{
-			HiColor c = color * m_softTint.flatColor();
-			for (int i = 0; i < length; i++)
-				pColors[i] = c;
-		}
-
 		if ((int)m_coverageEdge.size() < length)
 			m_coverageEdge.resize(length);
 
 		CoveragePixel* pPixels = m_coverageEdge.data();
 
-		for (int i = 0; i < length; i++)
+		if (m_softTint.isFlat())
 		{
-			const HiColor& c = pColors[i];
-			int alpha = (c.a * coverage) >> 12;
+			CoveragePixel pixel = _coveragePixel(color * m_softTint.flatColor(), coverage);
+			for (int i = 0; i < length; i++)
+				pPixels[i] = pixel;
+		}
+		else
+		{
+			HiColor* pColors = _shapeBuffer(0, length);
+			m_softTint.generate(rect.x, rect.y, bRow ? 1 : 0, bRow ? 0 : 1, length, pColors);
 
-			pPixels[i].b = int16_t((c.b * alpha) >> 12);
-			pPixels[i].g = int16_t((c.g * alpha) >> 12);
-			pPixels[i].r = int16_t((c.r * alpha) >> 12);
-			pPixels[i].a = int16_t(alpha);
-			pPixels[i].coverage = int16_t(coverage);
+			for (int i = 0; i < length; i++)
+				pPixels[i] = _coveragePixel(pColors[i] * color, coverage);
 		}
 
 		uint8_t* pDst = pOrigin + rect.y * pitch + rect.x * m_canvasPixelBytes;
@@ -3040,14 +3051,7 @@ namespace wg
 				int pixelBeg = (first + k) << 16;
 				int coverage = (std::min(end, pixelBeg + 65536) - std::max(beg, pixelBeg)) >> 4;
 
-				HiColor c = color * pColors[k];
-				int alpha = (c.a * coverage) >> 12;
-
-				pPixels[k].b = int16_t((c.b * alpha) >> 12);
-				pPixels[k].g = int16_t((c.g * alpha) >> 12);
-				pPixels[k].r = int16_t((c.r * alpha) >> 12);
-				pPixels[k].a = int16_t(alpha);
-				pPixels[k].coverage = int16_t(coverage);
+				pPixels[k] = _coveragePixel(color * pColors[k], coverage);
 			}
 
 			uint8_t* pDst = bHorizontal ? pOrigin + first * pitch + major * m_canvasPixelBytes

@@ -212,6 +212,7 @@ namespace wg
 
 		alignas(kCacheLineSize) static int s_mulTab[256];
 		alignas(kCacheLineSize) static int16_t s_limit4096Tab[4097 * 3];
+		alignas(kCacheLineSize) static uint32_t s_reciprocalTab[4097];	// (2^32 - 1) / i for 12-bit values, 0 for 0.
 
 		const static int	c_maxSegments = 16;
 		const static int	c_maxEdgemapBand = 64;			// Max height of bands edgemaps are drawn in. Taller patches are split.
@@ -347,6 +348,7 @@ namespace wg
 		HiColor* _shapeBuffer(int index, int length);
 
 		bool	_fadeSameAsAverage(BlendMode mode, bool bOpaqueSource) const;
+		static CoveragePixel _coveragePixel(const HiColor& color, int coverage);
 		void	_drawCoverageEdge(CoverageOp_p pOp, const RectI& rect, int coverage, HiColor color, uint8_t* pOrigin, int pitch);
 		void	_drawTintedLine(CoverageOp_p pOp, bool bHorizontal, int majorBeg, int length, int width, int pos, int slope,
 								int clipStart, int clipEnd, HiColor color, uint8_t* pOrigin, int pitch);

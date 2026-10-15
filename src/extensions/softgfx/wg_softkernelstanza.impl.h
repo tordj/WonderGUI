@@ -16,6 +16,13 @@ using namespace wg::Util;
 #define WG_RESTRICT __restrict__
 #endif
 
+// Macro for conditions that seldom hold in the kernels, so that the common path is laid out first.
+#if defined(__GNUC__) || defined(__clang__)
+#define WG_UNLIKELY(x) __builtin_expect(!!(x), 0)
+#else
+#define WG_UNLIKELY(x) (x)
+#endif
+
 //____ Pixel layout helpers _______________________________________________________
 
 // Loads and stores of 16-bit pixels, swapped if the byte order of the format differs from the system.
@@ -247,6 +254,58 @@ static inline void _write_pixel(uint8_t* pPixel, int16_t b, int16_t g, int16_t r
 	}
 }
 
+//____ _divide() _______________________________________________________________
+// Division by a divisor of 0 -> 4096, by multiplying with its reciprocal from
+// SoftBackend::s_reciprocalTab, which saves dividing when several values share it.
+// Rounded to nearest, value plus half the divisor must be below 2^32 and the result is
+// then off by at most one where it lies halfway between two values. A divisor of 0 gives 0.
+
+static inline int16_t _divide(uint32_t value, uint32_t halfDivisor, uint32_t reciprocal)
+{
+	return int16_t((uint64_t(value + halfDivisor) * reciprocal) >> 32);
+}
+
+//____ _blend_over_fast8() / _blend_over() ____________________________________
+// Porter-Duff over onto a pixel that isn't opaque: colors are mixed premultiplied and
+// divided by the resulting alpha. Inlined, as a function call in the kernels would cost
+// the common case of an opaque canvas registers.
+
+struct BlendedPixel
+{
+	int16_t b, g, r, a;
+};
+
+static inline BlendedPixel _blend_over_fast8(int srcB, int srcG, int srcR, int srcA, int backB, int backG, int backR, int backA)
+{
+	// Alphas in 12 bits, for the table of reciprocals.
+
+	int srcA12 = SoftBackend::s_mulTab[srcA] >> 4;
+	int backWeight = ((SoftBackend::s_mulTab[backA] >> 4) * (4096 - srcA12)) >> 12;
+	int outA12 = srcA12 + backWeight;
+
+	uint32_t reciprocal = SoftBackend::s_reciprocalTab[outA12];		// 0 if outA12 is, making all 0.
+	uint32_t half = outA12 / 2;
+
+	return { _divide(srcB * srcA12 + backB * backWeight, half, reciprocal),
+			 _divide(srcG * srcA12 + backG * backWeight, half, reciprocal),
+			 _divide(srcR * srcA12 + backR * backWeight, half, reciprocal),
+			 int16_t((outA12 * 255 + 2048) >> 12) };
+}
+
+static inline BlendedPixel _blend_over(int srcB, int srcG, int srcR, int srcA, int backB, int backG, int backR, int backA)
+{
+	int backWeight = (backA * (4096 - srcA)) >> 12;
+	int outA = srcA + backWeight;
+
+	uint32_t reciprocal = SoftBackend::s_reciprocalTab[outA];		// 0 if outA is, making all 0.
+	uint32_t half = outA / 2;
+
+	return { _divide(srcB * srcA + backB * backWeight, half, reciprocal),
+			 _divide(srcG * srcA + backG * backWeight, half, reciprocal),
+			 _divide(srcR * srcA + backR * backWeight, half, reciprocal),
+			 int16_t(outA) };
+}
+
 //____ _blend_pixels_fast8() ____________________________________________________
 template<BlendMode mode, SoftFormat destFormat>
 static inline void _blend_pixels_fast8(int morphFactor,
@@ -325,34 +384,44 @@ static inline void _blend_pixels_fast8(int morphFactor,
 		{
 			// Cross-fade of premultiplied colors, so that a transparent side just fades out.
 
-			int invMorph = 4096 - morphFactor;
-			int backWeight = backA * invMorph;
-			int srcWeight = srcA * morphFactor;
+			// Weights in 12 bits, for the table of reciprocals.
+
+			int backWeight = ((SoftBackend::s_mulTab[backA] >> 4) * (4096 - morphFactor)) >> 12;
+			int srcWeight = ((SoftBackend::s_mulTab[srcA] >> 4) * morphFactor) >> 12;
 			int weight = backWeight + srcWeight;
 
-			outA = weight >> 12;
+			outA = (weight * 255 + 2048) >> 12;
 
-			if (backA == 255 && srcA == 255)
+			if (weight == 4096)
 			{
-				outB = (backB * invMorph + srcB * morphFactor) >> 12;
-				outG = (backG * invMorph + srcG * morphFactor) >> 12;
-				outR = (backR * invMorph + srcR * morphFactor) >> 12;
-			}
-			else if (weight > 0)
-			{
-				outB = (backB * backWeight + srcB * srcWeight + weight / 2) / weight;
-				outG = (backG * backWeight + srcG * srcWeight + weight / 2) / weight;
-				outR = (backR * backWeight + srcR * srcWeight + weight / 2) / weight;
+				outB = (backB * backWeight + srcB * srcWeight) >> 12;
+				outG = (backG * backWeight + srcG * srcWeight) >> 12;
+				outR = (backR * backWeight + srcR * srcWeight) >> 12;
 			}
 			else
-				outB = outG = outR = 0;
+			{
+				uint32_t reciprocal = SoftBackend::s_reciprocalTab[weight];		// 0 if weight is, making all 0.
+				uint32_t half = weight / 2;
+
+				outB = _divide(backB * backWeight + srcB * srcWeight, half, reciprocal);
+				outG = _divide(backG * backWeight + srcG * srcWeight, half, reciprocal);
+				outR = _divide(backR * backWeight + srcR * srcWeight, half, reciprocal);
+			}
 		}
 		else if constexpr(mode == BlendMode::Blend)
 		{
-			// Porter-Duff over only differs from mixing by the alpha of the source where both
-			// source and canvas are semi-transparent.
+			// Porter-Duff over only differs from mixing by the alpha of the source where the
+			// canvas isn't opaque.
 
-			if (!SoftFormatInfo::hasAlpha(destFormat) || backA == 255 || srcA == 255 || srcA == 0)
+			if (SoftFormatInfo::hasAlpha(destFormat) && WG_UNLIKELY(backA != 255))
+			{
+				BlendedPixel out = _blend_over_fast8(srcB, srcG, srcR, srcA, backB, backG, backR, backA);
+				outB = out.b;
+				outG = out.g;
+				outR = out.r;
+				outA = out.a;
+			}
+			else
 			{
 				int alpha = SoftBackend::s_mulTab[srcA];
 				int invAlpha = 65536 - alpha;
@@ -361,26 +430,6 @@ static inline void _blend_pixels_fast8(int morphFactor,
 				outG = (backG * invAlpha + srcG * alpha + 0x8000) >> 16;
 				outR = (backR * invAlpha + srcR * alpha + 0x8000) >> 16;
 				outA = (backA * invAlpha + 255 * alpha + 0x8000) >> 16;
-			}
-			else
-			{
-				// Porter-Duff over onto a canvas that isn't opaque: colors are mixed premultiplied
-				// and divided by the resulting alpha.
-
-				int srcWeight = srcA * 255;
-				int backWeight = backA * (255 - srcA);
-				int weight = srcWeight + backWeight;
-
-				outA = (weight + 127) / 255;
-
-				if (weight > 0)
-				{
-					outB = (srcB * srcWeight + backB * backWeight + weight / 2) / weight;
-					outG = (srcG * srcWeight + backG * backWeight + weight / 2) / weight;
-					outR = (srcR * srcWeight + backR * backWeight + weight / 2) / weight;
-				}
-				else
-					outB = outG = outR = 0;
 			}
 		}
 		else if constexpr(mode == BlendMode::BlendFixedColor)
@@ -559,47 +608,38 @@ static inline void	_blend_pixels(int morphFactor,
 				outG = (backG * backWeight + srcG * srcWeight) >> 12;
 				outR = (backR * backWeight + srcR * srcWeight) >> 12;
 			}
-			else if (outA > 0)
-			{
-				outB = (backB * backWeight + srcB * srcWeight) / outA;
-				outG = (backG * backWeight + srcG * srcWeight) / outA;
-				outR = (backR * backWeight + srcR * srcWeight) / outA;
-			}
 			else
-				outB = outG = outR = 0;
+			{
+				uint32_t reciprocal = SoftBackend::s_reciprocalTab[outA];		// 0 if outA is, making all 0.
+				uint32_t half = outA / 2;
+
+				outB = _divide(backB * backWeight + srcB * srcWeight, half, reciprocal);
+				outG = _divide(backG * backWeight + srcG * srcWeight, half, reciprocal);
+				outR = _divide(backR * backWeight + srcR * srcWeight, half, reciprocal);
+			}
 		}
 		else if constexpr(mode == BlendMode::Blend)
 		{
-			int alpha = srcA;
-			int invAlpha = 4096 - alpha;
+			// Porter-Duff over only differs from mixing by the alpha of the source where the
+			// canvas isn't opaque.
 
-			// Porter-Duff over only differs from mixing by the alpha of the source where both
-			// source and canvas are semi-transparent.
-
-			if (!SoftFormatInfo::hasAlpha(destFormat) || backA == 4096 || alpha == 4096 || alpha == 0)
+			if (SoftFormatInfo::hasAlpha(destFormat) && WG_UNLIKELY(backA != 4096))
 			{
+				BlendedPixel out = _blend_over(srcB, srcG, srcR, srcA, backB, backG, backR, backA);
+				outB = out.b;
+				outG = out.g;
+				outR = out.r;
+				outA = out.a;
+			}
+			else
+			{
+				int alpha = srcA;
+				int invAlpha = 4096 - alpha;
+
 				outB = (backB * invAlpha + srcB * alpha) >> 12;
 				outG = (backG * invAlpha + srcG * alpha) >> 12;
 				outR = (backR * invAlpha + srcR * alpha) >> 12;
 				outA = (backA * invAlpha + 4096 * alpha) >> 12;
-			}
-			else
-			{
-				// Porter-Duff over onto a canvas that isn't opaque: colors are mixed premultiplied
-				// and divided by the resulting alpha.
-
-				int backWeight = (backA * invAlpha) >> 12;
-
-				outA = alpha + backWeight;
-
-				if (outA > 0)
-				{
-					outB = (srcB * alpha + backB * backWeight) / outA;
-					outG = (srcG * alpha + backG * backWeight) / outA;
-					outR = (srcR * alpha + backR * backWeight) / outA;
-				}
-				else
-					outB = outG = outR = 0;
 			}
 		}
 		else if constexpr(mode == BlendMode::BlendFixedColor)
@@ -1926,50 +1966,42 @@ void _transform_blit(const SoftSurface* WG_RESTRICT pSrcSurf, BinalCoord pos, co
 					}
 				}
 
-				// Interpolate our 2x2 source colors into one source color, srcX
+				// Interpolate our 2x2 source colors into one source color, srcX. Weights of the
+				// samples are in 12 bits, together exactly 4096.
 
-				binalInt fracX2 = ofsX & BINAL_MASK;
-				binalInt fracX1 = BINAL_MUL - fracX2;
+				int fracX = int((ofsX & BINAL_MASK) >> (BINAL_SHIFT - 12));
+				int fracY = int((ofsY & BINAL_MASK) >> (BINAL_SHIFT - 12));
 
-				binalInt fracY2 = ofsY & BINAL_MASK;
-				binalInt fracY1 = BINAL_MUL - fracY2;
+				int mul22 = (fracX * fracY) >> 12;
+				int mul12 = fracX - mul22;
+				int mul21 = fracY - mul22;
+				int mul11 = 4096 - fracX - fracY + mul22;
 
-				binalInt mul11 = fracX1 * fracY1 >> BINAL_SHIFT;
-				binalInt mul12 = fracX2 * fracY1 >> BINAL_SHIFT;
-				binalInt mul21 = fracX1 * fracY2 >> BINAL_SHIFT;
-				binalInt mul22 = fracX2 * fracY2 >> BINAL_SHIFT;
+				// Colors are interpolated as premultiplied colors, so that transparent samples, like
+				// those outside a ClipBlit, don't bleed their color into their neighbours. Their
+				// weights are also in 12 bits, together at most 4096, for the table of reciprocals.
 
-				srcA = (src11_a * mul11 + src12_a * mul12 + src21_a * mul21 + src22_a * mul22 + (BINAL_MUL >> 1)) >> BINAL_SHIFT;
+				int alpha11 = mul11 * src11_a;
+				int alpha12 = mul12 * src12_a;
+				int alpha21 = mul21 * src21_a;
+				int alpha22 = mul22 * src22_a;
 
-				if (src11_a == src12_a && src11_a == src21_a && src11_a == src22_a)
-				{
-					srcB = (src11_b * mul11 + src12_b * mul12 + src21_b * mul21 + src22_b * mul22 + (BINAL_MUL >> 1)) >> BINAL_SHIFT;
-					srcG = (src11_g * mul11 + src12_g * mul12 + src21_g * mul21 + src22_g * mul22 + (BINAL_MUL >> 1)) >> BINAL_SHIFT;
-					srcR = (src11_r * mul11 + src12_r * mul12 + src21_r * mul21 + src22_r * mul22 + (BINAL_MUL >> 1)) >> BINAL_SHIFT;
-				}
-				else
-				{
-					// Samples of different alpha are interpolated as premultiplied colors, so that
-					// transparent samples, like those outside a ClipBlit, don't bleed their color
-					// into their neighbours.
+				srcA = (alpha11 + alpha12 + alpha21 + alpha22 + 2048) >> 12;
 
-					constexpr int alphaBits = bFast8 ? 8 : 12;
+				constexpr int alphaBits = bFast8 ? 8 : 12;
 
-					binalInt w11 = (mul11 * src11_a) >> alphaBits;
-					binalInt w12 = (mul12 * src12_a) >> alphaBits;
-					binalInt w21 = (mul21 * src21_a) >> alphaBits;
-					binalInt w22 = (mul22 * src22_a) >> alphaBits;
-					binalInt weight = w11 + w12 + w21 + w22;
+				int w11 = alpha11 >> alphaBits;
+				int w12 = alpha12 >> alphaBits;
+				int w21 = alpha21 >> alphaBits;
+				int w22 = alpha22 >> alphaBits;
+				int weight = w11 + w12 + w21 + w22;
 
-					if (weight > 0)
-					{
-						srcB = int16_t((src11_b * w11 + src12_b * w12 + src21_b * w21 + src22_b * w22 + weight / 2) / weight);
-						srcG = int16_t((src11_g * w11 + src12_g * w12 + src21_g * w21 + src22_g * w22 + weight / 2) / weight);
-						srcR = int16_t((src11_r * w11 + src12_r * w12 + src21_r * w21 + src22_r * w22 + weight / 2) / weight);
-					}
-					else
-						srcB = srcG = srcR = 0;
-				}
+				uint32_t reciprocal = SoftBackend::s_reciprocalTab[weight];		// 0 if weight is, making all 0.
+				uint32_t half = weight / 2;
+
+				srcB = _divide(src11_b * w11 + src12_b * w12 + src21_b * w21 + src22_b * w22, half, reciprocal);
+				srcG = _divide(src11_g * w11 + src12_g * w12 + src21_g * w21 + src22_g * w22, half, reciprocal);
+				srcR = _divide(src11_r * w11 + src12_r * w12 + src21_r * w21 + src22_r * w22, half, reciprocal);
 
 			}
 			else
@@ -2650,14 +2682,15 @@ void _draw_coverage_span(uint8_t* WG_RESTRICT pDst, int pixelPitch, int length, 
 				outG = (srcG * srcScale + backG * backWeight + 2048) >> 12;
 				outR = (srcR * srcScale + backR * backWeight + 2048) >> 12;
 			}
-			else if (outA > 0)
-			{
-				outB = (srcB * srcScale + backB * backWeight) / outA;
-				outG = (srcG * srcScale + backG * backWeight) / outA;
-				outR = (srcR * srcScale + backR * backWeight) / outA;
-			}
 			else
-				outB = outG = outR = 0;
+			{
+				uint32_t reciprocal = SoftBackend::s_reciprocalTab[std::min(outA, 4096)];	// 0 if outA is, making all 0.
+				uint32_t half = outA / 2;
+
+				outB = _divide(srcB * srcScale + backB * backWeight, half, reciprocal);
+				outG = _divide(srcG * srcScale + backG * backWeight, half, reciprocal);
+				outR = _divide(srcR * srcScale + backR * backWeight, half, reciprocal);
+			}
 		}
 	};
 
@@ -2680,18 +2713,12 @@ void _draw_coverage_span(uint8_t* WG_RESTRICT pDst, int pixelPitch, int length, 
 
 				int inv = 4096 - cov;
 
-				if (px.a > 0)
-				{
-					outB = ((backB * inv + 2048) >> 12) + px.b * cov / px.a;
-					outG = ((backG * inv + 2048) >> 12) + px.g * cov / px.a;
-					outR = ((backR * inv + 2048) >> 12) + px.r * cov / px.a;
-				}
-				else
-				{
-					outB = (backB * inv + 2048) >> 12;
-					outG = (backG * inv + 2048) >> 12;
-					outR = (backR * inv + 2048) >> 12;
-				}
+				uint32_t reciprocal = SoftBackend::s_reciprocalTab[px.a];		// 0 if px.a is, adding nothing.
+				uint32_t half = px.a / 2;
+
+				outB = ((backB * inv + 2048) >> 12) + _divide(px.b * cov, half, reciprocal);
+				outG = ((backG * inv + 2048) >> 12) + _divide(px.g * cov, half, reciprocal);
+				outR = ((backR * inv + 2048) >> 12) + _divide(px.r * cov, half, reciprocal);
 			}
 			else if constexpr (BLEND == BlendMode::Replace)
 			{
@@ -2812,11 +2839,14 @@ void _draw_coverage_span(uint8_t* WG_RESTRICT pDst, int pixelPitch, int length, 
 				int weight = backWeight + ((px.a * morph + 2048) >> 12);
 				int inv = 4096 - cov;
 
+				uint32_t reciprocal = SoftBackend::s_reciprocalTab[std::min(weight, 4096)];	// 0 if weight is, leaving the canvas.
+				uint32_t half = weight / 2;
+
 				if (weight > 0)
 				{
-					outB = ((backB * inv + 2048) >> 12) + (backB * backWeight + px.b * morph) / weight * cov / 4096;
-					outG = ((backG * inv + 2048) >> 12) + (backG * backWeight + px.g * morph) / weight * cov / 4096;
-					outR = ((backR * inv + 2048) >> 12) + (backR * backWeight + px.r * morph) / weight * cov / 4096;
+					outB = ((backB * inv + 2048) >> 12) + ((_divide(backB * backWeight + px.b * morph, half, reciprocal) * cov) >> 12);
+					outG = ((backG * inv + 2048) >> 12) + ((_divide(backG * backWeight + px.g * morph, half, reciprocal) * cov) >> 12);
+					outR = ((backR * inv + 2048) >> 12) + ((_divide(backR * backWeight + px.r * morph, half, reciprocal) * cov) >> 12);
 				}
 			}
 			else if constexpr (BLEND == BlendMode::Morph)
