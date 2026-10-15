@@ -131,19 +131,32 @@ namespace
 	}
 
 	//____ blendFull() ________________________________________________________
-	// Result of blending src onto dst with full coverage, as the fill kernels do.
+	// Result of blending src onto dst with full coverage, by the rules of "Blending and
+	// transparency" in the guide. BlendFixedColor blends onto the fixed color, as SoftBackend
+	// does to save reading the canvas, with straight colors.
 
 	C12 blendFull(BlendMode mode, C12 s, C12 d, int morph, C12 fixed)
 	{
 		auto lim = [](int v) { return std::clamp(v, 0, 4096); };
+
+		// Premultiplied colors weighted by wSrc and wDst, divided by the alpha of the result.
+
+		auto paint = [](C12 s, int wSrc, C12 d, int wDst)
+		{
+			int a = (s.a * wSrc + d.a * wDst) / 4096;
+			if (a == 0)
+				return C12{ 0, 0, 0, 0 };
+
+			auto ch = [&](int sc, int dc) { return (sc * s.a / 4096 * wSrc + dc * d.a / 4096 * wDst) / a; };
+			return C12{ ch(s.b, d.b), ch(s.g, d.g), ch(s.r, d.r), a };
+		};
 
 		switch (mode)
 		{
 			case BlendMode::Replace:
 				return s;
 			case BlendMode::Blend:
-				return { (d.b * (4096 - s.a) + s.b * s.a) / 4096, (d.g * (4096 - s.a) + s.g * s.a) / 4096,
-						 (d.r * (4096 - s.a) + s.r * s.a) / 4096, (d.a * (4096 - s.a) + 4096 * s.a) / 4096 };
+				return paint(s, 4096, d, 4096 - s.a);
 			case BlendMode::BlendFixedColor:
 				return { (fixed.b * (4096 - s.a) + s.b * s.a) / 4096, (fixed.g * (4096 - s.a) + s.g * s.a) / 4096,
 						 (fixed.r * (4096 - s.a) + s.r * s.a) / 4096, (fixed.a * (4096 - s.a) + 4096 * s.a) / 4096 };
@@ -152,23 +165,42 @@ namespace
 			case BlendMode::Subtract:
 				return { lim(d.b - s.b * s.a / 4096), lim(d.g - s.g * s.a / 4096), lim(d.r - s.r * s.a / 4096), d.a };
 			case BlendMode::Multiply:
-				return { d.b * s.b / 4096, d.g * s.g / 4096, d.r * s.r / 4096, d.a };
+				return { d.b * (4096 - s.a + s.b * s.a / 4096) / 4096, d.g * (4096 - s.a + s.g * s.a / 4096) / 4096,
+						 d.r * (4096 - s.a + s.r * s.a / 4096) / 4096, d.a };
 			case BlendMode::Invert:
-				return { (s.b * (4096 - d.b) + d.b * (4096 - s.b)) / 4096, (s.g * (4096 - d.g) + d.g * (4096 - s.g)) / 4096,
-						 (s.r * (4096 - d.r) + d.r * (4096 - s.r)) / 4096, d.a };
+			{
+				auto inv = [&](int sc, int dc) { int e = sc * s.a / 4096; return (e * (4096 - dc) + dc * (4096 - e)) / 4096; };
+				return { inv(s.b, d.b), inv(s.g, d.g), inv(s.r, d.r), d.a };
+			}
 			case BlendMode::Min:
-				return { std::min(d.b, s.b), std::min(d.g, s.g), std::min(d.r, s.r), d.a };
+				return { std::min(d.b, 4096 - s.a + s.b * s.a / 4096), std::min(d.g, 4096 - s.a + s.g * s.a / 4096),
+						 std::min(d.r, 4096 - s.a + s.r * s.a / 4096), d.a };
 			case BlendMode::Max:
-				return { std::max(d.b, s.b), std::max(d.g, s.g), std::max(d.r, s.r), d.a };
+				return { std::max(d.b, s.b * s.a / 4096), std::max(d.g, s.g * s.a / 4096), std::max(d.r, s.r * s.a / 4096), d.a };
 			case BlendMode::Morph:
-				return { (d.b * (4096 - morph) + s.b * morph) / 4096, (d.g * (4096 - morph) + s.g * morph) / 4096,
-						 (d.r * (4096 - morph) + s.r * morph) / 4096, (d.a * (4096 - morph) + s.a * morph) / 4096 };
+				return paint(s, morph, d, 4096 - morph);
 			default:
 				return d;
 		}
 	}
 
+	// A partly covered pixel: the average of m (what the blend mode gives the covered part)
+	// and the original pixel d, weighted by coverage and averaged as premultiplied colors.
+
 	C12 mix(C12 d, C12 m, int coverage)
+	{
+		int inv = 4096 - coverage;
+		int a = (d.a * inv + m.a * coverage) / 4096;
+		if (a == 0)
+			return C12{ 0, 0, 0, 0 };
+
+		auto ch = [&](int dc, int mc) { return (dc * d.a / 4096 * inv + mc * m.a / 4096 * coverage) / a; };
+		return C12{ ch(d.b, m.b), ch(d.g, m.g), ch(d.r, m.r), a };
+	}
+
+	// As mix(), but with straight colors, as SoftBackend mixes BlendFixedColor.
+
+	C12 mixStraight(C12 d, C12 m, int coverage)
 	{
 		int inv = 4096 - coverage;
 		return { (d.b * inv + m.b * coverage) / 4096, (d.g * inv + m.g * coverage) / 4096,
@@ -297,7 +329,8 @@ bool ShapeRenderTest::blendModesTest(std::ostream& output)
 		{
 			C12 dst = { unpack(before, x, y, 0), unpack(before, x, y, 1), unpack(before, x, y, 2), unpack(before, x, y, 3) };
 			int c = cov.fill[y * c_canvasSize.w + x];
-			return mix(dst, blendFull(mode, src, dst, morph, fixed), c);
+			C12 full = blendFull(mode, src, dst, morph, fixed);
+			return mode == BlendMode::BlendFixedColor ? mixStraight(dst, full, c) : mix(dst, full, c);
 		});
 
 		if (!bOk)

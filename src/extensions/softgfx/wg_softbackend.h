@@ -183,19 +183,11 @@ namespace wg
 		};
 
 		// A pixel only partly covered by a shape, for coverage kernels, see SoftShapes::CoveragePixel.
-		// Colors are weighted by alpha for the blend modes of isCoverageAlphaWeighted():
+		// Colors are weighted by coverage and alpha, as premultiplied colors:
 		//
-		//   Alpha weighted:  b,g,r = sum( coverage * alpha * color ), a = sum( coverage * alpha )
-		//   Otherwise:       b,g,r,a = sum( coverage * color )			(color with straight alpha)
+		//   b,g,r = sum( coverage * alpha * color ), a = sum( coverage * alpha )
 
 		using CoveragePixel = SoftShapes::CoveragePixel;
-
-		// Blend modes where the colors of coverage pixels are weighted by alpha.
-
-		static constexpr bool isCoverageAlphaWeighted(BlendMode mode)
-		{
-			return mode == BlendMode::Blend || mode == BlendMode::BlendFixedColor || mode == BlendMode::Add || mode == BlendMode::Subtract;
-		}
 
 		typedef	void(*LineOp_p)(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
@@ -331,7 +323,7 @@ namespace wg
 			FillOp_p	pFillOp;				// Fully covered runs, if tint is flat. Device tint applied by kernel.
 			bool		bFillRuns;				// pFillOp draws runs of device tint colors.
 			HiColor		fillColor;				// Color for pFillOp.
-			int16_t		mix[4];					// Color with tints as b, g, r, a for coverage pixels, weighted by alpha for alpha weighted blend modes. If bFlat.
+			int16_t		mix[4];					// Color with tints as b, g, r, a for coverage pixels, colors weighted by alpha. If bFlat.
 		};
 
 		class ShapeSink : public SoftShapes::RowSink
@@ -353,6 +345,11 @@ namespace wg
 		void	_drawShapeRuns(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels, int prefetchRow);
 		void	_shapeSegmentColors(int segment, int x, int y, int length, HiColor* pOutput);
 		HiColor* _shapeBuffer(int index, int length);
+
+		bool	_fadeSameAsAverage(BlendMode mode, bool bOpaqueSource) const;
+		void	_drawCoverageEdge(CoverageOp_p pOp, const RectI& rect, int coverage, HiColor color, uint8_t* pOrigin, int pitch);
+		void	_drawTintedLine(CoverageOp_p pOp, bool bHorizontal, int majorBeg, int length, int width, int pos, int slope,
+								int clipStart, int clipEnd, HiColor color, uint8_t* pOrigin, int pitch);
 
 		int		_scaleLineThickness(float thickness, int slope);
 
@@ -419,6 +416,7 @@ namespace wg
 		std::vector<HiColor>		m_shapeBuffers[2];				// Colors of a segment (0) and the device tint (1) along a row.
 		std::vector<std::vector<int16_t>>	m_shapeMixBuffers;		// Colors of segments that aren't flat, for coverage pixels.
 		std::vector<CoveragePixel>	m_coverageColumn;
+		std::vector<CoveragePixel>	m_coverageEdge;					// Edge of a fill or span of a tinted line, see _drawCoverageEdge().
 		CoverageOp_p				m_pShapeCoverageOp = nullptr;
 
 
