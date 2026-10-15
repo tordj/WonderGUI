@@ -1977,31 +1977,43 @@ void _transform_blit(const SoftSurface* WG_RESTRICT pSrcSurf, BinalCoord pos, co
 				int mul21 = fracY - mul22;
 				int mul11 = 4096 - fracX - fracY + mul22;
 
-				// Colors are interpolated as premultiplied colors, so that transparent samples, like
-				// those outside a ClipBlit, don't bleed their color into their neighbours. Their
-				// weights are also in 12 bits, together at most 4096, for the table of reciprocals.
+				if constexpr (!SoftFormatInfo::hasAlpha(SRCFORMAT) && READOP != SoftBackend::ReadOp::Clip)
+				{
+					// All samples are opaque.
 
-				int alpha11 = mul11 * src11_a;
-				int alpha12 = mul12 * src12_a;
-				int alpha21 = mul21 * src21_a;
-				int alpha22 = mul22 * src22_a;
+					srcB = (src11_b * mul11 + src12_b * mul12 + src21_b * mul21 + src22_b * mul22 + 2048) >> 12;
+					srcG = (src11_g * mul11 + src12_g * mul12 + src21_g * mul21 + src22_g * mul22 + 2048) >> 12;
+					srcR = (src11_r * mul11 + src12_r * mul12 + src21_r * mul21 + src22_r * mul22 + 2048) >> 12;
+					srcA = src11_a;
+				}
+				else
+				{
+					// Colors are interpolated as premultiplied colors, so that transparent samples, like
+					// those outside a ClipBlit, don't bleed their color into their neighbours. Their
+					// weights are also in 12 bits, together at most 4096, for the table of reciprocals.
 
-				srcA = (alpha11 + alpha12 + alpha21 + alpha22 + 2048) >> 12;
+					int alpha11 = mul11 * src11_a;
+					int alpha12 = mul12 * src12_a;
+					int alpha21 = mul21 * src21_a;
+					int alpha22 = mul22 * src22_a;
 
-				constexpr int alphaBits = bFast8 ? 8 : 12;
+					srcA = (alpha11 + alpha12 + alpha21 + alpha22 + 2048) >> 12;
 
-				int w11 = alpha11 >> alphaBits;
-				int w12 = alpha12 >> alphaBits;
-				int w21 = alpha21 >> alphaBits;
-				int w22 = alpha22 >> alphaBits;
-				int weight = w11 + w12 + w21 + w22;
+					constexpr int alphaBits = bFast8 ? 8 : 12;
 
-				uint32_t reciprocal = SoftBackend::s_reciprocalTab[weight];		// 0 if weight is, making all 0.
-				uint32_t half = weight / 2;
+					int w11 = alpha11 >> alphaBits;
+					int w12 = alpha12 >> alphaBits;
+					int w21 = alpha21 >> alphaBits;
+					int w22 = alpha22 >> alphaBits;
+					int weight = w11 + w12 + w21 + w22;
 
-				srcB = _divide(src11_b * w11 + src12_b * w12 + src21_b * w21 + src22_b * w22, half, reciprocal);
-				srcG = _divide(src11_g * w11 + src12_g * w12 + src21_g * w21 + src22_g * w22, half, reciprocal);
-				srcR = _divide(src11_r * w11 + src12_r * w12 + src21_r * w21 + src22_r * w22, half, reciprocal);
+					uint32_t reciprocal = SoftBackend::s_reciprocalTab[weight];		// 0 if weight is, making all 0.
+					uint32_t half = weight / 2;
+
+					srcB = _divide(src11_b * w11 + src12_b * w12 + src21_b * w21 + src22_b * w22, half, reciprocal);
+					srcG = _divide(src11_g * w11 + src12_g * w12 + src21_g * w21 + src22_g * w22, half, reciprocal);
+					srcR = _divide(src11_r * w11 + src12_r * w12 + src21_r * w21 + src22_r * w22, half, reciprocal);
+				}
 
 			}
 			else
