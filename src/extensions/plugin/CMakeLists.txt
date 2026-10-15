@@ -36,6 +36,10 @@ set( PLUGIN_SOURCES
 	wg_pluginedgemap.h
 	wg_pluginedgemapfactory.cpp
 	wg_pluginedgemapfactory.h
+	wg_pluginwarpmap.cpp
+	wg_pluginwarpmap.h
+	wg_pluginwarpmapfactory.cpp
+	wg_pluginwarpmapfactory.h
 
 	wonderplugin.h
 )
@@ -78,6 +82,10 @@ set( LEGACYPLUGIN_SOURCES
 	wg_pluginedgemap.h
 	wg_pluginedgemapfactory.cpp
 	wg_pluginedgemapfactory.h
+	wg_pluginwarpmap.cpp
+	wg_pluginwarpmap.h
+	wg_pluginwarpmapfactory.cpp
+	wg_pluginwarpmapfactory.h
 )
 
 set( HOST_SOURCES

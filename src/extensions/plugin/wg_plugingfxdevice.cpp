@@ -21,6 +21,7 @@
 =========================================================================*/
 #include <wg_plugincalls.h>
 #include <wg_plugingfxdevice.h>
+#include <wg_pluginwarpmap.h>
 #include <algorithm>
 #include <wg_pluginsurface.h>
 #include <wg_pluginedgemap.h>
@@ -115,7 +116,14 @@ namespace wg
 
     WarpmapFactory_p PluginGfxDevice::warpmapFactory()
     {
-        return nullptr;			// Not supported yet.
+        if (!m_pWarpmapFactory)
+        {
+            wg_obj cFactory = PluginCalls::gfxDevice->warpmapFactory(m_cDevice);
+            if (cFactory)
+                m_pWarpmapFactory = PluginWarpmapFactory::create(cFactory);
+        }
+
+        return m_pWarpmapFactory;
     }
 
     //____ setClipList() _________________________________________________________
@@ -682,21 +690,38 @@ namespace wg
 
     //____ warpBlit() ________________________________________________________
 
+    // Warpmaps need to be the host's, created through our warpmapFactory().
+
+    static wg_obj hostWarpmap(Warpmap* pWarpmap, const Object* pCaller, const char* pFunc)
+    {
+        if (!pWarpmap || !pWarpmap->isInstanceOf(PluginWarpmap::TYPEINFO))
+        {
+            GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Warpmap not created by the WarpmapFactory of the device.",
+                                pCaller, &PluginGfxDevice::TYPEINFO, pFunc, __FILE__, __LINE__);
+            return nullptr;
+        }
+
+        return static_cast<PluginWarpmap*>(pWarpmap)->cObject();
+    }
+
     void PluginGfxDevice::warpBlit(CoordSPX dest, Warpmap* pWarpmap, CoordSPX sourceOffset)
     {
-        // Not supported yet.
+        if (wg_obj cWarpmap = hostWarpmap(pWarpmap, this, __func__))
+            PluginCalls::gfxDevice->warpBlit(m_cDevice, { dest.x, dest.y }, cWarpmap, { sourceOffset.x, sourceOffset.y });
     }
 
     void PluginGfxDevice::warpBlit(CoordSPX dest, Warpmap* pWarpmap, const RectSPX& source, CoordSPX sourceOffset)
     {
-        // Not supported yet.
+        if (wg_obj cWarpmap = hostWarpmap(pWarpmap, this, __func__))
+            PluginCalls::gfxDevice->warpBlitRect(m_cDevice, { dest.x, dest.y }, cWarpmap, (const wg_rectSPX*)&source, { sourceOffset.x, sourceOffset.y });
     }
 
     //____ warpDrawEdgemap() _________________________________________________
 
     void PluginGfxDevice::warpDrawEdgemap(CoordSPX dest, Warpmap* pWarpmap, Edgemap* pEdgemap, CoordSPX sourceOffset)
     {
-        // Not supported yet.
+        if (wg_obj cWarpmap = hostWarpmap(pWarpmap, this, __func__))
+            PluginCalls::gfxDevice->warpDrawEdgemap(m_cDevice, { dest.x, dest.y }, cWarpmap, static_cast<PluginEdgemap*>(pEdgemap)->cObject(), { sourceOffset.x, sourceOffset.y });
     }
 
     //____ drawRoundedBox() ___________________________________________________

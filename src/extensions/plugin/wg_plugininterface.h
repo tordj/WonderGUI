@@ -34,6 +34,7 @@
 #include <wg_c_font.h>
 #include <wg_c_gfxdevice.h>
 #include <wg_c_edgemap.h>
+#include <wg_c_warpmap.h>
 #include <wg_c_blurbrush.h>
 
 
@@ -296,6 +297,11 @@ typedef struct wg_gfxdevice_calls_struct
 	void				(*drawRoundedBox)(wg_obj device, const wg_roundedBoxSpec* spec);
 	void				(*drawRing)(wg_obj device, const wg_ringSpec* spec);
 
+	wg_obj				(*warpmapFactory)(wg_obj device);
+	void				(*warpBlit)(wg_obj device, wg_coordSPX dest, wg_obj warpmap, wg_coordSPX sourceOffset);
+	void				(*warpBlitRect)(wg_obj device, wg_coordSPX dest, wg_obj warpmap, const wg_rectSPX* source, wg_coordSPX sourceOffset);
+	void				(*warpDrawEdgemap)(wg_obj device, wg_coordSPX dest, wg_obj warpmap, wg_obj edgemap, wg_coordSPX sourceOffset);
+
 } wg_gfxdevice_calls;
 
 /*
@@ -487,6 +493,35 @@ typedef struct wg_edgemap_calls_struct
 
 
 
+//____ wg_warpmap_calls ______________________________________________________
+
+typedef struct wg_warpmap_calls_struct
+{
+	int					structSize;
+
+	wg_sizeI			(*warpmapPixelSize)(wg_obj warpmap);
+	int					(*warpmapCellSize)(wg_obj warpmap);
+	int					(*setWarpmapPeriods)(wg_obj warpmap, float uPeriod, float vPeriod);
+	float				(*warpmapUPeriod)(wg_obj warpmap);
+	float				(*warpmapVPeriod)(wg_obj warpmap);
+	int					(*importWarpmapNodes)(wg_obj warpmap, const wg_rectI* region, const wg_coordF* pSource, int pitch);
+	int					(*exportWarpmapNodes)(wg_obj warpmap, const wg_rectI* region, wg_coordF* pDestination, int pitch);
+
+} wg_warpmap_calls;
+
+
+//____ wg_warpmapfactory_calls ________________________________________________
+
+typedef struct wg_warpmapfactory_calls_struct
+{
+	int					structSize;
+
+	wg_obj				(*createWarpmap)(wg_obj factory, const wg_warpmapBP* blueprint);
+	wg_obj				(*createWarpmapFromNodes)(wg_obj factory, const wg_warpmapBP* blueprint, const wg_coordF* pNodes, int pitch);
+
+} wg_warpmapfactory_calls;
+
+
 //____ wg_edgemapfactory_calls ________________________________________________
 
 typedef struct wg_edgemapfactory_calls_struct
@@ -630,6 +665,8 @@ typedef struct wg_plugin_interface_struct
 	wg_gradyent_calls *			pGradyent;			// RETIRED
 	wg_statictintmap_calls *	pStaticTintmap;		// RETIRED
 	wg_tint_calls *				pTint;
+	wg_warpmap_calls *			pWarpmap;
+	wg_warpmapfactory_calls *	pWarpmapFactory;
 
 } wg_plugin_interface;
 

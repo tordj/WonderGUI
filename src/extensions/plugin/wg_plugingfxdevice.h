@@ -29,6 +29,7 @@
 #include <wg_c_gfxdevice.h>
 #include <wg_pluginsurfacefactory.h>
 #include <wg_pluginedgemapfactory.h>
+#include <wg_pluginwarpmapfactory.h>
 
 #include <vector>
 
@@ -215,6 +216,7 @@ namespace wg
 		wg_obj	m_hostBlurbrush = nullptr;
 		PluginSurfaceFactory_p	m_pSurfaceFactory;
         PluginEdgemapFactory_p	m_pEdgemapFactory;
+        PluginWarpmapFactory_p	m_pWarpmapFactory;
 
 		// Plugin side copies of state that can't be retrieved from the host.
 
