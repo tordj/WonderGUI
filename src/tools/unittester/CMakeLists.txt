@@ -24,6 +24,8 @@ set( SOURCES
 	tests/shapecoverage.h
 	tests/warpmap.cpp
 	tests/warpmap.h
+	tests/warprender.cpp
+	tests/warprender.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})

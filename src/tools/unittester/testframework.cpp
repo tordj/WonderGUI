@@ -14,6 +14,7 @@
 #include "tests/softshapes.h"
 #include "tests/shaperender.h"
 #include "tests/warpmap.h"
+#include "tests/warprender.h"
 
 
 
@@ -33,6 +34,7 @@ TestFramework::TestFramework( std::ostream& output ) :
 	addCollection( new SoftShapesTest() );
 	addCollection( new ShapeRenderTest() );
 	addCollection( new WarpmapTest() );
+	addCollection( new WarpRenderTest() );
 }
 
 //____ Destructor ______________________________________________________________
