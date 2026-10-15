@@ -176,13 +176,15 @@ The area of a pixel covered by a shape is exact in ReferenceBackend. The softwar
 
 | | ReferenceBackend | SoftBackend, LinearBackend | OpenGL, Metal, DirectX 12 |
 |---|---|---|---|
-| Blend as Porter-Duff over | Yes | Only onto opaque pixels | Only onto opaque pixels |
-| Source alpha as strength of effect modes | All | Add, Subtract | Add, Subtract |
-| Anti-aliasing as average of subpixels | All modes | Replace, Blend, Add, Subtract, and between edgemap segments | Blend, Add, Subtract |
-| Subpixels averaged as premultiplied colors | Yes | Edgemaps with Replace only | Edgemaps only |
-| Morph as premultiplied cross-fade | Yes | No | No |
-| Premultiplied bilinear sampling | Yes | No | No |
-| Transparent outside of ClipBlit has no effect | Yes | Add, Subtract | Add, Subtract |
-| Alpha_8: anti-aliasing as average of subpixels | Yes | Add, Subtract, Invert | Add, Subtract, Invert |
+| Blend as Porter-Duff over | Yes | Yes | Only onto opaque pixels |
+| Source alpha as strength of effect modes | All | All | Add, Subtract |
+| Anti-aliasing as average of subpixels | All modes | All modes, see below | Blend, Add, Subtract |
+| Subpixels averaged as premultiplied colors | Yes | Yes | Edgemaps only |
+| Morph as premultiplied cross-fade | Yes | Yes | No |
+| Premultiplied bilinear sampling | Yes | Yes | No |
+| Transparent outside of ClipBlit has no effect | Yes | Yes | Add, Subtract |
+| Alpha_8: anti-aliasing as average of subpixels | Yes | Yes | Add, Subtract, Invert |
+
+Where segments of a shape share a pixel, the software backends approximate the average for Add, Subtract, Min and Max closely. They draw BlendFixedColor onto the fixed color, as described under Paint modes.
 
 GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests.
