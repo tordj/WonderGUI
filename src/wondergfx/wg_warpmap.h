@@ -43,6 +43,11 @@ namespace wg
 	 * the source, u along its width and v along its height. Positions between nodes are interpolated
 	 * bilinearly. Where a position falls outside 0.0 -> 1.0 nothing is drawn.
 	 *
+	 * Node values are floats and not limited to 0.0 -> 1.0. Values outside that range are what makes
+	 * parts of the Warpmap transparent, with the border antialiased where the interpolated position
+	 * crosses 0.0 or 1.0. Values on a periodic axis are brought into 0.0 -> period when imported.
+	 * Backends convert to fixed point per cell corner when drawing, not per pixel.
+	 *
 	 * Smaller cells follow curved shapes more closely. A circle of radius r is off by
 	 * roughly cellSize^2 / (8 * r) pixels.
 	 *
@@ -50,6 +55,12 @@ namespace wg
 	 * then read modulo the period and interpolation between nodes across the seam takes the short way.
 	 * With a period of 1.0 the source wraps around, which is seamless if the source is tiling. A period
 	 * larger than 1.0 leaves a gap, such as a 270 degree arc having uPeriod = 360/270.
+	 *
+	 * When drawn, a source offset (in spx of the source) is added to the position before reading,
+	 * so a ring can be rotated or a pattern scrolled without changing the Warpmap.
+	 *
+	 * There is no supersampling when the Warpmap shrinks a surface. Use a mipmapped surface for that,
+	 * on backends that support mipmaps.
 	 *
 	 * Warpmaps are created by a WarpmapFactory, which is specific to the backend, or by a generator
 	 * such as CircularWarp.
