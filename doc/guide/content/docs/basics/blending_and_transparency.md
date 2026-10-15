@@ -174,7 +174,7 @@ The area of a pixel covered by a shape is exact in ReferenceBackend. The softwar
 
 ## Implementation status
 
-| | ReferenceBackend | SoftBackend, LinearBackend | OpenGL | Metal, DirectX 12 |
+| | ReferenceBackend | SoftBackend, LinearBackend | OpenGL, Metal | DirectX 12 |
 |---|---|---|---|---|
 | Blend as Porter-Duff over | Yes | Yes | Yes | Only onto opaque pixels |
 | Source alpha as strength of effect modes | All | All | All | Add, Subtract |
@@ -187,6 +187,6 @@ The area of a pixel covered by a shape is exact in ReferenceBackend. The softwar
 
 Where segments of a shape share a pixel, the software backends approximate the average for Add, Subtract, Min and Max closely. They draw BlendFixedColor onto the fixed color, as described under Paint modes.
 
-OpenGL keeps canvases and other surfaces with alpha premultiplied and uses dual-source blending, as described under Exactness, with the exceptions listed there. Colors of nearly transparent pixels therefore lose some precision when read back from it.
+OpenGL and Metal keep canvases and other surfaces with alpha premultiplied and use dual-source blending, as described under Exactness, with the exceptions listed there. Colors of nearly transparent pixels therefore lose some precision when read back from them.
 
 GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests.
