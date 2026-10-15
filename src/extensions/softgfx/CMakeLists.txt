@@ -22,6 +22,7 @@ set(SOURCES
 	wg_softtint.h
 	wg_softbackend.cpp
 	wg_softbackend.h
+	wg_softbackend_warp.cpp
 	wg_softkernels_default.cpp
 	wg_softkernels_default.h
 

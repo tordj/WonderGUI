@@ -768,13 +768,20 @@ namespace wg
 			case Command::WarpBlit:
 			case Command::WarpDrawEdgemap:
 			{
-				// Not supported yet. Step over the command.
-
 				WarpParams params;
 				p = decodeWarp(cmd, p, params);
 
-				pObjects += (cmd == Command::WarpDrawEdgemap) ? 2 : 1;
+				auto pWarpmap = static_cast<SoftWarpmap*>(*pObjects++);
+				auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<SoftEdgemap*>(*pObjects++) : nullptr;
+
+				const RectSPX* pMyRects = pRects;
 				pRects += params.nRects;
+
+				if (_beginWarp(params, pWarpmap, pEdgemap))
+				{
+					for (int i = 0; i < params.nRects; i++)
+						_drawWarp(pMyRects[i] / 64, m_pCanvasPixels, m_canvasPitch);
+				}
 				break;
 			}
 
