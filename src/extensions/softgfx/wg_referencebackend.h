@@ -27,6 +27,7 @@
 #include <wg_tinttools.h>
 #include <wg_softsurface.h>
 #include <wg_softedgemap.h>
+#include <wg_softwarpmap.h>
 
 #include <vector>
 
@@ -177,6 +178,10 @@ namespace wg
 		void	_drawEdgemap(SoftEdgemap* pEdgemap, bool bTile, GfxFlip flip, CoordSPX origo, const RectSPX& rect);
 
 		void	_drawEdgemapPixel(SoftEdgemap* pEdgemap, int column, int row, CoordI canvasPixel);
+		void	_decodeSegmentTints(SoftEdgemap* pEdgemap);
+
+		void	_warp(const WarpParams& params, SoftWarpmap* pWarpmap, SoftEdgemap* pEdgemap, const RectSPX& rect);
+		int		_edgemapSegmentAt(SoftEdgemap* pEdgemap, double x, double y) const;
 
 		// Pixels of the canvas
 

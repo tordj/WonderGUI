@@ -355,8 +355,14 @@ namespace wg
 					WarpParams params;
 					p = decodeWarp(cmd, p, params);
 
-					m_pObjectsPtr += (cmd == Command::WarpDrawEdgemap) ? 2 : 1;
-					m_pRectsPtr += params.nRects;
+					auto pWarpmap = static_cast<SoftWarpmap*>(*m_pObjectsPtr++);
+					auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<SoftEdgemap*>(*m_pObjectsPtr++) : nullptr;
+
+					if (pEdgemap)
+						_decodeSegmentTints(pEdgemap);
+
+					for (int i = 0; i < params.nRects; i++)
+						_warp(params, pWarpmap, pEdgemap, *m_pRectsPtr++);
 					break;
 				}
 
@@ -635,28 +641,7 @@ namespace wg
 		double cornerX = (mtx.xx < 0 || mtx.yx < 0) ? mapSize.w : 0;
 		double cornerY = (mtx.xy < 0 || mtx.yy < 0) ? mapSize.h : 0;
 
-		// Decode the tints of the segments, placed over the edgemap.
-
-		int nSegments = pEdgemap->renderSegments();
-
-		m_segmentTints.resize(nSegments);
-		for (int seg = 0; seg < nSegments; seg++)
-		{
-			Tint* pTint = pEdgemap->tints()[seg].rawPtr();
-			m_segmentTints[seg].nLayers = 0;
-
-			if (pTint)
-			{
-				uint16_t	words[TintTools::c_maxEncodedTintWords];
-				HiColor		colors[TintTools::c_maxEncodedTintColors];
-				int			nColors;
-
-				TintTools::encodeTint(pTint, RectSPX(0, 0, mapSize.w * 64, mapSize.h * 64), words, colors, nColors);
-
-				const HiColor* pColors = colors;
-				TintTools::decodeTint(words, pColors, m_segmentTints[seg]);
-			}
-		}
+		_decodeSegmentTints(pEdgemap);
 
 		// Draw the pixels
 
@@ -686,6 +671,36 @@ namespace wg
 					continue;
 
 				_drawEdgemapPixel(pEdgemap, column, row, { x, y });
+			}
+		}
+	}
+
+	//____ _decodeSegmentTints() __________________________________________________
+	/*
+		Decodes the tints of the segments of an edgemap, placed over the edgemap.
+	*/
+
+	void ReferenceBackend::_decodeSegmentTints(SoftEdgemap* pEdgemap)
+	{
+		SizeI mapSize = pEdgemap->pixelSize();
+		int nSegments = pEdgemap->renderSegments();
+
+		m_segmentTints.resize(nSegments);
+		for (int seg = 0; seg < nSegments; seg++)
+		{
+			Tint* pTint = pEdgemap->tints()[seg].rawPtr();
+			m_segmentTints[seg].nLayers = 0;
+
+			if (pTint)
+			{
+				uint16_t	words[TintTools::c_maxEncodedTintWords];
+				HiColor		colors[TintTools::c_maxEncodedTintColors];
+				int			nColors;
+
+				TintTools::encodeTint(pTint, RectSPX(0, 0, mapSize.w * 64, mapSize.h * 64), words, colors, nColors);
+
+				const HiColor* pColors = colors;
+				TintTools::decodeTint(words, pColors, m_segmentTints[seg]);
 			}
 		}
 	}
@@ -842,6 +857,207 @@ namespace wg
 		}
 
 		return area;
+	}
+
+	//____ _warp() _________________________________________________________________
+	/*
+		Draws the part of a WarpBlit (pEdgemap is null) or WarpDrawEdgemap that is within rect,
+		following the definition in Warpmap:
+
+		The Warpmap is placed with its top-left corner at dest, rounded to nearest pixel. The
+		position in the source of a point of the Warpmap is interpolated from the corners of its
+		cell (Warpmap::positionAt()), offset by the source offset, scaled to pixels of the source
+		and wrapped on periodic axes.
+
+		The part of a pixel that is covered (by the source or by each segment of the edgemap) is
+		measured by sampling the pixel at a grid of c_warpSamples * c_warpSamples points. Colors are
+		taken at the center of the pixel: the blit source is sampled there by its sample method,
+		reading pixels around the source rectangle (or wrapping around the surface if it is tiling),
+		and the tints of edgemap segments are evaluated there.
+	*/
+
+	static const int c_warpSamples = 16;
+
+	void ReferenceBackend::_warp(const WarpParams& params, SoftWarpmap* pWarpmap, SoftEdgemap* pEdgemap, const RectSPX& rect)
+	{
+		if (m_blendMode == BlendMode::Ignore)
+			return;
+
+		if (!pEdgemap && !m_pBlitSource)
+			return;
+
+		CoordI dest = Util::roundToPixels(params.dest);
+		SizeI warpSize = pWarpmap->pixelSize();
+
+		// Source rectangle, in pixels of the source.
+
+		double srcX = 0, srcY = 0, srcW, srcH;
+
+		if (pEdgemap)
+		{
+			srcW = pEdgemap->pixelSize().w;
+			srcH = pEdgemap->pixelSize().h;
+		}
+		else
+		{
+			srcX = params.source.x / 64.0;
+			srcY = params.source.y / 64.0;
+			srcW = params.source.w / 64.0;
+			srcH = params.source.h / 64.0;
+		}
+
+		double offsetX = params.sourceOffset.x / 64.0;
+		double offsetY = params.sourceOffset.y / 64.0;
+
+		double periodX = pWarpmap->uPeriod() * srcW;
+		double periodY = pWarpmap->vPeriod() * srcH;
+
+		// Position in the source (relative to the source rectangle) at point x,y of the Warpmap.
+
+		auto sourcePos = [&](double x, double y, double& sx, double& sy)
+		{
+			CoordF pos = pWarpmap->positionAt(x, y);
+
+			sx = double(pos.x) * srcW + offsetX;
+			sy = double(pos.y) * srcH + offsetY;
+
+			if (periodX > 0)
+				sx -= periodX * std::floor(sx / periodX);
+			if (periodY > 0)
+				sy -= periodY * std::floor(sy / periodY);
+		};
+
+		auto isInside = [&](double sx, double sy)
+		{
+			return sx >= 0 && sy >= 0 && sx < srcW && sy < srcH;
+		};
+
+		int nSegments = pEdgemap ? pEdgemap->renderSegments() : 1;
+
+		EdgeMode edgeMode = (m_pBlitSource && m_pBlitSource->isTiling()) ? EdgeMode::Tile : EdgeMode::Clamp;
+
+		RectI pixels = RectI::overlap(_pixelRect(rect), RectI(dest, warpSize));
+
+		for (int y = pixels.y; y < pixels.y + pixels.h; y++)
+		{
+			for (int x = pixels.x; x < pixels.x + pixels.w; x++)
+			{
+				if (!_isInsideCanvas(x, y))
+					continue;
+
+				// Coverage of the source or of each segment.
+
+				double coverage[Edgemap::maxSegments] = {};
+				double sampleArea = 1.0 / (c_warpSamples * c_warpSamples);
+				double covered = 0;
+
+				for (int sy = 0; sy < c_warpSamples; sy++)
+				{
+					for (int sx = 0; sx < c_warpSamples; sx++)
+					{
+						double px = x - dest.x + (sx + 0.5) / c_warpSamples;
+						double py = y - dest.y + (sy + 0.5) / c_warpSamples;
+
+						double posX, posY;
+						sourcePos(px, py, posX, posY);
+
+						if (!isInside(posX, posY))
+							continue;
+
+						int seg = pEdgemap ? _edgemapSegmentAt(pEdgemap, posX, posY) : 0;
+						coverage[seg] += sampleArea;
+						covered += sampleArea;
+					}
+				}
+
+				if (covered <= 0.0)
+					continue;
+
+				// Colors at the center of the pixel.
+
+				double centerX, centerY;
+				sourcePos(x - dest.x + 0.5, y - dest.y + 0.5, centerX, centerY);
+
+				Color tint = _deviceTint(x, y);
+
+				if (!pEdgemap)
+				{
+					Color texel = _sampleSource(srcX + centerX, srcY + centerY, edgeMode);
+					_plotPixel(x, y, texel * tint, covered);
+					continue;
+				}
+
+				Color colors[Edgemap::maxSegments];
+
+				for (int seg = 0; seg < nSegments; seg++)
+				{
+					Color segColor = pEdgemap->tints()[seg] ? _tintColorAt(m_segmentTints[seg], centerX, centerY)
+															: _toLinear(pEdgemap->flatColors()[seg]);
+					colors[seg] = segColor * tint;
+				}
+
+				Color dst = _canvasPixel(x, y);
+
+				// Effect modes apply the segments together, see _effectSource(). Parts of the pixel
+				// outside the source are transparent, which has no effect.
+
+				if (_isEffectMode())
+				{
+					_setCanvasPixel(x, y, _blend(_effectSource(nSegments, colors, coverage), dst));
+					continue;
+				}
+
+				// Paint modes average what each segment gives its part of the pixel, with the
+				// part outside the source keeping the canvas.
+
+				Color results[Edgemap::maxSegments + 1];
+				double weights[Edgemap::maxSegments + 1];
+
+				for (int seg = 0; seg < nSegments; seg++)
+				{
+					results[seg] = _blend(colors[seg], dst);
+					weights[seg] = coverage[seg];
+				}
+
+				results[nSegments] = dst;
+				weights[nSegments] = std::max(0.0, 1.0 - covered);
+
+				_setCanvasPixel(x, y, _averageColors(nSegments + 1, results, weights, true));
+			}
+		}
+	}
+
+	//____ _edgemapSegmentAt() ______________________________________________________
+	/*
+		Segment of an edgemap at position x,y (in pixels of the edgemap, inside it). Edges are
+		linear across each column of pixels. An edge that goes above an edge before it is pushed
+		down to that edge, as in _segmentCoverage(). A point exactly on an edge is below it.
+	*/
+
+	int ReferenceBackend::_edgemapSegmentAt(SoftEdgemap* pEdgemap, double x, double y) const
+	{
+		int nEdges = pEdgemap->renderSegments() - 1;
+		int samplePitch = pEdgemap->m_nbSegments - 1;
+
+		int column = std::clamp(int(std::floor(x)), 0, pEdgemap->pixelSize().w - 1);
+		double frac = x - column;
+
+		const spx* pLeft = pEdgemap->m_pSamples + column * samplePitch;
+		const spx* pRight = pLeft + samplePitch;
+
+		double lowest = -std::numeric_limits<double>::infinity();
+		int segment = 0;
+
+		for (int edge = 0; edge < nEdges; edge++)
+		{
+			double edgeY = std::max(lowest, (pLeft[edge] + (pRight[edge] - pLeft[edge]) * frac) / 64.0);
+			lowest = edgeY;
+
+			if (y >= edgeY)
+				segment = edge + 1;
+		}
+
+		return segment;
 	}
 
 	//____ _isInsideCanvas() ______________________________________________________
