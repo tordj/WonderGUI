@@ -571,9 +571,11 @@ void MetalBackend::waitForCompletion()
 	if( m_flushesInProgress == 0 )
 		return;
 
-	id<MTLCommandBuffer> commandBuffer = [s_metalCommandQueue commandBuffer];
-	[commandBuffer commit];
-	[commandBuffer waitUntilCompleted];
+	@autoreleasepool {
+		id<MTLCommandBuffer> commandBuffer = [s_metalCommandQueue commandBuffer];
+		[commandBuffer commit];
+		[commandBuffer waitUntilCompleted];
+	}
 
 	return;
 }
@@ -661,6 +663,13 @@ void MetalBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, 
 		return;
 
 //	m_bFullCanvasSession = (nUpdateRects == 1 && pUpdateRects[0] == RectSPX(0,0,pCanvasSurface->pixelSize()*64) );
+
+	// The command buffer and encoders we get from Metal are autoreleased and the
+	// command buffer keeps our buffers alive. If no autorelease pool is drained
+	// between sessions, as when rendering from a loop of our own, they would pile
+	// up until Metal runs out of memory, so we give each session a pool of its own.
+
+	m_pSessionPool = [[NSAutoreleasePool alloc] init];
 
 	// Reserve buffer for coordinates
 
@@ -773,6 +782,9 @@ void MetalBackend::endSession()
 	}
 
 	m_pActiveCanvas = nullptr;
+
+	[m_pSessionPool drain];
+	m_pSessionPool = nil;
 }
 
 //____ setCanvas() ___________________________________________________________

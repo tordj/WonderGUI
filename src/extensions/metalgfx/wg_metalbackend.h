@@ -312,6 +312,7 @@ namespace wg
 		CanvasInfo                  m_defaultCanvas;
 
 		id<MTLCommandBuffer>        m_metalCommandBuffer = nil;
+		NSAutoreleasePool*          m_pSessionPool = nil;											// Drains the autoreleased command buffer, encoders etc. of a session.
 
 		std::atomic<int>            m_flushesInProgress;                							// Number of buffer flushes to complete before metal is idle.
 
