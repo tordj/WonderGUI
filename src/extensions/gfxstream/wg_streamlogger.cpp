@@ -235,8 +235,21 @@ namespace wg
 					decoder >> nShapeDraws;
 					decoder >> nShapeTints;
 					decoder >> nShapeSegments;
-					decoder.skip(header.size - 48);
 				}
+
+				uint16_t	nWarpDraws = 0;
+
+				if( header.size >= 52 )
+				{
+					uint16_t	filler;
+					decoder >> nWarpDraws;
+					decoder >> filler;
+				}
+
+				if( header.size > 52 )
+					decoder.skip(header.size - 52);
+				else if( header.size > 48 && header.size < 52 )
+					decoder.skip(header.size - 48);
 
 				m_charStream << "    canvasObject = " << objectId << std::endl;
 				m_charStream << "    canvasRef = " << toString(canvasRef) << std::endl;
@@ -258,6 +271,7 @@ namespace wg
 				m_charStream << "    nShapeDraws = " << nShapeDraws << std::endl;
 				m_charStream << "    nShapeTints = " << nShapeTints << std::endl;
 				m_charStream << "    nShapeSegments = " << nShapeSegments << std::endl;
+				m_charStream << "    nWarpDraws = " << nWarpDraws << std::endl;
 
 				break;
 			}
@@ -609,6 +623,71 @@ namespace wg
 
 				decoder >> edgemapId;
 				m_charStream << "    edgemapId  = " << edgemapId << std::endl;
+				break;
+			}
+
+			case GfxStream::ChunkId::CreateWarpmap:
+			{
+				uint16_t	warpmapId;
+				SizeI		size;
+				uint16_t	cellSize;
+				float		uPeriod;
+				float		vPeriod;
+
+				decoder >> warpmapId;
+				decoder >> size;
+				decoder >> cellSize;
+				decoder >> uPeriod;
+				decoder >> vPeriod;
+
+				m_charStream << "    warpmapId   = " << warpmapId << std::endl;
+				m_charStream << "    size        = " << size.w << ", " << size.h << std::endl;
+				m_charStream << "    cellSize    = " << cellSize << std::endl;
+				m_charStream << "    periods     = " << uPeriod << ", " << vPeriod << std::endl;
+				break;
+			}
+
+			case GfxStream::ChunkId::WarpmapNodes:
+			{
+				uint16_t	warpmapId;
+				uint16_t	column;
+				uint16_t	row;
+				uint16_t	nNodes;
+
+				decoder >> warpmapId;
+				decoder >> column;
+				decoder >> row;
+				decoder >> nNodes;
+
+				m_charStream << "    warpmapId   = " << warpmapId << std::endl;
+				m_charStream << "    first node  = " << column << ", " << row << std::endl;
+				m_charStream << "    nodes       = " << nNodes << std::endl;
+
+				decoder.skip(header.size - 8);
+				break;
+			}
+
+			case GfxStream::ChunkId::SetWarpmapPeriods:
+			{
+				uint16_t	warpmapId;
+				float		uPeriod;
+				float		vPeriod;
+
+				decoder >> warpmapId;
+				decoder >> uPeriod;
+				decoder >> vPeriod;
+
+				m_charStream << "    warpmapId   = " << warpmapId << std::endl;
+				m_charStream << "    periods     = " << uPeriod << ", " << vPeriod << std::endl;
+				break;
+			}
+
+			case GfxStream::ChunkId::DeleteWarpmap:
+			{
+				uint16_t	warpmapId;
+
+				decoder >> warpmapId;
+				m_charStream << "    warpmapId  = " << warpmapId << std::endl;
 				break;
 			}
 

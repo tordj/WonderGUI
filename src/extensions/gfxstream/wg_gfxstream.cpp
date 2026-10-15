@@ -57,7 +57,11 @@ const char * toString(GfxStream::ChunkId i)
 		"SurfaceUpdate2",
 		"Fence",
 		"SetEdgemapTint",
-		"SurfacePalette"
+		"SurfacePalette",
+		"CreateWarpmap",
+		"WarpmapNodes",
+		"SetWarpmapPeriods",
+		"DeleteWarpmap"
 	};
 
     if( (unsigned)i >= sizeof(names)/sizeof(names[0]) )
