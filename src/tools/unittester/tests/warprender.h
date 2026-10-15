@@ -17,4 +17,5 @@ private:
 	bool linearBackendTest(std::ostream& output);
 	bool offsetPeriodTest(std::ostream& output);
 	bool clipTest(std::ostream& output);
+	bool opaqueCanvasTest(std::ostream& output);
 };

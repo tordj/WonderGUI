@@ -399,6 +399,10 @@ namespace wg
 			bool			bTinted[c_maxSegments];		// Colors from segment tint, otherwise mix.
 			bool			bSkip[c_maxSegments];		// Transparent segment that can be skipped.
 			int16_t			mix[c_maxSegments][4];		// Flat color as b, g, r, a weighted by alpha. Device tint included if flat.
+			HiColor			flat[c_maxSegments];		// Flat color of segment, without device tint.
+
+			bool			bOpaquePaint;		// Replace or Morph onto canvas without alpha, see _beginWarp().
+			int				opaqueMorph;		// Morph factor for bOpaquePaint, 4096 for Replace.
 
 			// WarpBlit
 
@@ -418,6 +422,7 @@ namespace wg
 		int		_warpEdgemapCoverage(int64_t sx, int64_t sy, int64_t ax, int64_t bx, int64_t ay, int64_t by, int* pCoverage, int& solidSegment) const;
 		void	_warpTintSpan(const SoftTint& tint, int64_t x, int64_t y, int64_t dx, int64_t dy, int length, HiColor* pOutput);
 		void	_warpReadSpan(int64_t x, int64_t y, int64_t dx, int64_t dy, int length, HiColor* pOutput, const int* pCoverage);
+		int		_warpOpaqueAlpha(int a) const;
 		HiColor* _warpBuffer(int index, int length);
 
 

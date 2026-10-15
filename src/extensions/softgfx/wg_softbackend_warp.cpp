@@ -247,6 +247,24 @@ namespace wg
 
 		WarpSetup& w = m_warp;
 
+		// Paint modes on a canvas without alpha give each part of a pixel the color of what covers
+		// it, the result of the blend mode for it as if the canvas was opaque. For Replace that is
+		// the color of the source, for Morph (by m) dst * (1 - q) + color * q, where
+		// q = a * m / (1 - m + a * m) and a is the alpha of the source. Mixed by area, a pixel is then
+		// dst * (1 - sum(part * q)) + sum(part * q * color), which the Replace coverage kernel gives
+		// from colors weighted by q in place of alpha and their coverage set to the sum of q.
+
+		w.bOpaquePaint = false;
+		w.opaqueMorph = 4096;
+
+		if ((m_blendMode == BlendMode::Replace || m_blendMode == BlendMode::Morph) && !SoftFormatInfo::hasAlpha(m_canvasSoftFormat) &&
+			pKernels->pCoverageKernels[(int)BlendMode::Replace])
+		{
+			w.bOpaquePaint = true;
+			w.opaqueMorph = (m_blendMode == BlendMode::Morph) ? m_colTrans.morphFactor : 4096;
+			m_pShapeCoverageOp = pKernels->pCoverageKernels[(int)BlendMode::Replace];
+		}
+
 		w.pWarpmap = pWarpmap;
 		w.pEdgemap = pEdgemap;
 		w.dest = Util::roundToPixels(params.dest);
@@ -317,6 +335,8 @@ namespace wg
 					m_shapeSegments[seg].bActive = false;
 				else
 					_setupShapeSegment(m_shapeSegments[seg], true, pEdgemap->m_pFlatColors[seg], false, pNoWords, pNoColors);
+
+				w.flat[seg] = segTint.flatColor();
 
 				HiColor c = (w.bTinted[seg] ? HiColor::White : segTint.flatColor()) * deviceColor;
 
@@ -650,18 +670,27 @@ namespace wg
 			pDevice = p - xBeg;
 		}
 
-		// Adds a pixel of a color (not premultiplied, without device tint) with full coverage.
+		// Adds a pixel of a color (not premultiplied, without device tint), covered by coverage.
 
-		auto addColoredPixel = [&](int x, HiColor c)
+		auto addColoredPixel = [&](int x, HiColor c, int coverage = 4096)
 		{
 			c = pDevice ? c * pDevice[x] : c * deviceFlat;
 
 			CoveragePixel& px = pPixels[nPixels++];
-			px.b = int16_t((c.b * c.a) >> 12);
-			px.g = int16_t((c.g * c.a) >> 12);
-			px.r = int16_t((c.r * c.a) >> 12);
-			px.a = c.a;
-			px.coverage = 4096;
+
+			if (w.bOpaquePaint)
+			{
+				int a = (_warpOpaqueAlpha(c.a) * coverage) >> 12;
+
+				px.b = int16_t((c.b * a) >> 12);
+				px.g = int16_t((c.g * a) >> 12);
+				px.r = int16_t((c.r * a) >> 12);
+				px.a = int16_t(a);
+				px.coverage = int16_t(a);
+			}
+			else
+				px = _coveragePixel(c, coverage);
+
 			addRun(x, x + 1, -1);
 		};
 
@@ -784,11 +813,7 @@ namespace wg
 					if (cov == 0)
 						continue;
 
-					int x = beg + k;
-					HiColor c = pDevice ? pColors[k] * pDevice[x] : pColors[k] * deviceFlat;
-
-					pPixels[nPixels++] = _coveragePixel(c, cov);
-					addRun(x, x + 1, -1);
+					addColoredPixel(beg + k, pColors[k], cov);
 				}
 				continue;
 			}
@@ -836,6 +861,7 @@ namespace wg
 				}
 
 				int sumB = 0, sumG = 0, sumR = 0, sumA = 0;
+				int x = beg + k;
 
 				for (int seg = 0; seg < nSegments; seg++)
 				{
@@ -843,14 +869,28 @@ namespace wg
 					if (cov == 0 || w.bSkip[seg])
 						continue;
 
-					if (w.bTinted[seg])
+					if (w.bTinted[seg] && !bGenerated[seg])
 					{
-						if (!bGenerated[seg])
-						{
-							_warpTintSpan(w.pEdgemap->m_segmentTints[seg], pos[0], pos[1], step[0], step[1], length, _warpBuffer(seg, length));
-							bGenerated[seg] = true;
-						}
+						_warpTintSpan(w.pEdgemap->m_segmentTints[seg], pos[0], pos[1], step[0], step[1], length, _warpBuffer(seg, length));
+						bGenerated[seg] = true;
+					}
 
+					if (w.bOpaquePaint)
+					{
+						// Each segment by its own result, see _beginWarp(). Device tint included here.
+
+						HiColor c = w.bTinted[seg] ? m_warpBuffers[seg][k] : w.flat[seg];
+						c = pDevice ? c * pDevice[x] : c * deviceFlat;
+
+						int a = _warpOpaqueAlpha(c.a);
+
+						sumB += ((c.b * a) >> 12) * cov;
+						sumG += ((c.g * a) >> 12) * cov;
+						sumR += ((c.r * a) >> 12) * cov;
+						sumA += a * cov;
+					}
+					else if (w.bTinted[seg])
+					{
 						HiColor c = m_warpBuffers[seg][k];
 						if (!pDevice)
 							c = c * deviceFlat;
@@ -871,10 +911,9 @@ namespace wg
 					}
 				}
 
-				int x = beg + k;
 				CoveragePixel& px = pPixels[nPixels++];
 
-				if (pDevice)
+				if (pDevice && !w.bOpaquePaint)
 				{
 					const HiColor& t = pDevice[x];
 					int ta = t.a;
@@ -892,7 +931,7 @@ namespace wg
 					px.a = int16_t(sumA >> 12);
 				}
 
-				px.coverage = int16_t(total);
+				px.coverage = w.bOpaquePaint ? px.a : int16_t(total);
 				addRun(x, x + 1, -1);
 			}
 		}
@@ -1158,6 +1197,22 @@ namespace wg
 				read(i, 1, std::clamp(sx + dx * i, int64_t(0), maxX), std::clamp(sy + dy * i, int64_t(0), maxY));
 			}
 		});
+	}
+
+	//____ _warpOpaqueAlpha() __________________________________________________
+	// Weight of a color of alpha a in a pixel painted on a canvas without alpha, see _beginWarp().
+
+	int SoftBackend::_warpOpaqueAlpha(int a) const
+	{
+		const int m = m_warp.opaqueMorph;
+
+		if (m >= 4096)
+			return 4096;
+
+		int64_t am = int64_t(a) * m;
+		int64_t den = int64_t(4096 - m) * 4096 + am;
+
+		return den > 0 ? int((am * 4096) / den) : 0;
 	}
 
 	//____ _warpBuffer() ________________________________________________________

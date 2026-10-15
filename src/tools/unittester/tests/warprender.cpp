@@ -50,7 +50,7 @@ namespace
 	//____ render() ___________________________________________________________
 	// Renders a scene on a cleared canvas. LinearBackend renders in two update rectangles.
 
-	Pixels render(Backend backend, const Scene& scene)
+	Pixels render(Backend backend, const Scene& scene, PixelFormat canvasFormat = PixelFormat::ARGB_8)
 	{
 		Pixels pixels(c_canvasSize.w * c_canvasSize.h * 4, 0);
 
@@ -101,7 +101,7 @@ namespace
 			pBackend = ReferenceBackend::create();
 
 		auto pDevice = GfxDeviceGen2::create(pBackend);
-		auto pCanvas = SoftSurface::create(WGBP(Surface, _.size = c_canvasSize, _.format = PixelFormat::ARGB_8, _.colorSpace = ColorSpace::Linear, _.canvas = true));
+		auto pCanvas = SoftSurface::create(WGBP(Surface, _.size = c_canvasSize, _.format = canvasFormat, _.colorSpace = ColorSpace::Linear, _.canvas = true));
 
 		pDevice->beginRender();
 		pDevice->beginCanvasUpdate(pCanvas);
@@ -115,6 +115,12 @@ namespace
 
 		for (int y = 0; y < c_canvasSize.h; y++)
 			std::memcpy(pixels.data() + y * c_canvasSize.w * 4, buffer.pixels + y * buffer.pitch, c_canvasSize.w * 4);
+
+		if (canvasFormat == PixelFormat::XRGB_8)
+		{
+			for (size_t i = 3; i < pixels.size(); i += 4)
+				pixels[i] = 255;
+		}
 
 		pCanvas->freePixelBuffer(buffer);
 		return pixels;
@@ -316,6 +322,7 @@ WarpRenderTest::WarpRenderTest()
 	ADD_TEST(linearBackendTest);
 	ADD_TEST(offsetPeriodTest);
 	ADD_TEST(clipTest);
+	ADD_TEST(opaqueCanvasTest);
 }
 
 WarpRenderTest::~WarpRenderTest()
@@ -507,6 +514,32 @@ bool WarpRenderTest::clipTest(std::ostream& output)
 		}
 
 		if (!compare(output, backend == Backend::Soft ? "SoftBackend" : "LinearBackend", pixels, "clipped", expected, "expected", 0))
+			return false;
+	}
+
+	return true;
+}
+
+//____ opaqueCanvasTest() _____________________________________________________
+// On a canvas without alpha, paint modes give each part of a pixel the color of what covers it,
+// which for Replace is the color of the segment as if opaque, also where a transparent segment
+// shares the pixel.
+
+bool WarpRenderTest::opaqueCanvasTest(std::ostream& output)
+{
+	for (BlendMode mode : { BlendMode::Replace, BlendMode::Blend, BlendMode::Morph })
+	{
+		auto scene = [&](GfxDevice* pDevice)
+		{
+			pDevice->setBlendMode(mode);
+			pDevice->setMorphFactor(0.6f);
+			warpScene(pDevice);
+		};
+
+		std::string what = std::string("XRGB_8 canvas, BlendMode::") + toString(mode);
+
+		if (!compare(output, what.c_str(), render(Backend::Soft, scene, PixelFormat::XRGB_8), "SoftBackend",
+					 render(Backend::Reference, scene, PixelFormat::XRGB_8), "ReferenceBackend", 6, 60, 48))
 			return false;
 	}
 
