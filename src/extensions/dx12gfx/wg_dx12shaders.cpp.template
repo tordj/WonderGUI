@@ -31,6 +31,7 @@ const char DX12Backend::g_fillVS[] =
 
 const char DX12Backend::g_fillPS[] =
 
+@INSERTLINEQUOTED <shaders/output.hlsl>
 @INSERTLINEQUOTED <shaders/tint.hlsl>
 @INSERTLINEQUOTED <shaders/ps_fill.hlsl>
 ;
@@ -42,6 +43,7 @@ const char DX12Backend::g_fillAAVS[] =
 
 const char DX12Backend::g_fillAAPS[] =
 
+@INSERTLINEQUOTED <shaders/output.hlsl>
 @INSERTLINEQUOTED <shaders/tint.hlsl>
 @INSERTLINEQUOTED <shaders/ps_fill_aa.hlsl>
 ;
@@ -53,24 +55,28 @@ const char DX12Backend::g_blitVS[] =
 
 const char DX12Backend::g_blitPS[] =
 
+@INSERTLINEQUOTED <shaders/output.hlsl>
 @INSERTLINEQUOTED <shaders/tint.hlsl>
 @INSERTLINEQUOTED <shaders/ps_blit.hlsl>
 ;
 
 const char DX12Backend::g_blurPS[] =
 
+@INSERTLINEQUOTED <shaders/output.hlsl>
 @INSERTLINEQUOTED <shaders/tint.hlsl>
 @INSERTLINEQUOTED <shaders/ps_blur.hlsl>
 ;
 
 const char DX12Backend::g_paletteBlitPS[] =
 
+@INSERTLINEQUOTED <shaders/output.hlsl>
 @INSERTLINEQUOTED <shaders/tint.hlsl>
 @INSERTLINEQUOTED <shaders/ps_blit_palette.hlsl>
 ;
 
 const char DX12Backend::g_paletteBlurPS[] =
 
+@INSERTLINEQUOTED <shaders/output.hlsl>
 @INSERTLINEQUOTED <shaders/tint.hlsl>
 @INSERTLINEQUOTED <shaders/ps_blur_palette.hlsl>
 ;
@@ -92,6 +98,8 @@ const char DX12Backend::g_lineVS[] =
 
 const char DX12Backend::g_linePS[] =
 
+@INSERTLINEQUOTED <shaders/output.hlsl>
+@INSERTLINEQUOTED <shaders/tint.hlsl>
 @INSERTLINEQUOTED <shaders/ps_line.hlsl>
 ;
 
@@ -102,6 +110,7 @@ const char DX12Backend::g_segmentsVS[] =
 
 const char DX12Backend::g_segmentsPS[] =
 
+@INSERTLINEQUOTED <shaders/output.hlsl>
 @INSERTLINEQUOTED <shaders/tint.hlsl>
 @INSERTLINEQUOTED <shaders/ps_segments.hlsl>
 ;
@@ -113,6 +122,7 @@ const char DX12Backend::g_shapeVS[] =
 
 const char DX12Backend::g_shapePS[] =
 
+@INSERTLINEQUOTED <shaders/output.hlsl>
 @INSERTLINEQUOTED <shaders/tint.hlsl>
 @INSERTLINEQUOTED <shaders/ps_shape.hlsl>
 ;

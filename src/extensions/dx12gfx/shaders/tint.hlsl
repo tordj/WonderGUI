@@ -1,5 +1,6 @@
 // The tint, shared by all pixel shaders that apply one. wg_dx12shaders.cpp.template
-// puts this file in front of each of them, D3DCompile has no include handler here.
+// puts this file in front of each of them, after output.hlsl, D3DCompile has no
+// include handler here.
 //
 // A tint block is a run of float4 entries, see TintTools::writeGpuTintBlock():
 //
@@ -13,13 +14,8 @@
 //     then              one color per stop.
 //
 // Positions are canvas pixels, the device tint is evaluated at pixel centers. Its
-// block lives in the color buffer and the root constants say where, -1 for none.
-
-cbuffer TintInfo : register(b1)
-{
-    int tintOfs;            // Offset of the tint block in the color buffer, -1 for no tint.
-    int3 tintPadding;
-};
+// block lives in the color buffer and the root constants say where (tintOfs in
+// output.hlsl), -1 for none.
 
 StructuredBuffer<float4> colors : register(t0);
 

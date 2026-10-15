@@ -174,19 +174,19 @@ The area of a pixel covered by a shape is exact in ReferenceBackend. The softwar
 
 ## Implementation status
 
-| | ReferenceBackend | SoftBackend, LinearBackend | OpenGL, Metal | DirectX 12 |
-|---|---|---|---|---|
-| Blend as Porter-Duff over | Yes | Yes | Yes | Only onto opaque pixels |
-| Source alpha as strength of effect modes | All | All | All | Add, Subtract |
-| Anti-aliasing as average of subpixels | All modes | All modes, see below | All modes, see below | Blend, Add, Subtract |
-| Subpixels averaged as premultiplied colors | Yes | Yes | Yes | Edgemaps only |
-| Morph as premultiplied cross-fade | Yes | Yes | Yes | No |
-| Premultiplied bilinear sampling | Yes | Yes | Yes | No |
-| Transparent outside of ClipBlit has no effect | Yes | Yes | Yes | Add, Subtract |
-| Alpha_8: anti-aliasing as average of subpixels | Yes | Yes | Yes, but Min and Max | Add, Subtract, Invert |
+| | ReferenceBackend | SoftBackend, LinearBackend | OpenGL, Metal, DirectX 12 |
+|---|---|---|---|
+| Blend as Porter-Duff over | Yes | Yes | Yes |
+| Source alpha as strength of effect modes | All | All | All |
+| Anti-aliasing as average of subpixels | All modes | All modes, see below | All modes, see below |
+| Subpixels averaged as premultiplied colors | Yes | Yes | Yes |
+| Morph as premultiplied cross-fade | Yes | Yes | Yes |
+| Premultiplied bilinear sampling | Yes | Yes | Yes |
+| Transparent outside of ClipBlit has no effect | Yes | Yes | Yes |
+| Alpha_8: anti-aliasing as average of subpixels | Yes | Yes | Yes, but Min and Max |
 
 Where segments of a shape share a pixel, the software backends approximate the average for Add, Subtract, Min and Max closely. They draw BlendFixedColor onto the fixed color, as described under Paint modes.
 
-OpenGL and Metal keep canvases and other surfaces with alpha premultiplied and use dual-source blending, as described under Exactness, with the exceptions listed there. Colors of nearly transparent pixels therefore lose some precision when read back from them.
+The GPU backends keep canvases and other surfaces with alpha premultiplied and use dual-source blending, as described under Exactness, with the exceptions listed there. Colors of nearly transparent pixels therefore lose some precision when read back from them.
 
 GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests.

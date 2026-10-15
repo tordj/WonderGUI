@@ -1,5 +1,5 @@
-// The tint, tintColor() and the colors buffer come from tint.hlsl, which is put
-// in front of this file.
+// writeOutput() and premul() come from output.hlsl, the tint, tintColor() and the
+// colors buffer from tint.hlsl, which are put in front of this file.
 
 
 struct PS_INPUT
@@ -9,7 +9,7 @@ struct PS_INPUT
 };
 
 
-float4 main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT main(PS_INPUT input)
 {
-    return input.color * tintColor(input.position.xy);
+    return writeOutput(premul(input.color * tintColor(input.position.xy)), 1.0f);
 }

@@ -28,6 +28,7 @@
 #include <wg_gfxutil.h>
 #include <wg_pixeltools.h>
 
+#include <algorithm>
 #include <cstring>
 #include <cstdio>
 #include <cwchar>
@@ -62,6 +63,58 @@ namespace wg
 		wchar_t name[128];
 		swprintf( name, 128, L"WonderGUI DX12Surface %p %dx%d: %ls", pSurface, size.w, size.h, pWhat );
 		pObject->SetName( name );
+	}
+
+	//____ _premultiply() / _unpremultiply() ______________________________________
+	// Colors of a pixel times or divided by its alpha (1 -> 255), in linear light for sRGB pixels.
+	// (std::min) since windows.h may define min() as a macro.
+
+	static inline void _premultiply(uint8_t& b, uint8_t& g, uint8_t& r, int a, bool bSRGB)
+	{
+		if (bSRGB)
+		{
+			b = HiColor::packSRGBTab[(HiColor::unpackSRGBTab[b] * a + 127) / 255];
+			g = HiColor::packSRGBTab[(HiColor::unpackSRGBTab[g] * a + 127) / 255];
+			r = HiColor::packSRGBTab[(HiColor::unpackSRGBTab[r] * a + 127) / 255];
+		}
+		else
+		{
+			b = uint8_t((b * a + 127) / 255);
+			g = uint8_t((g * a + 127) / 255);
+			r = uint8_t((r * a + 127) / 255);
+		}
+	}
+
+	static inline void _unpremultiply(uint8_t& b, uint8_t& g, uint8_t& r, int a, bool bSRGB)
+	{
+		if (bSRGB)
+		{
+			b = HiColor::packSRGBTab[(std::min)(4096, (HiColor::unpackSRGBTab[b] * 255 + a / 2) / a)];
+			g = HiColor::packSRGBTab[(std::min)(4096, (HiColor::unpackSRGBTab[g] * 255 + a / 2) / a)];
+			r = HiColor::packSRGBTab[(std::min)(4096, (HiColor::unpackSRGBTab[r] * 255 + a / 2) / a)];
+		}
+		else
+		{
+			b = uint8_t((std::min)(255, (b * 255 + a / 2) / a));
+			g = uint8_t((std::min)(255, (g * 255 + a / 2) / a));
+			r = uint8_t((std::min)(255, (r * 255 + a / 2) / a));
+		}
+	}
+
+	//____ _isOpaque() ____________________________________________________________
+	// Checks if all ARGB_8 pixels are opaque. Pixels are 32-bit words in native byte
+	// order with alpha in the high byte.
+
+	static bool _isOpaque(const uint8_t* pPixels, int pitch, int width, int height)
+	{
+		for (int y = 0; y < height; y++)
+		{
+			auto p = (const uint32_t*)(pPixels + y * pitch);
+			for (int x = 0; x < width; x++)
+				if ((p[x] >> 24) != 255)
+					return false;
+		}
+		return true;
 	}
 
 	//____ maxSize() _______________________________________________________________
@@ -654,9 +707,10 @@ namespace wg
 	//____ _updatePaletteBuffer() ______________________________________________
 	//
 	// The palette goes to the GPU converted to linear, the same way SoftSurface
-	// unpacks it, so the shader can use the colors as they are and interpolate
-	// between them. An sRGB texture would have had the hardware do it, but only
-	// for colors read from the texture, and ours are indexes.
+	// unpacks it, and premultiplied, like the pixels of surfaces with alpha, so the
+	// shader can use the colors as they are and interpolate between them. An sRGB
+	// texture would have had the hardware convert, but only for colors read from
+	// the texture, and ours are indexes.
 	//
 	// The buffer is read by the GPU where it is. Should the palette change while
 	// a frame using it is still in flight, that frame may see the new colors.
@@ -678,16 +732,18 @@ namespace wg
 
 			if( bLinear )
 			{
-				*p++ = col.r / 4096.f;
-				*p++ = col.g / 4096.f;
-				*p++ = col.b / 4096.f;
-				*p++ = col.a / 4096.f;
+				p[0] = col.r / 4096.f;
+				p[1] = col.g / 4096.f;
+				p[2] = col.b / 4096.f;
+				p[3] = col.a / 4096.f;
 			}
 			else
-			{
 				col.toLinearFloat(p);
-				p += 4;
-			}
+
+			p[0] *= p[3];
+			p[1] *= p[3];
+			p[2] *= p[3];
+			p += 4;
 		}
 	}
 
@@ -786,15 +842,63 @@ namespace wg
 		int y1 = m_dirtyRect.y;
 		int y2 = m_dirtyRect.y + m_dirtyRect.h;
 
+		// Surfaces with alpha keep premultiplied colors in the texture, so that blending
+		// and filtering work on premultiplied colors, see DX12Backend::_createPipeline().
+		// Our pixels are the ones handed out, so they are premultiplied in a buffer of
+		// their own, unless all opaque. It goes when the copy is done, which we wait for.
+
+		ID3D12Resource * pSource = m_uploadBuffer.Get();
+		UINT64 sourceOffset = UINT64(y1) * m_uploadPitch;
+
+		Microsoft::WRL::ComPtr<ID3D12Resource> premultiplied;
+
+		if( _isPremultiplied() && !_isOpaque(m_pUploadData + sourceOffset, m_uploadPitch, m_size.w, y2 - y1) )
+		{
+			size_t nBytes = size_t(m_uploadPitch) * (y2 - y1);
+
+			D3D12_HEAP_PROPERTIES uploadProps = {};
+			uploadProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+			D3D12_RESOURCE_DESC bufDesc = {};
+			bufDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+			bufDesc.Width = nBytes;
+			bufDesc.Height = 1;
+			bufDesc.DepthOrArraySize = 1;
+			bufDesc.MipLevels = 1;
+			bufDesc.Format = DXGI_FORMAT_UNKNOWN;
+			bufDesc.SampleDesc = { 1, 0 };
+			bufDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+			uint8_t * pDest = nullptr;
+
+			if( FAILED(s_pDevice->CreateCommittedResource(&uploadProps, D3D12_HEAP_FLAG_NONE, &bufDesc,
+														  D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(premultiplied.GetAddressOf()))) ||
+				FAILED(premultiplied->Map(0, nullptr, (void**) &pDest)) )
+			{
+				if( !DX12Backend::checkDeviceLost() )
+					GfxBase::throwError(ErrorLevel::Error, ErrorCode::RenderFailure, "Failed to create buffer for premultiplied pixels, colors of transparent pixels will be off.",
+						this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			}
+			else
+			{
+				memcpy( pDest, m_pUploadData + sourceOffset, nBytes );
+				_convertAlpha( pDest, m_uploadPitch, m_size.w, y2 - y1, true );
+				premultiplied->Unmap(0, nullptr);
+
+				pSource = premultiplied.Get();
+				sourceOffset = 0;
+			}
+		}
+
 		D3D12_TEXTURE_COPY_LOCATION dst = {};
 		dst.pResource = m_texture.Get();
 		dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
 		dst.SubresourceIndex = 0;
 
 		D3D12_TEXTURE_COPY_LOCATION src = {};
-		src.pResource = m_uploadBuffer.Get();
+		src.pResource = pSource;
 		src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
-		src.PlacedFootprint.Offset = UINT64(y1) * m_uploadPitch;
+		src.PlacedFootprint.Offset = sourceOffset;
 		src.PlacedFootprint.Footprint.Format = m_dxgiFormat;
 		src.PlacedFootprint.Footprint.Width = m_size.w;
 		src.PlacedFootprint.Footprint.Height = y2 - y1;
@@ -990,9 +1094,54 @@ namespace wg
 
 			D3D12_RANGE writtenRange = { 0, 0 };		// We only read.
 			m_readbackBuffer->Unmap(0, &writtenRange);
+
+			// The texture holds premultiplied colors, see syncTexture().
+
+			if( _isPremultiplied() )
+				_convertAlpha( m_pUploadData, m_uploadPitch, m_size.w, m_size.h, false );
 		}
 
 		m_dirtyRect = RectI();			// Our pixels and the texture are identical now.
+	}
+
+	//____ _convertAlpha() ____________________________________________________
+	//
+	// Premultiplies or unpremultiplies ARGB_8 pixels in place. Pixels are 32-bit words
+	// in native byte order with alpha in the high byte.
+
+	void DX12Surface::_convertAlpha( uint8_t * pPixels, int pitch, int width, int height, bool bPremultiply ) const
+	{
+		bool bSRGB = (m_colorSpace == ColorSpace::sRGB);
+
+		for( int y = 0 ; y < height ; y++ )
+		{
+			auto p = (uint32_t*)(pPixels + y * pitch);
+
+			for( int x = 0 ; x < width ; x++ )
+			{
+				uint32_t v = p[x];
+
+				int a = v >> 24;
+				if( a == 255 )
+					continue;
+
+				if( a == 0 )
+					v = 0;
+				else
+				{
+					uint8_t b = uint8_t(v), g = uint8_t(v >> 8), r = uint8_t(v >> 16);
+
+					if( bPremultiply )
+						_premultiply(b, g, r, a, bSRGB);
+					else
+						_unpremultiply(b, g, r, a, bSRGB);
+
+					v = (uint32_t(a) << 24) | (uint32_t(r) << 16) | (uint32_t(g) << 8) | b;
+				}
+
+				p[x] = v;
+			}
+		}
 	}
 
 	//____ alpha() _______________________________________________________________

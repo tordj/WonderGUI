@@ -1,10 +1,11 @@
-// The tint, tintColor(), evalTintBlock() and the colors buffer come from tint.hlsl,
-// which is put in front of this file.
+// writeOutput() and premul() come from output.hlsl, the tint, tintColor(),
+// evalTintBlock() and the colors buffer from tint.hlsl, which are put in front of
+// this file.
 //
 // Shapes (Command::DrawShape), see GpuShapes for the entries read from the extras
 // buffer. The coverage of each pixel by each segment is worked out from the geometry.
-// Partly covered pixels get the colors of the drawn segments covering them mixed,
-// weighted by coverage and alpha, like edgemaps. Pixels not covered by any drawn
+// Pixels get the premultiplied colors of the drawn segments covering them, weighted
+// by coverage, and are covered by them together. Pixels not covered by any drawn
 // segment are left alone.
 
 
@@ -357,17 +358,14 @@ float shapeCoverage(uint ofs, float2 p, out float4 acc)
 }
 
 
-float4 main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT main(PS_INPUT input)
 {
     float4 acc;
 
-    if (shapeCoverage(input.shapeOfs, input.position.xy, acc) < 1.0f / 256.0f)
+    float covered = shapeCoverage(input.shapeOfs, input.position.xy, acc);
+
+    if (covered < 1.0f / 256.0f)
         discard;
 
-    float4 outColor;
-
-    outColor.a = acc.a;
-    outColor.rgb = acc.a > 0.0f ? acc.rgb / acc.a : float3(0.0f, 0.0f, 0.0f);
-
-    return outColor * input.color * tintColor(input.position.xy);
+    return writeOutput(acc * premul(input.color * tintColor(input.position.xy)), covered);
 }

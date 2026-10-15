@@ -1,3 +1,7 @@
+// writeOutput() and premul() come from output.hlsl, the tint, tintColor() and the
+// colors buffer from tint.hlsl, which are put in front of this file.
+
+
 struct PS_INPUT
 {
     float4 position : SV_POSITION;
@@ -6,7 +10,7 @@ struct PS_INPUT
 };
 
 
-float4 main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT main(PS_INPUT input)
 {
     float s = input.lineInfo.x;
     float w = input.lineInfo.y;
@@ -26,9 +30,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     // Distance from the center of the line, against its half width. A pixel
     // further away than that is outside the line, one closer is fully inside.
 
-    float4 color = input.color;
+    float cov = clamp(w - abs(across - s - along * slope), 0.0f, 1.0f);
 
-    color.a = input.color.a * clamp(w - abs(across - s - along * slope), 0.0f, 1.0f);
-
-    return color;
+    return writeOutput(premul(input.color * tintColor(pos)) * cov, cov);
 }
