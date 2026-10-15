@@ -1974,6 +1974,24 @@ inline void boxCoverage(constant float4 * pShape, constant float4 * pColor, int 
 	addSegment(pShape, pColor, ofs + 6, outer - fill, p, acc, covered);
 }
 
+// Direction of v in turns clockwise from 12 o'clock, 0.0 -> 1.0. Worked out from the angle to
+// the vertical axis instead of by atan2(), which with fast math can put directions along an
+// axis in the wrong quadrant, as -0.0 doesn't count as negative while y / -0.0 does.
+
+inline float turnsFromTop(float2 v)
+{
+	float2 a = abs(v);
+	float t = a.x <= a.y ? atan(a.x / max(a.y, 1e-20f)) : 1.5707963f - atan(a.y / max(a.x, 1e-20f));
+	t *= 0.15915494f;								// From the vertical axis, 0.0 -> 0.25.
+
+	if( v.y >= 0.f )
+		t = 0.5f - t;								// Below the center.
+	if( v.x < 0.f )
+		t = 1.f - t;								// Left of the center.
+
+	return fract(t);
+}
+
 // Splits band, the coverage of the slice area, between the elements: those whose boundaries
 // pass through the pixel get the part between them, the element at the pixel center the rest.
 
@@ -1985,7 +2003,7 @@ inline void ringElements(constant float4 * pShape, constant float4 * pColor, int
 		return;
 	}
 
-	float theta = d > 0.0001f ? fract(atan2(v.x, -v.y) * 0.15915494f) : 0.f;
+	float theta = d > 0.0001f ? turnsFromTop(v) : 0.f;
 
 	int lo = 0;
 	int hi = n;
