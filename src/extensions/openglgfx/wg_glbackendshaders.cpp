@@ -1684,6 +1684,7 @@ WG_GL_CANVAS_BLOCK
 // f + g.x * dx + g.y * dy >= 0, dx and dy going from -0.5 to 0.5 over it, which is linear within
 // (a - b) / 2 of the center and a triangle in a corner further out. warpAxisCoverage() gives the
 // part inside the source along one axis, with the copies of the source on a periodic axis.
+// warpPosition() finds the cell with integers, as a division in floats can miss a whole number.
 
 #define WG_GL_WARP_FUNCS \
 "vec4 warpEntry(int i) { return texelFetch(extrasBufferId, warpOfs + i); }			" \
@@ -1727,13 +1728,13 @@ WG_GL_CANVAS_BLOCK
 "	vec4 e1 = warpEntry(1);															" \
 "	vec4 e2 = warpEntry(2);															" \
 "	vec2 q = p - e0.xy;																" \
-"	float cellSize = e0.z;															" \
-"	vec2 cells = ceil(e1.xy / cellSize);											" \
-"	vec2 cell = clamp(floor(q / cellSize), vec2(0.0), cells - 1.0);					" \
-"	vec2 c0 = cell * cellSize;														" \
-"	vec2 c1 = min(c0 + cellSize, e1.xy);											" \
+"	int cellSize = int(e0.z);														" \
+"	ivec2 cells = (ivec2(e1.xy) + cellSize - 1) / cellSize;							" \
+"	ivec2 cell = clamp(ivec2(floor(max(q, vec2(0.0)))) / cellSize, ivec2(0), cells - 1);	" \
+"	vec2 c0 = vec2(cell * cellSize);												" \
+"	vec2 c1 = min(c0 + float(cellSize), e1.xy);										" \
 "	vec2 f = (q - c0) / (c1 - c0);													" \
-"	int i = (int(cell.y) * int(cells.x) + int(cell.x)) * 2;							" \
+"	int i = (cell.y * cells.x + cell.x) * 2;										" \
 "	vec4 top = texelFetch(warpmapId, i);											" \
 "	vec4 bottom = texelFetch(warpmapId, i + 1);										" \
 "	vec2 u = mix(mix(top.xy, top.zw, f.x), mix(bottom.xy, bottom.zw, f.x), f.y);	" \
