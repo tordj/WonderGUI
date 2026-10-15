@@ -102,10 +102,14 @@ protected:
 
 	struct PerformanceResult
 	{
-		bool	bDone = false;
+		bool	bDone = false;								// Timed at least once.
 		bool	bFailed = false;
-		double	secondsPerRun = 0;
-		int		loops = 0;									// Calls to run() per measurement.
+		double	secondsPerRun = 0;							// From the fastest measurement of all passes.
+		int		loops = 0;									// Calls to run() per measurement, 0 until calibrated.
+		double	baseline = 0;								// Seconds for a measurement without any calls to run().
+		vector<double> passes;								// Seconds of the fastest measurement of each pass.
+
+		double	spread() const;								// Of the passes, relative to the fastest.
 	};
 
 	struct TestEntry
@@ -150,10 +154,23 @@ protected:
 	static const int	c_maxDiffFactor = 10;
 
 	// Performance measurements. Calls to run() are looped until a measurement takes at
-	// least c_perfTargetTime, then the fastest of c_perfRounds measurements is kept
+	// least c_perfTargetTime. Then each pass through the tests runs every test for at
+	// least c_perfWarmupTime and keeps its fastest of c_perfRounds measurements
 	// (c_perfSlowRounds for tests taking more than 10 times c_perfTargetTime).
+	// The result is the fastest of all passes.
+	//
+	// Spreading measurements over many passes gives much more stable results than
+	// taking many measurements in one go, since timings tend to be disturbed in
+	// bursts lasting longer than a test.
 
-	static constexpr double	c_perfTargetTime = 0.02;
+	// A GPU lowers its clocks when idle and needs a while to get them up again, so
+	// a run starts by keeping the testee busy for c_perfRunWarmupTime, and tests are
+	// timed back to back for c_perfUpdateBudget before letting the window update.
+
+	static constexpr double	c_perfTargetTime = 0.01;
+	static constexpr double	c_perfWarmupTime = 0.02;
+	static constexpr double	c_perfRunWarmupTime = 0.5;
+	static constexpr double	c_perfUpdateBudget = 0.25;
 	static const int		c_perfRounds = 5;
 	static const int		c_perfSlowRounds = 3;
 	static const int		c_perfMaxLoops = 100000;
@@ -213,7 +230,9 @@ protected:
 
 	void		start_performance_run(const vector<int>& tests);
 	void		continue_performance_run();
-	void		run_performance_test(int test);
+	void		run_performance_pass(int test);
+	void		warm_up_testee(int test);
+	int			calibrate_test(Test* pTest, double& baseline);
 	double		time_test(Test* pTest, int loops);
 	void		sync_testee();
 	void		refresh_performance_row(int test);
@@ -289,7 +308,11 @@ protected:
 	Slider_p			m_pPerformanceProgress;
 	TextDisplay_p		m_pPerformanceProgressLabel;
 
+	int					m_performancePasses = 5;			// Setting for passes through the tests per run.
+
 	bool				m_bPerformanceRunning = false;
 	vector<int>			m_performanceQueue;					// Tests to time in this run.
+	int					m_performanceRunPasses = 0;			// Passes through m_performanceQueue in this run.
+	int					m_performancePass = 0;
 	int					m_performanceNext = 0;				// Index in m_performanceQueue.
 };

@@ -2,6 +2,7 @@
 #include <cmath>
 #include <ctime>
 #include <fstream>
+#include <limits>
 #include <map>
 #include <sstream>
 
@@ -774,6 +775,28 @@ Widget_p GfxDeviceTester2::create_performance_view()
 	pFileBar->slots.pushBack(pLoadButton, { .weight = 0 });
 	pFileBar->slots.pushBack(m_pPerformanceLoadedLabel, { .weight = 1 });
 
+	// Number of passes through the tests. Each test keeps its best result.
+
+	auto pPassesLabel = TextDisplay::create({ .display = {.style = wkit::TextStyles::Strong, .text = "Passes: " } });
+	pFileBar->slots.pushBack(pPassesLabel, { .weight = 0 });
+
+	auto pPassesGroup = ToggleGroup::create();
+
+	for (int passes : { 1, 3, 5, 10, 20 })
+	{
+		auto pButton = WGCREATE(wkit::ToggleButton, _.label.text = std::to_string(passes).c_str());
+		pPassesGroup->add(pButton);
+		if (passes == m_performancePasses)
+			pButton->setChecked(true);
+
+		pFileBar->slots.pushBack(pButton, { .weight = 0 });
+
+		m_routes.push_back(Base::msgRouter()->addRoute(pButton, MsgType::Toggle, [this, passes](Msg* pMsg) {
+			if (static_cast<ToggleMsg*>(pMsg)->isChecked())
+				m_performancePasses = passes;
+		}));
+	}
+
 	// Bottom bar
 
 	auto pBottom = PackPanel::create({ .axis = Axis::X, .layout = m_pLayout, .skin = wkit::Skins::Plate, .spacing = 8 });
@@ -1351,7 +1374,8 @@ void GfxDeviceTester2::select_accuracy_row(int test)
 
 //____ start_performance_run() ________________________________________________
 /*
-	Times the given tests, one per update. Results of other tests are kept.
+	Times the given tests, one per update, in as many passes as set. Results of
+	other tests are kept.
 */
 
 void GfxDeviceTester2::start_performance_run(const vector<int>& tests)
@@ -1366,6 +1390,8 @@ void GfxDeviceTester2::start_performance_run(const vector<int>& tests)
 
 	m_bPerformanceRunning = true;
 	m_performanceQueue = tests;
+	m_performanceRunPasses = m_performancePasses;
+	m_performancePass = 0;
 	m_performanceNext = 0;
 
 	m_pPerformanceRunButton->label.setText("STOP");
@@ -1375,31 +1401,44 @@ void GfxDeviceTester2::start_performance_run(const vector<int>& tests)
 
 //____ continue_performance_run() _____________________________________________
 /*
-	Times one test per update, so the progress bar keeps moving and the window
-	stays responsive.
+	Times tests until our time budget for this update is spent, then lets the
+	progress bar and window update.
 */
 
 void GfxDeviceTester2::continue_performance_run()
 {
 	int nbTests = (int)m_performanceQueue.size();
 
-	if (m_performanceNext < nbTests)
-	{
-		int test = m_performanceQueue[m_performanceNext++];
+	auto start = Clock::now();
 
-		run_performance_test(test);
+	while (m_performancePass < m_performanceRunPasses && std::chrono::duration<double>(Clock::now() - start).count() < c_perfUpdateBudget)
+	{
+		int test = m_performanceQueue[m_performanceNext];
+
+		if (m_performancePass == 0 && m_performanceNext == 0)
+			warm_up_testee(test);
+
+		m_performanceNext++;
+		run_performance_pass(test);
 		refresh_performance_row(test);
 
 		if (test == m_performanceSelected)
 			refresh_performance_details();
+
+		if (m_performanceNext == nbTests)
+		{
+			m_performancePass++;
+			m_performanceNext = 0;
+		}
 	}
 
 	char label[256];
 
-	if (m_performanceNext < nbTests)
+	if (m_performancePass < m_performanceRunPasses)
 	{
 		auto& next = m_tests[m_performanceQueue[m_performanceNext]];
-		snprintf(label, sizeof(label), "%d / %d   %s / %s", m_performanceNext, nbTests, m_suites[next.suite].name.c_str(), next.name.c_str());
+		snprintf(label, sizeof(label), "Pass %d / %d   %d / %d   %s / %s", m_performancePass + 1, m_performanceRunPasses,
+			m_performanceNext, nbTests, m_suites[next.suite].name.c_str(), next.name.c_str());
 	}
 	else
 	{
@@ -1433,13 +1472,16 @@ void GfxDeviceTester2::continue_performance_run()
 		m_pPerformanceSummary->display.setText(summary.c_str());
 	}
 
-	m_pPerformanceProgress->setValue(nbTests > 0 ? m_performanceNext / float(nbTests) : 1.f);
+	int nbSteps = nbTests * m_performanceRunPasses;
+	int nbStepsDone = std::min(nbSteps, m_performancePass * nbTests + m_performanceNext);
+
+	m_pPerformanceProgress->setValue(nbSteps > 0 ? nbStepsDone / float(nbSteps) : 1.f);
 	m_pPerformanceProgressLabel->display.setText(label);
 }
 
-//____ run_performance_test() _________________________________________________
+//____ run_performance_pass() _________________________________________________
 /*
-	Times a test on the testee.
+	Times a test on the testee, once per pass.
 
 	Each measurement times a number of calls to run() including the endRender()
 	and a read back of a pixel, which makes sure the backend has finished its work,
@@ -1447,48 +1489,107 @@ void GfxDeviceTester2::continue_performance_run()
 	to run() is measured as a baseline and subtracted. That way neither init(),
 	exit() nor the overhead of a render pass are included.
 
-	The number of calls to run() is increased until a measurement takes long enough
-	to be accurate. Then the fastest of a few measurements is kept, as it is the one
-	least disturbed by anything else going on.
+	The first pass calibrates the number of calls to run() so that a measurement
+	takes long enough to be accurate. Each pass then warms up by running the test
+	for a while, so caches and clock speeds have settled, and keeps the fastest
+	of a number of measurements, as it is the one least disturbed by anything else
+	going on.
+
+	Timings are noisy in bursts, from other processes, power management and such,
+	which can make all measurements of one pass slow. Making several passes through
+	all tests spreads the measurements of each test over time, so the fastest of
+	them is much more likely to be undisturbed.
 */
 
-void GfxDeviceTester2::run_performance_test(int test)
+void GfxDeviceTester2::run_performance_pass(int test)
 {
-	auto& result = m_tests[test].performance;
-	result = PerformanceResult();
-	result.bDone = true;
+	auto& r = m_tests[test].performance;
 
 	if (!m_suites[m_tests[test].suite].bWorking)
 	{
-		result.bFailed = true;
+		r.bDone = true;
+		r.bFailed = true;
 		return;
 	}
 
 	Test* pTest = m_tests[test].pTests[TESTEE];
 
-	// Warm up, so any first time setup (caches, shaders, buffers) isn't measured.
-	// Since that makes it slower than later runs, it gives us a low first guess
-	// of the number of loops needed.
+	if (r.loops == 0)
+	{
+		r.baseline = std::numeric_limits<double>::max();
+		r.loops = calibrate_test(pTest, r.baseline);
+	}
 
-	double warmup = time_test(pTest, 1);
-	double baseline = std::min(time_test(pTest, 0), time_test(pTest, 0));
+	// Warm up.
+
+	double fastest = time_test(pTest, r.loops);
+
+	auto start = Clock::now();
+	while (std::chrono::duration<double>(Clock::now() - start).count() < c_perfWarmupTime)
+		fastest = std::min(fastest, time_test(pTest, r.loops));
+
+	// Measure. Tests that are slow even without looping get fewer rounds,
+	// noise is small in comparison and we don't want to wait forever.
+
+	int rounds = fastest > c_perfTargetTime * 10 ? c_perfSlowRounds : c_perfRounds;
+
+	for (int round = 0; round < rounds; round++)
+	{
+		r.baseline = std::min(r.baseline, time_test(pTest, 0));
+		fastest = std::min(fastest, time_test(pTest, r.loops));
+	}
+
+	r.passes.push_back(fastest);
+
+	r.secondsPerRun = std::max(0.0, *std::min_element(r.passes.begin(), r.passes.end()) - r.baseline) / r.loops;
+	r.bDone = true;
+}
+
+//____ warm_up_testee() _______________________________________________________
+/*
+	Keeps the testee busy with a test for c_perfRunWarmupTime, so a GPU has its
+	clocks up before we calibrate and time anything.
+*/
+
+void GfxDeviceTester2::warm_up_testee(int test)
+{
+	if (!m_suites[m_tests[test].suite].bWorking)
+		return;
+
+	Test* pTest = m_tests[test].pTests[TESTEE];
+
+	double baseline = std::numeric_limits<double>::max();
+	int loops = calibrate_test(pTest, baseline);
+
+	auto start = Clock::now();
+	while (std::chrono::duration<double>(Clock::now() - start).count() < c_perfRunWarmupTime)
+		time_test(pTest, loops);
+}
+
+//____ calibrate_test() _______________________________________________________
+/*
+	Returns the number of calls to run() needed for a measurement to take at least
+	c_perfTargetTime. Lowers baseline to the fastest measurement without calls.
+*/
+
+int GfxDeviceTester2::calibrate_test(Test* pTest, double& baseline)
+{
+	// A first run includes any first time setup (caches, shaders, buffers), making
+	// it slower than later ones. That gives us a low first guess.
+
+	double first = time_test(pTest, 1);
+	baseline = std::min({ baseline, time_test(pTest, 0), time_test(pTest, 0) });
 
 	int loops = 1;
-	if (warmup - baseline > 0)
-		loops = (int) std::clamp(std::floor(c_perfTargetTime / (warmup - baseline)), 1.0, double(c_perfMaxLoops));
-
-	// Increase number of loops until a measurement takes long enough.
-
-	double fastest;
+	if (first - baseline > 0)
+		loops = (int) std::clamp(std::floor(c_perfTargetTime / (first - baseline)), 1.0, double(c_perfMaxLoops));
 
 	while (true)
 	{
-		fastest = time_test(pTest, loops);
-
-		double time = fastest - baseline;
+		double time = time_test(pTest, loops) - baseline;
 
 		if (time >= c_perfTargetTime || loops >= c_perfMaxLoops)
-			break;
+			return loops;
 
 		// Aim a bit over the target, but grow at least 2x and at most 100x each step.
 
@@ -1498,26 +1599,25 @@ void GfxDeviceTester2::run_performance_test(int test)
 		loops = (int) std::min(double(c_perfMaxLoops), std::ceil(loops * factor));
 		baseline = std::min(baseline, time_test(pTest, 0));
 	}
+}
 
-	// Measure. Tests that are slow even without looping get fewer rounds,
-	// noise is small in comparison and we don't want to wait forever.
+//____ PerformanceResult::spread() ____________________________________________
 
-	int rounds = fastest > c_perfTargetTime * 10 ? c_perfSlowRounds : c_perfRounds;
+double GfxDeviceTester2::PerformanceResult::spread() const
+{
+	if (passes.size() < 2 || loops == 0)
+		return 0;
 
-	for (int round = 1; round < rounds; round++)
-	{
-		baseline = std::min(baseline, time_test(pTest, 0));
-		fastest = std::min(fastest, time_test(pTest, loops));
-	}
+	auto [pFastest, pSlowest] = std::minmax_element(passes.begin(), passes.end());
 
-	result.loops = loops;
-	result.secondsPerRun = std::max(0.0, fastest - baseline) / loops;
+	double fastest = *pFastest - baseline;
+	return fastest > 0 ? (*pSlowest - baseline) / fastest - 1.0 : 0;
 }
 
 //____ time_test() ____________________________________________________________
 /*
 	Seconds from just before the first call to run() until the testee has finished
-	rendering. See run_performance_test().
+	rendering. See run_performance_pass().
 */
 
 double GfxDeviceTester2::time_test(Test* pTest, int loops)
@@ -1642,7 +1742,14 @@ void GfxDeviceTester2::refresh_performance_details()
 	else if (r.bFailed)
 		details = "Could not be run.";
 	else
-		details = "Time per run: " + format_time(r.secondsPerRun) + "\nLoops per measurement: " + std::to_string(r.loops);
+	{
+		char spread[64] = "";
+		if (r.passes.size() > 1)
+			snprintf(spread, sizeof(spread), ", passes within %.1f %%", r.spread() * 100.0);
+
+		details = "Time per run: " + format_time(r.secondsPerRun) + " (best of " + std::to_string(r.passes.size())
+			+ (r.passes.size() == 1 ? " pass" : " passes") + spread + ")\nLoops per measurement: " + std::to_string(r.loops);
+	}
 
 	if (test.loadedSecondsPerRun >= 0)
 	{
