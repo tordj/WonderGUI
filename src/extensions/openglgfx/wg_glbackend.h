@@ -120,6 +120,9 @@ namespace wg
 
 		void	_setBlendMode(BlendMode mode);
 		void	_setBlitSource(GlSurface* pSurf);
+		void	_setPartialCoverage(bool bPartialCoverage);
+		void	_resetCommandStates();
+		void	_uploadCanvasUBO();
 
 
 		void	_initTables();
@@ -191,6 +194,8 @@ namespace wg
 		// "Active" members are updated and used in the rendering loop in endSession.
 
 		bool			m_bActiveCanvasIsA8 = false;
+		bool			m_bActiveCanvasHasAlpha = true;									// False for canvases that don't store alpha, like XRGB_8.
+		bool			m_bReplaceBlending = false;										// Blending enabled for Replace, see _setPartialCoverage().
 		GlSurface_p		m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
 		SizeI			m_activeCanvasSize;                                             // Currently active canvas size in OpenGL, " -
 		bool			m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
@@ -233,7 +238,7 @@ namespace wg
 		//
 
 		const static int c_nbPrograms = 40 + (c_maxSegments-1) * 2;
-		const static int c_versionNb = 112;		// 104: Tints replaced Tintmaps. 105: Tint color applied together with tint. 106: Palette ClipBlit clipping. 107: Palette read by index, capacity wide. 108: Blur for Alpha_8 sources and canvases. 109: Alpha of sources without alpha in ClipBlits. 110: Bilinear palette taps and weights from the same value. 111: Palette sampled with texture(), not texelFetch(). 112: Shape programs.
+		const static int c_versionNb = 113;		// 104: Tints replaced Tintmaps. 105: Tint color applied together with tint. 106: Palette ClipBlit clipping. 107: Palette read by index, capacity wide. 108: Blur for Alpha_8 sources and canvases. 109: Alpha of sources without alpha in ClipBlits. 110: Bilinear palette taps and weights from the same value. 111: Palette sampled with texture(), not texelFetch(). 112: Shape programs. 113: Premultiplied canvases, output by blend mode, tinted lines.
 
 		struct ProgramBlobEntry
 		{
@@ -287,6 +292,7 @@ namespace wg
 			float	height;
 			float	yOfs;
 			float	yMul;
+			float	blendInfo[4];		// How fragment shaders output to the blender, see WG_GL_OUTPUT.
 		};
 
 
