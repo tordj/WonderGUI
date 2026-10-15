@@ -216,6 +216,22 @@ pBackend->setSegmentStripKernel( SoftBackend::StripSource::Tintmaps, BlendMode::
 pBackend->setSegmentStripKernel( SoftBackend::StripSource::Colors, BlendMode::BlendFixedColor, SoftFormat::RGB_565_sRGB,  _draw_segment_strip<SoftBackend::StripSource::Colors, BlendMode::BlendFixedColor, SoftFormat::RGB_565_sRGB> );
 pBackend->setSegmentStripKernel( SoftBackend::StripSource::Tintmaps, BlendMode::BlendFixedColor, SoftFormat::RGB_565_sRGB, _draw_segment_strip<SoftBackend::StripSource::Tintmaps, BlendMode::BlendFixedColor, SoftFormat::RGB_565_sRGB> );
 
+pBackend->setCoverageKernel( BlendMode::Replace, SoftFormat::XRGB_8_sRGB, _draw_coverage_span<BlendMode::Replace, SoftFormat::XRGB_8_sRGB> );
+pBackend->setCoverageKernel( BlendMode::Replace, SoftFormat::ARGB_8_sRGB, _draw_coverage_span<BlendMode::Replace, SoftFormat::ARGB_8_sRGB> );
+pBackend->setCoverageKernel( BlendMode::Replace, SoftFormat::RGB_565_sRGB, _draw_coverage_span<BlendMode::Replace, SoftFormat::RGB_565_sRGB> );
+
+pBackend->setCoverageKernel( BlendMode::Blend, SoftFormat::XRGB_8_sRGB, _draw_coverage_span<BlendMode::Blend, SoftFormat::XRGB_8_sRGB> );
+pBackend->setCoverageKernel( BlendMode::Blend, SoftFormat::ARGB_8_sRGB, _draw_coverage_span<BlendMode::Blend, SoftFormat::ARGB_8_sRGB> );
+pBackend->setCoverageKernel( BlendMode::Blend, SoftFormat::RGB_565_sRGB, _draw_coverage_span<BlendMode::Blend, SoftFormat::RGB_565_sRGB> );
+
+pBackend->setCoverageKernel( BlendMode::Add, SoftFormat::XRGB_8_sRGB, _draw_coverage_span<BlendMode::Add, SoftFormat::XRGB_8_sRGB> );
+pBackend->setCoverageKernel( BlendMode::Add, SoftFormat::ARGB_8_sRGB, _draw_coverage_span<BlendMode::Add, SoftFormat::ARGB_8_sRGB> );
+pBackend->setCoverageKernel( BlendMode::Add, SoftFormat::RGB_565_sRGB, _draw_coverage_span<BlendMode::Add, SoftFormat::RGB_565_sRGB> );
+
+pBackend->setCoverageKernel( BlendMode::BlendFixedColor, SoftFormat::XRGB_8_sRGB, _draw_coverage_span<BlendMode::BlendFixedColor, SoftFormat::XRGB_8_sRGB> );
+pBackend->setCoverageKernel( BlendMode::BlendFixedColor, SoftFormat::ARGB_8_sRGB, _draw_coverage_span<BlendMode::BlendFixedColor, SoftFormat::ARGB_8_sRGB> );
+pBackend->setCoverageKernel( BlendMode::BlendFixedColor, SoftFormat::RGB_565_sRGB, _draw_coverage_span<BlendMode::BlendFixedColor, SoftFormat::RGB_565_sRGB> );
+
 pBackend->setStraightBlitKernel( SoftFormat::Undefined, SoftBackend::ReadOp::Normal, TintMode::None, BlendMode::Replace, SoftFormat::XRGB_8_sRGB, _straight_blit<SoftFormat::Undefined, TintMode::None, BlendMode::Replace, SoftFormat::XRGB_8_sRGB, SoftBackend::ReadOp::Normal> );
 pBackend->setStraightBlitKernel( SoftFormat::Undefined, SoftBackend::ReadOp::Normal, TintMode::None, BlendMode::Replace, SoftFormat::ARGB_8_sRGB, _straight_blit<SoftFormat::Undefined, TintMode::None, BlendMode::Replace, SoftFormat::ARGB_8_sRGB, SoftBackend::ReadOp::Normal> );
 pBackend->setStraightBlitKernel( SoftFormat::Undefined, SoftBackend::ReadOp::Normal, TintMode::None, BlendMode::Replace, SoftFormat::RGB_565_sRGB, _straight_blit<SoftFormat::Undefined, TintMode::None, BlendMode::Replace, SoftFormat::RGB_565_sRGB, SoftBackend::ReadOp::Normal> );

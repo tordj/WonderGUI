@@ -80,6 +80,12 @@ namespace wg
 			int		nColors;			// Total number of colors to be used through all commands.
 			int		nTransforms;		// Total number of transforms for session.
 			int		nObjects;			// Total number of object references for session.
+
+			// Shapes
+
+			int		nShapeDraws;		// Number of DrawShape commands.
+			int		nShapeSegments;		// Total number of segments (fill, outline, slices...) of all shapes.
+			int		nShapeTints;		// Total number of Tints encoded in DrawShape commands.
 		};
 
 		enum class Command : uint16_t
@@ -93,8 +99,132 @@ namespace wg
 			Tile,
 			Blur,
 			DrawEdgemap,
-			TileEdgemap					// Same parameters as DrawEdgemap, but edgemap is repeated over the rects.
+			TileEdgemap,				// Same parameters as DrawEdgemap, but edgemap is repeated over the rects.
+			DrawShape					// See below.
 		};
+
+		/*
+			DrawShape draws an analytic shape, made of segments (fill, outline...) that are
+			drawn together. Layout, in 16-bit words:
+
+			  uint16	Command::DrawShape
+			  uint16	ShapeKind
+			  uint16	nRects			Clip rectangles in rect buffer.
+			  uint16	nColors			Colors in color buffer.
+			  uint16	nWords			Words of payload following this header.
+			  uint16	padding
+			  ...		payload
+
+			The command starts at a 32-bit boundary (padded with Command::None if needed), so
+			32-bit values in the payload are aligned. Backends that don't support a kind of
+			shape can skip it using nWords, nRects and nColors. Payloads can be decoded with
+			decodeRoundedBox() and decodeRing().
+
+			ShapeKind::RoundedBox payload:
+
+			  spx		rect x, y, w, h
+			  spx		radius top-left, top-right, bottom-right, bottom-left
+			  spx		outline top, right, bottom, left
+			  spx		softness		Reserved for soft edges (shadows, glows), always 0 for now.
+			  uint16	flags			See RoundedBoxFlags.
+			  uint16	padding
+			  ...		fill tint		Encoded as by TintTools::encodeTint(), placed in rect. Only if HasFillTint.
+			  ...		outline tint	Encoded as by TintTools::encodeTint(), placed in rect. Only if HasOutlineTint.
+
+			  Colors: fill color if HasFill, outline color if HasOutline, then the colors of
+			  the encoded tints.
+
+			  Radii are clamped as by Util::clampCornerRadii().
+
+			ShapeKind::Ring payload:
+
+			  spx		rect x, y, w, h
+			  spx		thickness		Width of ring, outline included. 0 or at least the radius for no hole.
+			  spx		outline
+			  spx		softness		Reserved, always 0 for now.
+			  uint16	flags			See RingFlags.
+			  uint16	nSlices
+			  uint32	start			Clockwise from 12 o'clock, c_shapeFullTurn is a full turn.
+			  per slice:
+			    uint32	size			c_shapeFullTurn is a full turn.
+			    uint16	flags			See RingSliceFlags.
+			    uint16	padding
+			  ...		tints			Encoded as by TintTools::encodeTint(), placed in rect: outline, hub, back
+										and slices, each only if flagged as tinted.
+
+			  Colors: outline, hub and back color if they are drawn, color of each slice that
+			  is drawn, then the colors of the encoded tints.
+
+			  Segments are numbered back (0), outline (1), hub (2) and slices (3...).
+		*/
+
+		enum class ShapeKind : uint16_t
+		{
+			RoundedBox = 1,
+			Ring = 2
+		};
+
+		enum class RingFlags : uint16_t
+		{
+			Square			= 1,
+			HasOutline		= 1 << 1,
+			HasHub			= 1 << 2,
+			HasBack			= 1 << 3,
+			HasOutlineTint	= 1 << 4,
+			HasHubTint		= 1 << 5,
+			HasBackTint		= 1 << 6
+		};
+
+		enum class RingSliceFlags : uint16_t
+		{
+			Drawn			= 1,
+			Tinted			= 1 << 1
+		};
+
+		enum class RoundedBoxFlags : uint16_t
+		{
+			HasFill			= 1,
+			HasOutline		= 1 << 1,
+			HasFillTint		= 1 << 2,
+			HasOutlineTint	= 1 << 3
+		};
+
+		static constexpr int		c_drawShapeHeaderWords = 6;
+		static constexpr int		c_roundedBoxPayloadWords = 28;		// RoundedBox payload before its tints.
+		static constexpr int		c_ringPayloadWords = 18;			// Ring payload before its slices...
+		static constexpr int		c_ringSliceWords = 4;				// ...and the words of each.
+		static constexpr uint32_t	c_shapeFullTurn = 0x80000000;		// Angles and slice sizes of Ring.
+
+		// Decoded DrawShape payloads, see decodeRoundedBox() and decodeRing().
+
+		struct RoundedBoxPayload
+		{
+			RectSPX			rect;
+			spx				radius[4];				// Top-left, top-right, bottom-right, bottom-left.
+			BorderSPX		outline;
+			spx				softness;
+			uint16_t		flags;					// See RoundedBoxFlags.
+			const uint16_t*	pTints;					// Encoded tints.
+		};
+
+		struct RingPayload
+		{
+			RectSPX			rect;
+			spx				thickness;
+			spx				outline;
+			spx				softness;
+			uint16_t		flags;					// See RingFlags.
+			int				nSlices;
+			uint32_t		start;
+			const uint16_t*	pSlices;				// See sliceSize() and sliceFlags().
+			const uint16_t*	pTints;					// Encoded tints.
+
+			uint32_t		sliceSize(int slice) const;
+			uint16_t		sliceFlags(int slice) const;	// See RingSliceFlags.
+		};
+
+		static RoundedBoxPayload	decodeRoundedBox(const uint16_t* pPayload);
+		static RingPayload			decodeRing(const uint16_t* pPayload);
 
 		enum class StateChange : uint8_t
 		{

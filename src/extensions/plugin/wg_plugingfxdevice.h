@@ -26,6 +26,7 @@
 #include <wg_geo.h>
 
 #include <wg_gfxdevice.h>
+#include <wg_c_gfxdevice.h>
 #include <wg_pluginsurfacefactory.h>
 #include <wg_pluginedgemapfactory.h>
 
@@ -132,6 +133,9 @@ namespace wg
         void    drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64 ) override;
         void    drawLine( CoordSPX begin, Direction dir, int length, HiColor col, spx thickness = 64 ) override;
 
+        void    drawRoundedBox(const RoundedBoxSpec& spec) override;
+        void    drawRing(const RingSpec& spec) override;
+
         // Blit methods
 
         void    blit(CoordSPX dest) override;
@@ -200,6 +204,8 @@ namespace wg
 		};
 
         wg_obj  m_cDevice;
+
+		std::vector<wg_ringSlice>	m_ringSlices;		// Slices passed on by drawRing().
 		
 		wg_obj	m_hostBlurbrush = nullptr;
 		PluginSurfaceFactory_p	m_pSurfaceFactory;

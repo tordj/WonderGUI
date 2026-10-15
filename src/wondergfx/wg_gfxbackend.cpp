@@ -21,6 +21,8 @@
 =========================================================================*/
 #include <wg_gfxbackend.h>
 
+#include <cstring>
+
 namespace wg
 {
 	const TypeInfo GfxBackend::TYPEINFO = { "GfxBackend", &Object::TYPEINFO };
@@ -57,6 +59,62 @@ const spx GfxBackend::s_defaultBlurRadius = 4 * 64;
 const TypeInfo& GfxBackend::typeInfo(void) const
 {
 	return TYPEINFO;
+}
+
+//____ decodeRoundedBox() _________________________________________________
+
+GfxBackend::RoundedBoxPayload GfxBackend::decodeRoundedBox(const uint16_t* pPayload)
+{
+	spx values[13];
+	std::memcpy(values, pPayload, sizeof(values));
+
+	RoundedBoxPayload box;
+	box.rect = { values[0], values[1], values[2], values[3] };
+
+	for (int i = 0; i < 4; i++)
+		box.radius[i] = values[4 + i];
+
+	box.outline = { values[8], values[9], values[10], values[11] };
+	box.softness = values[12];
+	box.flags = pPayload[26];
+	box.pTints = pPayload + c_roundedBoxPayloadWords;
+	return box;
+}
+
+//____ decodeRing() _______________________________________________________
+
+GfxBackend::RingPayload GfxBackend::decodeRing(const uint16_t* pPayload)
+{
+	spx values[7];
+	std::memcpy(values, pPayload, sizeof(values));
+
+	RingPayload ring;
+	ring.rect = { values[0], values[1], values[2], values[3] };
+	ring.thickness = values[4];
+	ring.outline = values[5];
+	ring.softness = values[6];
+	ring.flags = pPayload[14];
+	ring.nSlices = pPayload[15];
+	std::memcpy(&ring.start, pPayload + 16, 4);
+	ring.pSlices = pPayload + c_ringPayloadWords;
+	ring.pTints = ring.pSlices + ring.nSlices * c_ringSliceWords;
+	return ring;
+}
+
+//____ RingPayload::sliceSize() ___________________________________________
+
+uint32_t GfxBackend::RingPayload::sliceSize(int slice) const
+{
+	uint32_t size;
+	std::memcpy(&size, pSlices + slice * c_ringSliceWords, 4);
+	return size;
+}
+
+//____ RingPayload::sliceFlags() __________________________________________
+
+uint16_t GfxBackend::RingPayload::sliceFlags(int slice) const
+{
+	return pSlices[slice * c_ringSliceWords + 2];
 }
 
 } // namespace wg

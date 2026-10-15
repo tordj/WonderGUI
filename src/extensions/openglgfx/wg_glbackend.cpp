@@ -30,6 +30,7 @@
 #include <wg_glsurfacefactory.h>
 #include <wg_gledgemap.h>
 #include <wg_gledgemapfactory.h>
+#include <wg_gpushapes.h>
 #include <wg_gfxbase.h>
 #include <wg_gfxutil.h>
 
@@ -816,6 +817,106 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 			break;
 		}
 
+		case Command::DrawShape:
+		{
+			auto kind = ShapeKind(p[0]);
+			int nRects = p[1];
+			int nColors = p[2];
+			int nWords = p[3];
+			const uint16_t* pPayload = p + c_drawShapeHeaderWords - 1;
+			p = pPayload + nWords;
+
+			const RectSPX* pShapeRects = pRects;
+			const HiColor* pShapeColors = pColors;
+			pRects += nRects;
+			pColors += nColors;
+
+			int maxEntries, nSegments;
+			GpuShapes::measure(kind, pPayload, maxEntries, nSegments);
+
+			if (maxEntries == 0)
+			{
+				GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, "Failed DrawShape operation. Unsupported kind of shape.",
+					this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				break;
+			}
+
+			// Shape data in extras buffer, read by the shader.
+
+			if ((int)m_shapeSegments.size() < nSegments)
+				m_shapeSegments.resize(nSegments);
+
+			int extrasOfs = int(pExtrasGL - m_pExtrasBuffer) / 4;
+			int nEntries = GpuShapes::write(kind, pPayload, pShapeColors, pExtrasGL, m_shapeSegments.data());
+
+			// Colors and tint blocks of drawn segments in color buffer, their offsets in the
+			// entries of the segments. Flat tint and tint are applied by the shader.
+
+			for (int i = 0; i < nSegments; i++)
+			{
+				const GpuShapes::Segment& seg = m_shapeSegments[i];
+
+				if (!seg.bDrawn)
+					continue;
+
+				TintTools::DecodedTint tint;
+				int blockSize = 0;
+
+				if (seg.pTint)
+				{
+					const HiColor* pTintColors = seg.pTintColors;
+					TintTools::decodeTint(seg.pTint, pTintColors, tint);
+					blockSize = TintTools::gpuTintBlockSize(tint);
+				}
+
+				int used = int(pColorGL - m_pColorBuffer);
+				_reserveColors(used, 1 + blockSize);
+				pColorGL = m_pColorBuffer + used;
+
+				GLfloat* pEntry = pExtrasGL + seg.entry * 4;
+
+				pEntry[0] = GLfloat(used);
+				seg.color.toLinearFloat(&pColorGL->r);
+				pColorGL++;
+
+				if (seg.pTint)
+				{
+					pEntry[1] = GLfloat(used + 1);
+					TintTools::writeGpuTintBlock(tint, (float*) pColorGL);
+					pColorGL += blockSize;
+				}
+			}
+
+			pExtrasGL += nEntries * 4;
+
+			// Vertices, a quad for each clip rectangle.
+
+			int flatTintOfs = m_tintColorOfs >= 0 ? m_tintColorOfs : 0;		// Entry 0 is white.
+
+			for (int i = 0; i < nRects; i++)
+			{
+				RectI patch = pShapeRects[i] / 64;
+
+				CoordI corners[6] = {	{ patch.x, patch.y }, { patch.x + patch.w, patch.y }, { patch.x + patch.w, patch.y + patch.h },
+										{ patch.x, patch.y }, { patch.x + patch.w, patch.y + patch.h }, { patch.x, patch.y + patch.h } };
+
+				for (auto& corner : corners)
+				{
+					pVertexGL->coord = corner;
+					pVertexGL->uv = { 0.f, 0.f };
+					pVertexGL->colorsOfs = flatTintOfs;
+					pVertexGL->extrasOfs = extrasOfs;
+					pVertexGL->tintmapOfs = { float(m_tintOfs), 0.f };
+					pVertexGL->colorstripOfs = { 0.f, 0.f };
+					pVertexGL++;
+				}
+			}
+
+			*pCommandGL++ = CommandGL::Shape;
+			*pCommandGL++ = nRects * 6;
+			break;
+		}
+
 		case Command::DrawEdgemap:
 		{
 			auto pEdgemap = static_cast<GlEdgemap*>(*pObjects++);
@@ -1472,6 +1573,9 @@ GlBackend::~GlBackend()
 		glDeleteProgram(m_segmentsProg[i][1]);
 	}
 
+	glDeleteProgram(m_shapeProg[0]);
+	glDeleteProgram(m_shapeProg[1]);
+
 	glDeleteFramebuffers(1, &m_framebufferId);
 	glDeleteTextures(1, &m_extrasBufferTex);
 //	glDeleteTextures(1, &m_segmentsTintTexId);
@@ -1723,7 +1827,8 @@ void GlBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, int
 	int nExtrasFloats = 
 		+ pInfo->nBlur * 8
 		+ pInfo->nLineCoords/2 * 4
-		+ pInfo->nRects * 8;			// This is margin for blits (+8) and  subpixel fills (+4).
+		+ pInfo->nRects * 8			// This is margin for blits (+8) and  subpixel fills (+4).
+		+ GpuShapes::maxSessionEntries(*pInfo) * 4;
 
 	m_pExtrasBuffer = new GLfloat[nExtrasFloats];
 	m_extrasBufferSize = 0;
@@ -1737,6 +1842,7 @@ void GlBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, int
 		+ pInfo->nBlur * 2
 		+ pInfo->nLines * 3 + pInfo->nLineClipRects * 4
 		+ pInfo->nEdgemapDraws * 3
+		+ pInfo->nShapeDraws * 2
 		+ pInfo->nSetCanvas];
 
 	m_commandQueueSize = 0;
@@ -2062,6 +2168,16 @@ void GlBackend::endSession()
 				int nEdges = *pCmd++;
 				int nVertices = *pCmd++;
 				glUseProgram(m_segmentsProg[nEdges][m_bActiveCanvasIsA8]);
+
+				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+				vertexOfs += nVertices;
+				break;
+			}
+
+			case CommandGL::Shape:
+			{
+				int nVertices = *pCmd++;
+				glUseProgram(m_shapeProg[m_bActiveCanvasIsA8]);
 
 				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 				vertexOfs += nVertices;
@@ -2429,6 +2545,16 @@ void GlBackend::_loadPrograms(int uboBindingPoint)
 		}
 	}
 
+	// Create and init Shape shaders
+
+	for (int i = 0; i < 2; i++)
+	{
+		GLuint progId = _loadOrCompileProgram(programNb++, shapeVertexShader, i == 0 ? shapeFragmentShader : shapeFragmentShader_A8);
+		_setUniforms(progId, uboBindingPoint);
+		m_shapeProg[i] = progId;
+		LOG_INIT_GLERROR(glGetError());
+	}
+
 	LOG_INIT_GLERROR(glGetError());
 }
 
@@ -2568,6 +2694,9 @@ Blob_p GlBackend::_generateProgramBlob()
 			programs[prg++] = m_segmentsProg[i][canvType];
 		}
 	}
+
+	programs[prg++] = m_shapeProg[0];
+	programs[prg++] = m_shapeProg[1];
 
 	assert(prg == c_nbPrograms);
 

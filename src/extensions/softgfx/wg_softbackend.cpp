@@ -29,6 +29,18 @@
 #include <cstring>
 #include <numeric>
 
+// Prefetches memory about to be written, nothing where not supported. Keep it in code doing
+// more than prefetching, compilers may drop calls to functions that don't.
+
+#if defined(__GNUC__) || defined(__clang__)
+#	define WG_PREFETCH_FOR_WRITE(p)	__builtin_prefetch((p), 1)
+#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_IX86))
+#	include <xmmintrin.h>
+#	define WG_PREFETCH_FOR_WRITE(p)	_mm_prefetch((const char*)(p), _MM_HINT_T0)
+#else
+#	define WG_PREFETCH_FOR_WRITE(p)	((void)0)
+#endif
+
 
 using namespace std;
 
@@ -82,10 +94,24 @@ namespace wg
 		return SoftBackend_p(new SoftBackend());
 	}
 
+	SoftBackend_p SoftBackend::create( const Blueprint& blueprint )
+	{
+		return SoftBackend_p(new SoftBackend(blueprint));
+	}
+
 	//____ constructor _____________________________________________
 
-	SoftBackend::SoftBackend()
+	SoftBackend::SoftBackend() : SoftBackend(Blueprint())
 	{
+	}
+
+	SoftBackend::SoftBackend( const Blueprint& blueprint )
+	{
+		if (blueprint.finalizer)
+			setFinalizer(blueprint.finalizer);
+
+		m_shapes.setMirrorBuffer(blueprint.mirrorBuffer, blueprint.maxMirrorBuffer);
+
 		_initTables();
 
 		// clear kernel tables
@@ -880,6 +906,29 @@ namespace wg
 				break;
 			}
 
+			case Command::DrawShape:
+			{
+				auto kind = ShapeKind(p[0]);
+				int nRects = p[1];
+				int nColors = p[2];
+				int nWords = p[3];
+				const uint16_t* pPayload = p + c_drawShapeHeaderWords - 1;
+				p = pPayload + nWords;
+
+				const RectSPX* pMyRects = pRects;
+				pRects += nRects;
+
+				const HiColor* pMyColors = pColors;
+				pColors += nColors;
+
+				if (_beginShape(kind, pPayload, pMyColors))
+				{
+					for (int i = 0; i < nRects; i++)
+						_drawShape(pMyRects[i] / 64, m_pCanvasPixels, m_canvasPitch);
+				}
+				break;
+			}
+
 			case Command::Blur:
 			case Command::Blit:
 			case Command::ClipBlit:
@@ -1227,6 +1276,17 @@ namespace wg
 			return false;
 
 		m_pKernels[(int)destFormat]->pSegmentKernels[(int)stripSource][(int)blendMode] = pKernel;
+		return true;
+	}
+
+	//____ setCoverageKernel() ________________________________________________
+
+	bool SoftBackend::setCoverageKernel(BlendMode blendMode, SoftFormat destFormat, CoverageOp_p pKernel)
+	{
+		if (!_setupDestFormatKernels(destFormat))
+			return false;
+
+		m_pKernels[(int)destFormat]->pCoverageKernels[(int)blendMode] = pKernel;
 		return true;
 	}
 
@@ -2395,5 +2455,438 @@ namespace wg
 		std::memset(this, 0, sizeof(SinglePassBlitKernels));
 	}
 
+
+	//____ _beginShape() _______________________________________________________
+	/*
+		Decodes the payload of a DrawShape command and prepares the colors of its segments.
+		Returns false if nothing should be drawn.
+	*/
+
+	bool SoftBackend::_beginShape(GfxBackend::ShapeKind kind, const uint16_t* pPayload, const HiColor* pColors)
+	{
+		if (m_blendMode == BlendMode::Ignore)
+			return false;
+
+		if (kind != ShapeKind::RoundedBox && kind != ShapeKind::Ring)
+		{
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, "Failed DrawShape operation. Unsupported kind of shape.",
+				this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+
+		// Check that we have the kernels needed.
+
+		auto pKernels = m_pKernels[(int)m_canvasSoftFormat];
+
+		if (!pKernels || !pKernels->pCoverageKernels[(int)m_blendMode] || !pKernels->pFillKernels[(int)TintMode::Flat][(int)m_blendMode])
+		{
+			char errorMsg[1024];
+
+			snprintf(errorMsg, 1024, "Failed DrawShape operation. SoftBackend is missing fill or coverage kernel for BlendMode::%s onto surface of format %s.",
+				toString(m_blendMode),
+				toString(m_canvasSoftFormat));
+
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+
+		m_shapeKind = kind;
+		m_pShapeCoverageOp = pKernels->pCoverageKernels[(int)m_blendMode];
+
+		if (kind == ShapeKind::RoundedBox)
+		{
+			const RoundedBoxPayload box = decodeRoundedBox(pPayload);
+			auto has = [&box](RoundedBoxFlags flag) { return (box.flags & uint16_t(flag)) != 0; };
+
+			m_roundedBox.rect = box.rect;
+
+			for (int i = 0; i < 4; i++)
+				m_roundedBox.radius[i] = box.radius[i];
+
+			m_roundedBox.outline = box.outline;
+
+			// Colors come first, then the colors of the tints, in the same order.
+
+			const uint16_t* pTintWords = box.pTints;
+
+			HiColor fillColor = has(RoundedBoxFlags::HasFill) ? *pColors++ : HiColor::Transparent;
+			HiColor outlineColor = has(RoundedBoxFlags::HasOutline) ? *pColors++ : HiColor::Transparent;
+
+			if (m_shapeSegments.size() < 2)
+				m_shapeSegments.resize(2);
+
+			_setupShapeSegment(m_shapeSegments[0], has(RoundedBoxFlags::HasFill), fillColor, has(RoundedBoxFlags::HasFillTint), pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[1], has(RoundedBoxFlags::HasOutline), outlineColor, has(RoundedBoxFlags::HasOutlineTint), pTintWords, pColors);
+		}
+		else
+		{
+			const RingPayload ring = decodeRing(pPayload);
+			auto has = [&ring](RingFlags flag) { return (ring.flags & uint16_t(flag)) != 0; };
+			auto sliceHas = [&ring](int slice, RingSliceFlags flag) { return (ring.sliceFlags(slice) & uint16_t(flag)) != 0; };
+
+			const int nSlices = ring.nSlices;
+
+			m_ringSliceSizes.resize(nSlices);
+			for (int i = 0; i < nSlices; i++)
+				m_ringSliceSizes[i] = ring.sliceSize(i);
+
+			m_ring.rect = ring.rect;
+			m_ring.thickness = ring.thickness;
+			m_ring.outline = ring.outline;
+			m_ring.bSquare = has(RingFlags::Square);
+			m_ring.bBack = has(RingFlags::HasBack);
+			m_ring.start = ring.start;
+			m_ring.nSlices = nSlices;
+			m_ring.pSliceSizes = m_ringSliceSizes.data();
+
+			// Colors come first, then the colors of the tints, in the same order.
+
+			const uint16_t* pTintWords = ring.pTints;
+
+			HiColor outlineColor = has(RingFlags::HasOutline) ? *pColors++ : HiColor::Transparent;
+			HiColor hubColor = has(RingFlags::HasHub) ? *pColors++ : HiColor::Transparent;
+			HiColor backColor = has(RingFlags::HasBack) ? *pColors++ : HiColor::Transparent;
+
+			const HiColor* pSliceColors = pColors;
+
+			for (int i = 0; i < nSlices; i++)
+				if (sliceHas(i, RingSliceFlags::Drawn))
+					pColors++;
+
+			int nSegments = SoftShapes::c_ringFirstSliceSegment + nSlices;
+			if ((int)m_shapeSegments.size() < nSegments)
+				m_shapeSegments.resize(nSegments);
+
+			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringOutlineSegment], has(RingFlags::HasOutline), outlineColor, has(RingFlags::HasOutlineTint), pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringHubSegment], has(RingFlags::HasHub), hubColor, has(RingFlags::HasHubTint), pTintWords, pColors);
+			_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringBackSegment], has(RingFlags::HasBack), backColor, has(RingFlags::HasBackTint), pTintWords, pColors);
+
+			for (int i = 0; i < nSlices; i++)
+			{
+				const bool bDrawn = sliceHas(i, RingSliceFlags::Drawn);
+				HiColor color = bDrawn ? *pSliceColors++ : HiColor::Transparent;
+
+				_setupShapeSegment(m_shapeSegments[SoftShapes::c_ringFirstSliceSegment + i], bDrawn, color, sliceHas(i, RingSliceFlags::Tinted), pTintWords, pColors);
+			}
+		}
+
+		return true;
+	}
+
+	//____ _drawShape() ________________________________________________________
+
+	void SoftBackend::_drawShape(const RectI& clip, uint8_t* pOrigin, int pitch)
+	{
+		ShapeSink sink;
+		sink.pBackend = this;
+		sink.pOrigin = pOrigin;
+		sink.pitch = pitch;
+		sink.rowEnd = clip.y + clip.h;
+
+		if (m_shapeKind == ShapeKind::RoundedBox)
+			m_shapes.rasterizeRoundedBox(m_roundedBox, clip, &sink);
+		else
+			m_shapes.rasterizeRing(m_ring, clip, &sink);
+	}
+
+	//____ _setupShapeSegment() ________________________________________________
+
+	void SoftBackend::_setupShapeSegment(ShapeSegment& seg, bool bActive, HiColor color, bool bTint, const uint16_t*& pTintWords, const HiColor*& pTintColors)
+	{
+		seg.bActive = bActive;
+		if (!bActive)
+			return;
+
+		HiColor linear = color.toLinear();
+
+		if (bTint)
+		{
+			TintTools::DecodedTint tint;
+			pTintWords = TintTools::decodeTint(pTintWords, pTintColors, tint);
+			seg.tint.set(tint, linear);
+		}
+		else
+			seg.tint.setFlat(linear);
+
+		seg.bFlat = seg.tint.isFlat() && m_softTint.isFlat();
+
+		if (seg.bFlat)
+		{
+			const HiColor c = seg.tint.flatColor() * m_softTint.flatColor();
+
+			bool bAlphaWeighted = isCoverageAlphaWeighted(m_blendMode);
+			seg.mix[0] = int16_t(bAlphaWeighted ? (c.b * c.a) >> 12 : c.b);
+			seg.mix[1] = int16_t(bAlphaWeighted ? (c.g * c.a) >> 12 : c.g);
+			seg.mix[2] = int16_t(bAlphaWeighted ? (c.r * c.a) >> 12 : c.r);
+			seg.mix[3] = c.a;
+		}
+
+		// Kernel for fully covered runs, device tint applied by the kernel as for fills.
+
+		seg.pFillOp = nullptr;
+		seg.bFillRuns = false;
+
+		if (seg.tint.isFlat())
+		{
+			auto pKernels = m_pKernels[(int)m_canvasSoftFormat];
+
+			HiColor color = seg.tint.flatColor();
+
+			BlendMode mode = m_blendMode;
+			if (mode == BlendMode::Blend && color.a == 4096 && m_colTrans.bTintOpaque)
+				mode = BlendMode::Replace;
+
+			seg.fillColor = color;
+			seg.pFillOp = pKernels->pFillKernels[(int)m_colTrans.mode][(int)mode];
+
+			if (!seg.pFillOp && m_colTrans.mode == TintMode::GradientX)
+			{
+				seg.pFillOp = pKernels->pFillKernels[(int)TintMode::Flat][(int)mode];
+				seg.bFillRuns = true;
+			}
+		}
+	}
+
+	//____ ShapeSink::segmentColors() ___________________________________________
+	// Colors of a segment for coverage pixels, the same everywhere if flat, otherwise
+	// for each pixel of the row.
+
+	const int16_t* SoftBackend::ShapeSink::segmentColors(int segment, int y, int begin, int end, bool& bFlat)
+	{
+		SoftBackend* pB = pBackend;
+		ShapeSegment& seg = pB->m_shapeSegments[segment];
+
+		if (!seg.bActive)
+			return nullptr;
+
+		bFlat = seg.bFlat;
+		if (seg.bFlat)
+			return seg.mix;
+
+		const int length = end - begin;
+		HiColor* pColors = pB->_shapeBuffer(0, length);
+		pB->_shapeSegmentColors(segment, begin, y, length, pColors);
+
+		if ((int)pB->m_shapeMixBuffers.size() <= segment)
+			pB->m_shapeMixBuffers.resize(segment + 1);
+
+		auto& buffer = pB->m_shapeMixBuffers[segment];
+		if ((int)buffer.size() < length * 4)
+			buffer.resize(length * 4);
+
+		const bool bAlphaWeighted = isCoverageAlphaWeighted(pB->m_blendMode);
+		int16_t* p = buffer.data();
+
+		for (int i = 0; i < length; i++)
+		{
+			const HiColor& c = pColors[i];
+			p[0] = int16_t(bAlphaWeighted ? (c.b * c.a) >> 12 : c.b);
+			p[1] = int16_t(bAlphaWeighted ? (c.g * c.a) >> 12 : c.g);
+			p[2] = int16_t(bAlphaWeighted ? (c.r * c.a) >> 12 : c.r);
+			p[3] = c.a;
+			p += 4;
+		}
+
+		return buffer.data();
+	}
+
+	//____ ShapeSink::row() ____________________________________________________
+
+	void SoftBackend::ShapeSink::row(int y, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels)
+	{
+		pBackend->_drawShapeRuns(pOrigin, pitch, y, y + 1, nRuns, pRuns, pPixels, y + 1 < rowEnd ? y + 1 : -1);
+	}
+
+	//____ ShapeSink::rows() ___________________________________________________
+
+	void SoftBackend::ShapeSink::rows(int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels)
+	{
+		pBackend->_drawShapeRuns(pOrigin, pitch, yBeg, yEnd, nRuns, pRuns, pPixels, yEnd < rowEnd ? yEnd : -1);
+	}
+
+	//____ _drawShapeRuns() ____________________________________________________
+	/*
+		Draws the same runs on rows yBeg up to yEnd. Fully covered runs are drawn with
+		the fill kernels, tinted like fills. Partly covered pixels, with colors already
+		mixed, are drawn with the coverage kernels.
+
+		The span of the runs on prefetchRow, the row likely drawn next, is then prefetched,
+		unless -1, to arrive while that row is rasterized. Without it, shapes drawn where
+		the canvas isn't in cache spend much of their time waiting for it.
+	*/
+
+	void SoftBackend::_drawShapeRuns(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels, int prefetchRow)
+	{
+		auto pKernels = m_pKernels[(int)m_canvasSoftFormat];
+		const int pixelBytes = m_canvasPixelBytes;
+		const int nRows = yEnd - yBeg;
+
+		for (int i = 0; i < nRuns; i++)
+		{
+			const SoftShapes::Run& run = pRuns[i];
+			const int length = run.end - run.begin;
+
+			if (run.segment >= 0)
+			{
+				// Run of fully covered pixels.
+
+				ShapeSegment& seg = m_shapeSegments[run.segment];
+
+				if (seg.tint.isFlat())
+				{
+					// Flat segment color, device tint applied by the kernel as for fills.
+
+					FillOp_p pOp = seg.pFillOp;
+
+					if (!pOp)
+						continue;
+
+					if (m_tintLayout == TintLayout::None)
+					{
+						uint8_t* pDst = pOrigin + yBeg * pitch + run.begin * pixelBytes;
+						pOp(pDst, pixelBytes, pitch - length * pixelBytes, yEnd - yBeg, length, seg.fillColor, m_colTrans, { run.begin, yBeg });
+					}
+					else
+					{
+						_forTintSpans(RectI(run.begin, yBeg, length, yEnd - yBeg), seg.bFillRuns, [&](const RectI& sub)
+						{
+							uint8_t* pDst = pOrigin + sub.y * pitch + sub.x * pixelBytes;
+							pOp(pDst, pixelBytes, pitch - sub.w * pixelBytes, sub.h, sub.w, seg.fillColor, m_colTrans, sub.pos());
+						});
+					}
+				}
+				else
+				{
+					// Segment tint varies, colors for each pixel.
+
+					for (int y = yBeg; y < yEnd; y++)
+					{
+						HiColor* pColors = _shapeBuffer(0, length);
+						_shapeSegmentColors(run.segment, run.begin, y, length, pColors);
+
+						uint8_t* pDst = pOrigin + y * pitch + run.begin * pixelBytes;
+
+						TintMode	savedMode = m_colTrans.mode;
+						const HiColor* pSavedAxisX = m_colTrans.pTintAxisX;
+						int			savedTintX = m_colTrans.tintRect.x;
+						HiColor		savedFlatTint = m_colTrans.flatTintColor;
+
+						FillOp_p pOp = pKernels->pFillKernels[(int)TintMode::GradientX][(int)m_blendMode];
+
+						if (pOp)
+						{
+							m_colTrans.mode = TintMode::GradientX;
+							m_colTrans.pTintAxisX = pColors;
+							m_colTrans.tintRect.x = run.begin;
+
+							pOp(pDst, pixelBytes, 0, 1, length, HiColor::White, m_colTrans, { run.begin, y });
+						}
+						else
+						{
+							// No GradientX kernels, draw runs of same color with Flat kernels.
+
+							pOp = pKernels->pFillKernels[(int)TintMode::Flat][(int)m_blendMode];
+							m_colTrans.mode = TintMode::Flat;
+
+							int beg = 0;
+							while (beg < length)
+							{
+								int end = beg + 1;
+								while (end < length && pColors[end] == pColors[beg])
+									end++;
+
+								m_colTrans.flatTintColor = pColors[beg];
+								pOp(pDst + beg * pixelBytes, pixelBytes, 0, 1, end - beg, HiColor::White, m_colTrans, { run.begin + beg, y });
+								beg = end;
+							}
+						}
+
+						m_colTrans.mode = savedMode;
+						m_colTrans.pTintAxisX = pSavedAxisX;
+						m_colTrans.tintRect.x = savedTintX;
+						m_colTrans.flatTintColor = savedFlatTint;
+					}
+				}
+			}
+			else
+			{
+				// Partly covered pixels. A few pixels repeated on many rows, like the sides
+				// of a box, are drawn column by column.
+
+				const CoveragePixel* pMixed = pPixels;
+				pPixels += length;
+
+				if (nRows > 1 && length <= 4)
+				{
+					if ((int)m_coverageColumn.size() < nRows)
+						m_coverageColumn.resize(nRows);
+
+					for (int x = 0; x < length; x++)
+					{
+						std::fill(m_coverageColumn.begin(), m_coverageColumn.begin() + nRows, pMixed[x]);
+
+						uint8_t* pDst = pOrigin + yBeg * pitch + (run.begin + x) * pixelBytes;
+						m_pShapeCoverageOp(pDst, pitch, nRows, m_coverageColumn.data(), m_colTrans);
+					}
+				}
+				else
+				{
+					for (int y = yBeg; y < yEnd; y++)
+					{
+						uint8_t* pDst = pOrigin + y * pitch + run.begin * pixelBytes;
+						m_pShapeCoverageOp(pDst, pixelBytes, length, pMixed, m_colTrans);
+					}
+				}
+			}
+		}
+
+		if (prefetchRow >= 0 && nRuns > 0)
+		{
+			const uint8_t* pRow = pOrigin + prefetchRow * pitch;
+			const int beg = pRuns[0].begin * pixelBytes;
+			const int end = pRuns[nRuns - 1].end * pixelBytes;
+
+			for (int ofs = beg; ofs < end; ofs += int(kCacheLineSize))
+				WG_PREFETCH_FOR_WRITE(pRow + ofs);
+
+			WG_PREFETCH_FOR_WRITE(pRow + end - 1);
+		}
+	}
+
+	//____ _shapeSegmentColors() _______________________________________________
+	// Colors of a segment that isn't flat, including the device tint, for a row of pixels.
+
+	void SoftBackend::_shapeSegmentColors(int segment, int x, int y, int length, HiColor* pOutput)
+	{
+		ShapeSegment& seg = m_shapeSegments[segment];
+
+		seg.tint.generate(x, y, 1, 0, length, pOutput);
+
+		if (!m_softTint.isFlat())
+		{
+			HiColor* pDevice = _shapeBuffer(1, length);
+			m_softTint.generate(x, y, 1, 0, length, pDevice);
+
+			for (int i = 0; i < length; i++)
+				pOutput[i] = pOutput[i] * pDevice[i];
+		}
+		else if (!m_softTint.flatColor().isOpaqueWhite())
+		{
+			HiColor device = m_softTint.flatColor();
+
+			for (int i = 0; i < length; i++)
+				pOutput[i] = pOutput[i] * device;
+		}
+	}
+
+	//____ _shapeBuffer() ______________________________________________________
+
+	HiColor* SoftBackend::_shapeBuffer(int index, int length)
+	{
+		auto& buffer = m_shapeBuffers[index];
+		if ((int)buffer.size() < length)
+			buffer.resize(length);
+		return buffer.data();
+	}
 
 } // namespace wg

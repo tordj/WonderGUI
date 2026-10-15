@@ -130,18 +130,19 @@ namespace wg
 
 		// 
 
-		// Force canvas to be square.
+		// Force canvas to be square. Kept on whole pixels, so the frame around it meets the
+		// background of the pie without seams.
 
 		if (canvas.w != canvas.h)
 		{
 			if (canvas.w > canvas.h)
 			{
-				canvas.x += (canvas.w - canvas.h) / 2;
+				canvas.x += ((canvas.w - canvas.h) / 2) & ~63;
 				canvas.w = canvas.h;
 			}
 			else if (canvas.h > canvas.w)
 			{
-				canvas.y += (canvas.h - canvas.w) / 2;
+				canvas.y += ((canvas.h - canvas.w) / 2) & ~63;
 				canvas.h = canvas.w;
 			}
 			bFramed = true;
@@ -168,8 +169,7 @@ namespace wg
 
 		//
 
-		float sliceSizes[c_maxSlices];
-		HiColor sliceColors[c_maxSlices];
+		RingSlice slices[c_maxSlices + 2];			// Room for empty slices before and after.
 		int nSlices = 0;
 
 		HiColor hubColor = m_hubColor.a == 4096 ? m_hubColor : HiColor::blend(m_backColor, m_hubColor, BlendMode::Blend);
@@ -180,8 +180,7 @@ namespace wg
 		{
 			if( !m_emptyColor.isFullyTransparent() )
 			{
-				sliceColors[nSlices] = m_emptyColor;
-				sliceSizes[nSlices++] = (m_maxRange-m_minRange)/2;
+				slices[nSlices++] = { (m_maxRange-m_minRange)/2, m_emptyColor };
 			}
 
 			totalLength = m_minRange + std::abs(value - 0.5f) * (m_maxRange - m_minRange);
@@ -210,18 +209,16 @@ namespace wg
 
 			for (int i = 0; i < m_nSlices; i++)
 			{
-				sliceColors[nSlices] = HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value*4096));
+				HiColor color = HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value*4096));
 
 				float size = m_slices[i].size*m_maxRange;
 				if (length + size >= totalLength)
 				{
-					sliceSizes[nSlices] = totalLength - length;
-					nSlices++;
+					slices[nSlices++] = { totalLength - length, color };
 					break;
 				}
-				sliceSizes[nSlices] = size;
+				slices[nSlices++] = { size, color };
 				length += size;
-				nSlices++;
 			}
 		}
 		else
@@ -235,9 +232,7 @@ namespace wg
 				float size = m_slices[i].size*m_maxRange;
 				if (length + size > gapSize )
 				{
-					sliceSizes[nSlices] = length < gapSize ? length + size - gapSize : size;
-					sliceColors[nSlices] = HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value * 4096));
-					nSlices++;
+					slices[nSlices++] = { length < gapSize ? length + size - gapSize : size, HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value * 4096)) };
 				}
 				length += size;
 			}
@@ -249,14 +244,12 @@ namespace wg
 		{
 			if (value > 0.f && value < 1.f)
 			{
-				sliceColors[nSlices] = m_emptyColor;
-				sliceSizes[nSlices++] = (0.5f - std::abs(value-0.5f) ) * (m_maxRange - m_minRange);
+				slices[nSlices++] = { (0.5f - std::abs(value-0.5f) ) * (m_maxRange - m_minRange), m_emptyColor };
 			}
 
 			if( m_bStartFromCenter && value < 0.5f )
 			{
-				std::reverse(sliceColors, sliceColors+nSlices);
-				std::reverse(sliceSizes, sliceSizes+nSlices);
+				std::reverse(slices, slices+nSlices);
 			}
 
 		}
@@ -264,15 +257,29 @@ namespace wg
 		{
 			if (value < 1.f && !m_emptyColor.isFullyTransparent() )
 			{
-				sliceColors[nSlices] = m_emptyColor;
-				sliceSizes[nSlices++] = (1.f - value) * (m_maxRange - m_minRange);
+				slices[nSlices++] = { (1.f - value) * (m_maxRange - m_minRange), m_emptyColor };
 			}
 		}
 		
 		
 		//
 		
-		pDevice->drawPieChart(canvas, startPos, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
+		if (m_hubSize >= 1.f && !m_bRectangular)
+			return;
+
+		RingSpec ring;
+		ring.rect = canvas;
+		ring.bSquare = m_bRectangular;
+		ring.start = startPos;
+		ring.nSlices = nSlices;
+		ring.pSlices = slices;
+		ring.hubColor = hubColor;
+		ring.backColor = m_backColor;
+
+		if (m_hubSize > 0.f)
+			ring.thickness = std::max(spx(canvas.w / 2 * (1.f - std::min(m_hubSize, 1.f))), spx(1));
+
+		pDevice->drawRing(ring);
 	}
 
 	//____  _defaultSize() ___________________________________________________

@@ -226,6 +226,18 @@ namespace wg
 				decoder >> nTransforms;
 				decoder >> nObjects;
 
+				uint16_t	nShapeDraws = 0;
+				uint16_t	nShapeTints = 0;
+				int32_t		nShapeSegments = 0;
+
+				if( header.size >= 48 )
+				{
+					decoder >> nShapeDraws;
+					decoder >> nShapeTints;
+					decoder >> nShapeSegments;
+					decoder.skip(header.size - 48);
+				}
+
 				m_charStream << "    canvasObject = " << objectId << std::endl;
 				m_charStream << "    canvasRef = " << toString(canvasRef) << std::endl;
 				m_charStream << "    nUpdateRects " << nUpdateRects << std::endl;
@@ -243,6 +255,9 @@ namespace wg
 				m_charStream << "    nColors = " << nColors << std::endl;
 				m_charStream << "    nTransforms = " << nTransforms << std::endl;
 				m_charStream << "    nObjects = " << nObjects << std::endl;
+				m_charStream << "    nShapeDraws = " << nShapeDraws << std::endl;
+				m_charStream << "    nShapeTints = " << nShapeTints << std::endl;
+				m_charStream << "    nShapeSegments = " << nShapeSegments << std::endl;
 
 				break;
 			}

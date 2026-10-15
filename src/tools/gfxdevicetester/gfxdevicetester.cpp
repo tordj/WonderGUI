@@ -48,6 +48,8 @@
 #include "testsuites/blursourcetests.h"
 #include "testsuites/readbacktests.h"
 #include "testsuites/edgemaptinttests.h"
+#include "testsuites/roundedboxtests.h"
+#include "testsuites/ringtests.h"
 
 #include <wg_softkernels_bgr565srgb_extras.h>
 
@@ -844,6 +846,8 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite([]() { return new BlurSourceTests(); });
 	add_testsuite([]() { return new ReadbackTests(); });
 	add_testsuite([]() { return new EdgemapTintTests(); });
+	add_testsuite([]() { return new RoundedBoxTests(); });
+	add_testsuite([]() { return new RingTests(); });
 
 	regen_testentries();
 }

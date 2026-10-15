@@ -1294,6 +1294,274 @@ WG_GL_SEGCOLOR_FUNC
 "}";
 
 
+// Shapes (Command::DrawShape), see GpuShapes for the entries read from the extras buffer. The
+// coverage of each pixel by each segment is worked out from the geometry. Partly covered
+// pixels get the colors of the drawn segments covering them mixed, weighted by coverage and
+// alpha, like edgemaps. Pixels not covered by any drawn segment are left alone.
+
+const char GlBackend::shapeVertexShader[] =
+
+"#version 330 core\n"
+
+"layout(std140) uniform Canvas"
+"{"
+"	float  canvasWidth;"
+"	float  canvasHeight;"
+"	float  canvasYOfs;"
+"	float  canvasYMul;"
+"};"
+
+"uniform samplerBuffer colorBufferId;					"
+"layout(location = 0) in ivec2 pos;                     "
+"layout(location = 2) in int colorOfs;                  "
+"layout(location = 3) in int extrasOfs;                 "
+"layout(location = 4) in vec2 tintmapOfs;               "
+"flat out int shapeOfs;									"
+"flat out int tintOfs;									"
+"out vec2 canvasPos;									"
+"flat out vec4 flatTint;								"
+
+"void main()											"
+"{                                                      "
+"   gl_Position.x = pos.x*2/canvasWidth - 1.0;              "
+"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasHeight - 1.0;    "
+"   gl_Position.z = 0.0;                                    "
+"   gl_Position.w = 1.0;                                    "
+"   shapeOfs = extrasOfs;								"
+"   tintOfs = int(tintmapOfs.x);						"
+"   canvasPos = vec2(pos);								"
+"   flatTint = texelFetch(colorBufferId, colorOfs);		"
+"}                                                      ";
+
+// Coverage of the segments of a shape at a pixel center, accumulated as color times alpha
+// and alpha, weighted by coverage, in acc, and the coverage of drawn segments in covered.
+// Needs extrasBufferId, colorBufferId and WG_GL_TINT_FUNC.
+
+#define WG_GL_SHAPE_FUNCS \
+"vec4 shapeEntry(int i)																" \
+"{																					" \
+"	return texelFetch(extrasBufferId, i);											" \
+"}																					" \
+"float spanCoverage(float a, float b, float p)										" \
+"{																					" \
+"	return clamp(min(p + 0.5, b) - max(p - 0.5, a), 0.0, 1.0);						" \
+"}																					" \
+"float rectCoverage(vec4 r, vec2 p)													" \
+"{																					" \
+"	return spanCoverage(r.x, r.z, p.x) * spanCoverage(r.y, r.w, p.y);				" \
+"}																					" \
+"float halfPlaneCoverage(float s, vec2 n)											" \
+"{																					" \
+"	vec2 an = abs(n);																" \
+"	float a = max(an.x, an.y);														" \
+"	float b = min(an.x, an.y);														" \
+"	if (b < 0.001)																	" \
+"		return clamp(s + 0.5, 0.0, 1.0);											" \
+"	float t = s + 0.5 * (a + b);													" \
+"	if (t <= 0.0)																	" \
+"		return 0.0;																	" \
+"	if (t >= a + b)																	" \
+"		return 1.0;																	" \
+"	if (t < b)																		" \
+"		return t * t / (2.0 * a * b);												" \
+"	if (t > a)																		" \
+"		return 1.0 - (a + b - t) * (a + b - t) / (2.0 * a * b);						" \
+"	return (t - 0.5 * b) / a;														" \
+"}																					" \
+"float circleCoverage(float radius, vec2 v, float d)								" \
+"{																					" \
+"	if (radius <= 0.0)																" \
+"		return 0.0;																	" \
+"	return d > 0.001 ? halfPlaneCoverage(radius - d, v / d) : clamp(radius + 0.5, 0.0, 1.0);	" \
+"}																					" \
+"float roundedRectCoverage(vec4 r, vec4 radii, vec2 p)								" \
+"{																					" \
+"	float c = rectCoverage(r, p);													" \
+"	vec2 center;																	" \
+"	float radius;																	" \
+"	if (radii.x > 0.0 && p.x < r.x + radii.x && p.y < r.y + radii.x)				" \
+"	{																				" \
+"		radius = radii.x;															" \
+"		center = vec2(r.x + radius, r.y + radius);									" \
+"	}																				" \
+"	else if (radii.y > 0.0 && p.x > r.z - radii.y && p.y < r.y + radii.y)			" \
+"	{																				" \
+"		radius = radii.y;															" \
+"		center = vec2(r.z - radius, r.y + radius);									" \
+"	}																				" \
+"	else if (radii.z > 0.0 && p.x > r.z - radii.z && p.y > r.w - radii.z)			" \
+"	{																				" \
+"		radius = radii.z;															" \
+"		center = vec2(r.z - radius, r.w - radius);									" \
+"	}																				" \
+"	else if (radii.w > 0.0 && p.x < r.x + radii.w && p.y > r.w - radii.w)			" \
+"	{																				" \
+"		radius = radii.w;															" \
+"		center = vec2(r.x + radius, r.w - radius);									" \
+"	}																				" \
+"	else																			" \
+"		return c;																	" \
+"	vec2 v = p - center;															" \
+"	return min(c, circleCoverage(radius, v, length(v)));							" \
+"}																					" \
+"void addSegment(int seg, float c, vec2 p, inout vec4 acc, inout float covered)		" \
+"{																					" \
+"	if (c <= 0.0)																	" \
+"		return;																		" \
+"	vec4 s = shapeEntry(seg);														" \
+"	if (s.x < 0.0)																	" \
+"		return;																		" \
+"	vec4 col = texelFetch(colorBufferId, int(s.x));									" \
+"	if (s.y >= 0.0)																	" \
+"		col *= evalTint(colorBufferId, int(s.y), p);								" \
+"	acc += vec4(col.rgb * col.a, col.a) * c;										" \
+"	covered += c;																	" \
+"}																					" \
+"void boxCoverage(int ofs, vec2 p, inout vec4 acc, inout float covered)				" \
+"{																					" \
+"	float outer = roundedRectCoverage(shapeEntry(ofs + 1), shapeEntry(ofs + 2), p);	" \
+"	float fill = outer;																" \
+"	if ((int(shapeEntry(ofs).y) & 1) != 0)											" \
+"		fill = min(outer, roundedRectCoverage(shapeEntry(ofs + 3), shapeEntry(ofs + 4), p));	" \
+"	addSegment(ofs + 5, fill, p, acc, covered);										" \
+"	addSegment(ofs + 6, outer - fill, p, acc, covered);								" \
+"}																					" \
+"void ringElements(int ofs, int n, int base, float band, vec2 p, vec2 v, float d, inout vec4 acc, inout float covered)	" \
+"{																					" \
+"	if (n == 1)																		" \
+"	{																				" \
+"		addSegment(ofs + int(shapeEntry(base).y), band, p, acc, covered);			" \
+"		return;																		" \
+"	}																				" \
+"	float theta = d > 0.0001 ? fract(atan(v.x, -v.y) * 0.15915494) : 0.0;			" \
+"	int lo = 0;																		" \
+"	int hi = n;																		" \
+"	while (lo < hi)																	" \
+"	{																				" \
+"		int mid = (lo + hi) / 2;													" \
+"		if (shapeEntry(base + mid).x <= theta)										" \
+"			lo = mid + 1;															" \
+"		else																		" \
+"			hi = mid;																" \
+"	}																				" \
+"	int first = lo > 0 ? lo - 1 : n - 1;											" \
+"	float w = min(0.25, 0.70710678 / (6.2831853 * max(d, 0.0001)));					" \
+"	float behind = fract(theta - shapeEntry(base + first).x);						" \
+"	for (int i = 0; i < n - 1 && behind < w; i++)									" \
+"	{																				" \
+"		int prev = first > 0 ? first - 1 : n - 1;									" \
+"		behind += fract(shapeEntry(base + first).x - shapeEntry(base + prev).x);	" \
+"		first = prev;																" \
+"	}																				" \
+"	float g = 1.0;																	" \
+"	float ahead = -behind;															" \
+"	int k = first;																	" \
+"	vec4 element = shapeEntry(base + k);											" \
+"	for (int i = 0; i < n; i++)														" \
+"	{																				" \
+"		int next = k + 1 < n ? k + 1 : 0;											" \
+"		vec4 nextElement = shapeEntry(base + next);									" \
+"		ahead += fract(nextElement.x - element.x);									" \
+"		float gEnd = 0.0;															" \
+"		if (i < n - 1 && ahead < w)													" \
+"		{																			" \
+"			float a = 6.2831853 * nextElement.x;									" \
+"			gEnd = min(g, halfPlaneCoverage(-d * sin(6.2831853 * ahead), vec2(cos(a), sin(a))));	" \
+"		}																			" \
+"		addSegment(ofs + int(element.y), band * (g - gEnd), p, acc, covered);		" \
+"		if (gEnd <= 0.0)															" \
+"			break;																	" \
+"		g = gEnd;																	" \
+"		k = next;																	" \
+"		element = nextElement;														" \
+"	}																				" \
+"}																					" \
+"void ringCoverage(int ofs, vec2 p, inout vec4 acc, inout float covered)			" \
+"{																					" \
+"	vec4 head = shapeEntry(ofs);													" \
+"	int flags = int(head.y);														" \
+"	vec4 circles = shapeEntry(ofs + 1);												" \
+"	vec4 inner = shapeEntry(ofs + 2);												" \
+"	vec4 rect = shapeEntry(ofs + 3);												" \
+"	vec2 v = p - circles.xy;														" \
+"	float d = length(v);															" \
+"	bool bSquare = (flags & 1) != 0;												" \
+"	float c0 = bSquare ? rectCoverage(rect, p) : circleCoverage(circles.z, v, d);	" \
+"	float c1 = min(bSquare ? rectCoverage(shapeEntry(ofs + 4), p) : circleCoverage(circles.w, v, d), c0);	" \
+"	float c2 = min(circleCoverage(inner.x, v, d), c1);								" \
+"	float c3 = min(circleCoverage(inner.y, v, d), c2);								" \
+"	float back = (flags & 2) != 0 ? max(rectCoverage(rect, p) - c0, 0.0) : 0.0;		" \
+"	float outline = c0 - c1 + c2 - c3;												" \
+"	float band = c1 - c2;															" \
+"	if ((flags & 16) == 0)															" \
+"	{																				" \
+"		outline += band;															" \
+"		band = 0.0;																	" \
+"	}																				" \
+"	addSegment(ofs + 5, back, p, acc, covered);										" \
+"	addSegment(ofs + 6, outline, p, acc, covered);									" \
+"	addSegment(ofs + 7, (flags & 4) != 0 ? c3 : 0.0, p, acc, covered);				" \
+"	if (band > 0.0)																	" \
+"		ringElements(ofs, int(head.z), ofs + int(head.w), band, p, v, d, acc, covered);	" \
+"}																					" \
+"float shapeCoverage(int ofs, vec2 p, out vec4 acc)									" \
+"{																					" \
+"	acc = vec4(0.0);																" \
+"	float covered = 0.0;															" \
+"	int kind = int(shapeEntry(ofs).x);												" \
+"	if (kind == 1)																	" \
+"		boxCoverage(ofs, p, acc, covered);											" \
+"	else if (kind == 2)																" \
+"		ringCoverage(ofs, p, acc, covered);											" \
+"	return covered;																	" \
+"}																					"
+
+const char GlBackend::shapeFragmentShader[] =
+
+"#version 330 core\n"
+"uniform samplerBuffer extrasBufferId;			"
+"uniform samplerBuffer colorBufferId;			"
+"uniform samplerBuffer tintmapBufferId;			"
+"flat in int shapeOfs;							"
+"flat in int tintOfs;							"
+"in vec2 canvasPos;								"
+"flat in vec4 flatTint;							"
+WG_GL_TINT_FUNC
+WG_GL_SHAPE_FUNCS
+
+"out vec4 color;								"
+"void main()									"
+"{												"
+"	vec4 acc;									"
+"	if (shapeCoverage(shapeOfs, canvasPos, acc) < 1.0 / 256.0)	"
+"		discard;								"
+"	vec4 col = vec4(acc.a > 0.0 ? acc.rgb / acc.a : vec3(0.0), acc.a);	"
+"	color = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) * col : col) * flatTint;	"
+"}";
+
+const char GlBackend::shapeFragmentShader_A8[] =
+
+"#version 330 core\n"
+"uniform samplerBuffer extrasBufferId;			"
+"uniform samplerBuffer colorBufferId;			"
+"uniform samplerBuffer tintmapBufferId;			"
+"flat in int shapeOfs;							"
+"flat in int tintOfs;							"
+"in vec2 canvasPos;								"
+"flat in vec4 flatTint;							"
+WG_GL_TINT_FUNC
+WG_GL_SHAPE_FUNCS
+
+"out vec4 color;								"
+"void main()									"
+"{												"
+"	vec4 acc;									"
+"	if (shapeCoverage(shapeOfs, canvasPos, acc) < 1.0 / 256.0)	"
+"		discard;								"
+"	color.r = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos).a : 1.0) * acc.a * flatTint.a;	"
+"}";
+
+
 
 
 /*

@@ -55,6 +55,8 @@ set(SOURCES
 	wg_softedgemap.h
 	wg_softedgemapfactory.cpp
 	wg_softedgemapfactory.h
+	wg_softshapes.cpp
+	wg_softshapes.h
 )
 
 set(INCDIRS

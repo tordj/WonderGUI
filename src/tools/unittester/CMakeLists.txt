@@ -17,6 +17,11 @@ set( SOURCES
 	tests/qoi.h
 	tests/surfacefile.cpp
 	tests/surfacefile.h
+	tests/softshapes.cpp
+	tests/softshapes.h
+	tests/shaperender.cpp
+	tests/shaperender.h
+	tests/shapecoverage.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})

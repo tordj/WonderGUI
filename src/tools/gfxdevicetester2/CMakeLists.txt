@@ -20,6 +20,8 @@ set( SOURCES
 	testsuites/colortests.h
 	testsuites/edgemaptests.h
 	testsuites/edgemaptinttests.h
+	testsuites/roundedboxtests.h
+	testsuites/ringtests.h
 	testsuites/edgemaptoolstests.h
 	testsuites/filltests.h
 	testsuites/layerroundtriptests.h

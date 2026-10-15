@@ -162,6 +162,11 @@ namespace wg
 		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64) override;
 		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness = 64) override;
 
+		// Shapes
+
+		void	drawRoundedBox(const RoundedBoxSpec& spec) override;
+		void	drawRing(const RingSpec& spec) override;
+
 		// Blit methods
 
 		void	blit(CoordSPX dest) override;
@@ -304,6 +309,8 @@ namespace wg
 		void _stretchBlitWithRigidPartX(const RectSPX& src, const RectSPX& dst, spx rigidPartOfs, spx rigidPartLength, spx rigidPartLengthDst);
 		void _stretchBlitWithRigidPartY(const RectSPX& src, const RectSPX& dst, spx rigidPartOfs, spx rigidPartLength, spx rigidPartLengthDst);
 
+		bool _isShapeColorDrawn(HiColor color) const;
+		int _addShapeClipRects(const RectSPX& area);
 
 		//
 

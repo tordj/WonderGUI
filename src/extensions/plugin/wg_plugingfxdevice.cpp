@@ -21,6 +21,7 @@
 =========================================================================*/
 #include <wg_plugincalls.h>
 #include <wg_plugingfxdevice.h>
+#include <algorithm>
 #include <wg_pluginsurface.h>
 #include <wg_pluginedgemap.h>
 #include <wg_pluginsurfacefactory.h>
@@ -670,6 +671,84 @@ namespace wg
     void PluginGfxDevice::flipTileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, GfxFlip flip, CoordSPX shift)
     {
         PluginCalls::gfxDevice->flipTileEdgemap(m_cDevice, (const wg_rectSPX*)&dest, static_cast<PluginEdgemap*>(pEdgemap)->cObject(), (wg_gfxFlip) flip, { shift.x,shift.y });
+    }
+
+    //____ drawRoundedBox() ___________________________________________________
+    //
+    // The host gets its own copies of the Tints.
+
+    void PluginGfxDevice::drawRoundedBox(const RoundedBoxSpec& spec)
+    {
+        wg_roundedBoxSpec box;
+
+        box.rect = *(const wg_rectSPX*)&spec.rect;
+
+        for (int i = 0; i < 4; i++)
+            box.radius[i] = spec.radius[i];
+
+        box.outline = *(const wg_borderSPX*)&spec.outline;
+        box.fillColor = *(const wg_color*)&spec.fillColor;
+        box.outlineColor = *(const wg_color*)&spec.outlineColor;
+        box.fillTint = PluginCalls::_hostTint(spec.pFillTint);
+        box.outlineTint = PluginCalls::_hostTint(spec.pOutlineTint);
+
+        PluginCalls::gfxDevice->drawRoundedBox(m_cDevice, &box);
+
+        if (box.fillTint)
+            PluginCalls::object->release(box.fillTint);
+        if (box.outlineTint)
+            PluginCalls::object->release(box.outlineTint);
+    }
+
+    //____ drawRing() _________________________________________________________
+    //
+    // The host gets its own copies of the Tints.
+
+    void PluginGfxDevice::drawRing(const RingSpec& spec)
+    {
+        // Invalid slices are passed on for the host to report.
+
+        int nSlices = std::min(spec.nSlices, maxRingSlices());
+        int nCopied = spec.pSlices ? std::max(nSlices, 0) : 0;
+
+        if ((int)m_ringSlices.size() < nCopied)
+            m_ringSlices.resize(nCopied);
+
+        wg_ringSlice* slices = m_ringSlices.data();
+
+        for (int i = 0; i < nCopied; i++)
+        {
+            slices[i].size = spec.pSlices[i].size;
+            slices[i].color = *(const wg_color*)&spec.pSlices[i].color;
+            slices[i].tint = PluginCalls::_hostTint(spec.pSlices[i].pTint);
+        }
+
+        wg_ringSpec ring;
+
+        ring.rect = *(const wg_rectSPX*)&spec.rect;
+        ring.thickness = spec.thickness;
+        ring.outline = spec.outline;
+        ring.start = spec.start;
+        ring.nSlices = nSlices;
+        ring.pSlices = spec.pSlices ? slices : nullptr;
+        ring.bSquare = spec.bSquare;
+        ring.outlineColor = *(const wg_color*)&spec.outlineColor;
+        ring.outlineTint = PluginCalls::_hostTint(spec.pOutlineTint);
+        ring.hubColor = *(const wg_color*)&spec.hubColor;
+        ring.hubTint = PluginCalls::_hostTint(spec.pHubTint);
+        ring.backColor = *(const wg_color*)&spec.backColor;
+        ring.backTint = PluginCalls::_hostTint(spec.pBackTint);
+
+        PluginCalls::gfxDevice->drawRing(m_cDevice, &ring);
+
+        auto release = [](wg_obj obj) { if (obj) PluginCalls::object->release(obj); };
+
+        for (int i = 0; i < nCopied; i++)
+            release(slices[i].tint);
+
+        release(ring.outlineTint);
+        release(ring.hubTint);
+        release(ring.backTint);
     }
 
     //.____ blitNinePatch() ___________________________________________________

@@ -30,6 +30,8 @@ set( TESTSUITES
 	${TESTSUITE_DIR}/colortests.h
 	${TESTSUITE_DIR}/edgemaptests.h
 	${TESTSUITE_DIR}/edgemaptinttests.h
+	${TESTSUITE_DIR}/roundedboxtests.h
+	${TESTSUITE_DIR}/ringtests.h
 	${TESTSUITE_DIR}/edgemaptoolstests.h
 	${TESTSUITE_DIR}/filltests.h
 	${TESTSUITE_DIR}/linetests.h

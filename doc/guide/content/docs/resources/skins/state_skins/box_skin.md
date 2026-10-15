@@ -13,8 +13,11 @@ BoxSkin is slightly more advanced than ColorSkin. With BoxSkin your filled recta
 | Property         | Set in state | Description                                      |
 | ---------------- | ----------- | ------------------------------------------------ |
 | color            | yes | Color of interior of the box. Defaults to White. |
+| cornerRadius     | no  | Radius (in pts) of the corners, either one value for all corners or four values clockwise from top-left. Defaults to 0 (square corners). |
 | outlineColor     | yes | Color of outline of the box. Defaults to Black.  |
 | outlineThickness | no          | Thickness (in pts) of outline. Defaults to 1.    |
+
+Rounded corners are drawn with subpixel precision and antialiased, so a rounded BoxSkin looks the same at any scale. Radii that don't fit the box are scaled down together, so a radius of at least half the height of the box gives it round ends (a pill). The inner corners of the outline get the radius of the corner minus the thicker of the two sides meeting there, or are square if that side is thicker than the radius.
 
 ## Examples
 
@@ -37,6 +40,16 @@ auto pBoxSkin2 = BoxSkin::create({
                                  .outlineColor = Color::DarkGray }}
 });
 
+```
+
+A button with rounded corners, a thicker outline to the right and below for a hint of depth:
+
+```c++
+auto pButtonSkin = BoxSkin::create({
+  .color = Color::LightBlue,
+  .cornerRadius = 6,
+  .outlineColor = Color::DarkBlue,
+  .outlineThickness = { 1, 2, 2, 1 } });
 ```
 
 There are shorthand versions for creating a skin with all parameters (+ optional padding) and states with color and outline color:

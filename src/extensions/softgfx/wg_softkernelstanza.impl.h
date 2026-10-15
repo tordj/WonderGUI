@@ -3,6 +3,9 @@
 #include <wg_gfxutil.h>
 #include <wg_gfxbase.h>
 
+#include <cstring>
+#include <type_traits>
+
 using namespace wg;
 using namespace wg::Util;
 
@@ -1266,7 +1269,87 @@ void _fill(uint8_t* WG_RESTRICT pDst, int pitchX, int pitchY, int nLines, int li
 		fixedR = tint.fixedBlendColor.r;
 		fixedA = tint.fixedBlendColor.a;
 	}
-	
+
+	// Replacing with a color that is the same along each line (no tint, flat or vertical tint)
+	// writes the same pixel throughout the line. It is packed once per line and copied, keeping
+	// any bytes the format doesn't write, like the X of XRGB.
+
+	constexpr int pixelBytes = SoftFormatInfo::bytesPerPixel(DSTFORMAT);
+
+	if constexpr (BLEND == BlendMode::Replace && DSTFORMAT != SoftFormat::Undefined && !SoftFormatInfo::isIndexed(DSTFORMAT) &&
+				  (TINT == TintMode::None || TINT == TintMode::Flat || TINT == TintMode::GradientY) &&
+				  (pixelBytes == 1 || pixelBytes == 2 || pixelBytes == 4))
+	{
+		using Pixel = std::conditional_t<pixelBytes == 4, uint32_t, std::conditional_t<pixelBytes == 2, uint16_t, uint8_t>>;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int16_t lineB, lineG, lineR, lineA;
+
+			_color_tint_line<TINT>(tint, bits, srcB, srcG, srcR, srcA,
+								 lineB, lineG, lineR, lineA,
+								 tintedB, tintedG, tintedR, tintedA,
+								 pTintmapX, pTintmapY, patchPos);
+
+			int16_t outB = 0, outG = 0, outR = 0, outA = 0;
+			int16_t backB = 0, backG = 0, backR = 0, backA = 0;
+
+			// Written into a cleared and a filled pixel, bytes that differ aren't written.
+
+			Pixel cleared = 0, filled = Pixel(~Pixel(0));
+
+			if constexpr(bFast8)
+			{
+				_blend_pixels_fast8<BLEND, DSTFORMAT>(tint.morphFactor, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA,
+															  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
+				_write_pixel_fast8<DSTFORMAT>((uint8_t*)&cleared, outB, outG, outR, outA);
+				_write_pixel_fast8<DSTFORMAT>((uint8_t*)&filled, outB, outG, outR, outA);
+			}
+			else
+			{
+				_blend_pixels<BLEND, DSTFORMAT>(tint.morphFactor, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA,
+														outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
+				_write_pixel<DSTFORMAT>((uint8_t*)&cleared, outB, outG, outR, outA);
+				_write_pixel<DSTFORMAT>((uint8_t*)&filled, outB, outG, outR, outA);
+			}
+
+			const Pixel keep = Pixel(cleared ^ filled);
+
+			if (keep == 0 && pitchX == pixelBytes)
+			{
+				// Pixels next to each other, the common case, are written 16 bytes at a time.
+
+				uint8_t pattern[16];
+				for (int i = 0; i < 16; i += pixelBytes)
+					std::memcpy(pattern + i, &cleared, pixelBytes);
+
+				uint8_t* p = pDst;
+				int bytes = lineLength * pixelBytes;
+
+				for (; bytes >= 16; bytes -= 16, p += 16)
+					std::memcpy(p, pattern, 16);
+
+				for (; bytes > 0; bytes -= pixelBytes, p += pixelBytes)
+					std::memcpy(p, &cleared, pixelBytes);
+			}
+			else
+			{
+				uint8_t* p = pDst;
+
+				for (int x = 0; x < lineLength; x++, p += pitchX)
+				{
+					Pixel pixel;
+					std::memcpy(&pixel, p, pixelBytes);
+					pixel = Pixel((pixel & keep) | cleared);
+					std::memcpy(p, &pixel, pixelBytes);
+				}
+			}
+
+			pDst += pitchX * lineLength + pitchY;
+		}
+		return;
+	}
+
 	for (int y = 0; y < nLines; y++)
 	{
 
@@ -2461,5 +2544,176 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* WG_RESTRICT pStripStar
 				pSegmentColors += 4;
 
 		}
+	}
+}
+
+//____ _limit4096() _______________________________________________________
+// Clamps to 0 -> 4096, like SoftBackend::s_limit4096Tab but for any value.
+
+static inline int _limit4096(int value)
+{
+	return value < 0 ? 0 : value > 4096 ? 4096 : value;
+}
+
+//____ _draw_coverage_span() _______________________________________________
+//
+// Blends a span of partly covered pixels, pixelPitch bytes apart, along a row or down
+// a column, see SoftBackend::CoveragePixel.
+// Each pixel is blended with the blend mode as if fully covered and the result
+// mixed with the original pixel by the coverage:
+//
+//   out = dst * (1 - coverage) + blend(src, dst) * coverage
+//
+// Pixels can be shared by several segments, so src is a coverage weighted sum.
+// Blend modes that saturate or select (Add, Subtract, Min, Max) are exact for
+// pixels covered by a single segment and a close approximation otherwise. The
+// others are exact.
+//
+// Alpha-only destinations treat alpha as the color, like the fill kernels.
+
+template<BlendMode BLEND, SoftFormat DSTFORMAT>
+void _draw_coverage_span(uint8_t* WG_RESTRICT pDst, int pixelPitch, int length, const SoftBackend::CoveragePixel* WG_RESTRICT pPixels, const SoftBackend::ColTrans& tint)
+{
+	constexpr bool bAlphaOnly = (DSTFORMAT == SoftFormat::Alpha_8);
+
+	const int fixedB = tint.fixedBlendColor.b;
+	const int fixedG = tint.fixedBlendColor.g;
+	const int fixedR = tint.fixedBlendColor.r;
+	const int fixedA = tint.fixedBlendColor.a;
+
+	const int morph = tint.morphFactor;
+
+	for (int i = 0; i < length; i++)
+	{
+		const SoftBackend::CoveragePixel& px = pPixels[i];
+		const int cov = px.coverage;
+
+		if (cov > 0)
+		{
+			int16_t backB, backG, backR, backA;
+			_read_pixel<DSTFORMAT>(pDst, nullptr, nullptr, backB, backG, backR, backA);
+
+			int outB = backB, outG = backG, outR = backR, outA = backA;
+
+			if constexpr (BLEND == BlendMode::Replace)
+			{
+				int inv = 4096 - cov;
+
+				outB = ((backB * inv + 2048) >> 12) + px.b;
+				outG = ((backG * inv + 2048) >> 12) + px.g;
+				outR = ((backR * inv + 2048) >> 12) + px.r;
+				outA = ((backA * inv + 2048) >> 12) + px.a;
+			}
+			else if constexpr (BLEND == BlendMode::Blend)
+			{
+				int inv = 4096 - px.a;
+
+				outB = ((backB * inv + 2048) >> 12) + px.b;
+				outG = ((backG * inv + 2048) >> 12) + px.g;
+				outR = ((backR * inv + 2048) >> 12) + px.r;
+				outA = ((backA * inv + 2048) >> 12) + px.a;
+			}
+			else if constexpr (BLEND == BlendMode::BlendFixedColor)
+			{
+				int inv = 4096 - cov;
+				int fixed = cov - px.a;					// Covered but transparent part shows the fixed color.
+
+				outB = ((backB * inv + fixedB * fixed + 2048) >> 12) + px.b;
+				outG = ((backG * inv + fixedG * fixed + 2048) >> 12) + px.g;
+				outR = ((backR * inv + fixedR * fixed + 2048) >> 12) + px.r;
+				outA = ((backA * inv + fixedA * fixed + 2048) >> 12) + px.a;
+			}
+			else if constexpr (BLEND == BlendMode::Add)
+			{
+				// dst + coverage * min(1 - dst, src), so the covered part saturates as it would if fully covered.
+
+				if constexpr (bAlphaOnly)
+					outA = backA + std::min(int(px.a), (cov * (4096 - backA) + 2048) >> 12);
+				else
+				{
+					outB = backB + std::min(int(px.b), (cov * (4096 - backB) + 2048) >> 12);
+					outG = backG + std::min(int(px.g), (cov * (4096 - backG) + 2048) >> 12);
+					outR = backR + std::min(int(px.r), (cov * (4096 - backR) + 2048) >> 12);
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Subtract)
+			{
+				// dst - coverage * min(dst, src)
+
+				if constexpr (bAlphaOnly)
+					outA = backA - std::min(int(px.a), (cov * backA + 2048) >> 12);
+				else
+				{
+					outB = backB - std::min(int(px.b), (cov * backB + 2048) >> 12);
+					outG = backG - std::min(int(px.g), (cov * backG + 2048) >> 12);
+					outR = backR - std::min(int(px.r), (cov * backR + 2048) >> 12);
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Multiply)
+			{
+				// Uncovered part multiplies with white.
+
+				int white = 4096 - cov;
+
+				if constexpr (bAlphaOnly)
+					outA = (backA * (white + px.a) + 2048) >> 12;
+				else
+				{
+					outB = (backB * (white + px.b) + 2048) >> 12;
+					outG = (backG * (white + px.g) + 2048) >> 12;
+					outR = (backR * (white + px.r) + 2048) >> 12;
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Invert)
+			{
+				if constexpr (bAlphaOnly)
+					outA = (px.a * (4096 - backA) + backA * (4096 - px.a) + 2048) >> 12;
+				else
+				{
+					outB = (px.b * (4096 - backB) + backB * (4096 - px.b) + 2048) >> 12;
+					outG = (px.g * (4096 - backG) + backG * (4096 - px.g) + 2048) >> 12;
+					outR = (px.r * (4096 - backR) + backR * (4096 - px.r) + 2048) >> 12;
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Min)
+			{
+				// dst - coverage * max(0, dst - src)
+
+				if constexpr (bAlphaOnly)
+					outA = backA - std::max(0, ((backA * cov + 2048) >> 12) - px.a);
+				else
+				{
+					outB = backB - std::max(0, ((backB * cov + 2048) >> 12) - px.b);
+					outG = backG - std::max(0, ((backG * cov + 2048) >> 12) - px.g);
+					outR = backR - std::max(0, ((backR * cov + 2048) >> 12) - px.r);
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Max)
+			{
+				// dst + coverage * max(0, src - dst)
+
+				if constexpr (bAlphaOnly)
+					outA = backA + std::max(0, px.a - ((backA * cov + 2048) >> 12));
+				else
+				{
+					outB = backB + std::max(0, px.b - ((backB * cov + 2048) >> 12));
+					outG = backG + std::max(0, px.g - ((backG * cov + 2048) >> 12));
+					outR = backR + std::max(0, px.r - ((backR * cov + 2048) >> 12));
+				}
+			}
+			else if constexpr (BLEND == BlendMode::Morph)
+			{
+				int inv = 4096 - ((morph * cov + 2048) >> 12);
+
+				outB = (backB * inv + px.b * morph + 2048) >> 12;
+				outG = (backG * inv + px.g * morph + 2048) >> 12;
+				outR = (backR * inv + px.r * morph + 2048) >> 12;
+				outA = (backA * inv + px.a * morph + 2048) >> 12;
+			}
+
+			_write_pixel<DSTFORMAT>(pDst, _limit4096(outB), _limit4096(outG), _limit4096(outR), _limit4096(outA));
+		}
+
+		pDst += pixelPitch;
 	}
 }

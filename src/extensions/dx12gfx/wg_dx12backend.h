@@ -25,6 +25,7 @@
 #pragma once
 
 #include <wg_gfxbackend.h>
+#include <wg_gpushapes.h>
 #include <wg_tinttools.h>
 
 #include <wrl.h>
@@ -196,6 +197,7 @@ namespace wg
 			PaletteBlur,	// which has to be looked up before it is filtered.
 			Line,
 			Segments,		// Edgemaps.
+			Shape,			// Shapes, coverage worked out per pixel, see GpuShapes.
 
 			Size
 		};
@@ -253,6 +255,7 @@ namespace wg
 		void _drawBlitRects(const uint16_t*& pCmd, const RectSPX*& pRects, int nRects, int version, PipelineKind kind, bool bClip);
 		void _drawLines(const uint16_t*& pCmd, const RectSPX*& pRects, const HiColor*& pColors, int nClipRects, int nLines);
 		void _drawEdgemap(const uint16_t*& pCmd, const RectSPX*& pRects, Object* const*& pObjects, int nRects);
+		void _drawShape(ShapeKind kind, const uint16_t* pPayload, const RectSPX* pRects, int nRects, const HiColor* pColors);
 
 		bool _isDX12Surface(const Object* pObject) const;
 		static bool _isDX12SurfaceType(const TypeInfo& type);
@@ -374,6 +377,8 @@ namespace wg
 		};
 
 		TintInfo				m_tint = { -1, { 0, 0, 0 } };
+
+		std::vector<GpuShapes::Segment>	m_shapeSegments;		// Segments of the shape being drawn.
 		BlendMode				m_activeBlendMode = BlendMode::Blend;
 		float					m_morphFactor = 0.5f;			// Only used by BlendMode::Morph.
 
@@ -518,6 +523,8 @@ namespace wg
 		static const char g_linePS[];
 		static const char g_segmentsVS[];
 		static const char g_segmentsPS[];
+		static const char g_shapeVS[];
+		static const char g_shapePS[];
 
 	};
 

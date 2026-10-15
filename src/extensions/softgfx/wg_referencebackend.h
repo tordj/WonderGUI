@@ -69,6 +69,10 @@ namespace wg
 	 *
 	 * - Tints are evaluated at the center of every pixel, without lookup tables.
 	 *
+	 * - Shapes (rounded boxes and rings) are made of segments drawn together. A pixel gets the
+	 *   average of what each segment gives the part of the pixel it covers, as for edgemaps,
+	 *   with coverage worked out from the exact geometry of the shape.
+	 *
 	 * Geometry follows the GfxBackend contract that all backends implement, which in a few places
 	 * is defined in whole pixels (end points of lines and position of edgemaps are rounded to
 	 * nearest pixel). Those places are pointed out in the code.
@@ -214,6 +218,17 @@ namespace wg
 		static void		_segmentCoverage(const EdgeLine* pEdges, int nEdges, int row, double* pCoverage);
 		static double	_areaBelow(const EdgeLine* pEdges, int nEdges, int row);
 
+		// Shapes (Command::DrawShape), see "Shapes" in wg_referencebackend.cpp.
+
+		struct ShapeEdge;
+		class Shape;
+		class RoundedBoxShape;
+		class RingShape;
+
+		void			_drawShape(ShapeKind kind, const uint16_t* pPayload, int nRects);
+		void			_drawShapePixel(const Shape& shape, int x, int y);
+		static void		_shapeCoverage(const Shape& shape, int x, int y, std::vector<double>& coverage);
+
 		//
 
 		std::vector<CanvasInfo>	m_definedCanvases;
@@ -242,7 +257,6 @@ namespace wg
 		Color				m_tintColor;					// Flat tint color, linear.
 		TintTools::DecodedTint	m_tint;						// Tint over the canvas, nLayers is 0 if none.
 		double				m_morphFactor = 0.5;
-		Color				m_fixedBlendColor;				// Linear.
 
 		double				m_blurRadius = 0;				// In pixels.
 		double				m_blurWeights[3][9];			// Red, green and blue weights for the 3x3 samples.

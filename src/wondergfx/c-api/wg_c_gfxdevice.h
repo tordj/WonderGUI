@@ -44,6 +44,49 @@ extern "C" {
 		wg_spx		hold;      // Value for extending the line if it is too short (or completely missing).
 	} wg_waveLine;
 
+	//____ wg_roundedBoxSpec ______________________________________________________
+	// Colors with negative alpha (undefined) are not drawn.
+
+	typedef struct wg_roundedBoxSpec_struct
+	{
+		wg_rectSPX		rect;				// Outer edge of the box.
+		wg_spx			radius[4];			// Corner radii: top-left, top-right, bottom-right, bottom-left.
+		wg_borderSPX	outline;			// Thickness of the outline along each side.
+		wg_color		fillColor;
+		wg_color		outlineColor;
+		wg_obj			fillTint;			// Tint or null.
+		wg_obj			outlineTint;		// Tint or null.
+	} wg_roundedBoxSpec;
+
+	//____ wg_ringSlice ___________________________________________________________
+
+	typedef struct wg_ringSlice_struct
+	{
+		float			size;				// Fraction of a full turn.
+		wg_color		color;
+		wg_obj			tint;				// Tint or null.
+	} wg_ringSlice;
+
+	//____ wg_ringSpec ____________________________________________________________
+	// Colors with negative alpha (undefined) are not drawn.
+
+	typedef struct wg_ringSpec_struct
+	{
+		wg_rectSPX			rect;
+		wg_spx				thickness;		// Width of ring, outline included. 0 or at least the radius for a full pie or disc.
+		wg_spx				outline;
+		float				start;			// Fraction of a turn clockwise from 12 o'clock.
+		int					nSlices;
+		const wg_ringSlice*	pSlices;
+		int					bSquare;
+		wg_color			outlineColor;
+		wg_obj				outlineTint;
+		wg_color			hubColor;
+		wg_obj				hubTint;
+		wg_color			backColor;
+		wg_obj				backTint;
+	} wg_ringSpec;
+
 	//____ Creation ___________________________________________________
 
 	WG_EXPORT wg_obj		wg_createGfxDevice( wg_obj backend );
@@ -166,6 +209,11 @@ extern "C" {
 	WG_EXPORT void			wg_stretchBlurRect(wg_obj device, const wg_rectSPX* dest, const wg_rectSPX* src);
 	WG_EXPORT void			wg_transformBlur(wg_obj device, const wg_rectSPX* dest, wg_coordF srcSPX, const wg_transform* pTransform);
 	WG_EXPORT void			wg_rotScaleBlur(wg_obj device, const wg_rectSPX* dest, float rotationDegrees, float scale, wg_coordF srcCenter, wg_coordF destCenter);
+
+	// Shapes
+
+	WG_EXPORT void			wg_drawRoundedBox(wg_obj device, const wg_roundedBoxSpec* spec);
+	WG_EXPORT void			wg_drawRing(wg_obj device, const wg_ringSpec* spec);
 
 	// Draw edgemap methods
 

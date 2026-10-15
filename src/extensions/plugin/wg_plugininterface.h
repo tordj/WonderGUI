@@ -293,6 +293,9 @@ typedef struct wg_gfxdevice_calls_struct
 	void				(*tileEdgemap)(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_coordSPX shift);
 	void				(*flipTileEdgemap)(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_gfxFlip flip, wg_coordSPX shift);
 
+	void				(*drawRoundedBox)(wg_obj device, const wg_roundedBoxSpec* spec);
+	void				(*drawRing)(wg_obj device, const wg_ringSpec* spec);
+
 } wg_gfxdevice_calls;
 
 /*

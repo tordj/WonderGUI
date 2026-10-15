@@ -20,6 +20,7 @@
 
 =========================================================================*/
 #include <algorithm>
+#include <new>
 #include <cmath>
 #include <cstring>
 
@@ -1455,6 +1456,392 @@ void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thic
 	m_pActiveCanvas->sessionInfo.nLineCoords+=2;
 }
 
+//____ _isShapeColorDrawn() __________________________________________________
+// Undefined colors are not drawn. Like fill(), transparent colors draw nothing in Blend mode.
+
+bool GfxDeviceGen2::_isShapeColorDrawn(HiColor color) const
+{
+	return !color.isUndefined() && !(color.a == 0 && m_renderState.blendMode == BlendMode::Blend);
+}
+
+//____ _addShapeClipRects() __________________________________________________
+// Adds the clip rectangles within the pixels touched by area, so that they stay
+// pixel aligned. Returns their number.
+
+int GfxDeviceGen2::_addShapeClipRects(const RectSPX& area)
+{
+	RectSPX bounds;
+	bounds.x = area.x & ~63;
+	bounds.y = area.y & ~63;
+	bounds.w = ((area.x + area.w + 63) & ~63) - bounds.x;
+	bounds.h = ((area.y + area.h + 63) & ~63) - bounds.y;
+
+	int nRects = 0;
+	auto& rects = m_pActiveLayer->rects;
+
+	for (int i = 0; i < m_pActiveClipList->nRects; i++)
+	{
+		RectSPX clipped = RectSPX::overlap(m_pActiveClipList->pRects[i], bounds);
+
+		if (!clipped.isEmpty())
+		{
+			rects.emplace_back(clipped);
+			nRects++;
+		}
+	}
+
+	return nRects;
+}
+
+//____ drawRoundedBox() ______________________________________________________
+
+void GfxDeviceGen2::drawRoundedBox(const RoundedBoxSpec& spec)
+{
+	if (!m_pActiveCanvas)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "No active canvas to draw rounded box to.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+
+		return;
+	}
+
+	const RectSPX& rect = spec.rect;
+
+	if (rect.w <= 0 || rect.h <= 0 || !rect.isOverlapping(m_pActiveClipList->bounds))
+		return;
+
+	BorderSPX outline = {	std::max(spec.outline.top, 0), std::max(spec.outline.right, 0),
+							std::max(spec.outline.bottom, 0), std::max(spec.outline.left, 0) };
+
+	RectSPX innerRect(rect.x + outline.left, rect.y + outline.top,
+					  rect.w - outline.left - outline.right, rect.h - outline.top - outline.bottom);
+
+	bool bInner = innerRect.w > 0 && innerRect.h > 0;
+
+	bool bHasOutline = (outline.top | outline.right | outline.bottom | outline.left) != 0 && _isShapeColorDrawn(spec.outlineColor);
+	bool bHasFill = bInner && _isShapeColorDrawn(spec.fillColor);
+
+	if (!bHasFill && !bHasOutline)
+		return;
+
+	spx radius[4] = { spec.radius[0], spec.radius[1], spec.radius[2], spec.radius[3] };
+	Util::clampCornerRadii(rect.size(), radius);
+
+	// Square, untinted boxes aligned to pixels are just fills.
+
+	if ((radius[0] | radius[1] | radius[2] | radius[3]) == 0 && !spec.pFillTint && !spec.pOutlineTint &&
+		((rect.x | rect.y | rect.w | rect.h | outline.top | outline.right | outline.bottom | outline.left) & 63) == 0)
+	{
+		if (bHasOutline)
+		{
+			if (!bInner)
+				fill(rect, spec.outlineColor);
+			else
+			{
+				RectSPX parts[4] = {	{ rect.x, rect.y, rect.w, outline.top },
+										{ rect.x, innerRect.y, outline.left, innerRect.h },
+										{ innerRect.x + innerRect.w, innerRect.y, outline.right, innerRect.h },
+										{ rect.x, innerRect.y + innerRect.h, rect.w, outline.bottom } };
+
+				for (auto& part : parts)
+					if (part.w > 0 && part.h > 0)
+						fill(part, spec.outlineColor);
+			}
+		}
+
+		if (bHasFill)
+			fill(innerRect, spec.fillColor);
+
+		return;
+	}
+
+	int nRects = _addShapeClipRects(rect);
+
+	if (nRects == 0)
+		return;
+
+	if (m_stateChanges != 0)
+		_encodeStateChanges();
+
+	// Encode tints
+
+	uint16_t	tintWords[2][TintTools::c_maxEncodedTintWords];
+	HiColor		tintColors[2][TintTools::c_maxEncodedTintColors];
+	int			nTintWords[2] = { 0, 0 };
+	int			nTintColors[2] = { 0, 0 };
+
+	Tint* pTints[2] = { bHasFill ? spec.pFillTint : nullptr, bHasOutline ? spec.pOutlineTint : nullptr };
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (pTints[i])
+			nTintWords[i] = TintTools::encodeTint(pTints[i], rect, tintWords[i], tintColors[i], nTintColors[i]);
+	}
+
+	uint16_t flags = 0;
+	if (bHasFill)
+		flags |= uint16_t(GfxBackend::RoundedBoxFlags::HasFill);
+	if (bHasOutline)
+		flags |= uint16_t(GfxBackend::RoundedBoxFlags::HasOutline);
+	if (pTints[0])
+		flags |= uint16_t(GfxBackend::RoundedBoxFlags::HasFillTint);
+	if (pTints[1])
+		flags |= uint16_t(GfxBackend::RoundedBoxFlags::HasOutlineTint);
+
+	int nWords = GfxBackend::c_roundedBoxPayloadWords + nTintWords[0] + nTintWords[1];
+	int nColors = (bHasFill ? 1 : 0) + (bHasOutline ? 1 : 0) + nTintColors[0] + nTintColors[1];
+
+	// Write command, aligned to 32 bits.
+
+	auto& commands = m_pActiveLayer->commands;
+
+	commands.secureSpace((GfxBackend::c_drawShapeHeaderWords + nWords + 1) * 2);
+
+	if (commands.size() % 4 != 0)
+		commands.pushUnchecked(uint16_t(Command::None));
+
+	m_pActiveLayer->latestCommand = Command::DrawShape;
+	m_pActiveLayer->latestCommandOfs = (int)commands.size();
+
+	commands.pushUnchecked(uint16_t(Command::DrawShape));
+	commands.pushUnchecked(uint16_t(GfxBackend::ShapeKind::RoundedBox));
+	commands.pushUnchecked(uint16_t(nRects));
+	commands.pushUnchecked(uint16_t(nColors));
+	commands.pushUnchecked(uint16_t(nWords));
+	commands.pushUnchecked(uint16_t(0));
+
+	commands.pushUnchecked(rect);
+
+	for (int i = 0; i < 4; i++)
+		commands.pushUnchecked(radius[i]);
+
+	commands.pushUnchecked(outline.top);
+	commands.pushUnchecked(outline.right);
+	commands.pushUnchecked(outline.bottom);
+	commands.pushUnchecked(outline.left);
+
+	commands.pushUnchecked(spx(0));					// Softness, reserved.
+	commands.pushUnchecked(flags);
+	commands.pushUnchecked(uint16_t(0));
+
+	for (int i = 0; i < 2; i++)
+		for (int w = 0; w < nTintWords[i]; w++)
+			commands.pushUnchecked(tintWords[i][w]);
+
+	// Colors
+
+	auto& colors = m_pActiveLayer->colors;
+
+	if (bHasFill)
+		colors.push_back(spec.fillColor);
+	if (bHasOutline)
+		colors.push_back(spec.outlineColor);
+
+	for (int i = 0; i < 2; i++)
+		colors.insert(colors.end(), tintColors[i], tintColors[i] + nTintColors[i]);
+
+	auto& info = m_pActiveCanvas->sessionInfo;
+	info.nShapeDraws++;
+	info.nShapeSegments += 2;
+	info.nShapeTints += (pTints[0] ? 1 : 0) + (pTints[1] ? 1 : 0);
+}
+
+//____ drawRing() ____________________________________________________________
+
+void GfxDeviceGen2::drawRing(const RingSpec& spec)
+{
+	if (!m_pActiveCanvas)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "No active canvas to draw ring to.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+
+		return;
+	}
+
+	const RectSPX& rect = spec.rect;
+
+	if (rect.w <= 0 || rect.h <= 0 || !rect.isOverlapping(m_pActiveClipList->bounds))
+		return;
+
+	int nSlices = spec.nSlices;
+
+	if (nSlices < 0 || (nSlices > 0 && !spec.pSlices))
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Invalid slices.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	if (nSlices > c_maxRingSlices)
+	{
+		GfxBase::throwError(ErrorLevel::Warning, ErrorCode::InvalidParam, "Too many slices, the ones beyond maxRingSlices() are not drawn.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		nSlices = c_maxRingSlices;
+	}
+
+	auto isDrawn = [this](HiColor color) { return _isShapeColorDrawn(color); };
+
+	spx radius = std::min(rect.w, rect.h) / 2;
+	spx outline = std::max(spec.outline, 0);
+	bool bHole = spec.thickness > 0 && spec.thickness < radius;
+
+	bool bOutline = outline > 0 && isDrawn(spec.outlineColor);
+	bool bHub = bHole && isDrawn(spec.hubColor);
+	bool bBack = isDrawn(spec.backColor);
+
+	bool bAnySlice = false;
+	for (int i = 0; i < nSlices; i++)
+		if (spec.pSlices[i].size > 0.f && isDrawn(spec.pSlices[i].color))
+			bAnySlice = true;
+
+	if (!bAnySlice && !bOutline && !bHub && !bBack)
+		return;
+
+	// Clip against the circle if nothing is drawn outside it.
+
+	RectSPX area = rect;
+
+	if (!bBack && !spec.bSquare)
+		area = RectSPX(rect.x + rect.w / 2 - radius, rect.y + rect.h / 2 - radius, radius * 2, radius * 2);
+
+	int nRects = _addShapeClipRects(area);
+
+	if (nRects == 0)
+		return;
+
+	if (m_stateChanges != 0)
+		_encodeStateChanges();
+
+	// Header, counts filled in when known. Aligned to 32 bits.
+
+	auto& commands = m_pActiveLayer->commands;
+	auto& colors = m_pActiveLayer->colors;
+
+	commands.secureSpace((GfxBackend::c_drawShapeHeaderWords + GfxBackend::c_ringPayloadWords + nSlices * GfxBackend::c_ringSliceWords + 1) * 2);
+
+	if (commands.size() % 4 != 0)
+		commands.pushUnchecked(uint16_t(Command::None));
+
+	m_pActiveLayer->latestCommand = Command::DrawShape;
+	m_pActiveLayer->latestCommandOfs = (int)commands.size();
+
+	int headerOfs = (int)commands.size();
+	int nColorsBefore = (int)colors.size();
+
+	commands.pushUnchecked(uint16_t(Command::DrawShape));
+	commands.pushUnchecked(uint16_t(GfxBackend::ShapeKind::Ring));
+	commands.pushUnchecked(uint16_t(nRects));
+	commands.pushUnchecked(uint16_t(0));						// nColors, filled in below.
+	commands.pushUnchecked(uint16_t(0));						// nWords, filled in below.
+	commands.pushUnchecked(uint16_t(0));
+
+	int payloadOfs = (int)commands.size();
+
+	uint16_t flags = 0;
+	if (spec.bSquare)
+		flags |= uint16_t(GfxBackend::RingFlags::Square);
+	if (bOutline)
+		flags |= uint16_t(GfxBackend::RingFlags::HasOutline);
+	if (bHub)
+		flags |= uint16_t(GfxBackend::RingFlags::HasHub);
+	if (bBack)
+		flags |= uint16_t(GfxBackend::RingFlags::HasBack);
+	if (bOutline && spec.pOutlineTint)
+		flags |= uint16_t(GfxBackend::RingFlags::HasOutlineTint);
+	if (bHub && spec.pHubTint)
+		flags |= uint16_t(GfxBackend::RingFlags::HasHubTint);
+	if (bBack && spec.pBackTint)
+		flags |= uint16_t(GfxBackend::RingFlags::HasBackTint);
+
+	float start = std::isfinite(spec.start) ? spec.start - std::floor(spec.start) : 0.f;
+
+	commands.pushUnchecked(rect);
+	commands.pushUnchecked(spec.thickness);
+	commands.pushUnchecked(outline);
+	commands.pushUnchecked(spx(0));								// Softness, reserved.
+	commands.pushUnchecked(flags);
+	commands.pushUnchecked(uint16_t(nSlices));
+	commands.pushUnchecked(uint32_t(double(start) * GfxBackend::c_shapeFullTurn) % GfxBackend::c_shapeFullTurn);
+
+	int nTints = 0;
+
+	for (int i = 0; i < nSlices; i++)
+	{
+		const RingSlice& slice = spec.pSlices[i];
+
+		float size = slice.size > 0.f ? std::min(slice.size, 1.f) : 0.f;		// Also for NaN.
+		bool bDrawn = size > 0.f && isDrawn(slice.color);
+
+		uint16_t sliceFlags = 0;
+		if (bDrawn)
+			sliceFlags |= uint16_t(GfxBackend::RingSliceFlags::Drawn);
+		if (bDrawn && slice.pTint)
+			sliceFlags |= uint16_t(GfxBackend::RingSliceFlags::Tinted);
+
+		commands.pushUnchecked(uint32_t(double(size) * GfxBackend::c_shapeFullTurn));
+		commands.pushUnchecked(sliceFlags);
+		commands.pushUnchecked(uint16_t(0));
+	}
+
+	// Colors
+
+	if (bOutline)
+		colors.push_back(spec.outlineColor);
+	if (bHub)
+		colors.push_back(spec.hubColor);
+	if (bBack)
+		colors.push_back(spec.backColor);
+
+	for (int i = 0; i < nSlices; i++)
+		if (spec.pSlices[i].size > 0.f && isDrawn(spec.pSlices[i].color))
+			colors.push_back(spec.pSlices[i].color);
+
+	// Tints, encoded one at a time.
+
+	auto encodeTint = [&](Tint* pTint)
+	{
+		uint16_t	words[TintTools::c_maxEncodedTintWords];
+		HiColor		tintColors[TintTools::c_maxEncodedTintColors];
+		int			nTintColors;
+
+		int nWords = TintTools::encodeTint(pTint, rect, words, tintColors, nTintColors);
+
+		commands.secureSpace(nWords * 2);
+		for (int w = 0; w < nWords; w++)
+			commands.pushUnchecked(words[w]);
+
+		colors.insert(colors.end(), tintColors, tintColors + nTintColors);
+		nTints++;
+	};
+
+	if (flags & uint16_t(GfxBackend::RingFlags::HasOutlineTint))
+		encodeTint(spec.pOutlineTint);
+	if (flags & uint16_t(GfxBackend::RingFlags::HasHubTint))
+		encodeTint(spec.pHubTint);
+	if (flags & uint16_t(GfxBackend::RingFlags::HasBackTint))
+		encodeTint(spec.pBackTint);
+
+	for (int i = 0; i < nSlices; i++)
+	{
+		const RingSlice& slice = spec.pSlices[i];
+		if (slice.size > 0.f && isDrawn(slice.color) && slice.pTint)
+			encodeTint(slice.pTint);
+	}
+
+	// Fill in counts
+
+	int nWords = ((int)commands.size() - payloadOfs) / 2;
+	int nColors = (int)colors.size() - nColorsBefore;
+
+	commands.at(headerOfs + 6).as<uint16_t>() = uint16_t(nColors);
+	commands.at(headerOfs + 8).as<uint16_t>() = uint16_t(nWords);
+
+	auto& info = m_pActiveCanvas->sessionInfo;
+	info.nShapeDraws++;
+	info.nShapeSegments += 3 + nSlices;
+	info.nShapeTints += nTints;
+}
+
 //____ blit() ________________________________________________________________
 
 void GfxDeviceGen2::blit(CoordSPX dest)
@@ -2773,584 +3160,98 @@ void GfxDeviceGen2::flipDrawSegments(const RectSPX& dest, int nSegments, const H
 }
 
 //____ drawElipse() ______________________________________________________
+/*
+	Deprecated, use drawRing(). Draws the largest circle centered in canvas: a ring of given
+	thickness with an outline of outlineThickness along both edges. Edges reaching past the
+	center leave a disc of what is inside them.
+*/
 
 void GfxDeviceGen2::drawElipse(const RectSPX& canvas, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor)
 {
-	auto pCurveTab = GfxBase::curveTab();
-	int curveTabSize = GfxBase::curveTabSize();
+	thickness = std::max(thickness, 0);
+	outlineThickness = std::max(outlineThickness, 0);
 
+	spx radius = std::min(canvas.w, canvas.h) / 2;
+	spx total = thickness + outlineThickness * 2;
 
-	// Center and corners in 26.6 format.
-
-	int x1 = (int)canvas.x;
-	int y1 = (int)canvas.y;
-	int x2 = (int)(canvas.x + canvas.w);
-	int y2 = (int)(canvas.y + canvas.h);
-
-	CoordI center = { (x1 + x2) / 2, (y1 + y2) / 2 };
-
-	// Outer rect of elipse rounded to full pixels.
-
-	RectI outerRect;
-	outerRect.x = x1 >> 6;
-	outerRect.y = y1 >> 6;
-	outerRect.w = ((x2 + 63) >> 6) - outerRect.x;
-	outerRect.h = ((y2 + 63) >> 6) - outerRect.y;
-
-	// Adjusted clip
-
-	RectI clip = RectI::overlap(m_pActiveClipList->bounds / 64, outerRect);
-	if (clip.w == 0 || clip.h == 0)
+	if (total <= 0 || radius <= 0)
 		return;
 
-	int clipLeft = clip.x - outerRect.x;
+	RingSlice slice;
+	slice.size = 1.f;
+	slice.color = fillColor;
 
-	// Calculate maximum width and height from center for the 4 edges of the elipse.
+	RingSpec ring;
+	ring.rect = canvas;
+	ring.nSlices = 1;
+	ring.pSlices = &slice;
+	ring.outlineColor = outlineColor;
 
-	int radiusY[4];
-	radiusY[0] = (y2 - y1) / 2;
-	radiusY[1] = (int)(radiusY[0] - outlineThickness);
-	radiusY[2] = (int)(radiusY[1] - thickness);
-	radiusY[3] = (int)(radiusY[2] - outlineThickness);
-
-	int radiusX[4];
-	radiusX[0] = (x2 - x1) / 2;
-	radiusX[1] = (int)(radiusX[0] - outlineThickness);
-	radiusX[2] = (int)(radiusX[1] - thickness);
-	radiusX[3] = (int)(radiusX[2] - outlineThickness);
-
-	// Reserve buffer for our line traces
-
-	int samplePoints = clip.w + 1;
-
-	int bufferSize = samplePoints * sizeof(int) * 4 * 2;		// length+1 * sizeof(int) * 4 separate traces * 2 halves.
-	int* pBuffer = (int*)GfxBase::memStackAlloc(bufferSize);
-
-	// Do line traces.
-
-	int yMid = (center.y & 0xFFFFFFC0) - outerRect.y * 64;
-	int yAdjust = center.y & 0x3F;						// Compensate for center not being on pixel boundary.
-	int centerOfs = center.x - (outerRect.x * 64);
-	int samplePitch = 4;
-
-	for (int edge = 0; edge < 4; edge++)
+	if (total < radius || thickness + outlineThickness >= radius)
 	{
-		int* pOutUpper = pBuffer + edge;
-		int* pOutLower = pBuffer + 3 - edge + samplePoints * 4;
+		// Ring with outline along both edges, or disc with outline.
 
-		if (radiusX[edge] <= 0 || radiusY[edge] <= 0)
+		ring.thickness = total < radius ? total : 0;
+		ring.outline = outlineThickness;
+		drawRing(ring);
+	}
+	else
+	{
+		// Only the inner outline reaches the center: disc of outline color, fill on top.
+
+		slice.color = outlineColor;
+		drawRing(ring);
+
+		if (thickness > 0)
 		{
-			for (int sample = 0; sample < samplePoints; sample++)
-			{
-				pOutUpper[sample * samplePitch] = yMid;
-				pOutLower[sample * samplePitch] = yMid;
-			}
-		}
-		else
-		{
-			//TODO: We need to handle subpixels better here.
-			// We should increase curvePos with the real xStart offset (could be as much as 63/64 of a pixel)
-			// and handle xMid similarly.
-
-			int xStart = (centerOfs - radiusX[edge] + 63) >> 6;		// First pixel-edge inside curve.
-			int xMid = (centerOfs) >> 6;							// Pixel edge on or right before center.
-			int xEnd = (centerOfs + radiusX[edge]) >> 6;			// Last pixel-edge inside curve.
-
-
-			int curveInc = int(int64_t((65536 * 64) - 1) * (curveTabSize - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
-			int curvePos = int((((radiusX[edge] - centerOfs) & 0x3F) * ((int64_t)curveInc)) >> 6);
-
-			if (clipLeft > 0)
-			{
-				xStart -= clipLeft;
-				xMid -= clipLeft;
-				xEnd -= clipLeft;
-
-				if (xStart < 0)
-					curvePos += (-xStart) * curveInc;
-			}
-
-			// Clip xStart, xMid and xEnd
-
-			if (xEnd >= samplePoints)
-			{
-				xEnd = samplePoints - 1;
-
-				xStart = min(xStart, xEnd);
-				xMid = min(xMid, xEnd);
-			}
-
-			//
-
-			int sample = 0;
-			while (sample < xStart)
-			{
-				pOutUpper[sample * samplePitch] = yMid;
-				pOutLower[sample * samplePitch] = yMid;
-				sample++;
-			}
-
-			while (sample <= xMid)
-			{
-				int i = curvePos >> 16;
-				uint32_t f = curvePos & 0xFFFF;
-
-				uint32_t heightFactor = (pCurveTab[i] * (65535 - f) + pCurveTab[i + 1] * f) >> 16;
-				int height = ((radiusY[edge] >> 16) * heightFactor) + ((radiusY[edge] & 0xFFFF) * heightFactor >> 16);  // = (radiusY[edge] * heightFactor) / 65536, but without overflow.
-
-				pOutUpper[sample * samplePitch] = yMid + yAdjust - height;
-				pOutLower[sample * samplePitch] = yMid + yAdjust + height;
-				sample++;
-				curvePos += curveInc;
-			}
-
-			curvePos = (curveTabSize - 1) * 65536 * 2 - curvePos;
-
-			while (sample <= xEnd)
-			{
-				int i = curvePos >> 16;
-				uint32_t f = curvePos & 0xFFFF;
-
-				uint32_t heightFactor = (pCurveTab[i] * (65535 - f) + pCurveTab[i + 1] * f) >> 16;
-				int height = ((radiusY[edge] >> 16) * heightFactor) + ((radiusY[edge] & 0xFFFF) * heightFactor >> 16); // = (radiusY[edge] * heightFactor) / 65536, but without overflow.
-
-				pOutUpper[sample * samplePitch] = yMid + yAdjust - height;
-				pOutLower[sample * samplePitch] = yMid + yAdjust + height;
-				sample++;
-				curvePos -= curveInc;
-			}
-
-			while (sample < samplePoints)
-			{
-				pOutUpper[sample * samplePitch] = yMid;
-				pOutLower[sample * samplePitch] = yMid;
-				sample++;
-			}
-
-			// Take care of left and right edges that needs more calculations to get the angle right.
-
-			int pixFracLeft = (xStart * 64) - (centerOfs - radiusX[edge]);
-			int pixFracRight = (centerOfs + radiusX[edge]) & 0x3F;
-
-			if (pixFracLeft > 0 && xStart > 0 && xStart <= samplePoints)
-			{
-				pOutUpper[(xStart - 1) * samplePitch] = pOutUpper[xStart * samplePitch] + (yMid + yAdjust - pOutUpper[xStart * samplePitch]) * 64 / pixFracLeft;
-				pOutLower[(xStart - 1) * samplePitch] = pOutLower[xStart * samplePitch] + (yMid + yAdjust - pOutLower[xStart * samplePitch]) * 64 / pixFracLeft;
-
-			}
-			if (pixFracRight > 0 && xEnd < samplePoints - 1 && xEnd >= -1)
-			{
-				pOutUpper[(xEnd + 1) * samplePitch] = pOutUpper[xEnd * samplePitch] + (yMid + yAdjust - pOutUpper[xEnd * samplePitch]) * 64 / pixFracRight;
-				pOutLower[(xEnd + 1) * samplePitch] = pOutLower[xEnd * samplePitch] + (yMid + yAdjust - pOutLower[xEnd * samplePitch]) * 64 / pixFracRight;
-			}
-
+			slice.color = fillColor;
+			ring.rect = RectSPX(canvas.x + outlineThickness, canvas.y + outlineThickness, canvas.w - outlineThickness * 2, canvas.h - outlineThickness * 2);
+			ring.thickness = thickness;
+			drawRing(ring);
 		}
 	}
-
-	// Split clip rectangles into upper and lower half, so we clip at the middle.
-
-	int split = min(clip.y + clip.h, outerRect.y + (yMid >> 6)) * 64;
-
-	int nClipRects = m_pActiveClipList->nRects;
-	auto pClipRects = m_pActiveClipList->pRects;
-
-	int clipBufferSize = sizeof(RectSPX) * nClipRects * 2;
-	RectSPX* pTopClips = (RectSPX*)GfxBase::memStackAlloc(clipBufferSize);
-	RectSPX* pBottomClips = pTopClips + nClipRects;
-	int nTopClips = 0;
-	int nBottomClips = 0;
-
-	for (int i = 0; i < nClipRects; i++)
-	{
-		const RectSPX& clip = pClipRects[i];
-
-		if (clip.y < split)
-		{
-			pTopClips[nTopClips] = clip;
-			if (clip.bottom() > split)
-				pTopClips[nTopClips].h = split - clip.y;
-			nTopClips++;
-		}
-		if (clip.bottom() > split)
-		{
-			pBottomClips[nBottomClips] = clip;
-			if (clip.y < split)
-			{
-				pBottomClips[nBottomClips].h -= split - clip.y;
-				pBottomClips[nBottomClips].y = split;
-			}
-			nBottomClips++;
-		}
-	}
-
-	// Render columns
-
-	HiColor	col[5];
-	col[0] = HiColor::Transparent;
-	col[1] = outlineColor;
-	col[2] = fillColor;
-	col[3] = outlineColor;
-	col[4] = HiColor::Transparent;
-
-	const RectI* pOldClipRects = pClipRects;
-	int nOldClipRects = nClipRects;
-
-	setClipList(nTopClips, pTopClips);
-	drawSegments(RectSPX(clip.x, outerRect.y, clip.w, outerRect.h) * 64, 5, col, samplePoints, pBuffer, 4);
-	setClipList(nBottomClips, pBottomClips);
-	drawSegments(RectSPX(clip.x, outerRect.y, clip.w, outerRect.h) * 64, 5, col, samplePoints, pBuffer + samplePoints * 4, 4);
-	setClipList(nOldClipRects, pOldClipRects);
-
-	// Free temporary work memory
-
-	GfxBase::memStackFree(clipBufferSize);
-	GfxBase::memStackFree(bufferSize);
-
 }
 
 //____ drawPieChart() _____________________________________________________
+/*
+	Deprecated, use drawRing(). Draws a pie chart in the largest circle centered in canvas,
+	or filling canvas if bRectangular. hubSize is the size of the hole as a fraction of the
+	radius. backColor fills the rest of canvas and what the slices don't reach.
+*/
 
-void GfxDeviceGen2::drawPieChart(const RectSPX& _canvas, float start, int nSlices, const float* _pSliceSizes, const HiColor* pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
+void GfxDeviceGen2::drawPieChart(const RectSPX& canvas, float start, int nSlices, const float* pSliceSizes, const HiColor* pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
 {
-	static const int c_maxSlices = c_maxSegments - 2;
-
-	if (nSlices < 0 || nSlices > c_maxSlices)
+	if (nSlices < 0 || (nSlices > 0 && (!pSliceSizes || !pSliceColors)))
 	{
-		//TODO: Error handling;
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Invalid slices.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
 		return;
 	}
 
-	//TODO: Early out if no slices, no hud and no background
-	//TODO: Replace with fill if no hub, no slices.
-
-	RectI canvas = _canvas / 64;
-	canvas.w = (canvas.w + 1) & 0xFFFFFFFC;
-	canvas.h = (canvas.h + 1) & 0xFFFFFFFC;
-
-	if (canvas.w <= 0 || canvas.h <= 0 || (hubSize == 1.f && !bRectangular))
+	if (hubSize >= 1.f && !bRectangular)			// Hub covering all, nothing drawn as before.
 		return;
 
-
-	// Setup our slices
-
-	struct Slice
-	{
-		float ofs;
-		float size;
-		HiColor color;
-	};
-
-	Slice slices[c_maxSlices + 2];			// Maximum two extra slices in the end. Beginning offset + end transparency.
-
-	float totalSize = 0.f;
-
-	// Trim our slices, so we have a length of most 1.0.
-
-	Slice trimmedSlices[c_maxSlices + 1];
-
-	float ofs = start;
-	for (int i = 0; i < nSlices; i++)
-	{
-		if (ofs >= 1.f)
-			ofs = fmod(ofs, 1.f);
-
-		float sliceSize = _pSliceSizes[i];
-
-		if (totalSize + sliceSize >= 1.f)
-		{
-			trimmedSlices[i] = { ofs, 1.f - totalSize, pSliceColors[i] };
-			totalSize = 1.f;
-			nSlices = i + 1;
-			break;
-		}
-
-
-		trimmedSlices[i] = { ofs,sliceSize, pSliceColors[i] };
-		totalSize += sliceSize;
-		ofs += sliceSize;
-	}
-
-	// Adding an empty slice at end if totalSize < 1.0
-
-	if (totalSize < 0.9999f)
-	{
-		if (ofs >= 1.f)
-			ofs = fmod(ofs, 1.f);
-
-		trimmedSlices[nSlices++] = { ofs,1.f - totalSize, backColor };
-	}
-
-	// Find first slice (one with smallest offset)
-
-	int		firstSlice = 0, lastSlice;
-	float	firstSliceOfs = 1.f;
+	int bufferSize = sizeof(RingSlice) * std::max(nSlices, 1);
+	auto slices = (RingSlice*) GfxBase::memStackAlloc(bufferSize);
 
 	for (int i = 0; i < nSlices; i++)
-	{
-		if (trimmedSlices[i].ofs < firstSliceOfs)
-		{
-			firstSlice = i;
-			firstSliceOfs = trimmedSlices[i].ofs;
-		}
+		new (&slices[i]) RingSlice{ pSliceSizes[i], pSliceColors[i], nullptr };
 
-	}
+	spx radius = std::min(canvas.w, canvas.h) / 2;
 
-	// Find last slice
+	RingSpec ring;
+	ring.rect = canvas;
+	ring.bSquare = bRectangular;
+	ring.start = start;
+	ring.nSlices = nSlices;
+	ring.pSlices = slices;
+	ring.hubColor = hubColor;
+	ring.backColor = backColor;
 
-	if (firstSlice == 0)
-		lastSlice = nSlices - 1;
-	else
-		lastSlice = firstSlice - 1;
-
-	// Take care of possible rounding errors on inparameters
-
-	if (firstSliceOfs < 0.0001f)
-		trimmedSlices[firstSlice].ofs = firstSliceOfs = 0.f;
-
-	// Rearrange our slices so we start from offset 0. Possibly adding one more slice in the beginning.
-
-	int sliceIdx = 0;
-
-	if (nSlices == 1)
-	{
-		slices[sliceIdx++] = { 0.f, 1.f, trimmedSlices[0].color };
-	}
-	else
-	{
-		// Fill in rollover from last slice (or transparent gap) due to rotation
-
-		if (firstSliceOfs > 0.f)
-			slices[sliceIdx++] = { 0.f, firstSliceOfs, trimmedSlices[lastSlice].color };
-
-		// Our buffer is circular, take care of slices from first slice to end of buffer.
-
-		for (int i = firstSlice; i < nSlices; i++)
-			slices[sliceIdx++] = trimmedSlices[i];
-
-		// Take care of slices from beginning of buffer to last slice.
-
-		if (lastSlice < firstSlice)
-		{
-			for (int i = 0; i <= lastSlice; i++)
-				slices[sliceIdx++] = trimmedSlices[i];
-		}
-
-		// Correct for any rollover or inprecision for last slice
-
-		slices[sliceIdx - 1].size = 1.f - slices[sliceIdx - 1].ofs;
-	}
-
-	nSlices = sliceIdx;			// Repurpose this variable
-
-	// Slices now in order, lets render the quadrants
-
-	int quadW = canvas.w / 2, quadH = canvas.h / 2;
-
-	RectI quadCanvas[4] = { {canvas.x + quadW, canvas.y, quadW, quadH },
-							{canvas.x + quadW, canvas.y + quadH, quadW, quadH},
-							{canvas.x, canvas.y + quadH, quadW, quadH},
-							{canvas.x, canvas.y, quadW, quadH} };
-
-	GfxFlip quadFlip[4] = { GfxFlip::None, GfxFlip::Rot90, GfxFlip::Rot180, GfxFlip::Rot270 };
-
-	HiColor colors[c_maxSegments];
-
-	int maxSegments = nSlices + 2;
-	int edgePitch = maxSegments - 1;
-	int bufferSize = (quadW + 1) * edgePitch * sizeof(int);
-
-	int* pBuffer = (int*)GfxBase::memStackAlloc(bufferSize);
-
-
-	auto pCurveTab = GfxBase::curveTab();
-	int curveTabSize = GfxBase::curveTabSize();
-
-	// Setting the outer edge (same for all quads)
-
-	if (bRectangular)
-	{
-		int* pEdge = pBuffer;
-		for (int i = 0; i <= quadW; i++)
-		{
-			*pEdge = 0;
-			pEdge += edgePitch;
-		}
-	}
-	else
-	{
-		int* pEdge = pBuffer;
-
-		int curveTabInc = ((curveTabSize << 16) - 1) / (quadW);
-
-		int curveTabOfs = 0;
-		for (int i = 0; i <= quadW; i++)
-		{
-			*pEdge = (quadH << 6) - ((pCurveTab[(curveTabSize - 1) - (curveTabOfs >> 16)] * quadH) >> 10);
-			pEdge += edgePitch;
-			curveTabOfs += curveTabInc;
-		}
-	}
-
-	// Generating an inner edge if we have one.
-	// Storing it separately, used for all 4 quads. Copied into right place later.
-
-	int* pHubBuffer = nullptr;
-	int hubBufferSize = 0;
 	if (hubSize > 0.f)
-	{
-		hubBufferSize = (quadW + 1) * sizeof(int);
-		pHubBuffer = (int*)GfxBase::memStackAlloc(hubBufferSize);
+		ring.thickness = std::max(spx(radius * (1.f - std::min(hubSize, 1.f))), spx(1));
 
-		int* p = pHubBuffer;
-
-		int ringW = int(hubSize * quadW);
-		int ringH = int(hubSize * quadH);
-
-		int inc = ((curveTabSize << 16) - 1) / (ringW);
-		int ofs = 0;
-
-		for (int i = 0; i <= ringW; i++)
-		{
-			*p++ = (quadH << 6) - ((pCurveTab[(curveTabSize - 1) - (ofs >> 16)] * ringH) >> 10);
-			ofs += inc;
-		}
-
-		int maxVal = quadH << 6;
-		for (int i = ringW + 1; i <= quadW; i++)
-			*p++ = maxVal;
-	}
-
-	//
-
-	for (int quad = 0; quad < 4; quad++)
-	{
-		int nSegments = 0;
-		Slice* pSlice = slices;
-		Slice* pSliceEnd = slices + nSlices;
-
-		float quadStartOfs = 0.25f * quad;
-
-		// Add background as first segment
-
-		colors[nSegments] = backColor;
-		nSegments++;
-
-		// Find first slice to include
-
-		while (pSlice != pSliceEnd && pSlice->ofs + pSlice->size < quadStartOfs)
-			pSlice++;
-
-		colors[nSegments] = pSlice->color;
-		nSegments++;
-		pSlice++;
-
-		// Generate edges for all following slices included
-
-		while (pSlice != pSliceEnd && pSlice->ofs < quadStartOfs + 0.25f)
-		{
-			int* pEdge = pBuffer + nSegments - 1;
-
-			// Set startvalue and decrease per strip.
-
-			int value = quadH << 6;
-			int dec;
-
-			float rot = (pSlice->ofs - quadStartOfs);
-
-			if (rot == 0.f)
-			{
-				value = 0;
-				dec = 0;
-			}
-			else
-			{
-				rot *= 3.14159265358979f * 2.f;
-				float s = std::sin(rot);
-				float c = std::cos(rot);
-
-				float decF = (c / s) * (quadH << 12) / float(quadW);
-
-				if (decF > 400000 * 4096)
-					decF = 400000 * 4096;
-
-				dec = int(decF);
-			}
-
-			// Fill in the edge
-
-			int strip;
-			int precisionValue = value << 6;
-			for (strip = 0; strip <= quadW && value >= pEdge[-1]; strip++)
-			{
-				*pEdge = value;
-				pEdge += edgePitch;
-				precisionValue -= dec;
-				value = precisionValue >> 6;
-			}
-
-			while (strip <= quadW)
-			{
-				*pEdge = pEdge[-1];
-				pEdge += edgePitch;
-				strip++;
-			}
-
-			colors[nSegments] = pSlice->color;
-			nSegments++;
-			pSlice++;
-		}
-
-		// Add edge for hub if present
-
-		if (pHubBuffer)
-		{
-			int* pEdge = pBuffer + nSegments - 1;
-
-			for (int i = 0; i <= quadW; i++)
-			{
-				int value = pHubBuffer[i];
-				*pEdge = value;
-
-				int* pPrev = pEdge - 1;
-				while (*pPrev > value)
-				{
-					*pPrev = value;
-					pPrev--;
-				}
-
-				pEdge += edgePitch;
-			}
-
-			colors[nSegments] = hubColor;
-			nSegments++;
-		}
-
-		// Draw
-
-		int* pEdges = pBuffer;
-		HiColor* pColors = colors;
-		if (bRectangular)
-		{
-			pEdges++;
-			pColors++;
-			nSegments--;
-		}
-
-		int16_t		alphaCheck = 0;
-		for (int i = 0; i < nSegments; i++)
-			alphaCheck |= pColors[i].a;
-
-		if (alphaCheck == 0)
-			continue;
-
-		if (nSegments == 1)
-			fill(quadCanvas[quad], pColors[0]);
-		else
-			flipDrawSegments(quadCanvas[quad] * 64, nSegments, pColors, quadW + 1, pEdges, edgePitch, quadFlip[quad], TintMode::Flat );
-	}
-
-	if (hubBufferSize != 0)
-		GfxBase::memStackFree(hubBufferSize);
+	drawRing(ring);
 
 	GfxBase::memStackFree(bufferSize);
 }

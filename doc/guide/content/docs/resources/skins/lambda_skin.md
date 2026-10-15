@@ -74,7 +74,7 @@ By default a LambdaSkin triggers a full redraw of its area for any change in wid
 
 ## Examples
 
-Create a static white skin with a 4 pts thick green elipse with 1 pts thick black outlines:
+Create a static white skin with a 6 pts thick green ring with 1 pts thick black outlines:
 
 ```c++
 auto pMySkin = LambdaSkin::create({
@@ -83,7 +83,11 @@ auto pMySkin = LambdaSkin::create({
                      int scale, State state, float value1, float value2)
 	{
 		pDevice->fill( canvas, Color::White );
-		pDevice->drawElipse(canvas, scale*4, Color::Green, scale*1, Color::Black);
+
+		RingSlice slice = { .size = 1.f, .color = Color::Green };
+
+		pDevice->drawRing({ .rect = canvas, .thickness = scale*6, .outline = scale*1,
+		                    .nSlices = 1, .pSlices = &slice, .outlineColor = Color::Black });
 	}
     .ignoreState = true,
     .ignoreValue = true

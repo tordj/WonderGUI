@@ -32,6 +32,8 @@ set(SHADERS
 	shaders/ps_line.hlsl
 	shaders/vs_segments.hlsl
 	shaders/ps_segments.hlsl
+	shaders/vs_shape.hlsl
+	shaders/ps_shape.hlsl
 )
 
 

@@ -107,6 +107,7 @@ KernelDB::KernelCount KernelDB::countKernels()
 		nSegmentKernelTypes++;							// Per pixel colors (StripSource::Tintmaps), needed for tinted edgemaps.
 
 	count.segment = nBlendModes * nDestFormats * nSegmentKernelTypes;
+	count.coverage = nBlendModes * nDestFormats;
 
 	count.pass1blits_straight		= nSourceFormats * 4;
 	count.pass1blits_straight_fast8	= nSourceFormats * 2;
@@ -558,6 +559,28 @@ bool KernelDB::_generateSource(std::ostream& out, const std::string& kernelLabel
 					}
 
 
+				}
+			}
+			out << endl;
+		}
+	}
+
+	// Print out the coverage kernels.
+
+	for (int blendMode = 0; blendMode < BlendMode_size; blendMode++)
+	{
+		if (m_blendModes[blendMode])
+		{
+			for (int destFormat = 0; destFormat < SoftFormat_size; destFormat++)
+			{
+				if (m_destFormats[destFormat])
+				{
+					auto pBlend = toString((BlendMode)blendMode);
+					auto pFormat = toString((SoftFormat)destFormat);
+
+					snprintf(temp, 4096, "pBackend->setCoverageKernel( BlendMode::%s, SoftFormat::%s, _draw_coverage_span<BlendMode::%s, SoftFormat::%s> );\n",
+						pBlend, pFormat, pBlend, pFormat);
+					out << temp;
 				}
 			}
 			out << endl;

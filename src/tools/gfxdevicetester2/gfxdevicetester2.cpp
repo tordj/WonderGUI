@@ -37,6 +37,8 @@
 #include "testsuites/edgemaptinttests.h"
 #include "testsuites/layerroundtriptests.h"
 #include "testsuites/blendruletests.h"
+#include "testsuites/roundedboxtests.h"
+#include "testsuites/ringtests.h"
 
 
 using namespace wg;
@@ -200,6 +202,8 @@ void GfxDeviceTester2::setup_tests()
 	add([]() { return new EdgemapTintTests(); });
 	add([]() { return new LayerRoundTripTests(); });
 	add([]() { return new BlendRuleTests(); });
+	add([]() { return new RoundedBoxTests(); });
+	add([]() { return new RingTests(); });
 }
 
 //____ add_testsuite() ________________________________________________________

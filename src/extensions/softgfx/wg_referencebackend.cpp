@@ -30,7 +30,9 @@
 #include <cfloat>
 #include <cmath>
 #include <cstring>
+#include <functional>
 #include <limits>
+#include <memory>
 
 namespace wg
 {
@@ -204,7 +206,6 @@ namespace wg
 		m_tintColor = { 1, 1, 1, 1 };
 		m_tint.nLayers = 0;
 		m_morphFactor = 0.5;
-		m_fixedBlendColor = { 1, 1, 1, 1 };
 
 		m_blurRadius = s_defaultBlurRadius / 64.0;
 		for (int color = 0; color < 3; color++)
@@ -330,6 +331,22 @@ namespace wg
 					break;
 				}
 
+				case Command::DrawShape:
+				{
+					auto kind = ShapeKind(p[0]);
+					int nRects = p[1];
+					int nColors = p[2];
+					int nWords = p[3];
+					const uint16_t* pPayload = p + c_drawShapeHeaderWords - 1;
+
+					_drawShape(kind, pPayload, nRects);
+
+					p = pPayload + nWords;
+					m_pRectsPtr += nRects;
+					m_pColorsPtr += nColors;
+					break;
+				}
+
 				case Command::DrawEdgemap:
 				case Command::TileEdgemap:
 				{
@@ -388,7 +405,7 @@ namespace wg
 			m_morphFactor = *p++ / 4096.0;
 
 		if (statesChanged & int(StateChange::FixedBlendColor))
-			m_fixedBlendColor = _toLinear(*m_pColorsPtr++);
+			m_pColorsPtr++;						// Not needed, BlendFixedColor is drawn as Blend.
 
 		if (statesChanged & int(StateChange::Blur))
 		{
@@ -903,6 +920,8 @@ namespace wg
 		"Blending and transparency".
 
 		Paint modes (Replace, Blend, BlendFixedColor and Morph) put paint on the canvas.
+		BlendFixedColor is Blend, made faster where the canvas is known to be the fixed blend
+		color, so we draw it as Blend.
 
 		Effect modes (Add, Subtract, Multiply, Invert, Min and Max) change the colors already on the
 		canvas and keep its alpha. The alpha of the source is the strength of the effect: it fades the
@@ -938,11 +957,8 @@ namespace wg
 
 			case BlendMode::Undefined:					// Undefined is treated as Blend.
 			case BlendMode::Blend:
+			case BlendMode::BlendFixedColor:
 				result = _over(src, dst);
-				break;
-
-			case BlendMode::BlendFixedColor:			// As Blend, but onto the fixed blend color instead of the canvas.
-				result = _over(src, m_fixedBlendColor);
 				break;
 
 			case BlendMode::Morph:
@@ -1034,9 +1050,8 @@ namespace wg
 				return src;
 			case BlendMode::Undefined:
 			case BlendMode::Blend:
-				return src + dst * (1.0 - src);
 			case BlendMode::BlendFixedColor:
-				return src + m_fixedBlendColor.a * (1.0 - src);
+				return src + dst * (1.0 - src);
 			case BlendMode::Morph:
 				return _mix(dst, src, m_morphFactor);
 			case BlendMode::Add:
@@ -1469,6 +1484,811 @@ namespace wg
 		int bottom = Util::roundToPixels(rect.y + rect.h);
 
 		return RectI(left, top, right - left, bottom - top);
+	}
+
+	//____ Shapes ________________________________________________________________
+	/*
+		Shapes of Command::DrawShape are made of segments that are drawn together: fill and
+		outline of a rounded box, back, outline, hub and slices of a ring.
+
+		Each kind of shape is a class that decodes its payload and defines the shape by
+		segmentAt(), which tells what segment a point of the canvas is in. That is written as
+		plainly as the definition of the shape in GfxDevice.
+
+		To work out how much of a pixel each segment covers we also need the edges of the shape,
+		the straight lines and circles along which one segment can turn into another. They are
+		given whole: a line or circle may go on where the shape has no edge, which does no harm.
+		See _shapeCoverage().
+	*/
+
+	static const double c_pi = 3.14159265358979323846;
+
+	//____ ShapeEdge ______________________________________________________________
+	// A straight line or a circle.
+
+	struct ReferenceBackend::ShapeEdge
+	{
+		bool	bCircle = false;
+		double	x = 0, y = 0;					// A point on the line, or the center of the circle.
+		double	dirX = 0, dirY = 0;				// Direction of the line, of length 1.
+		double	radius = 0;						// Of the circle.
+
+		static ShapeEdge line(double x, double y, double dirX, double dirY)
+		{
+			double length = std::sqrt(dirX * dirX + dirY * dirY);
+			return { false, x, y, dirX / length, dirY / length, 0 };
+		}
+
+		static ShapeEdge circle(double x, double y, double radius)
+		{
+			return { true, x, y, 0, 0, radius };
+		}
+
+		// Tells if the edge passes through the inside of the pixel at x, y.
+
+		bool passesThrough(int px, int py) const
+		{
+			const double corners[4][2] = { { double(px), double(py) }, { px + 1.0, double(py) }, { double(px), py + 1.0 }, { px + 1.0, py + 1.0 } };
+
+			if (bCircle)
+			{
+				// The circle passes through if it is farther from the center than the nearest
+				// point of the pixel and closer than the farthest.
+
+				double nearX = std::clamp(x, double(px), px + 1.0) - x;
+				double nearY = std::clamp(y, double(py), py + 1.0) - y;
+				double nearest = std::sqrt(nearX * nearX + nearY * nearY);
+
+				double farthest = 0.0;
+				for (auto& corner : corners)
+					farthest = std::max(farthest, std::hypot(corner[0] - x, corner[1] - y));
+
+				return nearest < radius && radius < farthest;
+			}
+
+			// The line passes through if corners of the pixel are on both sides of it.
+
+			double lowest = DBL_MAX, highest = -DBL_MAX;
+			for (auto& corner : corners)
+			{
+				double side = (corner[0] - x) * dirY - (corner[1] - y) * dirX;
+				lowest = std::min(lowest, side);
+				highest = std::max(highest, side);
+			}
+
+			return lowest < 0.0 && highest > 0.0;
+		}
+
+		// Adds y of the points where the edge crosses the vertical line at u.
+
+		void crossingsAtX(double u, std::vector<double>& ys) const
+		{
+			if (bCircle)
+			{
+				double dx = u - x;
+				if (std::abs(dx) < radius)
+				{
+					double dy = std::sqrt(radius * radius - dx * dx);
+					ys.push_back(y - dy);
+					ys.push_back(y + dy);
+				}
+			}
+			else if (dirX != 0.0)
+				ys.push_back(y + (u - x) * dirY / dirX);
+		}
+
+		// Adds x of the points where the edge crosses the horizontal line at v.
+
+		void crossingsAtY(double v, std::vector<double>& xs) const
+		{
+			if (bCircle)
+			{
+				double dy = v - y;
+				if (std::abs(dy) < radius)
+				{
+					double dx = std::sqrt(radius * radius - dy * dy);
+					xs.push_back(x - dx);
+					xs.push_back(x + dx);
+				}
+			}
+			else if (dirY != 0.0)
+				xs.push_back(x + (v - y) * dirX / dirY);
+		}
+
+		// Adds x of the points where the edge crosses another.
+
+		void intersections(const ShapeEdge& other, std::vector<double>& xs) const
+		{
+			if (!bCircle && !other.bCircle)
+			{
+				// Where x, y + t * dir is on the other line.
+
+				double det = dirX * other.dirY - dirY * other.dirX;
+				if (det != 0.0)
+				{
+					double t = ((other.x - x) * other.dirY - (other.y - y) * other.dirX) / det;
+					xs.push_back(x + t * dirX);
+				}
+			}
+			else if (bCircle && other.bCircle)
+			{
+				// Along the line between the centers, and across it.
+
+				double dx = other.x - x;
+				double dy = other.y - y;
+				double d = std::sqrt(dx * dx + dy * dy);
+
+				if (d > 0.0 && d <= radius + other.radius && d >= std::abs(radius - other.radius))
+				{
+					double along = (radius * radius - other.radius * other.radius + d * d) / (2 * d);
+					double across = std::sqrt(std::max(0.0, radius * radius - along * along));
+					double middleX = x + along * dx / d;
+
+					xs.push_back(middleX - across * dy / d);
+					xs.push_back(middleX + across * dy / d);
+				}
+			}
+			else
+			{
+				// Where the point line.x, line.y + t * line.dir is at radius from the center.
+
+				const ShapeEdge& line = bCircle ? other : *this;
+				const ShapeEdge& circle = bCircle ? *this : other;
+
+				double px = line.x - circle.x;
+				double py = line.y - circle.y;
+				double half = px * line.dirX + py * line.dirY;
+				double discriminant = half * half - (px * px + py * py - circle.radius * circle.radius);
+
+				if (discriminant >= 0.0)
+				{
+					double root = std::sqrt(discriminant);
+					xs.push_back(line.x + (-half - root) * line.dirX);
+					xs.push_back(line.x + (-half + root) * line.dirX);
+				}
+			}
+		}
+	};
+
+	//____ Shape __________________________________________________________________
+
+	class ReferenceBackend::Shape
+	{
+	public:
+		virtual ~Shape() = default;
+
+		// The segment a point is in, -1 for none.
+
+		virtual int		segmentAt(double x, double y) const = 0;
+
+		struct Segment
+		{
+			bool					bDrawn = false;
+			Color					color;					// Linear.
+			TintTools::DecodedTint	tint = {};				// Placed on the canvas, nLayers is 0 if none.
+		};
+
+		std::vector<Segment>	segments;
+		std::vector<ShapeEdge>	edges;
+
+	protected:
+
+		// Sets up a segment: its color from pColors if drawn and its tint from pTint if tinted,
+		// stepping both forward. The colors of the tints follow the colors of all segments.
+
+		void setupSegment(int index, bool bDrawn, const HiColor*& pColors, bool bTinted, const uint16_t*& pTint, const HiColor*& pTintColors)
+		{
+			Segment& segment = segments[index];
+			segment.bDrawn = bDrawn;
+
+			if (bDrawn)
+				segment.color = _toLinear(*pColors++);
+
+			if (bTinted)
+				pTint = TintTools::decodeTint(pTint, pTintColors, segment.tint);
+		}
+	};
+
+	//____ RoundedBoxShape ________________________________________________________
+	/*
+		A box with rounded corners and an outline inside it, see GfxDevice::drawRoundedBox().
+
+		The inner edge of the outline is a box of its own: rect inset by the outline, with the
+		radius of each corner reduced by the thicker of the two sides meeting there. Where an
+		uneven outline makes it reach outside the outer edge, the outline just gets thinner.
+	*/
+
+	class ReferenceBackend::RoundedBoxShape : public ReferenceBackend::Shape
+	{
+	public:
+
+		static constexpr int c_fill = 0;
+		static constexpr int c_outline = 1;
+
+		// A box with circular corners. Radii are top-left, top-right, bottom-right and
+		// bottom-left, 0 for a square corner.
+
+		struct Box
+		{
+			double	left = 0, top = 0, right = 0, bottom = 0;
+			double	radius[4] = { 0, 0, 0, 0 };
+
+			// Center of the circle of a corner, which touches both sides meeting there.
+
+			double	centerX(int corner) const { return (corner == 0 || corner == 3) ? left + radius[corner] : right - radius[corner]; }
+			double	centerY(int corner) const { return (corner == 0 || corner == 1) ? top + radius[corner] : bottom - radius[corner]; }
+
+			bool contains(double x, double y) const
+			{
+				if (x < left || x >= right || y < top || y >= bottom)
+					return false;
+
+				// Points in the corner of the box beyond the center of its circle are only inside
+				// if they are inside the circle.
+
+				for (int corner = 0; corner < 4; corner++)
+				{
+					double cx = centerX(corner);
+					double cy = centerY(corner);
+
+					bool bBeyondX = (corner == 0 || corner == 3) ? x < cx : x > cx;
+					bool bBeyondY = (corner == 0 || corner == 1) ? y < cy : y > cy;
+
+					if (bBeyondX && bBeyondY && std::hypot(x - cx, y - cy) > radius[corner])
+						return false;
+				}
+
+				return true;
+			}
+
+			void addEdges(std::vector<ShapeEdge>& edges) const
+			{
+				edges.push_back(ShapeEdge::line(left, top, 1, 0));
+				edges.push_back(ShapeEdge::line(left, bottom, 1, 0));
+				edges.push_back(ShapeEdge::line(left, top, 0, 1));
+				edges.push_back(ShapeEdge::line(right, top, 0, 1));
+
+				for (int corner = 0; corner < 4; corner++)
+				{
+					if (radius[corner] > 0)
+						edges.push_back(ShapeEdge::circle(centerX(corner), centerY(corner), radius[corner]));
+				}
+			}
+		};
+
+		Box		outer;
+		Box		inner;							// Inner edge of the outline.
+		bool	bOutline = false;				// Has an outline, otherwise inner isn't used.
+
+		//____ create() _________________________________________________________
+
+		static std::unique_ptr<Shape> create(const uint16_t* pPayload, const HiColor* pColors)
+		{
+			using Flags = GfxBackend::RoundedBoxFlags;
+
+			const RoundedBoxPayload box = decodeRoundedBox(pPayload);
+			auto has = [&box](Flags flag) { return (box.flags & uint16_t(flag)) != 0; };
+
+			auto pShape = std::make_unique<RoundedBoxShape>();
+
+			// Geometry, from spx to pixels.
+
+			spx radius[4] = { box.radius[0], box.radius[1], box.radius[2], box.radius[3] };
+			Util::clampCornerRadii(box.rect.size(), radius);
+
+			BorderSPX outline = { std::max(box.outline.top, 0), std::max(box.outline.right, 0),
+								  std::max(box.outline.bottom, 0), std::max(box.outline.left, 0) };
+
+			spx innerRadius[4];
+			Util::innerCornerRadii(radius, outline, innerRadius);
+
+			const RectSPX& rect = box.rect;
+			Box& outer = pShape->outer;
+			Box& inner = pShape->inner;
+
+			outer.left = rect.x / 64.0;
+			outer.top = rect.y / 64.0;
+			outer.right = (int64_t(rect.x) + rect.w) / 64.0;
+			outer.bottom = (int64_t(rect.y) + rect.h) / 64.0;
+
+			inner.left = outer.left + outline.left / 64.0;
+			inner.top = outer.top + outline.top / 64.0;
+			inner.right = outer.right - outline.right / 64.0;
+			inner.bottom = outer.bottom - outline.bottom / 64.0;
+
+			for (int i = 0; i < 4; i++)
+			{
+				outer.radius[i] = radius[i] / 64.0;
+				inner.radius[i] = innerRadius[i] / 64.0;
+			}
+
+			pShape->bOutline = (outline.top | outline.right | outline.bottom | outline.left) != 0;
+
+			outer.addEdges(pShape->edges);
+			if (pShape->bOutline)
+				inner.addEdges(pShape->edges);
+
+			// Segments. Colors come first, then the colors of the tints in the same order.
+
+			const HiColor* pTintColors = pColors + (has(Flags::HasFill) ? 1 : 0) + (has(Flags::HasOutline) ? 1 : 0);
+			const uint16_t* pTint = box.pTints;
+
+			pShape->segments.resize(2);
+			pShape->setupSegment(c_fill, has(Flags::HasFill), pColors, has(Flags::HasFillTint), pTint, pTintColors);
+			pShape->setupSegment(c_outline, has(Flags::HasOutline), pColors, has(Flags::HasOutlineTint), pTint, pTintColors);
+
+			return pShape;
+		}
+
+		//____ segmentAt() ______________________________________________________
+
+		int segmentAt(double x, double y) const override
+		{
+			if (!outer.contains(x, y))
+				return -1;
+
+			if (bOutline && !inner.contains(x, y))
+				return c_outline;
+
+			return c_fill;
+		}
+	};
+
+	//____ RingShape ______________________________________________________________
+	/*
+		A ring, pie, donut or disc, see GfxDevice::drawRing().
+
+		It is made of four circles around the center of rect. Circle 0 is the outer edge, the
+		largest circle that fits in rect, and circle 3 the inner edge, the edge of the hole.
+		The outline lies along the outer edge, between circles 0 and 1, and along the inner
+		edge, between circles 2 and 3. Slices lie between circles 1 and 2, the hub inside
+		circle 3. Without outline circle 1 is circle 0 and circle 2 is circle 3, and without
+		hole circles 2 and 3 have no radius.
+
+		The back segment covers the rest of rect outside circle 0 and the part between circles
+		1 and 2 that the slices don't reach.
+
+		A square ring has rect itself as outer edge and rect inset by the outline as the inside
+		of the outer outline, in place of circles 0 and 1.
+	*/
+
+	class ReferenceBackend::RingShape : public ReferenceBackend::Shape
+	{
+	public:
+
+		static constexpr int c_back = 0;
+		static constexpr int c_outline = 1;
+		static constexpr int c_hub = 2;
+		static constexpr int c_firstSlice = 3;
+
+		double	left = 0, top = 0, right = 0, bottom = 0;						// Rect.
+		double	centerX = 0, centerY = 0;
+		double	radius[4] = { 0, 0, 0, 0 };										// Of the circles.
+
+		bool	bSquare = false;
+		double	insetLeft = 0, insetTop = 0, insetRight = 0, insetBottom = 0;	// Rect inset by the outline.
+
+		bool	bSlices = false;			// There is room for slices, otherwise it is all outline.
+		double	start = 0;					// Where the first slice starts, in turns clockwise from 12 o'clock.
+		std::vector<double>	sliceSizes;		// In turns.
+
+		//____ create() _________________________________________________________
+
+		static std::unique_ptr<Shape> create(const uint16_t* pPayload, const HiColor* pColors)
+		{
+			using Flags = GfxBackend::RingFlags;
+			using SliceFlags = GfxBackend::RingSliceFlags;
+
+			const RingPayload ring = decodeRing(pPayload);
+			auto has = [&ring](Flags flag) { return (ring.flags & uint16_t(flag)) != 0; };
+			auto sliceHas = [&ring](int slice, SliceFlags flag) { return (ring.sliceFlags(slice) & uint16_t(flag)) != 0; };
+
+			auto pShape = std::make_unique<RingShape>();
+			RingShape& s = *pShape;
+
+			// Geometry, from spx to pixels.
+
+			s.left = ring.rect.x / 64.0;
+			s.top = ring.rect.y / 64.0;
+			s.right = (int64_t(ring.rect.x) + ring.rect.w) / 64.0;
+			s.bottom = (int64_t(ring.rect.y) + ring.rect.h) / 64.0;
+
+			s.centerX = (s.left + s.right) / 2;
+			s.centerY = (s.top + s.bottom) / 2;
+
+			double outerRadius = std::min(s.right - s.left, s.bottom - s.top) / 2;
+			double thickness = ring.thickness / 64.0;
+
+			bool bHole = thickness > 0 && thickness < outerRadius;
+			double holeRadius = bHole ? outerRadius - thickness : 0.0;
+			double outline = std::clamp(ring.outline / 64.0, 0.0, bHole ? thickness / 2 : outerRadius);
+
+			s.radius[0] = outerRadius;
+			s.radius[1] = outerRadius - outline;
+			s.radius[2] = bHole ? holeRadius + outline : 0.0;
+			s.radius[3] = holeRadius;
+
+			s.bSquare = has(Flags::Square);
+			s.insetLeft = s.left + outline;
+			s.insetTop = s.top + outline;
+			s.insetRight = s.right - outline;
+			s.insetBottom = s.bottom - outline;
+
+			// Slices need room between the outer outline and the inner one.
+
+			double sliceRadius = s.bSquare ? std::min(s.centerX - s.insetLeft, s.centerY - s.insetTop) : s.radius[1];
+			s.bSlices = sliceRadius > s.radius[2];
+
+			s.start = ring.start / double(c_shapeFullTurn);
+
+			for (int i = 0; i < ring.nSlices; i++)
+				s.sliceSizes.push_back(std::min(ring.sliceSize(i), c_shapeFullTurn) / double(c_shapeFullTurn));
+
+			// Edges: sides of rect, the circles, the inset rect of a square ring and the boundaries
+			// between slices, as lines through the center.
+
+			s.edges.push_back(ShapeEdge::line(s.left, s.top, 1, 0));
+			s.edges.push_back(ShapeEdge::line(s.left, s.bottom, 1, 0));
+			s.edges.push_back(ShapeEdge::line(s.left, s.top, 0, 1));
+			s.edges.push_back(ShapeEdge::line(s.right, s.top, 0, 1));
+
+			for (int i = s.bSquare ? 2 : 0; i < 4; i++)
+			{
+				if (s.radius[i] > 0)
+					s.edges.push_back(ShapeEdge::circle(s.centerX, s.centerY, s.radius[i]));
+			}
+
+			if (s.bSquare)
+			{
+				s.edges.push_back(ShapeEdge::line(s.insetLeft, s.insetTop, 1, 0));
+				s.edges.push_back(ShapeEdge::line(s.insetLeft, s.insetBottom, 1, 0));
+				s.edges.push_back(ShapeEdge::line(s.insetLeft, s.insetTop, 0, 1));
+				s.edges.push_back(ShapeEdge::line(s.insetRight, s.insetTop, 0, 1));
+			}
+
+			auto addBoundary = [&s](double position)
+			{
+				double angle = (s.start + position) * 2 * c_pi;
+				s.edges.push_back(ShapeEdge::line(s.centerX, s.centerY, std::sin(angle), -std::cos(angle)));
+			};
+
+			addBoundary(0.0);
+
+			double end = 0.0;
+			for (double size : s.sliceSizes)
+			{
+				end += size;
+				if (end >= 1.0)
+					break;
+
+				addBoundary(end);
+			}
+
+			// Segments. Colors come first, then the colors of the tints in the same order:
+			// outline, hub, back and the slices.
+
+			const HiColor* pTintColors = pColors + (has(Flags::HasOutline) ? 1 : 0) + (has(Flags::HasHub) ? 1 : 0) + (has(Flags::HasBack) ? 1 : 0);
+			for (int i = 0; i < ring.nSlices; i++)
+				if (sliceHas(i, SliceFlags::Drawn))
+					pTintColors++;
+
+			const uint16_t* pTint = ring.pTints;
+
+			s.segments.resize(c_firstSlice + ring.nSlices);
+			s.setupSegment(c_outline, has(Flags::HasOutline), pColors, has(Flags::HasOutlineTint), pTint, pTintColors);
+			s.setupSegment(c_hub, has(Flags::HasHub), pColors, has(Flags::HasHubTint), pTint, pTintColors);
+			s.setupSegment(c_back, has(Flags::HasBack), pColors, has(Flags::HasBackTint), pTint, pTintColors);
+
+			for (int i = 0; i < ring.nSlices; i++)
+				s.setupSegment(c_firstSlice + i, sliceHas(i, SliceFlags::Drawn), pColors, sliceHas(i, SliceFlags::Tinted), pTint, pTintColors);
+
+			return pShape;
+		}
+
+		//____ segmentAt() ______________________________________________________
+
+		int segmentAt(double x, double y) const override
+		{
+			if (x < left || x >= right || y < top || y >= bottom)
+				return -1;
+
+			double dx = x - centerX;
+			double dy = y - centerY;
+			double distance = std::sqrt(dx * dx + dy * dy);
+
+			bool bInsideOuterEdge = bSquare || distance < radius[0];
+			bool bInsideOuterOutline = bSquare ? (x >= insetLeft && x < insetRight && y >= insetTop && y < insetBottom) : distance < radius[1];
+
+			if (!bInsideOuterEdge)
+				return c_back;
+
+			if (!bInsideOuterOutline)
+				return c_outline;
+
+			if (distance < radius[3])
+				return c_hub;
+
+			if (distance < radius[2] || !bSlices)
+				return c_outline;
+
+			return sliceAt(dx, dy);
+		}
+
+		//____ sliceAt() ________________________________________________________
+		// The slice in direction dx, dy from the center, or the back segment in the gap after the slices.
+
+		int sliceAt(double dx, double dy) const
+		{
+			// Angle clockwise from 12 o'clock with y pointing down, in turns. The center itself
+			// counts as 12 o'clock.
+
+			double angle = (dx == 0.0 && dy == 0.0) ? 0.0 : std::atan2(dx, -dy) / (2 * c_pi);
+
+			double position = angle - start;
+			position -= std::floor(position);
+
+			double end = 0.0;
+			for (int i = 0; i < (int) sliceSizes.size(); i++)
+			{
+				end += sliceSizes[i];
+				if (position < end)
+					return c_firstSlice + i;
+			}
+
+			return c_back;
+		}
+	};
+
+	//____ _drawShape() ___________________________________________________________
+	/*
+		Draws a shape from the payload of a DrawShape command, within the next nRects clip
+		rectangles. Its colors are the next ones in the color buffer.
+	*/
+
+	void ReferenceBackend::_drawShape(ShapeKind kind, const uint16_t* pPayload, int nRects)
+	{
+		if (m_blendMode == BlendMode::Ignore)
+			return;
+
+		std::unique_ptr<Shape> pShape;
+
+		if (kind == ShapeKind::RoundedBox)
+			pShape = RoundedBoxShape::create(pPayload, m_pColorsPtr);
+		else if (kind == ShapeKind::Ring)
+			pShape = RingShape::create(pPayload, m_pColorsPtr);
+		else
+			return;
+
+		for (int i = 0; i < nRects; i++)
+		{
+			RectI pixels = _pixelRect(m_pRectsPtr[i]);
+
+			for (int y = pixels.y; y < pixels.y + pixels.h; y++)
+				for (int x = pixels.x; x < pixels.x + pixels.w; x++)
+					_drawShapePixel(*pShape, x, y);
+		}
+	}
+
+	//____ _drawShapePixel() ______________________________________________________
+	/*
+		Draws a pixel of a shape. The pixel gets the average of what each segment gives the part of
+		the pixel it covers and the original pixel for the part not covered by any drawn segment,
+		weighted by their areas and averaged as premultiplied colors.
+	*/
+
+	void ReferenceBackend::_drawShapePixel(const Shape& shape, int x, int y)
+	{
+		if (!_isInsideCanvas(x, y))
+			return;
+
+		std::vector<double> coverage;
+		_shapeCoverage(shape, x, y, coverage);
+
+		Color dst = _canvasPixel(x, y);
+
+		std::vector<Color> colors = { dst };
+		std::vector<double> areas = { 1.0 };
+
+		for (int seg = 0; seg < (int) shape.segments.size(); seg++)
+		{
+			const Shape::Segment& segment = shape.segments[seg];
+
+			if (!segment.bDrawn || coverage[seg] <= 0.0)
+				continue;
+
+			Color color = segment.color;
+			if (segment.tint.nLayers > 0)
+				color = color * _tintColorAt(segment.tint, x + 0.5, y + 0.5);
+
+			colors.push_back(_blend(color * _deviceTint(x, y), dst));
+			areas.push_back(coverage[seg]);
+			areas[0] -= coverage[seg];
+		}
+
+		if (colors.size() == 1)
+			return;													// Not covered by any drawn segment.
+
+		// A pixel fully covered by one segment gets what it gives, as in _plotPixel().
+
+		if (colors.size() == 2 && areas[1] == 1.0)
+		{
+			_setCanvasPixel(x, y, colors[1]);
+			return;
+		}
+
+		areas[0] = std::max(areas[0], 0.0);
+		_setCanvasPixel(x, y, _averageColors(int(colors.size()), colors.data(), areas.data(), true));
+	}
+
+	//____ _shapeCoverage() _______________________________________________________
+	/*
+		How much of the pixel at x, y each segment of a shape covers, 0.0 -> 1.0.
+
+		The area of a segment within the pixel is the integral across the pixel of length(u), how
+		much of the vertical line at u within the pixel lies in the segment. length(u) is exact:
+		along the line the segment can only change where an edge crosses it, so we cut the line at
+		those crossings and ask the shape which segment each piece is in.
+
+		length(u) is smooth, made of straight lines and circular arcs, except where an edge enters
+		or leaves the pixel through its top or bottom, where two edges cross, at the left and right
+		ends of circles and at vertical edges. We cut the pixel at all those u and integrate each
+		part with adaptive Gauss-Legendre quadrature, which converges quickly on smooth functions,
+		to an error far below what any canvas can show.
+	*/
+
+	// A function of u giving a value for each segment.
+
+	using SegmentFunction = std::function<void(double u, std::vector<double>& values)>;
+
+	// Integral of f from u0 to u1 by the 5-point Gauss-Legendre rule.
+
+	static void _gaussLegendre(const SegmentFunction& f, double u0, double u1, std::vector<double>& result)
+	{
+		static const double c_nodes[5] = { 0.0, -0.5384693101056831, 0.5384693101056831, -0.9061798459386640, 0.9061798459386640 };
+		static const double c_weights[5] = { 0.5688888888888889, 0.4786286704993665, 0.4786286704993665, 0.2369268850561891, 0.2369268850561891 };
+
+		double middle = (u0 + u1) / 2;
+		double half = (u1 - u0) / 2;
+
+		std::vector<double> values;
+		std::fill(result.begin(), result.end(), 0.0);
+
+		for (int i = 0; i < 5; i++)
+		{
+			f(middle + c_nodes[i] * half, values);
+			for (size_t seg = 0; seg < result.size(); seg++)
+				result[seg] += values[seg] * c_weights[i] * half;
+		}
+	}
+
+	// Integrates f from u0 to u1, adding the result to sum. whole is _gaussLegendre() of the
+	// interval, which is compared to the same over its halves. Halves that don't agree with it
+	// within tolerance are integrated on their own, until depth runs out.
+
+	static void _integrate(const SegmentFunction& f, double u0, double u1, const std::vector<double>& whole, double tolerance, int depth, std::vector<double>& sum)
+	{
+		double middle = (u0 + u1) / 2;
+
+		std::vector<double> left(sum.size()), right(sum.size());
+		_gaussLegendre(f, u0, middle, left);
+		_gaussLegendre(f, middle, u1, right);
+
+		double difference = 0.0;
+		for (size_t seg = 0; seg < sum.size(); seg++)
+			difference = std::max(difference, std::abs(left[seg] + right[seg] - whole[seg]));
+
+		if (difference <= tolerance || depth == 0)
+		{
+			for (size_t seg = 0; seg < sum.size(); seg++)
+				sum[seg] += left[seg] + right[seg];
+		}
+		else
+		{
+			_integrate(f, u0, middle, left, tolerance, depth - 1, sum);
+			_integrate(f, middle, u1, right, tolerance, depth - 1, sum);
+		}
+	}
+
+	void ReferenceBackend::_shapeCoverage(const Shape& shape, int x, int y, std::vector<double>& coverage)
+	{
+		const double top = y;
+		const double bottom = y + 1;
+
+		// Only edges that pass through the pixel matter here.
+
+		std::vector<const ShapeEdge*> edges;
+		for (const ShapeEdge& edge : shape.edges)
+		{
+			if (edge.passesThrough(x, y))
+				edges.push_back(&edge);
+		}
+
+		// A pixel no edge passes through is all in one segment.
+
+		int nSegments = int(shape.segments.size());
+		coverage.assign(nSegments, 0.0);
+
+		if (edges.empty())
+		{
+			int segment = shape.segmentAt(x + 0.5, y + 0.5);
+			if (segment >= 0)
+				coverage[segment] = 1.0;
+			return;
+		}
+
+		// Where across the pixel length(u) might not be smooth.
+
+		std::vector<double> cuts;
+
+		for (size_t i = 0; i < edges.size(); i++)
+		{
+			const ShapeEdge& edge = *edges[i];
+
+			if (edge.bCircle)
+			{
+				cuts.push_back(edge.x - edge.radius);
+				cuts.push_back(edge.x + edge.radius);
+			}
+			else if (edge.dirX == 0.0)
+				cuts.push_back(edge.x);
+
+			edge.crossingsAtY(top, cuts);
+			edge.crossingsAtY(bottom, cuts);
+
+			for (size_t j = i + 1; j < edges.size(); j++)
+				edge.intersections(*edges[j], cuts);
+		}
+
+		cuts.erase(std::remove_if(cuts.begin(), cuts.end(), [x](double u) { return u <= x || u >= x + 1; }), cuts.end());
+		cuts.push_back(x);
+		cuts.push_back(x + 1);
+		std::sort(cuts.begin(), cuts.end());
+
+		// length(u) for each segment.
+
+		auto lengths = [&](double u, std::vector<double>& result)
+		{
+			std::vector<double> crossings;
+			for (const ShapeEdge* pEdge : edges)
+				pEdge->crossingsAtX(u, crossings);
+
+			crossings.erase(std::remove_if(crossings.begin(), crossings.end(), [=](double v) { return v <= top || v >= bottom; }), crossings.end());
+			crossings.push_back(top);
+			crossings.push_back(bottom);
+			std::sort(crossings.begin(), crossings.end());
+
+			result.assign(nSegments, 0.0);
+
+			for (size_t i = 1; i < crossings.size(); i++)
+			{
+				int segment = shape.segmentAt(u, (crossings[i - 1] + crossings[i]) / 2);
+				if (segment >= 0)
+					result[segment] += crossings[i] - crossings[i - 1];
+			}
+		};
+
+		// Integrate across the pixel, part by part.
+
+		std::vector<double> whole(nSegments);
+
+		for (size_t i = 1; i < cuts.size(); i++)
+		{
+			if (cuts[i] - cuts[i - 1] < 1e-12)
+				continue;
+
+			_gaussLegendre(lengths, cuts[i - 1], cuts[i], whole);
+			_integrate(lengths, cuts[i - 1], cuts[i], whole, 1e-11, 40, coverage);
+		}
+
+		// Rounding errors aside, a segment covering all or nothing of the pixel covers exactly that.
+
+		for (double& value : coverage)
+		{
+			if (value < 1e-9)
+				value = 0.0;
+			else if (value > 1.0 - 1e-9)
+				value = 1.0;
+		}
 	}
 
 	//____ defineCanvas() _____________________________________________

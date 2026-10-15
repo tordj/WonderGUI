@@ -48,6 +48,7 @@ public:
 		int line = 0;
 		int clipLine = 0;
 		int segment = 0;
+		int coverage = 0;
 
 		int	pass1blits_straight = 0;
 		int pass1blits_straight_fast8 = 0;

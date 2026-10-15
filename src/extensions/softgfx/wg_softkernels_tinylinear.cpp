@@ -127,6 +127,15 @@ pBackend->setSegmentStripKernel( SoftBackend::StripSource::Colors, BlendMode::Bl
 pBackend->setSegmentStripKernel( SoftBackend::StripSource::Colors, BlendMode::Invert, SoftFormat::XRGB_8_linear,  _draw_segment_strip<SoftBackend::StripSource::Colors, BlendMode::Invert, SoftFormat::XRGB_8_linear> );
 pBackend->setSegmentStripKernel( SoftBackend::StripSource::Colors, BlendMode::Invert, SoftFormat::ARGB_8_linear,  _draw_segment_strip<SoftBackend::StripSource::Colors, BlendMode::Invert, SoftFormat::ARGB_8_linear> );
 
+pBackend->setCoverageKernel( BlendMode::Replace, SoftFormat::XRGB_8_linear, _draw_coverage_span<BlendMode::Replace, SoftFormat::XRGB_8_linear> );
+pBackend->setCoverageKernel( BlendMode::Replace, SoftFormat::ARGB_8_linear, _draw_coverage_span<BlendMode::Replace, SoftFormat::ARGB_8_linear> );
+
+pBackend->setCoverageKernel( BlendMode::Blend, SoftFormat::XRGB_8_linear, _draw_coverage_span<BlendMode::Blend, SoftFormat::XRGB_8_linear> );
+pBackend->setCoverageKernel( BlendMode::Blend, SoftFormat::ARGB_8_linear, _draw_coverage_span<BlendMode::Blend, SoftFormat::ARGB_8_linear> );
+
+pBackend->setCoverageKernel( BlendMode::Invert, SoftFormat::XRGB_8_linear, _draw_coverage_span<BlendMode::Invert, SoftFormat::XRGB_8_linear> );
+pBackend->setCoverageKernel( BlendMode::Invert, SoftFormat::ARGB_8_linear, _draw_coverage_span<BlendMode::Invert, SoftFormat::ARGB_8_linear> );
+
 pBackend->setStraightBlitKernel( SoftFormat::ARGB_8_linear, SoftBackend::ReadOp::Normal, TintMode::None, BlendMode::Replace, SoftFormat::XRGB_8_linear, _straight_blit<SoftFormat::ARGB_8_linear, TintMode::None, BlendMode::Replace, SoftFormat::XRGB_8_linear, SoftBackend::ReadOp::Normal> );
 pBackend->setStraightBlitKernel( SoftFormat::ARGB_8_linear, SoftBackend::ReadOp::Normal, TintMode::None, BlendMode::Replace, SoftFormat::ARGB_8_linear, _straight_blit<SoftFormat::ARGB_8_linear, TintMode::None, BlendMode::Replace, SoftFormat::ARGB_8_linear, SoftBackend::ReadOp::Normal> );
 pBackend->setStraightBlitKernel( SoftFormat::ARGB_8_linear, SoftBackend::ReadOp::Normal, TintMode::None, BlendMode::Blend, SoftFormat::XRGB_8_linear, _straight_blit<SoftFormat::ARGB_8_linear, TintMode::None, BlendMode::Blend, SoftFormat::XRGB_8_linear, SoftBackend::ReadOp::Normal> );

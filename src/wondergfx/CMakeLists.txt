@@ -42,6 +42,8 @@ set( SOURCES
 	wg_gfxtypes.h
 	wg_gfxutil.cpp
 	wg_gfxutil.h
+	wg_gpushapes.cpp
+	wg_gpushapes.h
 	wg_gridwalker.cpp
 	wg_gridwalker.h
 	wg_lzcompression.cpp

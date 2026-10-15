@@ -28,10 +28,12 @@
 
 #include <wg_gfxtypes.h>
 #include <wg_gfxbackend.h>
+#include <wg_gpushapes.h>
 #include <wg_tinttools.h>
 #include <wg_metalsurface.h>
 
 #include <map>
+#include <vector>
 
 
 namespace wg
@@ -172,6 +174,7 @@ namespace wg
 		id<MTLRenderPipelineState> _compileBlurPipeline( BlurFragShader shader, bool bTintmap, BlendMode blendMode, DestFormat canvasFormat );
 		id<MTLRenderPipelineState> _compileBlitPipeline( BlitFragShader shader, bool bTintmap, BlendMode blendMode, DestFormat canvasFormat );
 		id<MTLRenderPipelineState> _compileSegmentsPipeline( int shaderIndex, bool bTintmap, BlendMode blendMode, DestFormat canvasFormat );
+		id<MTLRenderPipelineState> _compileShapePipeline( bool bTintmap, BlendMode blendMode, DestFormat canvasFormat );
 
 
 		id<MTLRenderPipelineState> _compileRenderPipeline( NSString* label, NSString* vertexShader,
@@ -283,6 +286,8 @@ namespace wg
 
 		int			m_tintOfs = -1;				// Offset in m_pColorBuffer for tint block if a Tint is active.
 
+		std::vector<GpuShapes::Segment>	m_shapeSegments;		// Segments of shape being processed.
+
 
 
 		// Active state data
@@ -319,6 +324,8 @@ namespace wg
 		id<MTLRenderPipelineState>  m_blurPipelines[4][2][BlendMode_size][5]  = {};   				// [BlurFragShader][bTint][BlendMode][DestFormat]
 
 		id<MTLRenderPipelineState>  m_segmentsPipelines[c_maxSegments][2][BlendMode_size][5] = {};  // [nbEdges][bTintmap][BlendMode][DestFormat]
+
+		id<MTLRenderPipelineState>  m_shapePipelines[2][BlendMode_size][5] = {};					// [bTintmap][BlendMode][DestFormat]
 
 		id<MTLSamplerState>         m_samplers[2][2][2] = {};                        					// [bMipMap][bInterpolate][bTile]
 

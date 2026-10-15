@@ -20,6 +20,7 @@
 
 =========================================================================*/
 #include <wg_backendlogger.h>
+#include <cstring>
 #include <wg_tinttools.h>
 
 namespace wg
@@ -78,6 +79,9 @@ namespace wg
 				*m_pOStream << "    Blits:         " << pInfo->nBlit << std::endl;
 				*m_pOStream << "    Blurs:         " << pInfo->nBlur << std::endl;
 				*m_pOStream << "    EdgemapDraws:  " << pInfo->nEdgemapDraws << std::endl;
+				*m_pOStream << "    ShapeDraws:    " << pInfo->nShapeDraws << std::endl;
+				*m_pOStream << "    ShapeSegments: " << pInfo->nShapeSegments << std::endl;
+				*m_pOStream << "    ShapeTints:    " << pInfo->nShapeTints << std::endl;
 
 				*m_pOStream << "    LineCoords:    " << pInfo->nLineCoords << std::endl;
 				*m_pOStream << "    LineClipRects: " << pInfo->nLineClipRects << std::endl;
@@ -266,7 +270,7 @@ namespace wg
 				switch (cmd)
 				{
 				case Command::None:
-					*m_pOStream << "None (this should not be present, something is probably wrong!)" << std::endl;
+					*m_pOStream << "    None (padding)" << std::endl;
 					break;
 
 				case Command::StateChange:
@@ -439,6 +443,50 @@ namespace wg
 
 					_printRects(*m_pOStream, nRects, pRects);
 					pRects += nRects;
+					break;
+				}
+
+				case Command::DrawShape:
+				{
+					auto kind = GfxBackend::ShapeKind(p[0]);
+					int nRects = p[1];
+					int nColors = p[2];
+					int nWords = p[3];
+					const uint16_t* pPayload = p + c_drawShapeHeaderWords - 1;
+
+					if (kind == ShapeKind::RoundedBox)
+					{
+						const RoundedBoxPayload box = decodeRoundedBox(pPayload);
+						auto has = [&box](RoundedBoxFlags flag) { return (box.flags & uint16_t(flag)) != 0; };
+
+						*m_pOStream << "    DrawShape: RoundedBox " << box.rect.x << ", " << box.rect.y << ", " << box.rect.w << ", " << box.rect.h
+							<< " radius: " << box.radius[0] << ", " << box.radius[1] << ", " << box.radius[2] << ", " << box.radius[3]
+							<< " outline: " << box.outline.top << ", " << box.outline.right << ", " << box.outline.bottom << ", " << box.outline.left
+							<< (has(RoundedBoxFlags::HasFill) ? " fill" : "") << (has(RoundedBoxFlags::HasOutline) ? " outline" : "")
+							<< (has(RoundedBoxFlags::HasFillTint) ? " fillTint" : "") << (has(RoundedBoxFlags::HasOutlineTint) ? " outlineTint" : "")
+							<< " split into " << nRects << " rectangles." << std::endl;
+					}
+					else if (kind == ShapeKind::Ring)
+					{
+						const RingPayload ring = decodeRing(pPayload);
+						auto has = [&ring](RingFlags flag) { return (ring.flags & uint16_t(flag)) != 0; };
+
+						*m_pOStream << "    DrawShape: Ring " << ring.rect.x << ", " << ring.rect.y << ", " << ring.rect.w << ", " << ring.rect.h
+							<< " thickness: " << ring.thickness << " outline: " << ring.outline << " start: " << ring.start / double(c_shapeFullTurn)
+							<< " slices: " << ring.nSlices
+							<< (has(RingFlags::Square) ? " square" : "") << (has(RingFlags::HasOutline) ? " outline" : "")
+							<< (has(RingFlags::HasHub) ? " hub" : "") << (has(RingFlags::HasBack) ? " back" : "")
+							<< (has(RingFlags::HasOutlineTint) ? " outlineTint" : "") << (has(RingFlags::HasHubTint) ? " hubTint" : "")
+							<< (has(RingFlags::HasBackTint) ? " backTint" : "")
+							<< " split into " << nRects << " rectangles." << std::endl;
+					}
+					else
+						*m_pOStream << "    DrawShape: unknown kind " << int(kind) << ", " << nWords << " words, split into " << nRects << " rectangles." << std::endl;
+
+					_printRects(*m_pOStream, nRects, pRects);
+					pRects += nRects;
+					pColors += nColors;
+					p = pPayload + nWords;
 					break;
 				}
 

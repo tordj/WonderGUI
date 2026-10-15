@@ -271,6 +271,9 @@ static void populateBody(wg_c_calls_body * pBody)
 
 	pBody->gfxDevice.setBlurbrush			= LOCKED(wg_setBlurbrush);
 
+	pBody->gfxDevice.drawRoundedBox			= LOCKED(wg_drawRoundedBox);
+	pBody->gfxDevice.drawRing				= LOCKED(wg_drawRing);
+
 /*
 	pBody->streamBuffer.structSize				= sizeof(wg_streambuffer_calls);
 	pBody->streamBuffer.createStreamBuffer		= LOCKED(wg_createStreamBuffer);

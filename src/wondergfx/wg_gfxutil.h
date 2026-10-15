@@ -193,6 +193,12 @@ namespace wg
 			return spx(value * scale);
 		}
 
+		inline CornersSPX ptsToSpx(const Corners& corners, int scale)
+		{
+			return CornersSPX(spx(corners.topLeft * scale), spx(corners.topRight * scale),
+							  spx(corners.bottomRight * scale), spx(corners.bottomLeft * scale));
+		}
+
 		inline CoordSPX ptsToSpx(const Coord& coord, int scale)
 		{
 			return CoordSPX(spx(coord.x * scale), spx(coord.y * scale));
@@ -213,6 +219,118 @@ namespace wg
 		{
 			return RectSPX(spx(rect.x * scale), spx(rect.y * scale),
 				spx(rect.w * scale), spx(rect.h * scale));
+		}
+
+		/**
+		 * Clamps the corner radii of a rounded box so that corners never overlap.
+		 *
+		 * Negative radii are set to 0. If the radii along any side of the box add up
+		 * to more than the length of that side, all four radii are scaled down by the
+		 * same factor, the smallest that makes them fit (as in CSS). The shape keeps its
+		 * proportions and a radius larger than half the shorter side gives a pill.
+		 *
+		 * Radii are given as top-left, top-right, bottom-right, bottom-left.
+		 */
+
+		inline void clampCornerRadii(const SizeSPX& size, spx radius[4])
+		{
+			for (int i = 0; i < 4; i++)
+				if (radius[i] < 0)
+					radius[i] = 0;
+
+			int64_t w = size.w > 0 ? size.w : 0;
+			int64_t h = size.h > 0 ? size.h : 0;
+
+			// Find the side needing most scaling, as the fraction num/den.
+
+			int64_t num = 1, den = 1;
+
+			auto check = [&](int64_t length, int64_t sum)
+			{
+				if (sum > length && length * den < num * sum)
+				{
+					num = length;
+					den = sum;
+				}
+			};
+
+			check(w, int64_t(radius[0]) + radius[1]);
+			check(h, int64_t(radius[1]) + radius[2]);
+			check(w, int64_t(radius[2]) + radius[3]);
+			check(h, int64_t(radius[3]) + radius[0]);
+
+			if (num < den)
+			{
+				for (int i = 0; i < 4; i++)
+					radius[i] = spx(radius[i] * num / den);
+			}
+		}
+
+		inline void clampCornerRadii(const SizeSPX& size, CornersSPX& radius)
+		{
+			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };
+			clampCornerRadii(size, r);
+			radius = CornersSPX(r[0], r[1], r[2], r[3]);
+		}
+
+		/**
+		 * Checks if a point is inside a box with rounded corners. Radii are top-left, top-right,
+		 * bottom-right, bottom-left, each corner circular and touching the two sides meeting
+		 * there, as clamped by clampCornerRadii() for the box to look as drawn.
+		 */
+
+		inline bool isInsideRoundedBox(const CoordSPX& point, const RectSPX& box, const spx radius[4])
+		{
+			if (!box.contains(point))
+				return false;
+
+			int64_t x = point.x;
+			int64_t y = point.y;
+
+			auto outsideCorner = [&](int64_t cx, int64_t cy, int64_t r, bool bLeft, bool bTop)
+			{
+				if ((bLeft ? x >= cx : x < cx) || (bTop ? y >= cy : y < cy))
+					return false;
+
+				return (x - cx) * (x - cx) + (y - cy) * (y - cy) > r * r;
+			};
+
+			int64_t left = box.x, top = box.y, right = int64_t(box.x) + box.w, bottom = int64_t(box.y) + box.h;
+
+			return !(outsideCorner(left + radius[0], top + radius[0], radius[0], true, true) ||
+					 outsideCorner(right - radius[1], top + radius[1], radius[1], false, true) ||
+					 outsideCorner(right - radius[2], bottom - radius[2], radius[2], false, false) ||
+					 outsideCorner(left + radius[3], bottom - radius[3], radius[3], true, false));
+		}
+
+		inline bool isInsideRoundedBox(const CoordSPX& point, const RectSPX& box, const CornersSPX& radius)
+		{
+			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };
+			return isInsideRoundedBox(point, box, r);
+		}
+
+		/**
+		 * Radii of the inner corners of an outline inside a box with the given (clamped)
+		 * corner radii, as drawn by GfxDevice::drawRoundedBox(): the radius minus the thicker
+		 * of the two sides meeting there, circular and touching both sides of the inside.
+		 * With even outlines they are concentric with the outer corners. With uneven ones
+		 * they can be larger than the inside.
+		 */
+
+		inline void innerCornerRadii(const spx radius[4], const BorderSPX& outline, spx innerRadius[4])
+		{
+			innerRadius[0] = std::max(radius[0] - std::max(outline.left, outline.top), 0);
+			innerRadius[1] = std::max(radius[1] - std::max(outline.top, outline.right), 0);
+			innerRadius[2] = std::max(radius[2] - std::max(outline.right, outline.bottom), 0);
+			innerRadius[3] = std::max(radius[3] - std::max(outline.bottom, outline.left), 0);
+		}
+
+		inline CornersSPX innerCornerRadii(const CornersSPX& radius, const BorderSPX& outline)
+		{
+			spx r[4] = { radius.topLeft, radius.topRight, radius.bottomRight, radius.bottomLeft };
+			spx inner[4];
+			innerCornerRadii(r, outline, inner);
+			return CornersSPX(inner[0], inner[1], inner[2], inner[3]);
 		}
 
 		inline spx align(spx x)

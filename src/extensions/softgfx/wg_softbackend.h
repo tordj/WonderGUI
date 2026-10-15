@@ -28,6 +28,7 @@
 #include <wg_softtint.h>
 #include <wg_softsurface.h>
 #include <wg_softformat.h>
+#include <wg_softshapes.h>
 
 namespace wg
 {
@@ -55,9 +56,25 @@ namespace wg
 		friend class LinearBackend;
 	public:
 
+		//.____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			Finalizer_p	finalizer = nullptr;
+
+			// Buffer for rows of shapes symmetric upside down, kept to draw their lower half
+			// mirrored, see SoftShapes::setMirrorBuffer(). Allocated to mirrorBuffer bytes on
+			// creation and later as needed up to maxMirrorBuffer. Make them the same to
+			// allocate it once.
+
+			int			mirrorBuffer = 0;
+			int			maxMirrorBuffer = SoftShapes::c_defaultMaxMirrorBuffer;
+		};
+
 		//.____ Creation __________________________________________
 
 		static SoftBackend_p	create();
+		static SoftBackend_p	create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
@@ -164,13 +181,29 @@ namespace wg
 			Tintmaps,
 			ColorsAndTintmaps,
 		};
-		
+
+		// A pixel only partly covered by a shape, for coverage kernels, see SoftShapes::CoveragePixel.
+		// Colors are weighted by alpha for the blend modes of isCoverageAlphaWeighted():
+		//
+		//   Alpha weighted:  b,g,r = sum( coverage * alpha * color ), a = sum( coverage * alpha )
+		//   Otherwise:       b,g,r,a = sum( coverage * color )			(color with straight alpha)
+
+		using CoveragePixel = SoftShapes::CoveragePixel;
+
+		// Blend modes where the colors of coverage pixels are weighted by alpha.
+
+		static constexpr bool isCoverageAlphaWeighted(BlendMode mode)
+		{
+			return mode == BlendMode::Blend || mode == BlendMode::BlendFixedColor || mode == BlendMode::Add || mode == BlendMode::Subtract;
+		}
+
 		typedef	void(*LineOp_p)(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*FillOp_p)(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*StraightBlitOp_p)(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const Transform * pMatrix);
 		typedef	void(*TransformBlitOp_p)(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t* pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t* pStripStart, int pixelPitch, int nEdges, SegmentEdge* pEdges, const int16_t* pSegmentColors, const HiColor * pSegmentTintmap, int segmentTintmapPitch, const bool* pTransparentSegments, const bool* pOpaqueSegments, const ColTrans& tint);
+		typedef void(*CoverageOp_p)(uint8_t* pDst, int pixelPitch, int length, const CoveragePixel* pPixels, const ColTrans& tint);
 
 		alignas(kCacheLineSize) static const int16_t s_channel_5_linear[32];
 		alignas(kCacheLineSize) static const int16_t s_channel_6_linear[64];
@@ -206,6 +239,8 @@ namespace wg
 
 		bool	setSegmentStripKernel(SoftBackend::StripSource, BlendMode blendMode, SoftFormat destFormat, SegmentOp_p pKernel);
 
+		bool	setCoverageKernel(BlendMode blendMode, SoftFormat destFormat, CoverageOp_p pKernel);
+
 		bool	setTransformBlitKernel(SoftFormat sourceFormat, SampleMethod sampleMethod, ReadOp readOp,
 			TintMode tintMode, BlendMode blendMode, SoftFormat destFormat, TransformBlitOp_p pKernel);
 
@@ -213,6 +248,7 @@ namespace wg
 
 	protected:
 		SoftBackend();
+		SoftBackend( const Blueprint& blueprint );
 		virtual ~SoftBackend();
 
 		void _initTables();
@@ -280,6 +316,44 @@ namespace wg
 		template<class DrawFunc> void _forTintSpans(const RectI& rect, bool bRuns, DrawFunc&& draw);
 		void	_updateBlurRadius(spx radius);
 
+		// Shapes (Command::DrawShape), shared with LinearBackend. _beginShape() decodes a shape
+		// and prepares its segments, _drawShape() draws it within one clip rectangle onto
+		// pixels where pixel (x,y) is at pOrigin + y * pitch + x * m_canvasPixelBytes.
+
+		struct ShapeSegment
+		{
+			bool		bActive;				// Segment is drawn.
+			bool		bFlat;					// Same color everywhere, including device tint.
+			SoftTint	tint;					// Color and tint of segment, without device tint.
+
+			// Prepared for drawing.
+
+			FillOp_p	pFillOp;				// Fully covered runs, if tint is flat. Device tint applied by kernel.
+			bool		bFillRuns;				// pFillOp draws runs of device tint colors.
+			HiColor		fillColor;				// Color for pFillOp.
+			int16_t		mix[4];					// Color with tints as b, g, r, a for coverage pixels, weighted by alpha for alpha weighted blend modes. If bFlat.
+		};
+
+		class ShapeSink : public SoftShapes::RowSink
+		{
+		public:
+			const int16_t*	segmentColors(int segment, int y, int begin, int end, bool& bFlat) override;
+			void	row(int y, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels) override;
+			void	rows(int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels) override;
+
+			SoftBackend*	pBackend;
+			uint8_t*		pOrigin;
+			int				pitch;
+			int				rowEnd;				// Row below the clip rectangle.
+		};
+
+		bool	_beginShape(GfxBackend::ShapeKind kind, const uint16_t* pPayload, const HiColor* pColors);
+		void	_setupShapeSegment(ShapeSegment& seg, bool bActive, HiColor color, bool bTint, const uint16_t*& pTintWords, const HiColor*& pTintColors);
+		void	_drawShape(const RectI& clip, uint8_t* pOrigin, int pitch);
+		void	_drawShapeRuns(uint8_t* pOrigin, int pitch, int yBeg, int yEnd, int nRuns, const SoftShapes::Run* pRuns, const CoveragePixel* pPixels, int prefetchRow);
+		void	_shapeSegmentColors(int segment, int x, int y, int length, HiColor* pOutput);
+		HiColor* _shapeBuffer(int index, int length);
+
 		int		_scaleLineThickness(float thickness, int slope);
 
 
@@ -333,6 +407,19 @@ namespace wg
 		TintLayout			m_tintLayout = TintLayout::None;
 		std::vector<HiColor>	m_tintRow;
 		bool				m_bBlitTintRuns = false;			// Blits need to use runs with Flat kernels, GradientX kernels missing.
+
+		// Shapes
+
+		SoftShapes					m_shapes;
+		SoftShapes::RoundedBox		m_roundedBox;
+		SoftShapes::Ring			m_ring;
+		std::vector<uint32_t>		m_ringSliceSizes;
+		GfxBackend::ShapeKind		m_shapeKind;
+		std::vector<ShapeSegment>	m_shapeSegments;
+		std::vector<HiColor>		m_shapeBuffers[2];				// Colors of a segment (0) and the device tint (1) along a row.
+		std::vector<std::vector<int16_t>>	m_shapeMixBuffers;		// Colors of segments that aren't flat, for coverage pixels.
+		std::vector<CoveragePixel>	m_coverageColumn;
+		CoverageOp_p				m_pShapeCoverageOp = nullptr;
 
 
 //		PixelBuffer		m_canvasPixelBuffer;
@@ -389,6 +476,7 @@ namespace wg
 			ClipLineOp_p			pClipLineKernels[BlendMode_size];
 			FillOp_p				pFillKernels[TintMode_size][BlendMode_size];
 			SegmentOp_p				pSegmentKernels[3][BlendMode_size];
+			CoverageOp_p			pCoverageKernels[BlendMode_size];
 
 			StraightBlitOp_p		pStraightBlitFromHiColorKernels[TintMode_size][BlendMode_size];
 			StraightBlitOp_p		pStraightBlitFromBGRA8Kernels[TintMode_size][BlendMode_size];

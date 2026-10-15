@@ -59,7 +59,7 @@ namespace wg
 		m_maxEdges = maxEdges;
 
 		(*m_pEncoder) << GfxStream::Header{ GfxStream::ChunkId::ProtocolVersion, 0, 2 };
-		(*m_pEncoder) << (uint16_t) 0x0302;		// 3.2: Color space and byte order separate from PixelFormat.
+		(*m_pEncoder) << (uint16_t) 0x0303;		// 3.3: TileEdgemap and DrawShape commands, tiling edgemaps, shape counts in BeginSession.
 	}
 
 	StreamBackend::StreamBackend(const Blueprint& bp)
@@ -74,7 +74,7 @@ namespace wg
 		m_pColorCompressor		= bp.colorCompressor;
 
 		(*m_pEncoder) << GfxStream::Header{ GfxStream::ChunkId::ProtocolVersion, 0, 2 };
-		(*m_pEncoder) << (uint16_t) 0x0302;		// 3.2: Color space and byte order separate from PixelFormat.
+		(*m_pEncoder) << (uint16_t) 0x0303;		// 3.3: TileEdgemap and DrawShape commands, tiling edgemaps, shape counts in BeginSession.
 	}
 
 
@@ -111,7 +111,7 @@ namespace wg
 
 	void StreamBackend::beginSession( CanvasRef canvasRef, Surface * pCanvas, int nUpdateRects, const RectSPX * pUpdateRects, const SessionInfo * pInfo )
 	{
-		(*m_pEncoder) << GfxStream::Header{ GfxStream::ChunkId::BeginSession, 0, 40 };
+		(*m_pEncoder) << GfxStream::Header{ GfxStream::ChunkId::BeginSession, 0, 48 };
 
 		(*m_pEncoder) << (pCanvas ? static_cast<RemoteSurface*>(pCanvas)->inStreamId() : (uint16_t) 0);
 		(*m_pEncoder) << canvasRef;
@@ -133,6 +133,10 @@ namespace wg
 		(*m_pEncoder) << (int32_t) pInfo->nColors;
 		(*m_pEncoder) << (uint16_t) pInfo->nTransforms;
 		(*m_pEncoder) << (uint16_t) pInfo->nObjects;
+
+		(*m_pEncoder) << (uint16_t) std::min(pInfo->nShapeDraws, 0xFFFF);			// Since 3.3
+		(*m_pEncoder) << (uint16_t) std::min(pInfo->nShapeTints, 0xFFFF);
+		(*m_pEncoder) << (int32_t) pInfo->nShapeSegments;
 
 		if( nUpdateRects > 0 )
 			_compressSplitAndEncode( m_pEncoder, GfxStream::ChunkId::UpdateRects, 0, m_pRectCompressor, (const spx*) pUpdateRects, (const spx*) (pUpdateRects + nUpdateRects) );
