@@ -111,6 +111,7 @@ namespace wg
 
 	Microsoft::WRL::ComPtr<ID3DBlob>			DX12Backend::s_vertexShaderBlobs[int(PipelineKind::Size)];
 	Microsoft::WRL::ComPtr<ID3DBlob>			DX12Backend::s_pixelShaderBlobs[int(PipelineKind::Size)];
+	Microsoft::WRL::ComPtr<ID3DBlob>			DX12Backend::s_dualSourcePixelShaderBlobs[int(PipelineKind::Size)];
 	Microsoft::WRL::ComPtr<ID3DBlob>			DX12Backend::s_mipmapVertexShaderBlob;
 	Microsoft::WRL::ComPtr<ID3DBlob>			DX12Backend::s_mipmapPixelShaderBlob;
 	Microsoft::WRL::ComPtr<ID3D12Device>		DX12Backend::s_pDevice;
@@ -185,6 +186,8 @@ namespace wg
 			for (auto& blob : s_vertexShaderBlobs)
 				blob.Reset();
 			for (auto& blob : s_pixelShaderBlobs)
+				blob.Reset();
+			for (auto& blob : s_dualSourcePixelShaderBlobs)
 				blob.Reset();
 
 			s_mipmapVertexShaderBlob.Reset();
@@ -764,8 +767,7 @@ namespace wg
 			m_commandList->IASetVertexBuffers(0, 1, &vertexBufferView );
 		}
 
-		_setBlendFactor();
-		_bindTint();
+		_bindPixelInfo();
 
 		// Setting the root signature dropped the pipeline and whatever the blit
 		// source had bound.
@@ -912,32 +914,10 @@ namespace wg
 
 		// Sessions start with default state, changes arrive as StateChange commands.
 		// This has to happen before the command list is set up, since some of it -
-		// the morph factor - is recorded into the list rather than kept in a
-		// pipeline. GfxDeviceGen2 encodes a state change only when a value differs
-		// from these defaults, so getting them out of step means a whole session
-		// draws with the previous one's value.
+		// the tint and how pixel shaders hand their results to the blender - is
+		// recorded into the list rather than kept in a pipeline.
 
-		m_tintColor = HiColor::White;
-		m_tint.ofs = -1;
-		m_activeBlendMode = BlendMode::Blend;
-		m_morphFactor = 0.5f;
-
-		// No brush until a StateChange says otherwise. Should one ever be missing,
-		// this makes a blur come out as a plain blit rather than as something built
-		// from whatever the previous session left behind.
-
-		m_blurRadius = 0;
-
-		for (int i = 0; i < 9; i++)
-			for (int j = 0; j < 4; j++)
-				m_blurColorMtx[i][j] = 0.f;
-
-		m_blurColorMtx[4][0] = 1.f;
-		m_blurColorMtx[4][1] = 1.f;
-		m_blurColorMtx[4][2] = 1.f;
-		m_blurColorMtx[4][3] = 1.f;
-
-		_setBlitSource(nullptr);
+		_resetStates();
 
 		// Room for everything the session may write, in buffers the session state
 		// then points at.
@@ -1040,6 +1020,7 @@ namespace wg
 		if (!m_bCommandListOpen || s_bDeviceLost)
 			return;					// Nothing to render into it with, see processCommands().
 
+		_resetStates();
 		_setCanvas(static_cast<DX12Surface*>(pSurface));
 	}
 
@@ -1048,11 +1029,47 @@ namespace wg
 		if (ref == CanvasRef::Default)
 		{
 			if (m_bCommandListOpen && !s_bDeviceLost)
+			{
+				_resetStates();
 				_setCanvas(nullptr);
+			}
 		}
 		else
 			GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Only CanvasRef::Default is supported.",
 				this, &TYPEINFO, __func__, __FILE__, __LINE__);
+	}
+
+	//____ _resetStates() _____________________________________________________
+	//
+	// States start over with each session and each canvas, as GfxDeviceGen2 sets
+	// them again for it, like SoftBackend does. It encodes a state change only when
+	// a value differs from these defaults, so getting them out of step means drawing
+	// with the values of the previous session or canvas. The root constants that
+	// follow from them are bound by _setCanvas().
+
+	void DX12Backend::_resetStates()
+	{
+		m_tintColor = HiColor::White;
+		m_pixelInfo.tintOfs = -1;
+		m_activeBlendMode = BlendMode::Blend;
+		m_morphFactor = 0.5f;
+
+		// No brush until a StateChange says otherwise. Should one ever be missing,
+		// this makes a blur come out as a plain blit rather than as something built
+		// from whatever was left behind.
+
+		m_blurRadius = 0;
+
+		for (int i = 0; i < 9; i++)
+			for (int j = 0; j < 4; j++)
+				m_blurColorMtx[i][j] = 0.f;
+
+		m_blurColorMtx[4][0] = 1.f;
+		m_blurColorMtx[4][1] = 1.f;
+		m_blurColorMtx[4][2] = 1.f;
+		m_blurColorMtx[4][3] = 1.f;
+
+		_setBlitSource(nullptr);
 	}
 
 	//____ _transitionCanvas() ________________________________________________
@@ -1304,6 +1321,7 @@ namespace wg
 		}
 
 		_bindCanvasState();
+		_updatePixelInfo();				// The pixel shaders write differently to canvases without alpha.
 	}
 
 	//____ setObjects() ________________________________________________________
@@ -1403,15 +1421,10 @@ namespace wg
 						m_activeBlendMode = BlendMode(*p++);
 
 					if (statesChanged & uint8_t(StateChange::MorphFactor))
-					{
-						float morphFactor = (*p++) / 4096.f;
+						m_morphFactor = (*p++) / 4096.f;
 
-						if (morphFactor != m_morphFactor)
-						{
-							m_morphFactor = morphFactor;
-							_setBlendFactor();
-						}
-					}
+					if (statesChanged & (uint8_t(StateChange::BlendMode) | uint8_t(StateChange::MorphFactor)))
+						_updatePixelInfo();
 
 					if (statesChanged & uint8_t(StateChange::FixedBlendColor))
 					{
@@ -1920,36 +1933,60 @@ namespace wg
 
 		static_assert(sizeof(ColorDX12) == 4 * sizeof(float), "Tint blocks are written as float4 entries.");
 
-		m_tint.ofs = int32_t(m_pColorPtr - m_pColorBeg);
+		m_pixelInfo.tintOfs = int32_t(m_pColorPtr - m_pColorBeg);
 		TintTools::writeGpuTintBlock(tint, (float*) m_pColorPtr);
 		m_pColorPtr += blockSize;
 
-		_bindTint();
+		_bindPixelInfo();
 	}
 
 	//____ _clearTint() ________________________________________________________
 
 	void DX12Backend::_clearTint()
 	{
-		if (m_tint.ofs < 0)
+		if (m_pixelInfo.tintOfs < 0)
 			return;
 
-		m_tint.ofs = -1;
-		_bindTint();
+		m_pixelInfo.tintOfs = -1;
+		_bindPixelInfo();
 	}
 
-	//____ _bindTint() _________________________________________________________
+	//____ _updatePixelInfo() __________________________________________________
+	//
+	// How the pixel shaders hand what they draw to the blender, see output.hlsl and
+	// _createPipeline(). It follows blend mode, morph factor and the kind of canvas.
+
+	void DX12Backend::_updatePixelInfo()
+	{
+		BlendMode mode = _normalizeBlendMode(m_activeBlendMode);
+		uint32_t canvasKind = _canvasKind(m_activeCanvasFormat);
+
+		uint32_t outputMode = 0;
+
+		if (mode == BlendMode::Replace || mode == BlendMode::Morph || (mode == BlendMode::Multiply && canvasKind == 2))
+			outputMode = 1;
+		else if (mode == BlendMode::Min)
+			outputMode = 2;
+
+		m_pixelInfo.outputMode = outputMode;
+		m_pixelInfo.canvasKind = canvasKind;
+		m_pixelInfo.morphFactor = (mode == BlendMode::Morph) ? m_morphFactor : 1.f;
+
+		_bindPixelInfo();
+	}
+
+	//____ _bindPixelInfo() ____________________________________________________
 	//
 	// Root constants are recorded into the command list, so every draw after this
-	// sees the new tint and none before it does. A reset list has lost them,
+	// sees the new values and none before it does. A reset list has lost them,
 	// which is why _bindSessionState() calls this too.
 
-	void DX12Backend::_bindTint()
+	void DX12Backend::_bindPixelInfo()
 	{
 		if (!m_bCommandListOpen)
 			return;
 
-		m_commandList->SetGraphicsRoot32BitConstants(6, sizeof(TintInfo) / 4, &m_tint, 0);
+		m_commandList->SetGraphicsRoot32BitConstants(6, sizeof(PixelInfo) / 4, &m_pixelInfo, 0);
 	}
 
 	//____ _addExtras() ________________________________________________________
@@ -2719,11 +2756,7 @@ namespace wg
 		{
 			const RectSPX& patchSpx = *pRects++;
 
-			RectI patch;
-			patch.x = patchSpx.x / 64;
-			patch.y = patchSpx.y / 64;
-			patch.w = patchSpx.w / 64;
-			patch.h = patchSpx.h / 64;
+			RectI patch = Util::roundToPixels(patchSpx);		// Rounded like the position of the edgemap.
 
 			int dx1 = patch.x;
 			int dy1 = patch.y;
@@ -2954,21 +2987,6 @@ namespace wg
 			default:
 				return blendMode;
 		}
-	}
-
-	//____ _setBlendFactor() ___________________________________________________
-	//
-	// The constant BlendMode::Morph blends against. D3D12 keeps this on the command
-	// list, not in the pipeline, so it survives a pipeline change but not a reset.
-
-	void DX12Backend::_setBlendFactor()
-	{
-		if (!m_bCommandListOpen)
-			return;
-
-		const float blendFactor[4] = { m_morphFactor, m_morphFactor, m_morphFactor, m_morphFactor };
-
-		m_commandList->OMSetBlendFactor(blendFactor);
 	}
 
 	//____ _pipeline() _________________________________________________________
@@ -3367,28 +3385,29 @@ namespace wg
 			m_lineThicknessTable[i] = (float) Util::squareRoot(1.0 + b * b);
 		}
 
-		struct { PipelineKind kind; const char * pVS; const char * pPS; } shaders[] =
+		struct { PipelineKind kind; const char * pVS; } shaders[] =
 		{
-			{ PipelineKind::Fill,	g_fillVS,	g_fillPS },
-			{ PipelineKind::FillAA,	g_fillAAVS,	g_fillAAPS },
-			{ PipelineKind::Blit,	g_blitVS,	g_blitPS },
-			{ PipelineKind::Blur,	g_blitVS,	g_blurPS },		// Same geometry, so the same vertex shader.
-			{ PipelineKind::PaletteBlit, g_blitVS, g_paletteBlitPS },
-			{ PipelineKind::PaletteBlur, g_blitVS, g_paletteBlurPS },
-			{ PipelineKind::Line,	g_lineVS,	g_linePS },
-			{ PipelineKind::Segments, g_segmentsVS, g_segmentsPS },
-			{ PipelineKind::Shape,	g_shapeVS,	g_shapePS },
+			{ PipelineKind::Fill,	g_fillVS },
+			{ PipelineKind::FillAA,	g_fillAAVS },
+			{ PipelineKind::Blit,	g_blitVS },
+			{ PipelineKind::Blur,	g_blitVS },		// Same geometry, so the same vertex shader.
+			{ PipelineKind::PaletteBlit, g_blitVS },
+			{ PipelineKind::PaletteBlur, g_blitVS },
+			{ PipelineKind::Line,	g_lineVS },
+			{ PipelineKind::Segments, g_segmentsVS },
+			{ PipelineKind::Shape,	g_shapeVS },
 		};
 
 		// Compiled by the first backend, reused by the rest. Opening a window
-		// shouldn't cost a round of D3DCompile each time.
+		// shouldn't cost a round of D3DCompile each time. Pixel shaders for dual-
+		// source blending are compiled when first needed, see _createPipeline().
 
 		for (auto& shader : shaders)
 		{
 			if (!s_vertexShaderBlobs[int(shader.kind)] && !_compileVertexShader(s_vertexShaderBlobs[int(shader.kind)], shader.pVS))
 				return false;
 
-			if (!s_pixelShaderBlobs[int(shader.kind)] && !_compilePixelShader(s_pixelShaderBlobs[int(shader.kind)], shader.pPS))
+			if (!s_pixelShaderBlobs[int(shader.kind)] && !_compilePixelShader(s_pixelShaderBlobs[int(shader.kind)], _pixelShaderSource(shader.kind)))
 				return false;
 		}
 
@@ -3487,13 +3506,14 @@ namespace wg
 		rootParameter[5].Descriptor.RegisterSpace = 0;
 		rootParameter[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
-		// The tint, where its block is in the color buffer. Only the pixel shaders
-		// use it. See TintInfo.
+		// The tint, where its block is in the color buffer, and how the pixel shaders
+		// hand what they draw to the blender. Only the pixel shaders use them. See
+		// PixelInfo.
 
 		rootParameter[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 		rootParameter[6].Constants.ShaderRegister = 1;			// b1.
 		rootParameter[6].Constants.RegisterSpace = 0;
-		rootParameter[6].Constants.Num32BitValues = sizeof(TintInfo) / 4;
+		rootParameter[6].Constants.Num32BitValues = sizeof(PixelInfo) / 4;
 		rootParameter[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 		D3D12_VERSIONED_ROOT_SIGNATURE_DESC rsDesc = { };
@@ -3578,14 +3598,160 @@ namespace wg
 		return true;
 	}
 
+	//____ _pixelShaderSource() _______________________________________________
+
+	const char * DX12Backend::_pixelShaderSource(PipelineKind kind)
+	{
+		switch (kind)
+		{
+			case PipelineKind::Fill:		return g_fillPS;
+			case PipelineKind::FillAA:		return g_fillAAPS;
+			case PipelineKind::Blit:		return g_blitPS;
+			case PipelineKind::Blur:		return g_blurPS;
+			case PipelineKind::PaletteBlit:	return g_paletteBlitPS;
+			case PipelineKind::PaletteBlur:	return g_paletteBlurPS;
+			case PipelineKind::Line:		return g_linePS;
+			case PipelineKind::Segments:	return g_segmentsPS;
+			case PipelineKind::Shape:		return g_shapePS;
+			default:						return nullptr;
+		}
+	}
+
+	//____ _canvasKind() _______________________________________________________
+	//
+	// What the pixel shaders need to know about the canvas, see output.hlsl.
+
+	uint32_t DX12Backend::_canvasKind(DXGI_FORMAT format)
+	{
+		if (format == DXGI_FORMAT_A8_UNORM)
+			return 2;
+
+		if (format == DXGI_FORMAT_B8G8R8X8_UNORM || format == DXGI_FORMAT_B8G8R8X8_UNORM_SRGB)
+			return 1;
+
+		return 0;
+	}
+
 	//____ _createPipeline() __________________________________________________
+	//
+	// Canvases with alpha hold premultiplied colors, which lets fixed-function
+	// blending follow the blend rules exactly: Blend is Porter-Duff over, Morph a
+	// premultiplied cross-fade and a partly covered pixel gets the average of the
+	// blend result and the canvas. The pixel shaders pass what they draw to the
+	// blender as the mode needs it, told by root constants, see output.hlsl and
+	// _updatePixelInfo():
+	//
+	// - Replace and Morph keep the uncovered part of the pixel by the second color of
+	//   dual-source blending. Replace only blends in pipelines that can cover pixels
+	//   partly, the rest just write.
+	// - Effect modes keep the alpha of the canvas. Multiply and Subtract are exact, as
+	//   is Add where it doesn't saturate. Invert, Min and Max are exact on opaque
+	//   pixels, Min and Max are approximated on partly covered pixels by fading the
+	//   source by coverage.
+	// - An alpha only canvas keeps its value in the alpha channel. Effect modes use
+	//   the alpha of the source as the value there.
+	// - A canvas without alpha is opaque, and has no alpha channel to write to.
+	//
+	// Pixel shaders only output the second color in pipelines that blend with it,
+	// since the debug layer warns about output nothing reads. Those are compiled
+	// when first needed.
 
 	bool DX12Backend::_createPipeline(BlendMode blendMode, PipelineKind kind, DXGI_FORMAT rtvFormat, Microsoft::WRL::ComPtr<ID3D12PipelineState>& pPipeline)
 	{
+		bool bAlphaOnly = (_canvasKind(rtvFormat) == 2);
+		bool bNoAlpha = (_canvasKind(rtvFormat) == 1);
+		bool bPartialCoverage = (kind == PipelineKind::FillAA || kind == PipelineKind::Line || kind == PipelineKind::Shape);
+
+		// Blend state. Factors are for colors and alpha alike, unless the alpha of the
+		// canvas is kept. On an alpha only canvas only alpha is written, so the colors
+		// get the factors of alpha, which are valid for them too. Factors are filled in
+		// even where blending is off and they are never used, since zero is not a valid
+		// value for any of them.
+
+		BOOL			bBlend = TRUE;
+		D3D12_BLEND_OP	op = D3D12_BLEND_OP_ADD;
+		D3D12_BLEND		srcBlend = D3D12_BLEND_ONE;
+		D3D12_BLEND		destBlend = D3D12_BLEND_ZERO;
+		bool			bKeepAlpha = false;
+
+		switch (blendMode)
+		{
+			case BlendMode::Replace:
+				srcBlend = D3D12_BLEND_ONE;
+				destBlend = D3D12_BLEND_INV_SRC1_ALPHA;
+				bBlend = bPartialCoverage;
+				break;
+
+			case BlendMode::Blend:
+				srcBlend = D3D12_BLEND_ONE;
+				destBlend = D3D12_BLEND_INV_SRC_ALPHA;
+				break;
+
+			case BlendMode::Morph:
+				srcBlend = D3D12_BLEND_ONE;
+				destBlend = D3D12_BLEND_INV_SRC1_ALPHA;
+				break;
+
+			case BlendMode::Add:
+			case BlendMode::Subtract:
+				// Premultiplied colors of the canvas change by the source times the
+				// alpha of the canvas.
+
+				op = (blendMode == BlendMode::Add) ? D3D12_BLEND_OP_ADD : D3D12_BLEND_OP_REV_SUBTRACT;
+				srcBlend = (bAlphaOnly || bNoAlpha) ? D3D12_BLEND_ONE : D3D12_BLEND_DEST_ALPHA;
+				destBlend = D3D12_BLEND_ONE;
+				bKeepAlpha = true;
+				break;
+
+			case BlendMode::Multiply:
+				srcBlend = bAlphaOnly ? D3D12_BLEND_DEST_ALPHA : D3D12_BLEND_DEST_COLOR;
+				destBlend = D3D12_BLEND_INV_SRC1_ALPHA;
+				bKeepAlpha = true;
+				break;
+
+			case BlendMode::Invert:
+				srcBlend = bAlphaOnly ? D3D12_BLEND_INV_DEST_ALPHA : D3D12_BLEND_INV_DEST_COLOR;
+				destBlend = bAlphaOnly ? D3D12_BLEND_INV_SRC_ALPHA : D3D12_BLEND_INV_SRC_COLOR;
+				bKeepAlpha = true;
+				break;
+
+			case BlendMode::Min:
+			case BlendMode::Max:
+				op = (blendMode == BlendMode::Min) ? D3D12_BLEND_OP_MIN : D3D12_BLEND_OP_MAX;
+				srcBlend = D3D12_BLEND_ONE;
+				destBlend = D3D12_BLEND_ONE;
+				bKeepAlpha = true;
+				break;
+
+			case BlendMode::Ignore:
+				// Nothing should be drawn. _pipeline() returns null for this, so we
+				// only get here if that ever changes.
+
+				srcBlend = D3D12_BLEND_ZERO;
+				destBlend = D3D12_BLEND_ONE;
+				break;
+
+			default:
+			{
+				char buffer[128];
+				sprintf_s(buffer, "BlendMode %d is unknown, using Blend.", (int) blendMode);
+				GfxBase::throwError(ErrorLevel::Warning, ErrorCode::Other, buffer, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+
+				srcBlend = D3D12_BLEND_ONE;
+				destBlend = D3D12_BLEND_INV_SRC_ALPHA;
+				break;
+			}
+		}
+
+		bool bDualSource = bBlend && (destBlend == D3D12_BLEND_INV_SRC1_ALPHA);
+
 		// Setup the graphics pipeline state.
 
 		auto& vertexShaderBlob = s_vertexShaderBlobs[int(kind)];
-		auto& pixelShaderBlob = s_pixelShaderBlobs[int(kind)];
+		auto& pixelShaderBlob = bDualSource ? s_dualSourcePixelShaderBlobs[int(kind)] : s_pixelShaderBlobs[int(kind)];
+
+		if (bDualSource && !pixelShaderBlob && !_compilePixelShader(pixelShaderBlob, _pixelShaderSource(kind), true))
+			return false;
 
 		if (!vertexShaderBlob || !pixelShaderBlob)
 			return false;
@@ -3596,17 +3762,6 @@ namespace wg
 		desc.VS.BytecodeLength = vertexShaderBlob->GetBufferSize();
 		desc.PS.pShaderBytecode = pixelShaderBlob->GetBufferPointer();
 		desc.PS.BytecodeLength = pixelShaderBlob->GetBufferSize();
-
-		// Blend state, following MetalBackend's mapping. An alpha only canvas keeps
-		// its value in the alpha channel here, where Metal keeps it in red, so what
-		// Metal does to the color channels we do to alpha.
-		//
-		// A BGRX canvas has no alpha channel to write to, so the mask below just
-		// says so. Blits from it read alpha as 1.0 regardless, which is the point
-		// of giving it an X format in the first place.
-
-		bool bAlphaOnly = (rtvFormat == DXGI_FORMAT_A8_UNORM);
-		bool bNoAlpha = (rtvFormat == DXGI_FORMAT_B8G8R8X8_UNORM || rtvFormat == DXGI_FORMAT_B8G8R8X8_UNORM_SRGB);
 
 		desc.BlendState.AlphaToCoverageEnable = false;
 		desc.BlendState.IndependentBlendEnable = false;
@@ -3629,156 +3784,34 @@ namespace wg
 
 		auto& rt = desc.BlendState.RenderTarget[0];
 
-		rt.BlendEnable = (blendMode != BlendMode::Replace);
+		rt.BlendEnable = bBlend;
 		rt.LogicOpEnable = false;
 		rt.LogicOp = D3D12_LOGIC_OP_NOOP;
+
+		// A BGRX canvas has no alpha channel to write to, so the mask just says so.
+		// Blits from it read alpha as 1.0 regardless, which is the point of giving
+		// it an X format in the first place.
+
 		rt.RenderTargetWriteMask = bNoAlpha ? (D3D12_COLOR_WRITE_ENABLE_RED | D3D12_COLOR_WRITE_ENABLE_GREEN | D3D12_COLOR_WRITE_ENABLE_BLUE)
 											: D3D12_COLOR_WRITE_ENABLE_ALL;
 
-		// Zero is not a valid value for any of these, so they are filled in even
-		// where blending is off and they are never used.
+		rt.BlendOp = op;
+		rt.SrcBlend = srcBlend;
+		rt.DestBlend = destBlend;
 
-		rt.SrcBlend = D3D12_BLEND_ONE;
-		rt.DestBlend = D3D12_BLEND_ZERO;
-		rt.BlendOp = D3D12_BLEND_OP_ADD;
-		rt.SrcBlendAlpha = D3D12_BLEND_ONE;
-		rt.DestBlendAlpha = D3D12_BLEND_ZERO;
-		rt.BlendOpAlpha = D3D12_BLEND_OP_ADD;
-
-		switch (blendMode)
+		if (bKeepAlpha && !bAlphaOnly)
 		{
-			case BlendMode::Replace:
-				break;								// Blending is off, the defaults above are never used.
+			rt.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+			rt.SrcBlendAlpha = D3D12_BLEND_ZERO;
+			rt.DestBlendAlpha = D3D12_BLEND_ONE;
+		}
+		else
+		{
+			// Alpha can't take color factors, but none of these is one.
 
-			case BlendMode::Blend:
-				rt.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-				rt.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-				rt.SrcBlendAlpha = D3D12_BLEND_ONE;
-				rt.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
-				break;
-
-			case BlendMode::Add:
-				rt.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-				rt.DestBlend = D3D12_BLEND_ONE;
-
-				if (bAlphaOnly)
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_ONE;
-					rt.DestBlendAlpha = D3D12_BLEND_ONE;
-				}
-				else
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_ZERO;
-					rt.DestBlendAlpha = D3D12_BLEND_ONE;
-				}
-				break;
-
-			case BlendMode::Subtract:
-				rt.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-				rt.DestBlend = D3D12_BLEND_ONE;
-				rt.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
-
-				if (bAlphaOnly)
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_ONE;
-					rt.DestBlendAlpha = D3D12_BLEND_ONE;
-					rt.BlendOpAlpha = D3D12_BLEND_OP_REV_SUBTRACT;
-				}
-				else
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_ZERO;
-					rt.DestBlendAlpha = D3D12_BLEND_ONE;
-				}
-				break;
-
-			case BlendMode::Multiply:
-				rt.SrcBlend = D3D12_BLEND_DEST_COLOR;
-				rt.DestBlend = D3D12_BLEND_ZERO;
-
-				if (bAlphaOnly)
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_DEST_ALPHA;
-					rt.DestBlendAlpha = D3D12_BLEND_ZERO;
-				}
-				else
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_ZERO;
-					rt.DestBlendAlpha = D3D12_BLEND_ONE;
-				}
-				break;
-
-			case BlendMode::Invert:
-				rt.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;
-				rt.DestBlend = D3D12_BLEND_INV_SRC_COLOR;
-
-				if (bAlphaOnly)
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_INV_DEST_ALPHA;
-					rt.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
-				}
-				else
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_ZERO;
-					rt.DestBlendAlpha = D3D12_BLEND_ONE;
-				}
-				break;
-
-			case BlendMode::Min:
-			case BlendMode::Max:
-			{
-				D3D12_BLEND_OP op = (blendMode == BlendMode::Min) ? D3D12_BLEND_OP_MIN : D3D12_BLEND_OP_MAX;
-
-				rt.SrcBlend = D3D12_BLEND_ONE;
-				rt.DestBlend = D3D12_BLEND_ONE;
-				rt.BlendOp = op;
-
-				if (bAlphaOnly)
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_ONE;
-					rt.DestBlendAlpha = D3D12_BLEND_ONE;
-					rt.BlendOpAlpha = op;
-				}
-				else
-				{
-					rt.SrcBlendAlpha = D3D12_BLEND_ZERO;
-					rt.DestBlendAlpha = D3D12_BLEND_ONE;
-				}
-				break;
-			}
-
-			case BlendMode::Morph:
-				// Metal uses the blend color's alpha for every channel. We set all
-				// four components of the blend factor to the morph factor, which
-				// comes to the same thing, see _setBlendFactor().
-
-				rt.SrcBlend = D3D12_BLEND_BLEND_FACTOR;
-				rt.DestBlend = D3D12_BLEND_INV_BLEND_FACTOR;
-				rt.SrcBlendAlpha = D3D12_BLEND_BLEND_FACTOR;
-				rt.DestBlendAlpha = D3D12_BLEND_INV_BLEND_FACTOR;
-				break;
-
-			case BlendMode::Ignore:
-				// Nothing should be drawn. _pipeline() returns null for this, so we
-				// only get here if that ever changes.
-
-				rt.SrcBlend = D3D12_BLEND_ZERO;
-				rt.DestBlend = D3D12_BLEND_ONE;
-				rt.SrcBlendAlpha = D3D12_BLEND_ZERO;
-				rt.DestBlendAlpha = D3D12_BLEND_ONE;
-				break;
-
-			default:
-			{
-				char buffer[128];
-				sprintf_s(buffer, "BlendMode %d is unknown, using Blend.", (int) blendMode);
-				GfxBase::throwError(ErrorLevel::Warning, ErrorCode::Other, buffer, this, &TYPEINFO, __func__, __FILE__, __LINE__);
-
-				rt.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-				rt.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-				rt.SrcBlendAlpha = D3D12_BLEND_ONE;
-				rt.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
-				break;
-			}
+			rt.BlendOpAlpha = op;
+			rt.SrcBlendAlpha = srcBlend;
+			rt.DestBlendAlpha = destBlend;
 		}
 
 		desc.SampleMask = 0xFFFFFFFF;
@@ -3856,13 +3889,18 @@ namespace wg
 
 	//____ _compilePixelShader() _______________________________________________
 
-	bool DX12Backend::_compilePixelShader(Microsoft::WRL::ComPtr<ID3DBlob>& shaderBlob, LPCVOID pSrc)
+	bool DX12Backend::_compilePixelShader(Microsoft::WRL::ComPtr<ID3DBlob>& shaderBlob, LPCVOID pSrc, bool bDualSource)
 	{
 		UINT compileFlags = c_shaderCompileFlags;
 
 		Microsoft::WRL::ComPtr<ID3DBlob> errorMsg;
 
-		HRESULT hr = D3DCompile(pSrc, strlen((const char*)pSrc), nullptr, nullptr, nullptr, "main", "ps_5_0", compileFlags, 0, shaderBlob.GetAddressOf(), errorMsg.GetAddressOf());
+		// WG_DUAL_SOURCE has the shader output the second color of dual-source blending,
+		// see output.hlsl.
+
+		const D3D_SHADER_MACRO dualSourceDefines[] = { { "WG_DUAL_SOURCE", "1" }, { nullptr, nullptr } };
+
+		HRESULT hr = D3DCompile(pSrc, strlen((const char*)pSrc), nullptr, bDualSource ? dualSourceDefines : nullptr, nullptr, "main", "ps_5_0", compileFlags, 0, shaderBlob.GetAddressOf(), errorMsg.GetAddressOf());
 		if (FAILED(hr))
 		{
 			const char* pError = errorMsg ? (const char*)errorMsg->GetBufferPointer() : "Unknown error";

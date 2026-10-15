@@ -6,12 +6,12 @@ cbuffer CanvasInfo : register(b0)
     uint blurOfs;           // Where a blur's 9 color matrices and 9 offsets start in extras.
 };
 
-// The tint, tintColor() and the colors buffer come from tint.hlsl, which is put
-// in front of this file.
+// writeOutput() and premul() come from output.hlsl, the tint, tintColor() and the
+// colors buffer from tint.hlsl, which are put in front of this file.
 
 
 // A palette based source is a texture of 8 or 16 bit indexes and a palette of
-// colors already converted to linear. The palette lookup has to come before any
+// colors already converted to linear and premultiplied. The palette lookup has to come before any
 // filtering, so we fetch texels ourselves rather than going through a sampler,
 // and do what the sampler would have done: wrap or clamp at the edges, and for
 // a bilinear surface blend the four texels around us.
@@ -103,7 +103,7 @@ struct PS_INPUT
 };
 
 
-float4 main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT main(PS_INPUT input)
 {
-    return samplePalette(input.texUV) * input.color * tintColor(input.position.xy);
+    return writeOutput(samplePalette(input.texUV) * premul(input.color * tintColor(input.position.xy)), 1.0f);
 }

@@ -232,12 +232,13 @@ namespace wg
 
 		BlendMode _normalizeBlendMode(BlendMode blendMode);
 		ID3D12PipelineState* _pipeline(BlendMode blendMode, PipelineKind kind);
-		void _setBlendFactor();					// Morph needs a constant blend factor.
+		void _updatePixelInfo();				// Blend mode, morph factor or canvas has changed.
 
 		float _scaleThickness(float thickness, float slope);
 		bool _setPipeline(ID3D12PipelineState* pPipeline);
 
 		void _setCanvas(DX12Surface* pCanvas);
+		void _resetStates();					// To start values, for a new session or canvas.
 		void _transitionCanvas(DX12Surface* pCanvas, D3D12_RESOURCE_STATES state);
 
 		// Resources the command list being recorded uses, held until the GPU is
@@ -270,13 +271,16 @@ namespace wg
 		int _addColor(HiColor color);			// Returns offset into color buffer, -1 if full.
 		void _setTint(const TintTools::DecodedTint& tint);
 		void _clearTint();
-		void _bindTint();						// Records the tint root constants into the command list.
+		void _bindPixelInfo();					// Records the pixel shader root constants into the command list.
 		int _addExtras(const ExtrasDX12& extras);							// Returns offset, -1 if full.
 		int _addBlurExtras();												// Returns offset to 18 entries, -1 if full.
 		int _addExtras(const ExtrasDX12& first, const ExtrasDX12& second);	// Returns offset, -1 if full.
 
+		static const char * _pixelShaderSource(PipelineKind kind);
+		static uint32_t _canvasKind(DXGI_FORMAT format);		// 0: with alpha, 1: without alpha, 2: alpha only.
+
 		bool _compileVertexShader(Microsoft::WRL::ComPtr<ID3DBlob>& shaderBlob, LPCVOID pSrc );
-		bool _compilePixelShader(Microsoft::WRL::ComPtr<ID3DBlob>& shaderBlob, LPCVOID pSrc);
+		bool _compilePixelShader(Microsoft::WRL::ComPtr<ID3DBlob>& shaderBlob, LPCVOID pSrc, bool bDualSource = false);
 
 
 		SurfaceFactory_p	m_pSurfaceFactory;	
@@ -362,21 +366,25 @@ namespace wg
 
 		HiColor					m_tintColor = HiColor::White;
 
-		// The tint, as root constants for the pixel shaders: where its block is in
-		// the color buffer, -1 for none. See TintTools::writeGpuTintBlock() for
-		// what the block holds. The tint color is independent of it and multiplied
-		// into every color _addColor() writes, so the shaders only see the tint.
+		// Root constants for the pixel shaders, see output.hlsl. The tint is where its
+		// block is in the color buffer, -1 for none. See TintTools::writeGpuTintBlock()
+		// for what the block holds. The tint color is independent of it and multiplied
+		// into every color _addColor() writes, so the shaders only see the tint. The
+		// rest tell how the shaders hand what they draw to the blender, and follow
+		// blend mode, morph factor and canvas, see _updatePixelInfo().
 		//
-		// Four values since HLSL rounds the constant buffer up to a whole register,
-		// and the root constants have to cover all of it.
+		// Four values, which is also what HLSL rounds the constant buffer up to, a
+		// whole register, and the root constants have to cover all of it.
 
-		struct TintInfo
+		struct PixelInfo
 		{
-			int32_t		ofs;
-			int32_t		padding[3];
+			int32_t		tintOfs;
+			uint32_t	outputMode;
+			uint32_t	canvasKind;		// 0: with alpha, 1: without alpha, 2: alpha only.
+			float		morphFactor;	// 1 unless blending by Morph.
 		};
 
-		TintInfo				m_tint = { -1, { 0, 0, 0 } };
+		PixelInfo				m_pixelInfo = { -1, 0, 0, 1.f };
 
 		std::vector<GpuShapes::Segment>	m_shapeSegments;		// Segments of the shape being drawn.
 		BlendMode				m_activeBlendMode = BlendMode::Blend;
@@ -491,6 +499,7 @@ namespace wg
 
 		static Microsoft::WRL::ComPtr<ID3DBlob>				s_vertexShaderBlobs[int(PipelineKind::Size)];
 		static Microsoft::WRL::ComPtr<ID3DBlob>				s_pixelShaderBlobs[int(PipelineKind::Size)];
+		static Microsoft::WRL::ComPtr<ID3DBlob>				s_dualSourcePixelShaderBlobs[int(PipelineKind::Size)];		// Compiled when first needed, see _createPipeline().
 		static Microsoft::WRL::ComPtr<ID3DBlob>				s_mipmapVertexShaderBlob;
 		static Microsoft::WRL::ComPtr<ID3DBlob>				s_mipmapPixelShaderBlob;
 

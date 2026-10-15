@@ -154,6 +154,9 @@ namespace wg
 		bool			_createPaletteBuffer();
 		void			_updatePaletteBuffer();						// Converts m_pPalette into the palette buffer.
 
+		bool			_isPremultiplied() const { return m_pixelFormat == PixelFormat::ARGB_8; }		// Texture holds premultiplied colors.
+		void			_convertAlpha( uint8_t * pPixels, int pitch, int width, int height, bool bPremultiply ) const;
+
 		static bool			_initCopyResources();
 		static void			_waitForCopyFence();
 

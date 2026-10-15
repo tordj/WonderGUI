@@ -1,5 +1,5 @@
-// The tint, tintColor() and the colors buffer come from tint.hlsl, which is put
-// in front of this file.
+// writeOutput() and premul() come from output.hlsl, the tint, tintColor() and the
+// colors buffer from tint.hlsl, which are put in front of this file.
 
 
 struct PS_INPUT
@@ -10,18 +10,16 @@ struct PS_INPUT
 };
 
 
-float4 main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT main(PS_INPUT input)
 {
     // How far this pixel's center is from the center of the rectangle, against
     // how far it may be before it stops being covered. Anything in between is a
     // pixel the edge runs through, and gets partial coverage.
 
-    float4 color = input.color;
-
     float2 middleOfs = abs(input.position.xy - input.rect.xy);
     float2 alphas = clamp(input.rect.zw - middleOfs, 0.0f, 1.0f);
 
-    color.a = input.color.a * alphas.x * alphas.y;
+    float cov = alphas.x * alphas.y;
 
-    return color * tintColor(input.position.xy);
+    return writeOutput(premul(input.color * tintColor(input.position.xy)) * cov, cov);
 }

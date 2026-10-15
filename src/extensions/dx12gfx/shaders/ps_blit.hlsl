@@ -5,8 +5,10 @@ cbuffer CanvasInfo : register(b0)
     uint flags;             // Bit 0: source is alpha only. Bit 1: bilinear. Bit 3: clip, nothing outside the source is read. Bit 4: source has no alpha.
 };
 
-// The tint, tintColor() and the colors buffer come from tint.hlsl, which is put
-// in front of this file.
+// writeOutput() and premul() come from output.hlsl, the tint, tintColor() and the
+// colors buffer from tint.hlsl, which are put in front of this file.
+//
+// Textures with alpha hold premultiplied colors, so texels are premultiplied.
 
 
 Texture2D blitSource : register(t2);
@@ -21,7 +23,7 @@ struct PS_INPUT
 };
 
 
-float4 main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT main(PS_INPUT input)
 {
     float4 texel = blitSource.Sample(blitSampler, input.texUV);
 
@@ -29,7 +31,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     // border that clips a ClipBlit. So its alpha is worked out from the position:
     // 1 inside and 0 outside with nearest sampling, and the part of the bilinear
     // footprint that lies inside with bilinear sampling, which is what the sampler
-    // does with the colors.
+    // does with the colors. The colors are therefore already premultiplied by it.
 
     if ((flags & 24u) == 24u)
     {
@@ -49,12 +51,10 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     // An alpha only source has no color of its own, it just modulates the tint.
 
-    if ((flags & 1) != 0)
-    {
-        float4 color = input.color;
-        color.a *= texel.a;
-        return color * tintColor(input.position.xy);
-    }
+    float4 tint = premul(input.color * tintColor(input.position.xy));
 
-    return texel * input.color * tintColor(input.position.xy);
+    if ((flags & 1u) != 0u)
+        texel = texel.a;
+
+    return writeOutput(texel * tint, 1.0f);
 }

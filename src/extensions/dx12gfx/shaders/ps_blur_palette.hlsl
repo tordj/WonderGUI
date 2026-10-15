@@ -8,12 +8,12 @@ cbuffer CanvasInfo : register(b0)
 
 StructuredBuffer<float4> extras : register(t1);
 
-// The tint, tintColor() and the colors buffer come from tint.hlsl, which is put
-// in front of this file.
+// writeOutput() and premul() come from output.hlsl, the tint, tintColor() and the
+// colors buffer from tint.hlsl, which are put in front of this file.
 
 
 // A palette based source is a texture of 8 or 16 bit indexes and a palette of
-// colors already converted to linear. The palette lookup has to come before any
+// colors already converted to linear and premultiplied. The palette lookup has to come before any
 // filtering, so we fetch texels ourselves rather than going through a sampler,
 // and do what the sampler would have done: wrap or clamp at the edges, and for
 // a bilinear surface blend the four texels around us.
@@ -100,11 +100,12 @@ struct PS_INPUT
 };
 
 
-float4 main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT main(PS_INPUT input)
 {
     // As ps_blur, but with each tap looked up in the palette. The alpha row of
     // the matrix only weights the center tap, so the palette entry's alpha there
-    // is kept.
+    // is kept. Taps are premultiplied, like the palette, and divided by their
+    // alphas to get straight colors to blur.
 
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -113,8 +114,13 @@ float4 main(PS_INPUT input) : SV_TARGET
     {
         float2 ofs = extras[blurOfs + 9u + i].xy;
 
-        color += samplePalette(input.texUV + ofs) * extras[blurOfs + i];
+        float4 tap = samplePalette(input.texUV + ofs);
+        tap.rgb = tap.a > 0.0f ? tap.rgb / tap.a : float3(0.0f, 0.0f, 0.0f);
+
+        color += tap * extras[blurOfs + i];
     }
 
-    return color * input.color * tintColor(input.position.xy);
+    color.rgb = saturate(color.rgb);
+
+    return writeOutput(premul(color * input.color * tintColor(input.position.xy)), 1.0f);
 }

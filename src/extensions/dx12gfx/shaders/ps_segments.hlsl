@@ -8,8 +8,8 @@ cbuffer CanvasInfo : register(b0)
     uint edgemapPitch;      // Edges per column in the edgemap's buffer.
 };
 
-// The tint, tintColor() and the colors buffer come from tint.hlsl, which is put
-// in front of this file.
+// writeOutput() and premul() come from output.hlsl, the tint, tintColor() and the
+// colors buffer from tint.hlsl, which are put in front of this file.
 
 
 StructuredBuffer<float4> edgemap : register(t3);
@@ -45,12 +45,14 @@ float4 segmentColor(uint seg, uint2 segColorsOfs, float2 epos)
 }
 
 
-float4 main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT main(PS_INPUT input)
 {
     // Walking down a column of the edgemap, one edge at a time. Each edge says
     // where it begins and how steeply it runs, which is enough to tell how much
     // of this pixel falls above it. The difference between one edge's coverage
     // and the next is how much of the pixel belongs to the segment between them.
+    // The segments together cover the whole pixel, their premultiplied colors
+    // weighted by those parts.
 
     uint nEdges = edgemapEdges;
     uint pitch = edgemapPitch;
@@ -62,8 +64,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     float2 epos = float2(floor(input.texUV.x) + 0.5f, input.texUV.y + 0.5f);
 
-    float totalAlpha = 0.0f;
-    float3 rgbAcc = float3(0.0f, 0.0f, 0.0f);
+    float4 acc = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     float factor = 1.0f;
 
@@ -85,10 +86,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 
         float factor2 = clamp(x + adder, 0.0f, 1.0f);
 
-        float useFactor = (factor - factor2) * col.a;
-
-        totalAlpha += useFactor;
-        rgbAcc += col.rgb * useFactor;
+        acc += premul(col) * (factor - factor2);
 
         factor = factor2;
     }
@@ -97,15 +95,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     float4 lastCol = segmentColor(nEdges, input.segColorsOfs, epos);
 
-    float lastFactor = factor * lastCol.a;
+    acc += premul(lastCol) * factor;
 
-    totalAlpha += lastFactor;
-    rgbAcc += lastCol.rgb * lastFactor;
-
-    float4 outColor;
-
-    outColor.a = totalAlpha;
-    outColor.rgb = totalAlpha > 0.0f ? rgbAcc / totalAlpha : float3(0.0f, 0.0f, 0.0f);
-
-    return outColor * input.color * tintColor(input.position.xy);
+    return writeOutput(acc * premul(input.color * tintColor(input.position.xy)), 1.0f);
 }
