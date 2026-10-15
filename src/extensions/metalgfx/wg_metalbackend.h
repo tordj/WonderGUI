@@ -121,6 +121,7 @@ namespace wg
 			BlurUniform = 2,
 			Edgemap = 3,
 			ClipToSource = 4,		// Palette blits: set for a ClipBlit, see insideSource() in the shaders.
+			MorphFactor = 5,		// For writeColor() and writeAlpha() in the shaders.
 		};
 
 
@@ -157,6 +158,7 @@ namespace wg
 		};
 
 		id<MTLRenderCommandEncoder> _setCanvas( MetalSurface * pCanvas, int width, int height );
+		void			_resetStates();
 		void            _setBlendMode( id<MTLRenderCommandEncoder>, BlendMode mode);
 		void            _setMorphFactor( id<MTLRenderCommandEncoder>, float morphFactor);
 		void 			_setBlurMatrices( id<MTLRenderCommandEncoder> renderEncoder, spx radius, const float red[9], const float green[9], const float blue[9] );
@@ -178,7 +180,7 @@ namespace wg
 
 
 		id<MTLRenderPipelineState> _compileRenderPipeline( NSString* label, NSString* vertexShader,
-									NSString* fragmentShader, BlendMode blendMode, DestFormat destFormat );
+									NSString* fragmentShader, BlendMode blendMode, DestFormat destFormat, bool bPartialCoverage );
 
 		void						_generateMipmaps( MetalSurface * pSurface );		// Draws every mip level from level 0.
 		id<MTLRenderPipelineState>	_mipmapPipeline( MTLPixelFormat format );
@@ -299,8 +301,6 @@ namespace wg
 		BlendMode       m_activeBlendMode   = BlendMode::Blend;
 		float           m_activeMorphFactor = 0.5f;
 		spx				m_activeBlurRadius = 64;
-
-		float           m_morphFactorInUse = -1;
 
 
 

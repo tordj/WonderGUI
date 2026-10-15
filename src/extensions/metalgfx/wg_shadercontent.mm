@@ -38,6 +38,101 @@ typedef struct             // Uniform buffer object for fragment shader blur inf
 } BlurUniform;
 
 
+//____ Output ______________________________________________________________
+//
+// Canvases with alpha hold premultiplied colors. A fragment shader works out the premultiplied
+// color of what it draws times the part of the pixel it covers (pc) and that part (cov), and
+// hands them to writeColor(), or their alphas to writeAlpha() on Alpha_8 canvases. These pass
+// them on as the blend mode of the pipeline needs them, the second color being the second source
+// of dual-source blending (see MetalBackend::_compileRenderPipeline()). Each pipeline sets the
+// function constants:
+//
+//   c_outputMode 0: pc, with its alpha as the second color (Blend and the effect modes but Min).
+//   c_outputMode 1: pc times m, with the covered part times m as the second color, which tells
+//                   the blender how much of the canvas to keep. m is the morph factor for Morph
+//                   (c_morph) and 1 for Replace. Canvases without alpha (c_noAlpha) keep the color
+//                   of the result, which is the result divided by its alpha. The canvas is opaque,
+//                   so that alpha only depends on the source, and the result can be divided by
+//                   it here. A transparent Replace writes the color of the source, which
+//                   premultiplied is black.
+//   c_outputMode 2: the source faded towards white by the alpha of pc (Min).
+//
+// On Alpha_8 canvases, which hold alpha in the red channel, effect modes take the alpha of the
+// source as the value, like an opaque source of that color, and mode 1 is also used by Multiply.
+
+constant int	c_outputMode	[[function_constant(0)]];
+constant bool	c_noAlpha		[[function_constant(1)]];
+constant bool	c_morph			[[function_constant(2)]];
+
+typedef struct
+{
+	float4	color	[[color(0), index(0)]];
+	float4	factor	[[color(0), index(1)]];
+} FragOutput;
+
+inline float4 premul(float4 c)
+{
+	return float4(c.rgb * c.a, c.a);
+}
+
+inline FragOutput writeColor(float4 pc, float cov, float morphFactor)
+{
+	FragOutput out;
+
+	if( c_outputMode == 2 )
+	{
+		out.color = float4(float3(1.f - pc.a) + pc.rgb, 1.f);
+		out.factor = float4(0.f);
+	}
+	else if( c_outputMode == 1 )
+	{
+		float m = c_morph ? morphFactor : 1.f;
+		float k = 1.f;
+
+		if( c_noAlpha )
+		{
+			float resultAlpha = 1.f - m + (cov > 0.f ? pc.a / cov : 0.f) * m;
+			k = resultAlpha > 0.f ? 1.f / resultAlpha : 0.f;
+		}
+
+		out.color = pc * (m * k);
+		out.factor = float4(cov * (1.f - (1.f - m) * k));
+	}
+	else
+	{
+		out.color = pc;
+		out.factor = float4(pc.a);
+	}
+
+	return out;
+}
+
+inline FragOutput writeAlpha(float pa, float cov, float morphFactor)
+{
+	FragOutput out;
+
+	if( c_outputMode == 2 )
+	{
+		out.color = float4(1.f - cov + pa);
+		out.factor = float4(0.f);
+	}
+	else if( c_outputMode == 1 )
+	{
+		float m = c_morph ? morphFactor : 1.f;
+
+		out.color = float4(pa * m);
+		out.factor = float4(cov * m);
+	}
+	else
+	{
+		out.color = float4(pa);
+		out.factor = float4(pa);
+	}
+
+	return out;
+}
+
+
 //____ LineFragInput ______________________________________________
 
 typedef struct 
@@ -49,6 +144,7 @@ typedef struct
     float slope;
     float ifSteep;
     float ifMild;
+    int tintOfs [[flat]];
 
 } LineFragInput;
 
@@ -260,31 +356,40 @@ lineVertexShader(uint vertexID [[vertex_id]],
     out.slope = x.z;
     out.ifSteep = x.w;
     out.ifMild = 1.0 - out.ifSteep;
+    out.tintOfs = pVertices[vertexID].tintOfs;
 
     return out;
 }
 
 //____ lineFragmentShader() ____________________________________________
 
-fragment float4 lineFragmentShader(LineFragInput in [[stage_in]])
+inline float lineCoverage(LineFragInput in)
 {
-   float4 outColor;
+    return clamp(in.w - abs(in.position.x*in.ifSteep + in.position.y*in.ifMild - in.s - (in.position.x*in.ifMild + in.position.y*in.ifSteep) * in.slope), 0.0, 1.0);
+}
 
-   outColor.rgb = in.color.rgb;
-   outColor.a = in.color.a * clamp(in.w - abs(in.position.x*in.ifSteep + in.position.y*in.ifMild - in.s - (in.position.x*in.ifMild + in.position.y*in.ifSteep) * in.slope), 0.0, 1.0);
+inline float4 lineColor(LineFragInput in, constant float4 * pColor)
+{
+    return in.tintOfs >= 0 ? evalTint(pColor, in.tintOfs, in.position.xy) * in.color : in.color;
+}
 
-   return outColor;
-};
+fragment FragOutput lineFragmentShader(LineFragInput in [[stage_in]],
+                                       constant float4 * pColor [[buffer(0)]],
+                                       constant float & morphFactor [[buffer(5)]])
+{
+    float cov = lineCoverage(in);
+    return writeColor(premul(lineColor(in, pColor)) * cov, cov, morphFactor);
+}
 
 //____ lineFragmentShader_A8() ____________________________________________
 
-fragment float4 lineFragmentShader_A8(LineFragInput in [[stage_in]])
+fragment FragOutput lineFragmentShader_A8(LineFragInput in [[stage_in]],
+                                          constant float4 * pColor [[buffer(0)]],
+                                          constant float & morphFactor [[buffer(5)]])
 {
-   float4 outColor;
-   outColor.r = in.color.a * clamp(in.w - abs(in.position.x*in.ifSteep + in.position.y*in.ifMild - in.s - (in.position.x*in.ifMild + in.position.y*in.ifSteep) * in.slope), 0.0, 1.0);
-
-   return outColor;
-};
+    float cov = lineCoverage(in);
+    return writeAlpha(lineColor(in, pColor).a * cov, cov, morphFactor);
+}
 
 
 //____ fillVertexShader() ____________________________________________
@@ -316,17 +421,19 @@ fillVertexShader(uint vertexID [[vertex_id]],
 
 //____ fillFragmentShader() ____________________________________________
 
-fragment float4 fillFragmentShader(FillFragInput in [[stage_in]])
+fragment FragOutput fillFragmentShader(FillFragInput in [[stage_in]],
+                                       constant float & morphFactor [[buffer(5)]])
 {
-    return in.color;
-};
+    return writeColor(premul(in.color), 1.0, morphFactor);
+}
 
 //____ fillFragmentShader_A8() ____________________________________________
 
-fragment float4 fillFragmentShader_A8(FillFragInput in [[stage_in]])
+fragment FragOutput fillFragmentShader_A8(FillFragInput in [[stage_in]],
+                                          constant float & morphFactor [[buffer(5)]])
 {
-    return {in.color.a,0.0,0.0,0.0};
-};
+    return writeAlpha(in.color.a, 1.0, morphFactor);
+}
 
 
 //____ fillTintmapVertexShader() ____________________________________________
@@ -358,23 +465,25 @@ fillTintmapVertexShader(uint vertexID [[vertex_id]],
 
 //____ fillTintmapFragmentShader() ____________________________________________
 
-fragment float4 fillTintmapFragmentShader(FillTintmapFragInput in [[stage_in]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput fillTintmapFragmentShader(FillTintmapFragInput in [[stage_in]],
+                                              constant float4 * pColor [[buffer(0)]],
+                                              constant float & morphFactor [[buffer(5)]])
 {
     float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
 
-    return tintColor * in.color;
-};
+    return writeColor(premul(tintColor * in.color), 1.0, morphFactor);
+}
 
 //____ fillTintmapFragmentShader_A8() ____________________________________________
 
-fragment float4 fillTintmapFragmentShader_A8(FillTintmapFragInput in [[stage_in]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput fillTintmapFragmentShader_A8(FillTintmapFragInput in [[stage_in]],
+                                                 constant float4 * pColor [[buffer(0)]],
+                                                 constant float & morphFactor [[buffer(5)]])
 {
     float tintAlpha = evalTint(pColor, in.tintOfs, in.position.xy).a;
 
-    return {tintAlpha * in.color.a,0.0,0.0,0.0};
-};
+    return writeAlpha(tintAlpha * in.color.a, 1.0, morphFactor);
+}
 
 //____ fillAAVertexShader() ____________________________________________
 
@@ -409,25 +518,27 @@ fillAAVertexShader(uint vertexID [[vertex_id]],
 
 //____ fillAAFragmentShader() ____________________________________________
 
-fragment float4 fillAAFragmentShader(FillAAFragInput in [[stage_in]])
+fragment FragOutput fillAAFragmentShader(FillAAFragInput in [[stage_in]],
+                                         constant float & morphFactor [[buffer(5)]])
 {
-    float4 color = in.color;
     float2 middleofs = abs(in.position.xy - in.rect.xy);
     float2 alphas = clamp(in.rect.zw  - middleofs, 0.f, 1.f);
-    color.a = in.color.a * alphas.x * alphas.y;
+    float cov = alphas.x * alphas.y;
 
-    return color;
-};
+    return writeColor(premul(in.color) * cov, cov, morphFactor);
+}
 
 //____ fillAAFragmentShader_A8() ____________________________________________
 
-fragment float4 fillAAFragmentShader_A8(FillAAFragInput in [[stage_in]])
+fragment FragOutput fillAAFragmentShader_A8(FillAAFragInput in [[stage_in]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
     float2 middleofs = abs(in.position.xy - in.rect.xy);
     float2 alphas = clamp(in.rect.zw  - middleofs, 0.f, 1.f);
-    
-    return { in.color.a * alphas.x * alphas.y, 0.0, 0.0, 0.0 };
-};
+    float cov = alphas.x * alphas.y;
+
+    return writeAlpha(in.color.a * cov, cov, morphFactor);
+}
 
 
 //____ fillAATintmapVertexShader() ____________________________________________
@@ -462,34 +573,33 @@ fillAATintmapVertexShader(uint vertexID [[vertex_id]],
 
 //____ fillAATintmapFragmentShader() ____________________________________________
 
-fragment float4 fillAATintmapFragmentShader(FillAATintmapFragInput in [[stage_in]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput fillAATintmapFragmentShader(FillAATintmapFragInput in [[stage_in]],
+                                                constant float4 * pColor [[buffer(0)]],
+                                                constant float & morphFactor [[buffer(5)]])
 {
     float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
 
-    float4 color = tintColor * in.color;
-
     float2 middleofs = abs(in.position.xy - in.rect.xy);
     float2 alphas = clamp(in.rect.zw  - middleofs, 0.f, 1.f);
-    color.a = color.a * alphas.x * alphas.y;
+    float cov = alphas.x * alphas.y;
 
-    return color;
-};
+    return writeColor(premul(tintColor * in.color) * cov, cov, morphFactor);
+}
 
 //____ fillAATintmapFragmentShader_A8() ____________________________________________
 
-fragment float4 fillAATintmapFragmentShader_A8(FillAATintmapFragInput in [[stage_in]],
-                                        constant float4  *pColor [[buffer(0)]])
+fragment FragOutput fillAATintmapFragmentShader_A8(FillAATintmapFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
     float tintAlpha = evalTint(pColor, in.tintOfs, in.position.xy).a;
 
-    float alpha = tintAlpha * in.color.a;
-
     float2 middleofs = abs(in.position.xy - in.rect.xy);
     float2 alphas = clamp(in.rect.zw  - middleofs, 0.f, 1.f);
-    
-    return { alpha * alphas.x * alphas.y, 0.0, 0.0, 0.0 };
-};
+    float cov = alphas.x * alphas.y;
+
+    return writeAlpha(tintAlpha * in.color.a * cov, cov, morphFactor);
+}
 
 
 
@@ -530,25 +640,27 @@ blitVertexShader(uint vertexID [[vertex_id]],
 
 //____ blitFragmentShader() ____________________________________________
 
-fragment float4 blitFragmentShader(BlitFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]])
+fragment FragOutput blitFragmentShader(BlitFragInput in [[stage_in]],
+                                       texture2d<half> colorTexture [[ texture(0) ]],
+                                       sampler textureSampler [[ sampler(0) ]],
+                                       constant float & morphFactor [[buffer(5)]])
 {
     const half4 colorSample = colorTexture.sample(textureSampler, in.texUV);
 
-    return float4(colorSample) * in.color;
-};
+    return writeColor(float4(colorSample) * premul(in.color), 1.0, morphFactor);
+}
 
 //____ blitFragmentShader_A8() ____________________________________________
 
-fragment float4 blitFragmentShader_A8(BlitFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]])
+fragment FragOutput blitFragmentShader_A8(BlitFragInput in [[stage_in]],
+                                          texture2d<half> colorTexture [[ texture(0) ]],
+                                          sampler textureSampler [[ sampler(0) ]],
+                                          constant float & morphFactor [[buffer(5)]])
 {
     const float colorSample = float(colorTexture.sample(textureSampler, in.texUV).a);
 
-    return { colorSample * in.color.a, 0.0, 0.0, 0.0 };
-};
+    return writeAlpha(colorSample * in.color.a, 1.0, morphFactor);
+}
 
 //____ insideSource() ________________________________________________________
 //
@@ -568,7 +680,8 @@ inline float insideSource(float2 uv, int clipToSource)
 // but RGBX shaders can't use the sampled alpha, since the X bytes are undefined.
 // So the alpha is worked out from the position instead: 1 inside and 0 outside
 // for nearest sampling, and the part of the bilinear footprint that is inside for
-// bilinear sampling, which is what the sampler does with the colors.
+// bilinear sampling, which is what the sampler does with the colors. The colors
+// are therefore already premultiplied by it.
 //
 // clipFlags: bit 0 = clip to source (ClipBlit of a non-tiling source), bit 1 = bilinear.
 
@@ -587,52 +700,55 @@ inline float rgbxCoverage(float2 uv, float2 size, int clipFlags)
 
 //____ rgbxBlitFragmentShader() ____________________________________________
 
-fragment float4 rgbxBlitFragmentShader(BlitFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipFlags [[buffer(4)]])
+fragment FragOutput rgbxBlitFragmentShader(BlitFragInput in [[stage_in]],
+                                           texture2d<half> colorTexture [[ texture(0) ]],
+                                           sampler textureSampler [[ sampler(0) ]],
+                                           constant int & clipFlags [[buffer(4)]],
+                                           constant float & morphFactor [[buffer(5)]])
 {
     half4 colorSample = colorTexture.sample(textureSampler, in.texUV);
     colorSample.a = (half) rgbxCoverage(in.texUV, float2(colorTexture.get_width(), colorTexture.get_height()), clipFlags);
 
-    return float4(colorSample) * in.color;
-};
+    return writeColor(float4(colorSample) * premul(in.color), 1.0, morphFactor);
+}
 
 //____ rgbxBlitFragmentShader_A8() ____________________________________________
 
-fragment float4 rgbxBlitFragmentShader_A8(BlitFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipFlags [[buffer(4)]])
+fragment FragOutput rgbxBlitFragmentShader_A8(BlitFragInput in [[stage_in]],
+                                              texture2d<half> colorTexture [[ texture(0) ]],
+                                              sampler textureSampler [[ sampler(0) ]],
+                                              constant int & clipFlags [[buffer(4)]],
+                                              constant float & morphFactor [[buffer(5)]])
 {
     float alpha = rgbxCoverage(in.texUV, float2(colorTexture.get_width(), colorTexture.get_height()), clipFlags);
 
-    return { alpha * in.color.a, 0.0, 0.0, 0.0 };
-};
+    return writeAlpha(alpha * in.color.a, 1.0, morphFactor);
+}
 
 
 //____ alphaBlitFragmentShader() ____________________________________________
 
-fragment float4 alphaBlitFragmentShader(BlitFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]])
+fragment FragOutput alphaBlitFragmentShader(BlitFragInput in [[stage_in]],
+                                            texture2d<half> colorTexture [[ texture(0) ]],
+                                            sampler textureSampler [[ sampler(0) ]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    float4 color = in.color;
-    color.a *= colorTexture.sample(textureSampler, in.texUV).r;
+    const float alpha = float(colorTexture.sample(textureSampler, in.texUV).r);
 
-    return color;
-};
+    return writeColor(premul(in.color) * alpha, 1.0, morphFactor);
+}
 
 //____ alphaBlitFragmentShader_A8() ____________________________________________
 
-fragment float4 alphaBlitFragmentShader_A8(BlitFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]])
+fragment FragOutput alphaBlitFragmentShader_A8(BlitFragInput in [[stage_in]],
+                                               texture2d<half> colorTexture [[ texture(0) ]],
+                                               sampler textureSampler [[ sampler(0) ]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
     const float colorSample = float(colorTexture.sample(textureSampler, in.texUV).r);
 
-    return { colorSample * in.color.a, 0.0, 0.0, 0.0 };
-};
+    return writeAlpha(colorSample * in.color.a, 1.0, morphFactor);
+}
 
 //____ blitTintmapVertexShader() _______________________________________________
 
@@ -673,93 +789,96 @@ blitTintmapVertexShader(uint vertexID [[vertex_id]],
 
 //____ blitTintmapFragmentShader() ____________________________________________
 
-fragment float4 blitTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant float4  *pColor [[buffer(0)]])
-
+fragment FragOutput blitTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
+                                              texture2d<half> colorTexture [[ texture(0) ]],
+                                              sampler textureSampler [[ sampler(0) ]],
+                                              constant float4 * pColor [[buffer(0)]],
+                                              constant float & morphFactor [[buffer(5)]])
 {
     const half4 colorSample = colorTexture.sample(textureSampler, in.texUV);
 
     float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
 
-    return float4(colorSample) * tintColor * in.color;
-};
+    return writeColor(float4(colorSample) * premul(tintColor * in.color), 1.0, morphFactor);
+}
 
 //____ blitTintmapFragmentShader_A8() ____________________________________________
 
-fragment float4 blitTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput blitTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
+                                                 texture2d<half> colorTexture [[ texture(0) ]],
+                                                 sampler textureSampler [[ sampler(0) ]],
+                                                 constant float4 * pColor [[buffer(0)]],
+                                                 constant float & morphFactor [[buffer(5)]])
 {
     const float colorSample = float(colorTexture.sample(textureSampler, in.texUV).a);
 
     float tintAlpha = evalTint(pColor, in.tintOfs, in.position.xy).a;
 
-    return { colorSample * tintAlpha * in.color.a, 0.0, 0.0, 0.0 };
-};
+    return writeAlpha(colorSample * tintAlpha * in.color.a, 1.0, morphFactor);
+}
 
 //____ rgbxBlitTintmapFragmentShader() ____________________________________________
 
-fragment float4 rgbxBlitTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant float4  *pColor [[buffer(0)]],
-                                    constant int & clipFlags [[buffer(4)]])
+fragment FragOutput rgbxBlitTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
+                                                  texture2d<half> colorTexture [[ texture(0) ]],
+                                                  sampler textureSampler [[ sampler(0) ]],
+                                                  constant float4 * pColor [[buffer(0)]],
+                                                  constant int & clipFlags [[buffer(4)]],
+                                                  constant float & morphFactor [[buffer(5)]])
 {
     half4 colorSample = colorTexture.sample(textureSampler, in.texUV);
     colorSample.a = (half) rgbxCoverage(in.texUV, float2(colorTexture.get_width(), colorTexture.get_height()), clipFlags);
 
     float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
 
-    return float4(colorSample) * tintColor * in.color;
-};
+    return writeColor(float4(colorSample) * premul(tintColor * in.color), 1.0, morphFactor);
+}
 
 //____ rgbxBlitTintmapFragmentShader_A8() ____________________________________________
 
-fragment float4 rgbxBlitTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant float4  *pColor [[buffer(0)]],
-                                    constant int & clipFlags [[buffer(4)]])
+fragment FragOutput rgbxBlitTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
+                                                     texture2d<half> colorTexture [[ texture(0) ]],
+                                                     sampler textureSampler [[ sampler(0) ]],
+                                                     constant float4 * pColor [[buffer(0)]],
+                                                     constant int & clipFlags [[buffer(4)]],
+                                                     constant float & morphFactor [[buffer(5)]])
 {
     float tintAlpha = evalTint(pColor, in.tintOfs, in.position.xy).a;
     float alpha = rgbxCoverage(in.texUV, float2(colorTexture.get_width(), colorTexture.get_height()), clipFlags);
 
-    return { alpha * tintAlpha * in.color.a, 0.0, 0.0, 0.0 };
-};
+    return writeAlpha(alpha * tintAlpha * in.color.a, 1.0, morphFactor);
+}
 
 
 //____ alphaBlitTintmapFragmentShader() ____________________________________________
 
-fragment float4 alphaBlitTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput alphaBlitTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
+                                                   texture2d<half> colorTexture [[ texture(0) ]],
+                                                   sampler textureSampler [[ sampler(0) ]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
     float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
 
-    float4 color = tintColor * in.color;
+    const float alpha = float(colorTexture.sample(textureSampler, in.texUV).r);
 
-    color.a *= colorTexture.sample(textureSampler, in.texUV).r;
-
-    return color;
-};
+    return writeColor(premul(tintColor * in.color) * alpha, 1.0, morphFactor);
+}
 
 //____ alphaBlitTintmapFragmentShader_A8() ____________________________________________
 
-fragment float4 alphaBlitTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
-                                    texture2d<half> colorTexture [[ texture(0) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput alphaBlitTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
+                                                      texture2d<half> colorTexture [[ texture(0) ]],
+                                                      sampler textureSampler [[ sampler(0) ]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
     const float colorSample = float(colorTexture.sample(textureSampler, in.texUV).r);
 
     float tintAlpha = evalTint(pColor, in.tintOfs, in.position.xy).a;
 
-    return { colorSample * tintAlpha * in.color.a, 0.0, 0.0, 0.0 };
-};
+    return writeAlpha(colorSample * tintAlpha * in.color.a, 1.0, morphFactor);
+}
 
 
 
@@ -773,7 +892,8 @@ fragment float4 alphaBlitTintmapFragmentShader_A8(BlitTintmapFragInput in [[stag
 //
 // The palette texture is up to 256 texels wide with as many rows as needed for
 // paletteCapacity() entries, see MetalSurface::_createAndSyncTextures(). Indexes
-// beyond the palette texture get its last entry, like DX12 does.
+// beyond the palette texture get its last entry, like DX12 does. Entries are
+// premultiplied, see MetalSurface::_premultipliedPalette().
 
 inline half4 paletteLookup(texture2d<half> paletteTexture, float2 normIndex)
 {
@@ -785,67 +905,70 @@ inline half4 paletteLookup(texture2d<half> paletteTexture, float2 normIndex)
 
 //____ paletteBlitNearestFragmentShader() ____________________________________________
 
-fragment float4 paletteBlitNearestFragmentShader(BlitFragInput in [[stage_in]],
-                                    texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> paletteTexture [[ texture(1) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipToSource [[buffer(4)]])
+fragment FragOutput paletteBlitNearestFragmentShader(BlitFragInput in [[stage_in]],
+                                                     texture2d<float> colorTexture [[ texture(0) ]],
+                                                     texture2d<half> paletteTexture [[ texture(1) ]],
+                                                     sampler textureSampler [[ sampler(0) ]],
+                                                     constant int & clipToSource [[buffer(4)]],
+                                                     constant float & morphFactor [[buffer(5)]])
 {
     const float2 colorIndex = float2(colorTexture.sample(textureSampler, in.texUV).rg);
     const half4 colorSample = paletteLookup(paletteTexture, colorIndex) * half(insideSource(in.texUV, clipToSource));
 
-//    return in.color;
-    return float4(colorSample) * in.color;
-};
+    return writeColor(float4(colorSample) * premul(in.color), 1.0, morphFactor);
+}
 
 //____ paletteBlitNearestFragmentShader_A8() ____________________________________________
 
-fragment float4 paletteBlitNearestFragmentShader_A8(BlitFragInput in [[stage_in]],
-                                    texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> paletteTexture [[ texture(1) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipToSource [[buffer(4)]])
+fragment FragOutput paletteBlitNearestFragmentShader_A8(BlitFragInput in [[stage_in]],
+                                                        texture2d<float> colorTexture [[ texture(0) ]],
+                                                        texture2d<half> paletteTexture [[ texture(1) ]],
+                                                        sampler textureSampler [[ sampler(0) ]],
+                                                        constant int & clipToSource [[buffer(4)]],
+                                                        constant float & morphFactor [[buffer(5)]])
 {
     const float2 colorIndex = float2(colorTexture.sample(textureSampler, in.texUV).rg);
     const float colorSample = paletteLookup(paletteTexture, colorIndex).a * insideSource(in.texUV, clipToSource);
 
-    return { colorSample * in.color.a, 0.0, 0.0, 0.0 };
-};
+    return writeAlpha(colorSample * in.color.a, 1.0, morphFactor);
+}
 
 
 //____ paletteBlitNearestTintmapFragmentShader() ____________________________________________
 
-fragment float4 paletteBlitNearestTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
-                                    texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> paletteTexture [[ texture(1) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipToSource [[buffer(4)]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput paletteBlitNearestTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
+                                                            texture2d<float> colorTexture [[ texture(0) ]],
+                                                            texture2d<half> paletteTexture [[ texture(1) ]],
+                                                            sampler textureSampler [[ sampler(0) ]],
+                                                            constant int & clipToSource [[buffer(4)]],
+                                                            constant float4 * pColor [[buffer(0)]],
+                                                            constant float & morphFactor [[buffer(5)]])
 {
     const float2 colorIndex = float2(colorTexture.sample(textureSampler, in.texUV).rg);
     const half4 colorSample = paletteLookup(paletteTexture, colorIndex) * half(insideSource(in.texUV, clipToSource));
 
     float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
 
-    return float4(colorSample) * tintColor * in.color;
-};
+    return writeColor(float4(colorSample) * premul(tintColor * in.color), 1.0, morphFactor);
+}
 
 //____ paletteBlitNearestTintmapFragmentShader_A8() ____________________________________________
 
-fragment float4 paletteBlitNearestTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
-                                    texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> paletteTexture [[ texture(1) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipToSource [[buffer(4)]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput paletteBlitNearestTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
+                                                               texture2d<float> colorTexture [[ texture(0) ]],
+                                                               texture2d<half> paletteTexture [[ texture(1) ]],
+                                                               sampler textureSampler [[ sampler(0) ]],
+                                                               constant int & clipToSource [[buffer(4)]],
+                                                               constant float4 * pColor [[buffer(0)]],
+                                                               constant float & morphFactor [[buffer(5)]])
 {
     const float2 colorIndex = float2(colorTexture.sample(textureSampler, in.texUV).rg);
     const float colorSample = paletteLookup(paletteTexture, colorIndex).a * insideSource(in.texUV, clipToSource);
 
     float tintAlpha = evalTint(pColor, in.tintOfs, in.position.xy).a;
 
-    return { colorSample * tintAlpha * in.color.a, 0.0, 0.0, 0.0 };
-};
+    return writeAlpha(colorSample * tintAlpha * in.color.a, 1.0, morphFactor);
+}
 
 
 
@@ -902,11 +1025,12 @@ inline void paletteTaps(float2 uvFrac, float2 texSize, thread float2& uv00, thre
 
 //____ paletteBlitInterpolateFragmentShader() ____________________________________________
 
-fragment float4 paletteBlitInterpolateFragmentShader(PaletteBlitInterpolateFragInput in [[stage_in]],
-                                    texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> paletteTexture [[ texture(1) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipToSource [[buffer(4)]])
+fragment FragOutput paletteBlitInterpolateFragmentShader(PaletteBlitInterpolateFragInput in [[stage_in]],
+                                                         texture2d<float> colorTexture [[ texture(0) ]],
+                                                         texture2d<half> paletteTexture [[ texture(1) ]],
+                                                         sampler textureSampler [[ sampler(0) ]],
+                                                         constant int & clipToSource [[buffer(4)]],
+                                                         constant float & morphFactor [[buffer(5)]])
 {
    float2 texUV00, texUV11, uvf;
    paletteTaps(in.uvFrac, float2(colorTexture.get_width(), colorTexture.get_height()), texUV00, texUV11, uvf);
@@ -924,16 +1048,17 @@ fragment float4 paletteBlitInterpolateFragmentShader(PaletteBlitInterpolateFragI
    half4 out1 = color10 * (1-uvf.x) + color11 * uvf.x;
    half4 colorSample = (out0 * (1-uvf.y) + out1 * uvf.y);
 
-    return float4(colorSample) * in.color;
-};
+   return writeColor(float4(colorSample) * premul(in.color), 1.0, morphFactor);
+}
 
 //____ paletteBlitInterpolateFragmentShader_A8() ____________________________________________
 
-fragment float4 paletteBlitInterpolateFragmentShader_A8(PaletteBlitInterpolateFragInput in [[stage_in]],
-                                    texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> paletteTexture [[ texture(1) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipToSource [[buffer(4)]])
+fragment FragOutput paletteBlitInterpolateFragmentShader_A8(PaletteBlitInterpolateFragInput in [[stage_in]],
+                                                            texture2d<float> colorTexture [[ texture(0) ]],
+                                                            texture2d<half> paletteTexture [[ texture(1) ]],
+                                                            sampler textureSampler [[ sampler(0) ]],
+                                                            constant int & clipToSource [[buffer(4)]],
+                                                            constant float & morphFactor [[buffer(5)]])
 {
    float2 texUV00, texUV11, uvf;
    paletteTaps(in.uvFrac, float2(colorTexture.get_width(), colorTexture.get_height()), texUV00, texUV11, uvf);
@@ -951,8 +1076,8 @@ fragment float4 paletteBlitInterpolateFragmentShader_A8(PaletteBlitInterpolateFr
    float out1 = color10 * (1-uvf.x) + color11 * uvf.x;
    float colorSample = (out0 * (1-uvf.y) + out1 * uvf.y);
 
-   return { colorSample * in.color.a, 0.0, 0.0, 0.0 };
-};
+   return writeAlpha(colorSample * in.color.a, 1.0, morphFactor);
+}
 
 //____ paletteBlitInterpolateTintmapVertexShader() _______________________________________________
 
@@ -994,12 +1119,13 @@ paletteBlitInterpolateTintmapVertexShader(uint vertexID [[vertex_id]],
 
 //____ paletteBlitInterpolateTintmapFragmentShader() ____________________________________________
 
-fragment float4 paletteBlitInterpolateTintmapFragmentShader(PaletteBlitInterpolateTintmapFragInput in [[stage_in]],
-                                    texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> paletteTexture [[ texture(1) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipToSource [[buffer(4)]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput paletteBlitInterpolateTintmapFragmentShader(PaletteBlitInterpolateTintmapFragInput in [[stage_in]],
+                                                                texture2d<float> colorTexture [[ texture(0) ]],
+                                                                texture2d<half> paletteTexture [[ texture(1) ]],
+                                                                sampler textureSampler [[ sampler(0) ]],
+                                                                constant int & clipToSource [[buffer(4)]],
+                                                                constant float4 * pColor [[buffer(0)]],
+                                                                constant float & morphFactor [[buffer(5)]])
 {
    float2 texUV00, texUV11, uvf;
    paletteTaps(in.uvFrac, float2(colorTexture.get_width(), colorTexture.get_height()), texUV00, texUV11, uvf);
@@ -1019,17 +1145,18 @@ fragment float4 paletteBlitInterpolateTintmapFragmentShader(PaletteBlitInterpola
 
    float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
 
-   return float4(colorSample) * tintColor * in.color;
-};
+   return writeColor(float4(colorSample) * premul(tintColor * in.color), 1.0, morphFactor);
+}
 
 //____ paletteBlitInterpolateTintmapFragmentShader_A8() ____________________________________________
 
-fragment float4 paletteBlitInterpolateTintmapFragmentShader_A8(PaletteBlitInterpolateTintmapFragInput in [[stage_in]],
-                                    texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> paletteTexture [[ texture(1) ]],
-                                    sampler textureSampler [[ sampler(0) ]],
-                                    constant int & clipToSource [[buffer(4)]],
-                                    constant float4  *pColor [[buffer(0)]])
+fragment FragOutput paletteBlitInterpolateTintmapFragmentShader_A8(PaletteBlitInterpolateTintmapFragInput in [[stage_in]],
+                                                                   texture2d<float> colorTexture [[ texture(0) ]],
+                                                                   texture2d<half> paletteTexture [[ texture(1) ]],
+                                                                   sampler textureSampler [[ sampler(0) ]],
+                                                                   constant int & clipToSource [[buffer(4)]],
+                                                                   constant float4 * pColor [[buffer(0)]],
+                                                                   constant float & morphFactor [[buffer(5)]])
 {
    float2 texUV00, texUV11, uvf;
    paletteTaps(in.uvFrac, float2(colorTexture.get_width(), colorTexture.get_height()), texUV00, texUV11, uvf);
@@ -1049,8 +1176,8 @@ fragment float4 paletteBlitInterpolateTintmapFragmentShader_A8(PaletteBlitInterp
 
    float tintAlpha = evalTint(pColor, in.tintOfs, in.position.xy).a;
 
-   return { colorSample * tintAlpha * in.color.a, 0.0, 0.0, 0.0 };
-};
+   return writeAlpha(colorSample * tintAlpha * in.color.a, 1.0, morphFactor);
+}
 
 
 
@@ -1058,7 +1185,9 @@ fragment float4 paletteBlitInterpolateTintmapFragmentShader_A8(PaletteBlitInterp
 //
 // Nine taps around texUV, each weighted per channel by its own row of the brush's
 // color matrix. The alpha row only weights the center tap, so the source's own
-// alpha is kept and only the colors are blurred.
+// alpha is kept and only the colors are blurred. Taps are premultiplied, like the
+// textures, so their colors are divided by their alphas first, which gives a
+// straight color.
 //
 // An Alpha_8 source (R8Unorm texture) reads as white with alpha, the way it does
 // in blits. An RGBX source has undefined alpha bytes, so its alpha is 1.
@@ -1078,11 +1207,13 @@ inline float4 blurCore(float2 texUV, texture2d<float> colorTexture, sampler text
 			tap = float4(1.0, 1.0, 1.0, tap.r);
 		else if( source == BlurSource::RGBX )
 			tap.a = 1.0;
+		else
+			tap.rgb = tap.a > 0.0 ? tap.rgb / tap.a : float3(0.0);
 
 		color += tap * pBlurInfo->colorMtx[i];
 	}
 
-	return color;
+	return float4(saturate(color.rgb), color.a);
 }
 
 //____ paletteBlurCore() _____________________________________________________
@@ -1100,207 +1231,226 @@ inline float4 paletteBlurCore(float2 texUV, texture2d<float> colorTexture, textu
 	for( int i = 0 ; i < 9 ; i++ )
 	{
 		float2 colorIndex = float2(colorTexture.sample(textureSampler, texUV + pBlurInfo->offset[i] ).rg);
-		color += float4(paletteLookup(paletteTexture, colorIndex)) * pBlurInfo->colorMtx[i];
+		float4 tap = float4(paletteLookup(paletteTexture, colorIndex));
+		tap.rgb = tap.a > 0.0 ? tap.rgb / tap.a : float3(0.0);
+
+		color += tap * pBlurInfo->colorMtx[i];
 	}
 
-	return color;
+	return float4(saturate(color.rgb), color.a);
 }
 
 //____ blurFragmentShader() __________________________________________
 
-fragment float4 blurFragmentShader(BlitFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput blurFragmentShader(BlitFragInput in [[stage_in]],
+                                       texture2d<float> colorTexture [[ texture(0) ]],
+                                       sampler textureSampler [[ sampler(0) ]],
+                                       constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                       constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::Normal);
-	return color * in.color;
-};
+	return writeColor(premul(color * in.color), 1.0, morphFactor);
+}
 
 //____ blurFragmentShader_A8() _______________________________________
 
-fragment float4 blurFragmentShader_A8(BlitFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput blurFragmentShader_A8(BlitFragInput in [[stage_in]],
+                                          texture2d<float> colorTexture [[ texture(0) ]],
+                                          sampler textureSampler [[ sampler(0) ]],
+                                          constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                          constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::Normal);
-	return { color.a * in.color.a, 0.0, 0.0, 0.0 };
-};
+	return writeAlpha(color.a * in.color.a, 1.0, morphFactor);
+}
 
 //____ blurTintmapFragmentShader() ___________________________________
 
-fragment float4 blurTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant float4  *pColor [[buffer(0)]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput blurTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
+                                              texture2d<float> colorTexture [[ texture(0) ]],
+                                              sampler textureSampler [[ sampler(0) ]],
+                                              constant float4 * pColor [[buffer(0)]],
+                                              constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                              constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::Normal);
 	float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
-	return color * tintColor * in.color;
-};
+	return writeColor(premul(color * tintColor * in.color), 1.0, morphFactor);
+}
 
 //____ blurTintmapFragmentShader_A8() ________________________________
 
-fragment float4 blurTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant float4  *pColor [[buffer(0)]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput blurTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
+                                                 texture2d<float> colorTexture [[ texture(0) ]],
+                                                 sampler textureSampler [[ sampler(0) ]],
+                                                 constant float4 * pColor [[buffer(0)]],
+                                                 constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                                 constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::Normal);
 	float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
-	return { color.a * tintColor.a * in.color.a, 0.0, 0.0, 0.0 };
-};
+	return writeAlpha(color.a * tintColor.a * in.color.a, 1.0, morphFactor);
+}
 
 //____ alphaBlurFragmentShader() _____________________________________
 
-fragment float4 alphaBlurFragmentShader(BlitFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput alphaBlurFragmentShader(BlitFragInput in [[stage_in]],
+                                            texture2d<float> colorTexture [[ texture(0) ]],
+                                            sampler textureSampler [[ sampler(0) ]],
+                                            constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::Alpha);
-	return color * in.color;
-};
+	return writeColor(premul(color * in.color), 1.0, morphFactor);
+}
 
 //____ alphaBlurFragmentShader_A8() __________________________________
 
-fragment float4 alphaBlurFragmentShader_A8(BlitFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput alphaBlurFragmentShader_A8(BlitFragInput in [[stage_in]],
+                                               texture2d<float> colorTexture [[ texture(0) ]],
+                                               sampler textureSampler [[ sampler(0) ]],
+                                               constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::Alpha);
-	return { color.a * in.color.a, 0.0, 0.0, 0.0 };
-};
+	return writeAlpha(color.a * in.color.a, 1.0, morphFactor);
+}
 
 //____ alphaBlurTintmapFragmentShader() ______________________________
 
-fragment float4 alphaBlurTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant float4  *pColor [[buffer(0)]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput alphaBlurTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
+                                                   texture2d<float> colorTexture [[ texture(0) ]],
+                                                   sampler textureSampler [[ sampler(0) ]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::Alpha);
 	float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
-	return color * tintColor * in.color;
-};
+	return writeColor(premul(color * tintColor * in.color), 1.0, morphFactor);
+}
 
 //____ alphaBlurTintmapFragmentShader_A8() ___________________________
 
-fragment float4 alphaBlurTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant float4  *pColor [[buffer(0)]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput alphaBlurTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
+                                                      texture2d<float> colorTexture [[ texture(0) ]],
+                                                      sampler textureSampler [[ sampler(0) ]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::Alpha);
 	float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
-	return { color.a * tintColor.a * in.color.a, 0.0, 0.0, 0.0 };
-};
+	return writeAlpha(color.a * tintColor.a * in.color.a, 1.0, morphFactor);
+}
 
 //____ rgbxBlurFragmentShader() ______________________________________
 
-fragment float4 rgbxBlurFragmentShader(BlitFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput rgbxBlurFragmentShader(BlitFragInput in [[stage_in]],
+                                           texture2d<float> colorTexture [[ texture(0) ]],
+                                           sampler textureSampler [[ sampler(0) ]],
+                                           constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                           constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::RGBX);
-	return color * in.color;
-};
+	return writeColor(premul(color * in.color), 1.0, morphFactor);
+}
 
 //____ rgbxBlurFragmentShader_A8() ___________________________________
 
-fragment float4 rgbxBlurFragmentShader_A8(BlitFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput rgbxBlurFragmentShader_A8(BlitFragInput in [[stage_in]],
+                                              texture2d<float> colorTexture [[ texture(0) ]],
+                                              sampler textureSampler [[ sampler(0) ]],
+                                              constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                              constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::RGBX);
-	return { color.a * in.color.a, 0.0, 0.0, 0.0 };
-};
+	return writeAlpha(color.a * in.color.a, 1.0, morphFactor);
+}
 
 //____ rgbxBlurTintmapFragmentShader() _______________________________
 
-fragment float4 rgbxBlurTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant float4  *pColor [[buffer(0)]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput rgbxBlurTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
+                                                  texture2d<float> colorTexture [[ texture(0) ]],
+                                                  sampler textureSampler [[ sampler(0) ]],
+                                                  constant float4 * pColor [[buffer(0)]],
+                                                  constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                                  constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::RGBX);
 	float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
-	return color * tintColor * in.color;
-};
+	return writeColor(premul(color * tintColor * in.color), 1.0, morphFactor);
+}
 
 //____ rgbxBlurTintmapFragmentShader_A8() ____________________________
 
-fragment float4 rgbxBlurTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant float4  *pColor [[buffer(0)]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput rgbxBlurTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
+                                                     texture2d<float> colorTexture [[ texture(0) ]],
+                                                     sampler textureSampler [[ sampler(0) ]],
+                                                     constant float4 * pColor [[buffer(0)]],
+                                                     constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                                     constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = blurCore(in.texUV, colorTexture, textureSampler, pBlurInfo, BlurSource::RGBX);
 	float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
-	return { color.a * tintColor.a * in.color.a, 0.0, 0.0, 0.0 };
-};
+	return writeAlpha(color.a * tintColor.a * in.color.a, 1.0, morphFactor);
+}
 
 //____ paletteBlurFragmentShader() ___________________________________
 
-fragment float4 paletteBlurFragmentShader(BlitFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									texture2d<half> paletteTexture [[ texture(1) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput paletteBlurFragmentShader(BlitFragInput in [[stage_in]],
+                                              texture2d<float> colorTexture [[ texture(0) ]],
+                                              texture2d<half> paletteTexture [[ texture(1) ]],
+                                              sampler textureSampler [[ sampler(0) ]],
+                                              constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                              constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = paletteBlurCore(in.texUV, colorTexture, paletteTexture, textureSampler, pBlurInfo);
-	return color * in.color;
-};
+	return writeColor(premul(color * in.color), 1.0, morphFactor);
+}
 
 //____ paletteBlurFragmentShader_A8() ________________________________
 
-fragment float4 paletteBlurFragmentShader_A8(BlitFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									texture2d<half> paletteTexture [[ texture(1) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput paletteBlurFragmentShader_A8(BlitFragInput in [[stage_in]],
+                                                 texture2d<float> colorTexture [[ texture(0) ]],
+                                                 texture2d<half> paletteTexture [[ texture(1) ]],
+                                                 sampler textureSampler [[ sampler(0) ]],
+                                                 constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                                 constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = paletteBlurCore(in.texUV, colorTexture, paletteTexture, textureSampler, pBlurInfo);
-	return { color.a * in.color.a, 0.0, 0.0, 0.0 };
-};
+	return writeAlpha(color.a * in.color.a, 1.0, morphFactor);
+}
 
 //____ paletteBlurTintmapFragmentShader() ____________________________
 
-fragment float4 paletteBlurTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									texture2d<half> paletteTexture [[ texture(1) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant float4  *pColor [[buffer(0)]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput paletteBlurTintmapFragmentShader(BlitTintmapFragInput in [[stage_in]],
+                                                     texture2d<float> colorTexture [[ texture(0) ]],
+                                                     texture2d<half> paletteTexture [[ texture(1) ]],
+                                                     sampler textureSampler [[ sampler(0) ]],
+                                                     constant float4 * pColor [[buffer(0)]],
+                                                     constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                                     constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = paletteBlurCore(in.texUV, colorTexture, paletteTexture, textureSampler, pBlurInfo);
 	float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
-	return color * tintColor * in.color;
-};
+	return writeColor(premul(color * tintColor * in.color), 1.0, morphFactor);
+}
 
 //____ paletteBlurTintmapFragmentShader_A8() _________________________
 
-fragment float4 paletteBlurTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
-									texture2d<float> colorTexture [[ texture(0) ]],
-									texture2d<half> paletteTexture [[ texture(1) ]],
-									sampler textureSampler [[ sampler(0) ]],
-									constant float4  *pColor [[buffer(0)]],
-									constant BlurUniform  *pBlurInfo [[buffer(2)]])
+fragment FragOutput paletteBlurTintmapFragmentShader_A8(BlitTintmapFragInput in [[stage_in]],
+                                                        texture2d<float> colorTexture [[ texture(0) ]],
+                                                        texture2d<half> paletteTexture [[ texture(1) ]],
+                                                        sampler textureSampler [[ sampler(0) ]],
+                                                        constant float4 * pColor [[buffer(0)]],
+                                                        constant BlurUniform * pBlurInfo [[buffer(2)]],
+                                                        constant float & morphFactor [[buffer(5)]])
 {
 	float4 color = paletteBlurCore(in.texUV, colorTexture, paletteTexture, textureSampler, pBlurInfo);
 	float4 tintColor = evalTint(pColor, in.tintOfs, in.position.xy);
-	return { color.a * tintColor.a * in.color.a, 0.0, 0.0, 0.0 };
-};
+	return writeAlpha(color.a * tintColor.a * in.color.a, 1.0, morphFactor);
+}
 
 
 
@@ -1350,13 +1500,14 @@ inline float4 segColor(int seg, SegmentsFragInput in, constant float4 * pEdgemap
 
 //____ segmentsFragmentShader() ____________________________________________
 
+// The segments together cover the whole pixel, each the part of it between its edges.
+// Returns their colors premultiplied and weighted by those parts.
+
 template <int EDGES>
 inline float4 segFragShaderCore(SegmentsFragInput in,
                                     constant float4  *pEdgemap)
 {
-    float totalAlpha = 0.f;
-    float3    rgbAcc = float3(0,0,0);
-
+    float4 acc = float4(0.f);
 
     float factor = 1.f;
 	float2 epos = float2(floor(in.texUV.x) + 0.5f, in.texUV.y + 0.5f);	// Pixel center in edgemap space.
@@ -1374,227 +1525,249 @@ inline float4 segFragShaderCore(SegmentsFragInput in,
 			adder = edge.a;
         float factor2 = clamp(x + adder, 0.f, 1.f);
 
-        float useFactor = (factor - factor2)*col.a;
-        totalAlpha += useFactor;
-        rgbAcc += col.rgb * useFactor;
+        acc += premul(col) * (factor - factor2);
         factor = factor2;
     }
 
 	float4 col = segColor(EDGES, in, pEdgemap, epos);
+	acc += premul(col) * factor;
 
-	float useFactor = factor*col.a;
-    totalAlpha += useFactor;
-	rgbAcc += col.rgb * useFactor;
-
-    float4 out;
-	out.a = totalAlpha; // * in.color.a;
-	out.rgb = totalAlpha > 0.f ? rgbAcc/totalAlpha : float3(0,0,0);	// Fully transparent would be 0/0.
-	return out;
+	return acc;
 };
 
 
-fragment float4 segmentsFragmentShader1(SegmentsFragInput in [[stage_in]],
-                                    constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader1(SegmentsFragInput in [[stage_in]],
+                                            constant float4 * pEdgemap [[buffer(3)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<1>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<1>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader2(SegmentsFragInput in [[stage_in]],
-                                    constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader2(SegmentsFragInput in [[stage_in]],
+                                            constant float4 * pEdgemap [[buffer(3)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<2>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<2>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader3(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader3(SegmentsFragInput in [[stage_in]],
+                                            constant float4 * pEdgemap [[buffer(3)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<3>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<3>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader4(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader4(SegmentsFragInput in [[stage_in]],
+                                            constant float4 * pEdgemap [[buffer(3)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<4>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<4>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader5(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader5(SegmentsFragInput in [[stage_in]],
+                                            constant float4 * pEdgemap [[buffer(3)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<5>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<5>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader6(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader6(SegmentsFragInput in [[stage_in]],
+                                            constant float4 * pEdgemap [[buffer(3)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<6>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<6>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader7(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader7(SegmentsFragInput in [[stage_in]],
+                                            constant float4 * pEdgemap [[buffer(3)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<7>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<7>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader8(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader8(SegmentsFragInput in [[stage_in]],
+                                            constant float4 * pEdgemap [[buffer(3)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<8>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<8>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader9(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader9(SegmentsFragInput in [[stage_in]],
+                                            constant float4 * pEdgemap [[buffer(3)]],
+                                            constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<9>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<9>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader10(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader10(SegmentsFragInput in [[stage_in]],
+                                             constant float4 * pEdgemap [[buffer(3)]],
+                                             constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<10>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<10>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader11(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader11(SegmentsFragInput in [[stage_in]],
+                                             constant float4 * pEdgemap [[buffer(3)]],
+                                             constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<11>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<11>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader12(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader12(SegmentsFragInput in [[stage_in]],
+                                             constant float4 * pEdgemap [[buffer(3)]],
+                                             constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<12>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<12>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader13(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader13(SegmentsFragInput in [[stage_in]],
+                                             constant float4 * pEdgemap [[buffer(3)]],
+                                             constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<13>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<13>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader14(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader14(SegmentsFragInput in [[stage_in]],
+                                             constant float4 * pEdgemap [[buffer(3)]],
+                                             constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<14>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<14>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader15(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader15(SegmentsFragInput in [[stage_in]],
+                                             constant float4 * pEdgemap [[buffer(3)]],
+                                             constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore<15>(in,pEdgemap) * in.color;
-};
+	return writeColor(segFragShaderCore<15>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+}
 
 
-fragment float4 segmentsTintmapFragmentShader1(SegmentsFragInput in [[stage_in]],
-											   constant float4  *pColor [[buffer(0)]],
-											   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader1(SegmentsFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float4 * pEdgemap [[buffer(3)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<1>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<1>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader2(SegmentsFragInput in [[stage_in]],
-											   constant float4  *pColor [[buffer(0)]],
-											   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader2(SegmentsFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float4 * pEdgemap [[buffer(3)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<2>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<2>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader3(SegmentsFragInput in [[stage_in]],
-											   constant float4  *pColor [[buffer(0)]],
-											   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader3(SegmentsFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float4 * pEdgemap [[buffer(3)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<3>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<3>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader4(SegmentsFragInput in [[stage_in]],
-											   constant float4  *pColor [[buffer(0)]],
-											   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader4(SegmentsFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float4 * pEdgemap [[buffer(3)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<4>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<4>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader5(SegmentsFragInput in [[stage_in]],
-											   constant float4  *pColor [[buffer(0)]],
-											   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader5(SegmentsFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float4 * pEdgemap [[buffer(3)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<5>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<5>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader6(SegmentsFragInput in [[stage_in]],
-											   constant float4  *pColor [[buffer(0)]],
-											   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader6(SegmentsFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float4 * pEdgemap [[buffer(3)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<6>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<6>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader7(SegmentsFragInput in [[stage_in]],
-											   constant float4  *pColor [[buffer(0)]],
-											   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader7(SegmentsFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float4 * pEdgemap [[buffer(3)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<7>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<7>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader8(SegmentsFragInput in [[stage_in]],
-											   constant float4  *pColor [[buffer(0)]],
-											   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader8(SegmentsFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float4 * pEdgemap [[buffer(3)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<8>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<8>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader9(SegmentsFragInput in [[stage_in]],
-											   constant float4  *pColor [[buffer(0)]],
-											   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader9(SegmentsFragInput in [[stage_in]],
+                                                   constant float4 * pColor [[buffer(0)]],
+                                                   constant float4 * pEdgemap [[buffer(3)]],
+                                                   constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<9>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<9>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader10(SegmentsFragInput in [[stage_in]],
-												constant float4  *pColor [[buffer(0)]],
-												constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader10(SegmentsFragInput in [[stage_in]],
+                                                    constant float4 * pColor [[buffer(0)]],
+                                                    constant float4 * pEdgemap [[buffer(3)]],
+                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<10>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<10>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader11(SegmentsFragInput in [[stage_in]],
-												constant float4  *pColor [[buffer(0)]],
-												constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader11(SegmentsFragInput in [[stage_in]],
+                                                    constant float4 * pColor [[buffer(0)]],
+                                                    constant float4 * pEdgemap [[buffer(3)]],
+                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<11>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<11>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader12(SegmentsFragInput in [[stage_in]],
-												constant float4  *pColor [[buffer(0)]],
-												constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader12(SegmentsFragInput in [[stage_in]],
+                                                    constant float4 * pColor [[buffer(0)]],
+                                                    constant float4 * pEdgemap [[buffer(3)]],
+                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<12>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<12>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader13(SegmentsFragInput in [[stage_in]],
-												constant float4  *pColor [[buffer(0)]],
-												constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader13(SegmentsFragInput in [[stage_in]],
+                                                    constant float4 * pColor [[buffer(0)]],
+                                                    constant float4 * pEdgemap [[buffer(3)]],
+                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<13>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<13>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader14(SegmentsFragInput in [[stage_in]],
-												constant float4  *pColor [[buffer(0)]],
-												constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader14(SegmentsFragInput in [[stage_in]],
+                                                    constant float4 * pColor [[buffer(0)]],
+                                                    constant float4 * pEdgemap [[buffer(3)]],
+                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<14>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<14>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader15(SegmentsFragInput in [[stage_in]],
-												constant float4  *pColor [[buffer(0)]],
-												constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader15(SegmentsFragInput in [[stage_in]],
+                                                    constant float4 * pColor [[buffer(0)]],
+                                                    constant float4 * pEdgemap [[buffer(3)]],
+                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore<15>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
-};
+	return writeColor(segFragShaderCore<15>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+}
 
 
 
 //____ segmentsFragmentShader_A8() ____________________________________________
 
 template <int EDGES>
-inline float4 segFragShaderCore_A8(SegmentsFragInput in,
+inline float segFragShaderCore_A8(SegmentsFragInput in,
                                     constant float4  *pEdgemap)
 {
 	float totalAlpha = 0.f;
@@ -1623,212 +1796,242 @@ inline float4 segFragShaderCore_A8(SegmentsFragInput in,
 	float alpha = segColor(EDGES, in, pEdgemap, epos).a;
 	totalAlpha += factor*alpha;
 
-	return { totalAlpha, 0.f, 0.f, 0.f };
+	return totalAlpha;
 };
 
 
 
-fragment float4 segmentsFragmentShader1_A8(SegmentsFragInput in [[stage_in]],
-                                    constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader1_A8(SegmentsFragInput in [[stage_in]],
+                                               constant float4 * pEdgemap [[buffer(3)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<1>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<1>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader2_A8(SegmentsFragInput in [[stage_in]],
-                                    constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader2_A8(SegmentsFragInput in [[stage_in]],
+                                               constant float4 * pEdgemap [[buffer(3)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<2>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<2>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader3_A8(SegmentsFragInput in [[stage_in]],
-								   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader3_A8(SegmentsFragInput in [[stage_in]],
+                                               constant float4 * pEdgemap [[buffer(3)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<3>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<3>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader4_A8(SegmentsFragInput in [[stage_in]],
-								   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader4_A8(SegmentsFragInput in [[stage_in]],
+                                               constant float4 * pEdgemap [[buffer(3)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<4>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<4>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader5_A8(SegmentsFragInput in [[stage_in]],
-								   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader5_A8(SegmentsFragInput in [[stage_in]],
+                                               constant float4 * pEdgemap [[buffer(3)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<5>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<5>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader6_A8(SegmentsFragInput in [[stage_in]],
-								   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader6_A8(SegmentsFragInput in [[stage_in]],
+                                               constant float4 * pEdgemap [[buffer(3)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<6>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<6>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader7_A8(SegmentsFragInput in [[stage_in]],
-								   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader7_A8(SegmentsFragInput in [[stage_in]],
+                                               constant float4 * pEdgemap [[buffer(3)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<7>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<7>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader8_A8(SegmentsFragInput in [[stage_in]],
-								   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader8_A8(SegmentsFragInput in [[stage_in]],
+                                               constant float4 * pEdgemap [[buffer(3)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<8>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<8>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader9_A8(SegmentsFragInput in [[stage_in]],
-								   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader9_A8(SegmentsFragInput in [[stage_in]],
+                                               constant float4 * pEdgemap [[buffer(3)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<9>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<9>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader10_A8(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader10_A8(SegmentsFragInput in [[stage_in]],
+                                                constant float4 * pEdgemap [[buffer(3)]],
+                                                constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<10>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<10>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader11_A8(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader11_A8(SegmentsFragInput in [[stage_in]],
+                                                constant float4 * pEdgemap [[buffer(3)]],
+                                                constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<11>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<11>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader12_A8(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader12_A8(SegmentsFragInput in [[stage_in]],
+                                                constant float4 * pEdgemap [[buffer(3)]],
+                                                constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<12>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<12>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader13_A8(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader13_A8(SegmentsFragInput in [[stage_in]],
+                                                constant float4 * pEdgemap [[buffer(3)]],
+                                                constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<13>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<13>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader14_A8(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader14_A8(SegmentsFragInput in [[stage_in]],
+                                                constant float4 * pEdgemap [[buffer(3)]],
+                                                constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<14>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<14>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsFragmentShader15_A8(SegmentsFragInput in [[stage_in]],
-									constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsFragmentShader15_A8(SegmentsFragInput in [[stage_in]],
+                                                constant float4 * pEdgemap [[buffer(3)]],
+                                                constant float & morphFactor [[buffer(5)]])
 {
-    return segFragShaderCore_A8<15>(in,pEdgemap) * in.color.a;
-};
+	return writeAlpha(segFragShaderCore_A8<15>(in,pEdgemap) * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader1_A8(SegmentsFragInput in [[stage_in]],
-												  constant float4  *pColor [[buffer(0)]],
-												  constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader1_A8(SegmentsFragInput in [[stage_in]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float4 * pEdgemap [[buffer(3)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<1>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<1>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader2_A8(SegmentsFragInput in [[stage_in]],
-												  constant float4  *pColor [[buffer(0)]],
-												  constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader2_A8(SegmentsFragInput in [[stage_in]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float4 * pEdgemap [[buffer(3)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<2>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<2>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader3_A8(SegmentsFragInput in [[stage_in]],
-												  constant float4  *pColor [[buffer(0)]],
-												  constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader3_A8(SegmentsFragInput in [[stage_in]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float4 * pEdgemap [[buffer(3)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<3>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<3>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader4_A8(SegmentsFragInput in [[stage_in]],
-												  constant float4  *pColor [[buffer(0)]],
-												  constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader4_A8(SegmentsFragInput in [[stage_in]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float4 * pEdgemap [[buffer(3)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<4>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<4>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader5_A8(SegmentsFragInput in [[stage_in]],
-												  constant float4  *pColor [[buffer(0)]],
-												  constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader5_A8(SegmentsFragInput in [[stage_in]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float4 * pEdgemap [[buffer(3)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<5>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<5>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader6_A8(SegmentsFragInput in [[stage_in]],
-												  constant float4  *pColor [[buffer(0)]],
-												  constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader6_A8(SegmentsFragInput in [[stage_in]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float4 * pEdgemap [[buffer(3)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<6>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<6>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader7_A8(SegmentsFragInput in [[stage_in]],
-												  constant float4  *pColor [[buffer(0)]],
-												  constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader7_A8(SegmentsFragInput in [[stage_in]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float4 * pEdgemap [[buffer(3)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<7>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<7>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader8_A8(SegmentsFragInput in [[stage_in]],
-												  constant float4  *pColor [[buffer(0)]],
-												  constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader8_A8(SegmentsFragInput in [[stage_in]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float4 * pEdgemap [[buffer(3)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<8>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<8>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader9_A8(SegmentsFragInput in [[stage_in]],
-												  constant float4  *pColor [[buffer(0)]],
-												  constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader9_A8(SegmentsFragInput in [[stage_in]],
+                                                      constant float4 * pColor [[buffer(0)]],
+                                                      constant float4 * pEdgemap [[buffer(3)]],
+                                                      constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<9>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<9>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader10_A8(SegmentsFragInput in [[stage_in]],
-												   constant float4  *pColor [[buffer(0)]],
-												   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader10_A8(SegmentsFragInput in [[stage_in]],
+                                                       constant float4 * pColor [[buffer(0)]],
+                                                       constant float4 * pEdgemap [[buffer(3)]],
+                                                       constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<10>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<10>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader11_A8(SegmentsFragInput in [[stage_in]],
-												   constant float4  *pColor [[buffer(0)]],
-												   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader11_A8(SegmentsFragInput in [[stage_in]],
+                                                       constant float4 * pColor [[buffer(0)]],
+                                                       constant float4 * pEdgemap [[buffer(3)]],
+                                                       constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<11>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<11>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader12_A8(SegmentsFragInput in [[stage_in]],
-												   constant float4  *pColor [[buffer(0)]],
-												   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader12_A8(SegmentsFragInput in [[stage_in]],
+                                                       constant float4 * pColor [[buffer(0)]],
+                                                       constant float4 * pEdgemap [[buffer(3)]],
+                                                       constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<12>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<12>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader13_A8(SegmentsFragInput in [[stage_in]],
-												   constant float4  *pColor [[buffer(0)]],
-												   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader13_A8(SegmentsFragInput in [[stage_in]],
+                                                       constant float4 * pColor [[buffer(0)]],
+                                                       constant float4 * pEdgemap [[buffer(3)]],
+                                                       constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<13>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<13>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader14_A8(SegmentsFragInput in [[stage_in]],
-												   constant float4  *pColor [[buffer(0)]],
-												   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader14_A8(SegmentsFragInput in [[stage_in]],
+                                                       constant float4 * pColor [[buffer(0)]],
+                                                       constant float4 * pEdgemap [[buffer(3)]],
+                                                       constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<14>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<14>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
-fragment float4 segmentsTintmapFragmentShader15_A8(SegmentsFragInput in [[stage_in]],
-												   constant float4  *pColor [[buffer(0)]],
-												   constant float4  *pEdgemap [[buffer(3)]])
+fragment FragOutput segmentsTintmapFragmentShader15_A8(SegmentsFragInput in [[stage_in]],
+                                                       constant float4 * pColor [[buffer(0)]],
+                                                       constant float4 * pEdgemap [[buffer(3)]],
+                                                       constant float & morphFactor [[buffer(5)]])
 {
-	return segFragShaderCore_A8<15>(in,pEdgemap) * (evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a);
-};
+	return writeAlpha(segFragShaderCore_A8<15>(in,pEdgemap) * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 1.0, morphFactor);
+}
 
 //____ Shapes ______________________________________________________________
 //
 // Shapes (Command::DrawShape), see GpuShapes for the entries read from the extras buffer.
-// The coverage of each pixel by each segment is worked out from the geometry. Partly covered
-// pixels get the colors of the drawn segments covering them mixed, weighted by coverage and
-// alpha, like edgemaps. Pixels not covered by any drawn segment are left alone.
+// The coverage of each pixel by each segment is worked out from the geometry. Pixels get the
+// premultiplied colors of the drawn segments covering them, weighted by coverage, and are
+// covered by them together. Pixels not covered by any drawn segment are left alone.
 
 typedef struct
 {
@@ -2162,53 +2365,56 @@ inline float shapeCoverage(constant float4 * pShape, constant float4 * pColor, i
 	return covered;
 }
 
-inline float4 shapeColor(float4 acc)
-{
-	return float4(acc.a > 0.f ? acc.rgb / acc.a : float3(0.f), acc.a);
-}
-
-fragment float4 shapeFragmentShader(ShapeFragInput in [[stage_in]],
-									constant float4 *pColor [[buffer(0)]],
-									constant float4 *pExtras [[buffer(1)]])
+fragment FragOutput shapeFragmentShader(ShapeFragInput in [[stage_in]],
+                                        constant float4 * pColor [[buffer(0)]],
+                                        constant float4 * pExtras [[buffer(1)]],
+                                        constant float & morphFactor [[buffer(5)]])
 {
 	float4 acc;
-	if( shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc) < 1.f / 256.f )
+	float covered = shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc);
+	if( covered < 1.f / 256.f )
 		discard_fragment();
 
-	return shapeColor(acc) * in.color;
+	return writeColor(acc * premul(in.color), covered, morphFactor);
 }
 
-fragment float4 shapeFragmentShader_A8(ShapeFragInput in [[stage_in]],
-									   constant float4 *pColor [[buffer(0)]],
-									   constant float4 *pExtras [[buffer(1)]])
+fragment FragOutput shapeFragmentShader_A8(ShapeFragInput in [[stage_in]],
+                                           constant float4 * pColor [[buffer(0)]],
+                                           constant float4 * pExtras [[buffer(1)]],
+                                           constant float & morphFactor [[buffer(5)]])
 {
 	float4 acc;
-	if( shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc) < 1.f / 256.f )
+	float covered = shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc);
+	if( covered < 1.f / 256.f )
 		discard_fragment();
 
-	return { acc.a * in.color.a, 0.0, 0.0, 0.0 };
+	return writeAlpha(acc.a * in.color.a, covered, morphFactor);
 }
 
-fragment float4 shapeTintmapFragmentShader(ShapeFragInput in [[stage_in]],
-										   constant float4 *pColor [[buffer(0)]],
-										   constant float4 *pExtras [[buffer(1)]])
+fragment FragOutput shapeTintmapFragmentShader(ShapeFragInput in [[stage_in]],
+                                               constant float4 * pColor [[buffer(0)]],
+                                               constant float4 * pExtras [[buffer(1)]],
+                                               constant float & morphFactor [[buffer(5)]])
 {
 	float4 acc;
-	if( shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc) < 1.f / 256.f )
+	float covered = shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc);
+	if( covered < 1.f / 256.f )
 		discard_fragment();
 
-	return shapeColor(acc) * evalTint(pColor, in.tintOfs, in.position.xy) * in.color;
+	return writeColor(acc * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), covered, morphFactor);
 }
 
-fragment float4 shapeTintmapFragmentShader_A8(ShapeFragInput in [[stage_in]],
-											  constant float4 *pColor [[buffer(0)]],
-											  constant float4 *pExtras [[buffer(1)]])
+fragment FragOutput shapeTintmapFragmentShader_A8(ShapeFragInput in [[stage_in]],
+                                                  constant float4 * pColor [[buffer(0)]],
+                                                  constant float4 * pExtras [[buffer(1)]],
+                                                  constant float & morphFactor [[buffer(5)]])
 {
 	float4 acc;
-	if( shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc) < 1.f / 256.f )
+	float covered = shapeCoverage(pExtras, pColor, in.shapeOfs, in.position.xy, acc);
+	if( covered < 1.f / 256.f )
 		discard_fragment();
 
-	return { acc.a * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, 0.0, 0.0, 0.0 };
+	return writeAlpha(acc.a * evalTint(pColor, in.tintOfs, in.position.xy).a * in.color.a, covered, morphFactor);
 }
 
 

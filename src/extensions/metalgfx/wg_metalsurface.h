@@ -110,6 +110,11 @@ namespace wg
 		void			_syncPalette();
 
         void            _createAndSyncTextures( bool bHasTextureData );
+
+		bool			_isPremultiplied() const { return m_pixelFormat == PixelFormat::ARGB_8; }		// Texture holds premultiplied colors.
+		id<MTLBuffer>	_encodeTextureUpload( id<MTLBlitCommandEncoder> encoder, RectI region );
+		id<MTLBuffer>	_encodePaletteUpload( id<MTLBlitCommandEncoder> encoder );
+		void			_convertAlpha( uint8_t * pPixels, int pitch, int width, int height, bool bPremultiply ) const;
         
         void            _syncBufferAndWait();
         void            _syncTexture( RectI region );

@@ -42,6 +42,57 @@ namespace wg
 
 #define HANDLE_GLERROR(check) { GLenum err = check; if(err != 0) GlGfxDevice::onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); }
 
+	//____ _premultiply() / _unpremultiply() ______________________________________
+	// Colors of a pixel times or divided by its alpha (1 -> 255), in linear light for sRGB pixels.
+
+	static inline void _premultiply(uint8_t& b, uint8_t& g, uint8_t& r, int a, bool bSRGB)
+	{
+		if (bSRGB)
+		{
+			b = HiColor::packSRGBTab[(HiColor::unpackSRGBTab[b] * a + 127) / 255];
+			g = HiColor::packSRGBTab[(HiColor::unpackSRGBTab[g] * a + 127) / 255];
+			r = HiColor::packSRGBTab[(HiColor::unpackSRGBTab[r] * a + 127) / 255];
+		}
+		else
+		{
+			b = uint8_t((b * a + 127) / 255);
+			g = uint8_t((g * a + 127) / 255);
+			r = uint8_t((r * a + 127) / 255);
+		}
+	}
+
+	static inline void _unpremultiply(uint8_t& b, uint8_t& g, uint8_t& r, int a, bool bSRGB)
+	{
+		if (bSRGB)
+		{
+			b = HiColor::packSRGBTab[std::min(4096, (HiColor::unpackSRGBTab[b] * 255 + a / 2) / a)];
+			g = HiColor::packSRGBTab[std::min(4096, (HiColor::unpackSRGBTab[g] * 255 + a / 2) / a)];
+			r = HiColor::packSRGBTab[std::min(4096, (HiColor::unpackSRGBTab[r] * 255 + a / 2) / a)];
+		}
+		else
+		{
+			b = uint8_t(std::min(255, (b * 255 + a / 2) / a));
+			g = uint8_t(std::min(255, (g * 255 + a / 2) / a));
+			r = uint8_t(std::min(255, (r * 255 + a / 2) / a));
+		}
+	}
+
+	//____ _isOpaque() ____________________________________________________________
+	// Checks if all ARGB_8 pixels are opaque. Pixels are 32-bit words in native byte order
+	// with alpha in the high byte.
+
+	static bool _isOpaque(const uint8_t* pPixels, int pitch, int width, int height)
+	{
+		for (int y = 0; y < height; y++)
+		{
+			auto p = (const uint32_t*)(pPixels + y * pitch);
+			for (int x = 0; x < width; x++)
+				if ((p[x] >> 24) != 255)
+					return false;
+		}
+		return true;
+	}
+
 
 
 	//____ maxSize() _______________________________________________________________
@@ -306,39 +357,15 @@ namespace wg
 			id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
 			id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
 			commandBuffer.label = @"_createAndSyncTextures Command Buffer";
-			
+
+			id<MTLBuffer> pixelUpload = nil;
+			id<MTLBuffer> paletteUpload = nil;
+
 			if( bHasTextureData )
-			{
-				MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h, 1};
-				MTLOrigin textureOrigin = {0,0,0};
+				pixelUpload = _encodeTextureUpload(blitCommandEncoder, RectI(0, 0, m_size.w, m_size.h));
 
-
-				[blitCommandEncoder copyFromBuffer:     m_textureBuffer
-									sourceOffset:       0
-									sourceBytesPerRow:  m_size.w * m_pixelSize
-									sourceBytesPerImage:0
-									sourceSize:         textureSize
-									toTexture:          m_texture
-									destinationSlice:   0
-									destinationLevel:   0
-									destinationOrigin:  textureOrigin];
-			}
-			
 			if( m_pPalette )
-			{
-				MTLSize paletteSize = { (unsigned long) _paletteTextureWidth(), (unsigned long) _paletteTextureHeight(), 1 };
-				MTLOrigin paletteOrigin = {0,0,0};
-
-				[blitCommandEncoder copyFromBuffer:     m_paletteBuffer
-									sourceOffset:       0
-									sourceBytesPerRow:  _paletteTextureWidth()*4
-									sourceBytesPerImage:0
-									sourceSize:         paletteSize
-									toTexture:          m_paletteTexture
-									destinationSlice:   0
-									destinationLevel:   0
-									destinationOrigin:  paletteOrigin];
-			}
+				paletteUpload = _encodePaletteUpload(blitCommandEncoder);
 
 			// MetalBackend draws the mip levels before the texture is first read,
 			// see MetalBackend::_generateMipmaps().
@@ -362,6 +389,9 @@ namespace wg
 			[commandBuffer waitUntilCompleted];
 
 			commandBuffer = nil;
+
+			[pixelUpload release];
+			[paletteUpload release];
 		}
     }
 
@@ -567,6 +597,10 @@ namespace wg
 
         [commandBuffer waitUntilCompleted];
         commandBuffer = nil;
+
+        if( _isPremultiplied() )
+            _convertAlpha((uint8_t*)[m_textureBuffer contents], m_size.w * m_pixelSize, m_size.w, m_size.h, false);
+
         m_bBufferNeedsSync = false;
 
     }
@@ -575,24 +609,11 @@ namespace wg
 
     void MetalSurface::_syncTexture(RectI region)
 {
-		MTLSize textureSize = { (unsigned) region.w, (unsigned) region.h,1};
-		MTLOrigin textureOrigin = { (unsigned) region.x, (unsigned) region.y,0};
-
-		int     sourceOffset = region.y * m_size.w * m_pixelSize + region.x * m_pixelSize;
-
 		id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
 		commandBuffer.label = @"_syncTexture Command Buffer";
 
 		id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
-		[blitCommandEncoder copyFromBuffer:     m_textureBuffer
-							  sourceOffset:       sourceOffset
-						 sourceBytesPerRow:  m_size.w * m_pixelSize
-					   sourceBytesPerImage:0
-								sourceSize:         textureSize
-								 toTexture:          m_texture
-						  destinationSlice:   0
-						  destinationLevel:   0
-						 destinationOrigin:  textureOrigin];
+		id<MTLBuffer> upload = _encodeTextureUpload(blitCommandEncoder, region);
 
         if(m_bMipmapped)
             m_bMipmapStale = true;
@@ -615,7 +636,8 @@ namespace wg
 		[commandBuffer waitUntilCompleted];
 
         commandBuffer = nil;
-        
+        [upload release];
+
 //        _waitForSyncedTexture();
     }
 
@@ -624,28 +646,152 @@ namespace wg
 
     void MetalSurface::_syncPalette()
     {
-        MTLSize paletteSize = { (unsigned long) _paletteTextureWidth(), (unsigned long) _paletteTextureHeight(), 1 };
-        MTLOrigin paletteOrigin = {0,0,0};
-
         id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
         commandBuffer.label = @"_syncPalette Command Buffer";
 
         id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
-        [blitCommandEncoder copyFromBuffer:     m_paletteBuffer
-                            sourceOffset:       0
-                            sourceBytesPerRow:  _paletteTextureWidth()*4
-                            sourceBytesPerImage:0
-                            sourceSize:         paletteSize
-                            toTexture:          m_paletteTexture
-                            destinationSlice:   0
-                            destinationLevel:   0
-                            destinationOrigin:  paletteOrigin];
+        id<MTLBuffer> upload = _encodePaletteUpload(blitCommandEncoder);
         [blitCommandEncoder endEncoding];
         blitCommandEncoder = nil;
 
         [commandBuffer commit];
         [commandBuffer waitUntilCompleted];
         commandBuffer = nil;
+        [upload release];
+    }
+
+    //____ _encodeTextureUpload() _______________________________________________
+    //
+    // Encodes a copy of a region of our shared buffer to the texture. Surfaces with alpha
+    // keep premultiplied colors in the texture, see MetalBackend::_compileRenderPipeline(),
+    // so their pixels are premultiplied on the way, in a buffer of their own, unless all
+    // are opaque. Returns that buffer or nil. The caller releases it once copied.
+
+    id<MTLBuffer> MetalSurface::_encodeTextureUpload( id<MTLBlitCommandEncoder> encoder, RectI region )
+    {
+        int pitch = m_size.w * m_pixelSize;
+        int offset = region.y * pitch + region.x * m_pixelSize;
+
+        id<MTLBuffer> source = m_textureBuffer;
+        id<MTLBuffer> premultiplied = nil;
+
+        if( _isPremultiplied() )
+        {
+            const uint8_t * pPixels = ((const uint8_t*) [m_textureBuffer contents]) + offset;
+
+            if( !_isOpaque(pPixels, pitch, region.w, region.h) )
+            {
+                int rowBytes = region.w * m_pixelSize;
+
+                premultiplied = [MetalBackend::s_metalDevice newBufferWithLength:rowBytes * region.h options:MTLResourceStorageModeShared];
+
+                auto pDest = (uint8_t*) [premultiplied contents];
+                for( int y = 0 ; y < region.h ; y++ )
+                    memcpy(pDest + y * rowBytes, pPixels + y * pitch, rowBytes);
+
+                _convertAlpha(pDest, rowBytes, region.w, region.h, true);
+
+                source = premultiplied;
+                offset = 0;
+                pitch = rowBytes;
+            }
+        }
+
+        MTLSize textureSize = { (unsigned) region.w, (unsigned) region.h, 1 };
+        MTLOrigin textureOrigin = { (unsigned) region.x, (unsigned) region.y, 0 };
+
+        [encoder copyFromBuffer:     source
+                    sourceOffset:       offset
+               sourceBytesPerRow:  pitch
+             sourceBytesPerImage:0
+                      sourceSize:         textureSize
+                       toTexture:          m_texture
+                destinationSlice:   0
+                destinationLevel:   0
+               destinationOrigin:  textureOrigin];
+
+        return premultiplied;
+    }
+
+    //____ _encodePaletteUpload() _______________________________________________
+    //
+    // Encodes a copy of the palette to the palette texture. Entries are premultiplied, like
+    // the pixels of surfaces with alpha, so that interpolating between them interpolates
+    // premultiplied colors. That is done in a buffer of its own, which is returned for the
+    // caller to release once copied.
+
+    id<MTLBuffer> MetalSurface::_encodePaletteUpload( id<MTLBlitCommandEncoder> encoder )
+    {
+        int nEntries = _paletteTextureWidth() * _paletteTextureHeight();
+
+        id<MTLBuffer> premultiplied = [MetalBackend::s_metalDevice newBufferWithBytes:m_pPalette length:nEntries * 4 options:MTLResourceStorageModeShared];
+
+        bool bSRGB = (m_colorSpace == ColorSpace::sRGB);
+        auto pEntries = (Color8*) [premultiplied contents];
+
+        for( int i = 0 ; i < nEntries ; i++ )
+        {
+            Color8& c = pEntries[i];
+            if( c.a == 0 )
+                c.argb = 0;
+            else if( c.a < 255 )
+                _premultiply(c.b, c.g, c.r, c.a, bSRGB);
+        }
+
+        MTLSize paletteSize = { (unsigned long) _paletteTextureWidth(), (unsigned long) _paletteTextureHeight(), 1 };
+        MTLOrigin paletteOrigin = {0,0,0};
+
+        [encoder copyFromBuffer:     premultiplied
+                    sourceOffset:       0
+               sourceBytesPerRow:  _paletteTextureWidth()*4
+             sourceBytesPerImage:0
+                      sourceSize:         paletteSize
+                       toTexture:          m_paletteTexture
+                destinationSlice:   0
+                destinationLevel:   0
+               destinationOrigin:  paletteOrigin];
+
+        return premultiplied;
+    }
+
+    //____ _convertAlpha() ______________________________________________________
+    //
+    // Premultiplies or unpremultiplies ARGB_8 pixels in place. Pixels are 32-bit words in
+    // native byte order with alpha in the high byte.
+
+    void MetalSurface::_convertAlpha( uint8_t * pPixels, int pitch, int width, int height, bool bPremultiply ) const
+    {
+        bool bSRGB = (m_colorSpace == ColorSpace::sRGB);
+
+        for( int y = 0 ; y < height ; y++ )
+        {
+            auto p = (uint32_t*)(pPixels + y * pitch);
+
+            for( int x = 0 ; x < width ; x++ )
+            {
+                uint32_t v = p[x];
+
+                int a = v >> 24;
+                if( a == 255 )
+                    continue;
+
+                if( a == 0 )
+                    v = 0;
+                else
+                {
+                    uint8_t b = uint8_t(v), g = uint8_t(v >> 8), r = uint8_t(v >> 16);
+
+                    if( bPremultiply )
+                        _premultiply(b, g, r, a, bSRGB);
+                    else
+                        _unpremultiply(b, g, r, a, bSRGB);
+
+                    v = (uint32_t(a) << 24) | (uint32_t(r) << 16) | (uint32_t(g) << 8) | b;
+                }
+
+                p[x] = v;
+            }
+        }
     }
 
     //____ _waitForSyncedTexture() _______________________________________________
