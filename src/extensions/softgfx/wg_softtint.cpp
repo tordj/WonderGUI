@@ -24,10 +24,268 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 
 namespace wg
 {
+	namespace
+	{
+		//____ Fixed point ____________________________________________________
+		/*
+			Geometry is converted to fixed point once per layer in set(), so that generating colors
+			needs no floating point.
+
+			Positions are in LUT entries with 32 binals. Values are limited to +-2^61 and gradients
+			to c_maxSteepness LUT entries per pixel, which keeps sums like stepX * x + stepY * y + originX
+			within 64 bits for coordinates up to +-2^20. Only gradients shorter than 1/128 pixel are
+			affected, they are widened to that.
+		*/
+
+		const double	c_maxSteepness = 256.0;
+
+		int64_t toFixed(double value)
+		{
+			const double c_limit = 2305843009213693952.0;		// 2^61
+
+			if (value >= c_limit)
+				return int64_t(1) << 61;
+			if (value <= -c_limit)
+				return -(int64_t(1) << 61);
+			if (value != value)
+				return 0;										// NaN
+			return std::llround(value);
+		}
+
+		//____ Integer square roots ___________________________________________
+		// floor(sqrt(n)), digit by digit. Without branches in isqrt32(), which runs once per span.
+
+		uint32_t isqrt32(uint32_t n)
+		{
+			uint32_t root = 0;
+
+			for (uint32_t bit = uint32_t(1) << 30; bit != 0; bit >>= 2)
+			{
+				uint32_t trial = root + bit;
+				uint32_t mask = uint32_t(0) - uint32_t(n >= trial);
+
+				n -= trial & mask;
+				root = (root >> 1) + (bit & mask);
+			}
+			return root;
+		}
+
+		uint32_t isqrt64(uint64_t n)
+		{
+			uint64_t root = 0;
+			uint64_t bit = uint64_t(1) << 62;
+
+			while (bit > n)
+				bit >>= 2;
+
+			while (bit != 0)
+			{
+				if (n >= root + bit)
+				{
+					n -= root + bit;
+					root = (root >> 1) + bit;
+				}
+				else
+					root >>= 1;
+				bit >>= 2;
+			}
+			return uint32_t(root);
+		}
+
+		//____ Lookups ________________________________________________________
+		/*
+			Colors for LUT indices with spread applied. The LUT has N+1 entries, N = 1 << bits,
+			entry i covering positions i/N -> (i+1)/N.
+		*/
+
+		struct PadLookup
+		{
+			const HiColor*	pLUT;
+			int				N;
+			HiColor			low;			// Below position 0.0.
+
+			inline HiColor operator()(int idx) const { return idx < 0 ? low : pLUT[idx > N ? N : idx]; }
+		};
+
+		struct RepeatLookup
+		{
+			const HiColor*	pLUT;
+			int				mask;			// N - 1
+
+			inline HiColor operator()(int idx) const { return pLUT[idx & mask]; }
+		};
+
+		struct ReflectLookup
+		{
+			const HiColor*	pLUT;
+			int				bits;
+			int				mask;			// 2N - 1
+
+			// Span r >= N mirrors span 2N-1-r, which is r with all bits below 2N flipped.
+
+			inline HiColor operator()(int idx) const { int r = idx & mask; return pLUT[r ^ (-(r >> bits) & mask)]; }
+		};
+
+		//____ radialSpan() ___________________________________________________
+		/*
+			Colors for a span of a radial layer, where u and v (LUT entries with 32 binals) are
+			stepped with du and dv per pixel and the LUT index is floor(length(u, v)).
+
+			Instead of a square root per pixel, the squared length D is stepped with additions
+			(forward differences) and the index is kept from pixel to pixel by comparing D
+			against squares of it. That is done for every other index, h = k/2, which moves at
+			most a couple of steps per pixel since LUTs have two entries per pixel of radius.
+			D is kept as R = D - (2h)^2 and compared against W = (2h+2)^2 - (2h)^2 = 8h + 4 to
+			step h, and against M = (2h+1)^2 - (2h)^2 = 4h + 1 for the last bit of k.
+
+			D grows or shrinks from one pixel to the next as E, its step, is positive or
+			negative, and since E grows along the span only one direction needs to be checked
+			per pixel.
+
+			This is done with c_radialBinals binals, anchored to exact positions every
+			c_radialChunk pixels so that rounding of the steps adds up to at most 1/2048 entry.
+
+			The first index of a span takes a square root, unless it is close to where the last
+			span started or ended (hints), which is common for rows and edgemap columns.
+
+			Spans too far from the center for that (2^15 entries), or that step more than
+			c_radialMaxFastStep entries per pixel (radius below 1/8 pixel), take a slow path
+			with an integer square root per pixel.
+		*/
+
+		const int		c_radialBinals = 16;
+		const int		c_radialChunk = 64;
+		const int64_t	c_radialFastLimit = (int64_t(1) << 47) - (int64_t(1) << 16);	// |u| and |v| below this keeps them below 2^31 in c_radialBinals.
+		const int64_t	c_radialMaxFastStep = int64_t(16) << 32;
+
+		template<bool PAD, class Lookup>
+		void radialSpan(const Lookup& lookup, int N, int64_t u, int64_t v, int64_t du, int64_t dv, int length, HiColor* pOutput, int* pHints)
+		{
+			auto absMax = [](int64_t a, int64_t b) { return std::max(a < 0 ? -a : a, b < 0 ? -b : b); };
+
+			int64_t uvMax = std::max(absMax(u, u + du * (length - 1)), absMax(v, v + dv * (length - 1)));
+
+			if (uvMax >= c_radialFastLimit || absMax(du, dv) > c_radialMaxFastStep)
+			{
+				// Slow path. u and v scaled down to 31 bits, so the sum of squares fits in 64.
+
+				int shift = 0;
+				while ((uvMax >> shift) >= (int64_t(1) << 31))
+					shift++;
+
+				for (int i = 0; i < length; i++)
+				{
+					uint64_t au = uint64_t(u < 0 ? -u : u) >> shift;
+					uint64_t av = uint64_t(v < 0 ? -v : v) >> shift;
+					uint64_t k = uint64_t(isqrt64(au * au + av * av)) >> (32 - shift);
+
+					pOutput[i] = lookup(int(std::min(k, uint64_t(1) << 30)));
+					u += du;
+					v += dv;
+				}
+				return;
+			}
+
+			// Values below are kept within 32 bits where they can, so that 32-bit CPUs get 32 x 32 -> 64 bit
+			// multiplications at most. k is below 2^15.5, so (2h)^2 and (2h + 10)^2 fit in 32 bits unsigned.
+
+			const int		shift = 32 - c_radialBinals;
+			const int		squareShift = 2 * c_radialBinals;
+			const int64_t	half = int64_t(1) << (shift - 1);
+			const int64_t	one = int64_t(1) << squareShift;					// Square of one LUT entry.
+
+			const int32_t	dU = int32_t((du + half) >> shift);
+			const int32_t	dV = int32_t((dv + half) >> shift);
+			const int64_t	stepSquared = int64_t(dU) * dU + int64_t(dV) * dV;
+
+			const int		halfN = N / 2;
+			int				h = -1;
+
+			while (length > 0)
+			{
+				int n = std::min(length, c_radialChunk);
+
+				int32_t U = int32_t((u + half) >> shift);
+				int32_t V = int32_t((v + half) >> shift);
+
+				uint64_t D = uint64_t(int64_t(U) * U) + uint64_t(int64_t(V) * V);		// Below 2^63.
+				int64_t E = 2 * (int64_t(U) * dU + int64_t(V) * dV) + stepSquared;		// D of next pixel - D.
+
+				bool bFirstChunk = (h < 0);
+
+				if (bFirstChunk)
+				{
+					// k^2 <= D / one < (k+1)^2, so a hint g is used if 2g - 8 <= k < 2g + 10.
+
+					uint32_t entriesSquared = uint32_t(D >> squareShift);
+
+					for (int i = 0; i < 2 && h < 0; i++)
+					{
+						uint32_t g = uint32_t(pHints[i]);
+						if (pHints[i] >= 0 && entriesSquared < (2 * g + 10) * (2 * g + 10) && (g < 4 || entriesSquared >= (2 * g - 8) * (2 * g - 8)))
+							h = int(g);
+					}
+
+					if (h < 0)
+						h = int(isqrt32(entriesSquared)) / 2;
+				}
+
+				int64_t R = int64_t(D - (uint64_t(uint32_t(2 * h) * uint32_t(2 * h)) << squareShift));
+				int64_t W = int64_t(8 * h + 4) << squareShift;
+				int64_t M = int64_t(4 * h + 1) << squareShift;
+
+				// h from hint or previous chunk can be off a few steps.
+
+				while (R >= W) { R -= W; W += 8 * one; M += 4 * one; h++; }
+				while (R < 0) { W -= 8 * one; M -= 4 * one; R += W; h--; }
+
+				if (bFirstChunk)
+					pHints[0] = h;
+
+				for (int i = 0; i < n; i++)
+				{
+					if (E >= 0)
+					{
+						if (PAD && h >= halfN)
+						{
+							// Outside and moving away (D only grows from here), so the rest has the last color.
+
+							HiColor last = lookup(N);
+							for (int j = i; j < length; j++)
+								pOutput[j] = last;
+
+							pHints[1] = -1;
+							return;
+						}
+
+						pOutput[i] = lookup(2 * h + int(R >= M));
+						R += E;
+						E += 2 * stepSquared;
+						while (R >= W) { R -= W; W += 8 * one; M += 4 * one; h++; }
+					}
+					else
+					{
+						pOutput[i] = lookup(2 * h + int(R >= M));
+						R += E;
+						E += 2 * stepSquared;
+						while (R < 0) { W -= 8 * one; M -= 4 * one; R += W; h--; }
+					}
+				}
+
+				pOutput += n;
+				length -= n;
+				u += du * c_radialChunk;		// Only used if this chunk was full.
+				v += dv * c_radialChunk;
+			}
+
+			pHints[1] = h;
+		}
+	}
 
 	//____ set() ______________________________________________________________
 
@@ -67,12 +325,20 @@ namespace wg
 
 			Layer& layer = m_layers[m_nLayers++];
 
-			layer.geo = TintTools::layerGeometry(src);
+			layer.shape = src.shape;
 			layer.spread = src.spread;
 			layer.weight = src.weight;
 			layer.bFlat = TintTools::isLayerFlat(src);
 			layer.lutBits = 0;
 			layer.lutOfs = 0;
+			layer.stepX = 0;
+			layer.stepY = 0;
+			layer.originX = 0;
+			layer.originY = 0;
+			layer.stepX16 = 0;
+			layer.stepY16 = 0;
+			layer.radialHints[0] = -1;
+			layer.radialHints[1] = -1;
 
 			for (int i = 0; i < src.nStops; i++)
 			{
@@ -90,22 +356,60 @@ namespace wg
 
 			bAllFlat = false;
 
-			// Classify and decide LUT size from length of gradient in pixels.
+			// Decide LUT size from length of gradient in pixels and convert geometry to fixed point.
+			// The only floating point in SoftTint, a few operations per layer.
 
-			if (layer.geo.shape == TintShape::Linear)
+			int bits = TintTools::lutBitsForLayer(src);
+
+			TintTools::CanvasGeometry geo = TintTools::layerGeometry(src);
+			double scale = double(int64_t(1) << (bits + 32));
+
+			if (geo.shape == TintShape::Linear)
 			{
-				if (layer.geo.a != 0.f)
+				double a = geo.a, b = geo.b, c = geo.c;
+
+				// Too steep gradients are widened around their middle.
+
+				double steepness = std::max(std::abs(a), std::abs(b)) * (1 << bits);
+				if (steepness > c_maxSteepness)
+				{
+					double f = c_maxSteepness / steepness;
+					a *= f;
+					b *= f;
+					c = c * f + 0.5 * (1.0 - f);
+				}
+
+				layer.stepX = toFixed(a * scale);
+				layer.stepY = toFixed(b * scale);
+				layer.originX = toFixed(c * scale) + (layer.stepX + layer.stepY) / 2;		// Pixel centers.
+				layer.stepX16 = toFixed(a * scale / 65536.0);
+				layer.stepY16 = toFixed(b * scale / 65536.0);
+
+				if (layer.stepX != 0)
 					bVariesX = true;
-				if (layer.geo.b != 0.f)
+				if (layer.stepY != 0)
 					bVariesY = true;
 			}
 			else
 			{
+				double irx = geo.invRadiusX, iry = geo.invRadiusY;
+
+				double steepness = std::max(std::abs(irx), std::abs(iry)) * (1 << bits);
+				if (steepness > c_maxSteepness)
+				{
+					double f = c_maxSteepness / steepness;
+					irx *= f;
+					iry *= f;
+				}
+
+				layer.stepX = toFixed(irx * scale);
+				layer.stepY = toFixed(iry * scale);
+				layer.originX = toFixed((0.5 - geo.centerX) * irx * scale);
+				layer.originY = toFixed((0.5 - geo.centerY) * iry * scale);
+
 				bVariesX = true;
 				bVariesY = true;
 			}
-
-			int bits = TintTools::lutBitsForLayer(src);
 
 			layer.lutBits = bits;
 			layer.lutOfs = lutEntries;
@@ -136,10 +440,18 @@ namespace wg
 
 					TintTools::buildLUT(src, entries, pLUT);
 
-					for (int i = 0; i < entries; i++)
-						pLUT[i] = pLUT[i].toLinear() * multiplier;
+					if (multiplier == HiColor::White)
+					{
+						for (int i = 0; i < entries; i++)
+							pLUT[i] = pLUT[i].toLinear();
+					}
+					else
+					{
+						for (int i = 0; i < entries; i++)
+							pLUT[i] = pLUT[i].toLinear() * multiplier;
+					}
 
-					layer.padLowColor = TintTools::layerColorAt(src, 0.f).toLinear() * multiplier;
+					layer.padLowColor = TintTools::layerColorAtFixed(src, 0).toLinear() * multiplier;
 				}
 			}
 		}
@@ -265,64 +577,126 @@ namespace wg
 			return;
 		}
 
+		if (layer.shape == TintShape::Linear)
+			_generateLinear(layer, x, y, dx, dy, length, pOutput);
+		else
+			_generateRadial(layer, x, y, dx, dy, length, pOutput);
+	}
+
+	//____ _generateLinear() __________________________________________________
+
+	void SoftTint::_generateLinear(const Layer& layer, int x, int y, int dx, int dy, int length, HiColor* pOutput) const
+	{
 		const HiColor* pLUT = m_lut.data() + layer.lutOfs;
-		const int64_t N = int64_t(1) << layer.lutBits;
+		const int bits = layer.lutBits;
 
-		// Index into LUT with spread applied. LUT has N+1 entries, entry i covers positions i/N -> (i+1)/N.
+		// Position in LUT entries with 16 binals, exact at the first pixel, then stepped.
 
-		auto lookup = [&](int64_t idx) -> const HiColor&
+		int64_t pos = (layer.stepX * x + layer.stepY * y + layer.originX) >> 16;
+		int64_t step = layer.stepX16 * dx + layer.stepY16 * dy;
+
+		switch (layer.spread)
 		{
-			switch (layer.spread)
+			default:
+			case TintSpread::Pad:
 			{
-				default:
-				case TintSpread::Pad:
-					return idx < 0 ? layer.padLowColor : pLUT[idx > N ? N : idx];
-				case TintSpread::Repeat:
-					return pLUT[idx & (N - 1)];
-				case TintSpread::Reflect:
+				PadLookup lookup = { pLUT, 1 << bits, layer.padLowColor };
+
+				int64_t last = pos + step * (length - 1);
+
+				if (std::min(pos, last) >= INT32_MIN && std::max(pos, last) <= INT32_MAX)
 				{
-					int64_t r = idx & (2 * N - 1);
-					return pLUT[r >= N ? 2 * N - 1 - r : r];		// Span r >= N mirrors span 2N-1-r.
+					// Stepped in 32 bits, unsigned so that the step after the last pixel can't overflow.
+
+					uint32_t p = uint32_t(pos);
+					uint32_t s = uint32_t(step);
+
+					for (int i = 0; i < length; i++)
+					{
+						pOutput[i] = lookup(int32_t(p) >> 16);
+						p += s;
+					}
 				}
+				else
+				{
+					// Far outside the gradient.
+
+					for (int i = 0; i < length; i++)
+					{
+						int64_t idx = pos >> 16;
+						pOutput[i] = lookup(idx < -1 ? -1 : idx > lookup.N ? lookup.N : int(idx));
+						pos += step;
+					}
+				}
+				break;
 			}
-		};
 
-		const TintTools::CanvasGeometry& geo = layer.geo;
+			// Repeat and Reflect only need the bits of the position below 2N, so they are
+			// stepped in 32 bits and allowed to wrap.
 
-		if (geo.shape == TintShape::Linear)
-		{
-			// Step position in LUT index space, 16 binals. 64-bit to handle positions far outside the gradient.
-
-			double scale = double(N) * 65536.0;
-			double t = double(geo.a) * (x + 0.5) + double(geo.b) * (y + 0.5) + double(geo.c);
-
-			int64_t idx = int64_t(std::floor(t * scale));
-			int64_t step = int64_t(std::llround((double(geo.a) * dx + double(geo.b) * dy) * scale));
-
-			for (int i = 0; i < length; i++)
+			case TintSpread::Repeat:
 			{
-				pOutput[i] = lookup(idx >> 16);
-				idx += step;
+				RepeatLookup lookup = { pLUT, (1 << bits) - 1 };
+
+				uint32_t p = uint32_t(pos);
+				uint32_t s = uint32_t(step);
+
+				for (int i = 0; i < length; i++)
+				{
+					pOutput[i] = lookup(int(p >> 16));
+					p += s;
+				}
+				break;
+			}
+
+			case TintSpread::Reflect:
+			{
+				ReflectLookup lookup = { pLUT, bits, (2 << bits) - 1 };
+
+				uint32_t p = uint32_t(pos);
+				uint32_t s = uint32_t(step);
+
+				for (int i = 0; i < length; i++)
+				{
+					pOutput[i] = lookup(int(p >> 16));
+					p += s;
+				}
+				break;
 			}
 		}
-		else
+	}
+
+	//____ _generateRadial() __________________________________________________
+
+	void SoftTint::_generateRadial(const Layer& layer, int x, int y, int dx, int dy, int length, HiColor* pOutput) const
+	{
+		const HiColor* pLUT = m_lut.data() + layer.lutOfs;
+		const int bits = layer.lutBits;
+		const int N = 1 << bits;
+
+		// Steps without 64-bit multiplication for dx and dy of -1, 0 and 1.
+
+		auto stepFor = [](int64_t step, int d) { return d == 1 ? step : d == -1 ? -step : d == 0 ? 0 : step * d; };
+
+		int64_t u = layer.stepX * x + layer.originX;
+		int64_t v = layer.stepY * y + layer.originY;
+		int64_t du = stepFor(layer.stepX, dx);
+		int64_t dv = stepFor(layer.stepY, dy);
+
+		switch (layer.spread)
 		{
-			float u = (x + 0.5f - geo.centerX) * geo.invRadiusX;
-			float v = (y + 0.5f - geo.centerY) * geo.invRadiusY;
-			float du = dx * geo.invRadiusX;
-			float dv = dy * geo.invRadiusY;
-			float n = float(N);
+			default:
+			case TintSpread::Pad:
+				radialSpan<true>(PadLookup{ pLUT, N, layer.padLowColor }, N, u, v, du, dv, length, pOutput, layer.radialHints);
+				break;
 
-			for (int i = 0; i < length; i++)
-			{
-				float t = std::sqrt(u * u + v * v);
-				if (t > 1e9f)
-					t = 1e9f;
+			case TintSpread::Repeat:
+				radialSpan<false>(RepeatLookup{ pLUT, N - 1 }, N, u, v, du, dv, length, pOutput, layer.radialHints);
+				break;
 
-				pOutput[i] = lookup(int64_t(t * n));
-				u += du;
-				v += dv;
-			}
+			case TintSpread::Reflect:
+				radialSpan<false>(ReflectLookup{ pLUT, bits, 2 * N - 1 }, N, u, v, du, dv, length, pOutput, layer.radialHints);
+				break;
 		}
 	}
 
