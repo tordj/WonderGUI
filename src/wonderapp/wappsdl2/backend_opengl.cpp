@@ -92,6 +92,8 @@ bool backend_specific_init()
 	auto pEdgemapFactory = GlEdgemapFactory::create();
 	Base::setDefaultEdgemapFactory(pEdgemapFactory);
 
+	Base::setDefaultWarpmapFactory(g_pBackend->warpmapFactory());
+
 
 
 

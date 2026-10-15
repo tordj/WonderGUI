@@ -720,6 +720,19 @@ namespace wg
 			}
 
 
+			case Command::WarpBlit:
+			case Command::WarpDrawEdgemap:
+			{
+				// Not supported yet. Step over the command.
+
+				WarpParams params;
+				p = decodeWarp(cmd, p, params);
+
+				pObjects += (cmd == Command::WarpDrawEdgemap) ? 2 : 1;
+				pRects += params.nRects;
+				break;
+			}
+
 			case Command::DrawEdgemap:
 			case Command::TileEdgemap:
 			{

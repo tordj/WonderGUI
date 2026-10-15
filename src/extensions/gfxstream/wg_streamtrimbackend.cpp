@@ -228,6 +228,16 @@ namespace wg
 		return m_pBackend->edgemapFactory();
 	}
 
+	//____ warpmapFactory() ______________________________________________________
+
+	WarpmapFactory_p StreamTrimBackend::warpmapFactory()
+	{
+		if( !m_pBackend)
+			return nullptr;
+
+		return m_pBackend->warpmapFactory();
+	}
+
 	//____ maxEdges() ____________________________________________________________
 
 	int StreamTrimBackend::maxEdges() const

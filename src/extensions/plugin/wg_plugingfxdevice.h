@@ -63,6 +63,7 @@ namespace wg
 
 		SurfaceFactory_p surfaceFactory() override;
         EdgemapFactory_p edgemapFactory() override;
+        WarpmapFactory_p warpmapFactory() override;
 
 		//.____ Geometry _________________________________________________
 
@@ -185,6 +186,10 @@ namespace wg
 
         void	tileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, CoordSPX shift = { 0,0 }) override;
         void	flipTileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
+
+        void	warpBlit(CoordSPX dest, Warpmap* pWarpmap, CoordSPX sourceOffset = { 0,0 }) override;
+        void	warpBlit(CoordSPX dest, Warpmap* pWarpmap, const RectSPX& source, CoordSPX sourceOffset = { 0,0 }) override;
+        void	warpDrawEdgemap(CoordSPX dest, Warpmap* pWarpmap, Edgemap* pEdgemap, CoordSPX sourceOffset = { 0,0 }) override;
 
         // Special draw/blit methods
 

@@ -27,6 +27,8 @@
 #include <wg_gfxtypes.h>
 #include <wg_geo.h>
 
+#include <algorithm>
+
 namespace wg
 {
 	class Warpmap;
@@ -46,15 +48,17 @@ namespace wg
 	 * Node values are floats and not limited to 0.0 -> 1.0. Values outside that range are what makes
 	 * parts of the Warpmap transparent, with the border antialiased where the interpolated position
 	 * crosses 0.0 or 1.0. Values on a periodic axis are brought into 0.0 -> period when imported.
-	 * Backends convert to fixed point per cell corner when drawing, not per pixel.
+	 * Backends convert to fixed point per cell corner when drawing, not per pixel. A new Warpmap
+	 * maps its rectangle straight onto the source, u = x / size.w and v = y / size.h.
 	 *
 	 * Smaller cells follow curved shapes more closely. A circle of radius r is off by
 	 * roughly cellSize^2 / (8 * r) pixels.
 	 *
 	 * An axis can be periodic (uPeriod/vPeriod > 0), as when u is the angle of a ring. Positions are
-	 * then read modulo the period and interpolation between nodes across the seam takes the short way.
-	 * With a period of 1.0 the source wraps around, which is seamless if the source is tiling. A period
-	 * larger than 1.0 leaves a gap, such as a 270 degree arc having uPeriod = 360/270.
+	 * then read modulo the period and interpolation between nodes across the seam takes the short way:
+	 * the corners of a cell are taken as the values closest to its top-left corner, give or take whole
+	 * periods. With a period of 1.0 the source wraps around, which for an edgemap is seamless if it is
+	 * tiling. A period larger than 1.0 leaves a gap, such as a 270 degree arc having uPeriod = 360/270.
 	 *
 	 * When drawn, a source offset (in spx of the source) is added to the position before reading,
 	 * so a ring can be rotated or a pattern scrolled without changing the Warpmap.
@@ -64,6 +68,28 @@ namespace wg
 	 *
 	 * Warpmaps are created by a WarpmapFactory, which is specific to the backend, or by a generator
 	 * such as CircularWarp.
+	 *
+	 * How a Warpmap is drawn, which all backends follow:
+	 *
+	 * - The Warpmap is placed on whole pixels (dest is rounded to nearest pixel), like edgemaps.
+	 *   Nothing is drawn outside of its rectangle.
+	 *
+	 * - The position of a point (x,y) of the Warpmap is interpolated from the corners of the cell it
+	 *   is in, see positionAt(). Adding the source offset and multiplying by the size of the source
+	 *   gives the position in the source, in its pixels. A periodic axis is then wrapped into
+	 *   0 -> period * size.
+	 *
+	 * - The part of a pixel that is covered is the part of its area whose position is inside the
+	 *   source: 0 -> width and 0 -> height. For an edgemap, the part covered by each segment is the
+	 *   part whose position is in that segment. Coverage is then applied as for any anti-aliased edge,
+	 *   see "Blending and transparency" in the guide. ReferenceBackend measures coverage by sampling
+	 *   the pixel at many points, other backends estimate it from the distance to the border or edge
+	 *   and how fast the position changes over the pixel.
+	 *
+	 * - Colors are taken at the position of the center of the pixel: the surface is sampled there
+	 *   by its sample method (reading the surface around the source rectangle, or wrapping around it
+	 *   if it is tiling), the tints of edgemap segments are evaluated there (in pixels of the
+	 *   edgemap). The device tint is applied in canvas space as usual.
 	 */
 
 	class Warpmap : public Object
@@ -90,6 +116,9 @@ namespace wg
 		inline int		cellSize() const { return m_cellSize; }
 		inline SizeI	nodes() const { return m_nodes; }				// Nodes horizontally and vertically.
 
+		inline int		nodeX( int column ) const { return std::min( column * m_cellSize, m_size.w ); }	// Pixel position of a column of nodes.
+		inline int		nodeY( int row ) const { return std::min( row * m_cellSize, m_size.h ); }
+
 		//.____ Content _______________________________________________________
 
 		virtual bool	setPeriods( float uPeriod, float vPeriod );
@@ -104,12 +133,27 @@ namespace wg
 
 		inline const CoordF*	nodeData() const { return m_pNodes; }
 
+		//.____ Misc __________________________________________________________
+
+		// Corners of a cell (top-left, top-right, bottom-left, bottom-right), with values on periodic
+		// axes moved by whole periods to be as close as possible to the top-left corner.
+
+		void			cellCorners( int column, int row, CoordF * pCorners ) const;
+
+		// Interpolated, normalized position at point x,y (in pixels, 0 -> size) of the Warpmap. Not
+		// wrapped into the period.
+
+		CoordF			positionAt( double x, double y ) const;
+
 	protected:
 		Warpmap() {};
 		Warpmap( const Blueprint& bp );
 		virtual ~Warpmap();
 
 		static bool		_validateBlueprint( const Blueprint& bp );
+		static float	_unwrapTo( float value, float reference, float period );
+
+		void			_normalizeNodes( const RectI& region );
 
 		// Called when nodes in region or the periods have changed (region is then all nodes).
 		// Typically all you need to override when subclassing.

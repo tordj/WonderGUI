@@ -111,6 +111,13 @@ namespace wg
         return m_pEdgemapFactory;
     }
 
+    //____ warpmapFactory() ______________________________________________________
+
+    WarpmapFactory_p PluginGfxDevice::warpmapFactory()
+    {
+        return nullptr;			// Not supported yet.
+    }
+
     //____ setClipList() _________________________________________________________
 
     bool PluginGfxDevice::setClipList(int nRectangles, const RectSPX * pRectangles)
@@ -671,6 +678,25 @@ namespace wg
     void PluginGfxDevice::flipTileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, GfxFlip flip, CoordSPX shift)
     {
         PluginCalls::gfxDevice->flipTileEdgemap(m_cDevice, (const wg_rectSPX*)&dest, static_cast<PluginEdgemap*>(pEdgemap)->cObject(), (wg_gfxFlip) flip, { shift.x,shift.y });
+    }
+
+    //____ warpBlit() ________________________________________________________
+
+    void PluginGfxDevice::warpBlit(CoordSPX dest, Warpmap* pWarpmap, CoordSPX sourceOffset)
+    {
+        // Not supported yet.
+    }
+
+    void PluginGfxDevice::warpBlit(CoordSPX dest, Warpmap* pWarpmap, const RectSPX& source, CoordSPX sourceOffset)
+    {
+        // Not supported yet.
+    }
+
+    //____ warpDrawEdgemap() _________________________________________________
+
+    void PluginGfxDevice::warpDrawEdgemap(CoordSPX dest, Warpmap* pWarpmap, Edgemap* pEdgemap, CoordSPX sourceOffset)
+    {
+        // Not supported yet.
     }
 
     //____ drawRoundedBox() ___________________________________________________

@@ -68,6 +68,7 @@ namespace wg
 			int		nBlit;				// Includes Blit, ClipBlit och Tile.
 			int		nBlur;
 			int		nEdgemapDraws;		// Includes DrawEdgemap and TileEdgemap.
+			int		nWarpDraws;			// WarpBlit and WarpDrawEdgemap.
 			int		nLineCoords;		// Total number of coordinates for line commands (=total lines in line commands *2)
 
 			// Total content of coord buffers
@@ -100,8 +101,23 @@ namespace wg
 			Blur,
 			DrawEdgemap,
 			TileEdgemap,				// Same parameters as DrawEdgemap, but edgemap is repeated over the rects.
-			DrawShape					// See below.
+			DrawShape,					// See below.
+			WarpBlit,					// See below.
+			WarpDrawEdgemap				// See below.
 		};
+
+		/*
+			WarpBlit and WarpDrawEdgemap draw the blit source or an edgemap through a Warpmap, see
+			Warpmap for how. Layout, in 16-bit words:
+
+			  uint16	Command::WarpBlit or Command::WarpDrawEdgemap
+			  uint16	nRects			Clip rectangles in rect buffer, within the rectangle of the Warpmap.
+			  int32		dest x, y		Top-left corner of the Warpmap, spx. Rounded to nearest pixel.
+			  int32		offset x, y		Source offset, spx.
+			  int32		source x, y, w, h	WarpBlit only. Source rectangle of the blit source, spx.
+
+			  Objects: the Warpmap, then the edgemap for WarpDrawEdgemap.
+		*/
 
 		/*
 			DrawShape draws an analytic shape, made of segments (fill, outline...) that are
@@ -226,6 +242,21 @@ namespace wg
 		static RoundedBoxPayload	decodeRoundedBox(const uint16_t* pPayload);
 		static RingPayload			decodeRing(const uint16_t* pPayload);
 
+		// Decoded WarpBlit and WarpDrawEdgemap commands, see decodeWarp().
+
+		struct WarpParams
+		{
+			int				nRects;
+			CoordSPX		dest;
+			CoordSPX		sourceOffset;
+			RectSPX			source;					// WarpBlit only.
+		};
+
+		// Decodes a WarpBlit or WarpDrawEdgemap command. p points at the word after the command,
+		// the returned pointer at the word after its parameters.
+
+		static const uint16_t*		decodeWarp(Command cmd, const uint16_t* p, WarpParams& params);
+
 		enum class StateChange : uint8_t
 		{
 			BlitSource		= 1,
@@ -269,6 +300,7 @@ namespace wg
 
 		virtual SurfaceFactory_p	surfaceFactory() = 0;
 		virtual EdgemapFactory_p	edgemapFactory() = 0;
+		virtual WarpmapFactory_p	warpmapFactory() = 0;
 
 		virtual int		maxEdges() const = 0;
 

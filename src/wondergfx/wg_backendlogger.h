@@ -78,6 +78,7 @@ public:
 
 	SurfaceFactory_p	surfaceFactory() override;
 	EdgemapFactory_p	edgemapFactory() override;
+	WarpmapFactory_p	warpmapFactory() override;
 
 	int		maxEdges() const override;
 

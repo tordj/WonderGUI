@@ -109,6 +109,7 @@ namespace wg
 
 		SurfaceFactory_p	surfaceFactory() override;
 		EdgemapFactory_p	edgemapFactory() override;
+		WarpmapFactory_p	warpmapFactory() override;
 
 
 		int		maxEdges() const override;
@@ -362,6 +363,7 @@ namespace wg
 
 		SurfaceFactory_p	m_pSurfaceFactory;
 		EdgemapFactory_p	m_pEdgemapFactory;
+		WarpmapFactory_p	m_pWarpmapFactory;
 
 		Object * const *	m_pObjectsBeg = nullptr;
 		Object * const *	m_pObjectsEnd = nullptr;

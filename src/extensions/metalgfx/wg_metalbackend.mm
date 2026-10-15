@@ -605,6 +605,13 @@ EdgemapFactory_p MetalBackend::edgemapFactory()
 
 }
 
+//____ warpmapFactory() ___________________________________________________
+
+WarpmapFactory_p MetalBackend::warpmapFactory()
+{
+	return m_pWarpmapFactory;		// Not supported yet.
+}
+
 //____ canvasInfo() ____________________________________________________________
 
 const CanvasInfo * MetalBackend::canvasInfo(CanvasRef ref) const
@@ -1472,6 +1479,19 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 
 				[m_renderEncoder setRenderPipelineState:pipeline];
 				[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nRects*6];
+				break;
+			}
+
+			case Command::WarpBlit:
+			case Command::WarpDrawEdgemap:
+			{
+				// Not supported yet. Step over the command.
+
+				WarpParams params;
+				p = decodeWarp(cmd, p, params);
+
+				pObjects += (cmd == Command::WarpDrawEdgemap) ? 2 : 1;
+				pRects += params.nRects;
 				break;
 			}
 

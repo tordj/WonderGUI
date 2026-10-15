@@ -55,6 +55,10 @@ set(SOURCES
 	wg_softedgemap.h
 	wg_softedgemapfactory.cpp
 	wg_softedgemapfactory.h
+	wg_softwarpmap.cpp
+	wg_softwarpmap.h
+	wg_softwarpmapfactory.cpp
+	wg_softwarpmapfactory.h
 	wg_softshapes.cpp
 	wg_softshapes.h
 )

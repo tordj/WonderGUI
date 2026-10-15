@@ -154,6 +154,7 @@ namespace wg
 
 		SurfaceFactory_p	surfaceFactory() override;
 		EdgemapFactory_p	edgemapFactory() override;
+		WarpmapFactory_p	warpmapFactory() override;
 
 		int		maxEdges() const override;
 
@@ -285,6 +286,7 @@ namespace wg
 
 		SurfaceFactory_p	m_pSurfaceFactory;	
 		EdgemapFactory_p	m_pEdgemapFactory;
+		WarpmapFactory_p	m_pWarpmapFactory;
 
 		D3D12_CPU_DESCRIPTOR_HANDLE	m_defaultCanvasRTV = {};
 		ID3D12Resource*		m_defaultCanvasBuffer = nullptr;

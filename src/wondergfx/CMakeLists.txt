@@ -85,6 +85,12 @@ set( SOURCES
 	wg_transitions.h
 	wg_waveform.cpp
 	wg_waveform.h
+	wg_warpmap.cpp
+	wg_warpmap.h
+	wg_warpmapfactory.cpp
+	wg_warpmapfactory.h
+	wg_circularwarp.cpp
+	wg_circularwarp.h
 	wondergfx.h
 
 	c-api/wg_c_bitmapcache.cpp

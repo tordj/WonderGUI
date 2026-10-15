@@ -23,6 +23,8 @@
 #include <wg_referencebackend.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softedgemapfactory.h>
+#include <wg_softwarpmapfactory.h>
+#include <wg_softwarpmap.h>
 #include <wg_gfxutil.h>
 #include <wg_gfxbase.h>
 
@@ -344,6 +346,17 @@ namespace wg
 					p = pPayload + nWords;
 					m_pRectsPtr += nRects;
 					m_pColorsPtr += nColors;
+					break;
+				}
+
+				case Command::WarpBlit:
+				case Command::WarpDrawEdgemap:
+				{
+					WarpParams params;
+					p = decodeWarp(cmd, p, params);
+
+					m_pObjectsPtr += (cmd == Command::WarpDrawEdgemap) ? 2 : 1;
+					m_pRectsPtr += params.nRects;
 					break;
 				}
 
@@ -2458,6 +2471,16 @@ namespace wg
 			m_pEdgemapFactory = SoftEdgemapFactory::create();
 
 		return m_pEdgemapFactory;
+	}
+
+	//____ warpmapFactory() ___________________________________________________
+
+	WarpmapFactory_p ReferenceBackend::warpmapFactory()
+	{
+		if (!m_pWarpmapFactory)
+			m_pWarpmapFactory = SoftWarpmapFactory::create();
+
+		return m_pWarpmapFactory;
 	}
 
 	//____ maxEdges() _____________________________________________

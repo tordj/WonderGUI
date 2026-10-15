@@ -79,6 +79,7 @@ namespace wg
 				*m_pOStream << "    Blits:         " << pInfo->nBlit << std::endl;
 				*m_pOStream << "    Blurs:         " << pInfo->nBlur << std::endl;
 				*m_pOStream << "    EdgemapDraws:  " << pInfo->nEdgemapDraws << std::endl;
+				*m_pOStream << "    WarpDraws:     " << pInfo->nWarpDraws << std::endl;
 				*m_pOStream << "    ShapeDraws:    " << pInfo->nShapeDraws << std::endl;
 				*m_pOStream << "    ShapeSegments: " << pInfo->nShapeSegments << std::endl;
 				*m_pOStream << "    ShapeTints:    " << pInfo->nShapeTints << std::endl;
@@ -490,6 +491,27 @@ namespace wg
 					break;
 				}
 
+				case Command::WarpBlit:
+				case Command::WarpDrawEdgemap:
+				{
+					WarpParams params;
+					p = decodeWarp(cmd, p, params);
+
+					Object* pWarpmap = *pObjects++;
+
+					if (cmd == Command::WarpBlit)
+						*m_pOStream << "    WarpBlit: warpmap " << pWarpmap << " source: " << params.source.x << ", " << params.source.y << ", " << params.source.w << ", " << params.source.h;
+					else
+						*m_pOStream << "    WarpDrawEdgemap: warpmap " << pWarpmap << " edgemap: " << *pObjects++;
+
+					*m_pOStream << " at: " << params.dest.x << ", " << params.dest.y << " offset: " << params.sourceOffset.x << ", " << params.sourceOffset.y
+						<< " split into " << params.nRects << " rectangles." << std::endl;
+
+					_printRects(*m_pOStream, params.nRects, pRects);
+					pRects += params.nRects;
+					break;
+				}
+
 				case Command::Blur:
 				case Command::Tile:
 				case Command::Blit:
@@ -602,6 +624,21 @@ namespace wg
 
 		if( m_pOStream )
 			*m_pOStream << "Called edgemapFactory(). Returned: " << pFactory.rawPtr() << std::endl;
+
+		return pFactory;
+	}
+
+	//____ warpmapFactory() ___________________________________________________
+
+	WarpmapFactory_p BackendLogger::warpmapFactory()
+	{
+		WarpmapFactory_p pFactory = nullptr;
+
+		if (m_pBackend)
+			pFactory = m_pBackend->warpmapFactory();
+
+		if( m_pOStream )
+			*m_pOStream << "Called warpmapFactory(). Returned: " << pFactory.rawPtr() << std::endl;
 
 		return pFactory;
 	}

@@ -48,6 +48,7 @@ namespace wg
 
 		SurfaceFactory_p	pDefaultSurfaceFactory;
 		EdgemapFactory_p	pDefaultEdgemapFactory;
+		WarpmapFactory_p	pDefaultWarpmapFactory;
 		GfxDeviceFactory_p	pDefaultGfxDeviceFactory;
 		GfxDevice_p			pDefaultGfxDevice;
 		BitmapCache_p		pDefaultBitmapCache;
@@ -85,6 +86,9 @@ namespace wg
 
 		static void					setDefaultEdgemapFactory(EdgemapFactory* pFactory);
 		static inline EdgemapFactory_p	defaultEdgemapFactory() { return s_pGfxContext->pDefaultEdgemapFactory; };
+
+		static void					setDefaultWarpmapFactory(WarpmapFactory* pFactory);
+		static inline WarpmapFactory_p	defaultWarpmapFactory() { return s_pGfxContext->pDefaultWarpmapFactory; };
 
 		static void					setDefaultGfxDeviceFactory(GfxDeviceFactory* pFactory);
 		static inline GfxDeviceFactory_p	defaultGfxDeviceFactory() { return s_pGfxContext->pDefaultGfxDeviceFactory; };

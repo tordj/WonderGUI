@@ -350,6 +350,13 @@ namespace wg
 		return m_pEdgemapFactory;
 	}
 
+	//____ warpmapFactory() ______________________________________________________
+
+	WarpmapFactory_p StreamBackend::warpmapFactory()
+	{
+		return m_pWarpmapFactory;		// Not supported yet.
+	}
+
 	//____ maxEdges() ____________________________________________________________
 
 	int StreamBackend::maxEdges() const

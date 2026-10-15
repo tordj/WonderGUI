@@ -1517,6 +1517,19 @@ namespace wg
 					break;
 				}
 
+				case Command::WarpBlit:
+				case Command::WarpDrawEdgemap:
+				{
+					// Not supported yet. Step over the command.
+
+					WarpParams params;
+					p = decodeWarp(cmd, p, params);
+
+					pObjects += (cmd == Command::WarpDrawEdgemap) ? 2 : 1;
+					pRects += params.nRects;
+					break;
+				}
+
 				case Command::DrawEdgemap:
 				case Command::TileEdgemap:
 				{
@@ -3090,6 +3103,13 @@ namespace wg
 	EdgemapFactory_p DX12Backend::edgemapFactory()
 	{
 		return m_pEdgemapFactory;
+	}
+
+	//____ warpmapFactory() _____________________________________________________
+
+	WarpmapFactory_p DX12Backend::warpmapFactory()
+	{
+		return m_pWarpmapFactory;		// Not supported yet.
 	}
 
 	//____ maxEdges() ___________________________________________________________
