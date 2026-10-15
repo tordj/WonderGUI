@@ -18,4 +18,5 @@ private:
 	bool offsetPeriodTest(std::ostream& output);
 	bool clipTest(std::ostream& output);
 	bool opaqueCanvasTest(std::ostream& output);
+	bool streamTest(std::ostream& output);
 };

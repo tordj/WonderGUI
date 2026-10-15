@@ -12,6 +12,10 @@
 #include <wg_softwarpmapfactory.h>
 #include <wg_softkernels_default.h>
 #include <wg_circularwarp.h>
+#include <wg_streambackend.h>
+#include <wg_streamplayer.h>
+#include <wg_streamencoder.h>
+#include <wg_softsurfacefactory.h>
 
 #include <algorithm>
 #include <cmath>
@@ -182,7 +186,7 @@ namespace
 
 	// An edgemap with three edges: straight, a slow wave and a faster one.
 
-	Edgemap_p makeEdgemap(bool bTiling, bool bTinted = false)
+	Edgemap_p makeEdgemap(GfxDevice* pDevice, bool bTiling, bool bTinted = false)
 	{
 		const int w = 48, h = 24, nEdges = 3;
 		std::vector<spx> samples(nEdges * (w + 1));
@@ -216,23 +220,22 @@ namespace
 		bp.tints = bTinted ? tints : nullptr;
 		bp.tiling = bTiling;
 
-		return SoftEdgemapFactory::create()->createEdgemap(bp, SampleOrigo::Top, samples.data(), nEdges, w + 1);
+		return pDevice->edgemapFactory()->createEdgemap(bp, SampleOrigo::Top, samples.data(), nEdges, w + 1);
 	}
 
 	// A surface with a pattern that has no two neighbors alike.
 
-	Surface_p makeSurface(bool bTiling, SampleMethod sampleMethod)
+	Surface_p makeSurface(GfxDevice* pDevice, bool bTiling, SampleMethod sampleMethod)
 	{
 		const int w = 32, h = 16;
 
-		auto pSurface = SoftSurface::create(WGBP(Surface, _.format = PixelFormat::ARGB_8, _.sampleMethod = sampleMethod, _.size = { w, h }, _.tiling = bTiling));
+		std::vector<uint8_t> pixels(w * h * 4);
 
-		auto buffer = pSurface->allocPixelBuffer();
 		for (int y = 0; y < h; y++)
 		{
 			for (int x = 0; x < w; x++)
 			{
-				uint8_t* p = buffer.pixels + y * buffer.pitch + x * 4;
+				uint8_t* p = pixels.data() + (y * w + x) * 4;
 				bool bChecker = ((x / 4) + (y / 4)) & 1;
 				p[0] = bChecker ? 40 : 230;
 				p[1] = uint8_t(x * 8);
@@ -240,26 +243,26 @@ namespace
 				p[3] = uint8_t(255 - ((x * 7 + y * 3) % 5) * 30);
 			}
 		}
-		pSurface->pullPixels(buffer);
-		pSurface->freePixelBuffer(buffer);
-		return pSurface;
+
+		return pDevice->surfaceFactory()->createSurface(WGBP(Surface, _.format = PixelFormat::ARGB_8, _.sampleMethod = sampleMethod, _.size = { w, h }, _.tiling = bTiling),
+														pixels.data(), PixelFormat::ARGB_8);
 	}
 
-	Warpmap_p makeRing(int size, float sweep = 360.f, float startAngle = 0.f)
+	Warpmap_p makeRing(GfxDevice* pDevice, int size, float sweep = 360.f, float startAngle = 0.f)
 	{
 		return CircularWarp::create(WGBP(CircularWarp,
 											_.size = { size, size },
 											_.topRadius = (size / 2 - 2) * 64,
 											_.bottomRadius = (size / 4) * 64,
 											_.startAngle = startAngle,
-											_.sweep = sweep), SoftWarpmapFactory::create())->refresh();
+											_.sweep = sweep), pDevice->warpmapFactory())->refresh();
 	}
 
 	// A smooth, non-periodic warp of a rectangle, partly outside the source.
 
-	Warpmap_p makeWave(int size)
+	Warpmap_p makeWave(GfxDevice* pDevice, int size)
 	{
-		auto pWarpmap = SoftWarpmapFactory::create()->createWarpmap(WGBP(Warpmap, _.size = { size, size }, _.cellSize = 8));
+		auto pWarpmap = pDevice->warpmapFactory()->createWarpmap(WGBP(Warpmap, _.size = { size, size }, _.cellSize = 8));
 
 		SizeI n = pWarpmap->nodes();
 		std::vector<CoordF> nodes(n.w * n.h);
@@ -282,24 +285,24 @@ namespace
 
 	void warpScene(GfxDevice* pDevice)
 	{
-		auto pEdgemap = makeEdgemap(true);
-		auto pTinted = makeEdgemap(false, true);
-		auto pRing = makeRing(44);
-		auto pArc = makeRing(44, 270.f, -135.f);
-		auto pWave = makeWave(44);
+		auto pEdgemap = makeEdgemap(pDevice, true);
+		auto pTinted = makeEdgemap(pDevice, false, true);
+		auto pRing = makeRing(pDevice, 44);
+		auto pArc = makeRing(pDevice, 44, 270.f, -135.f);
+		auto pWave = makeWave(pDevice, 44);
 
 		pDevice->warpDrawEdgemap({ 2 * 64, 2 * 64 }, pRing, pEdgemap);
 		pDevice->warpDrawEdgemap({ 50 * 64, 2 * 64 }, pArc, pEdgemap, { 11 * 64, 3 * 64 });
 		pDevice->warpDrawEdgemap({ 98 * 64, 2 * 64 }, pWave, pTinted);
 
-		pDevice->setBlitSource(makeSurface(true, SampleMethod::Bilinear));
+		pDevice->setBlitSource(makeSurface(pDevice, true, SampleMethod::Bilinear));
 		pDevice->warpBlit({ 2 * 64, 50 * 64 }, pRing);
 
 		pDevice->setTint({ 50 * 64, 50 * 64, 44 * 64, 44 * 64 }, Tint::create(HiColor(4096, 4096, 4096, 4096), HiColor(4096, 1000, 1000, 2000)));
 		pDevice->warpBlit({ 50 * 64, 50 * 64 }, pArc, { 8 * 64, 0, 16 * 64, 16 * 64 }, { 5 * 64, 0 });
 		pDevice->clearTint();
 
-		pDevice->setBlitSource(makeSurface(false, SampleMethod::Nearest));
+		pDevice->setBlitSource(makeSurface(pDevice, false, SampleMethod::Nearest));
 		pDevice->warpBlit({ 98 * 64, 50 * 64 }, pWave);
 	}
 
@@ -308,6 +311,15 @@ namespace
 	Warpmap_p identity(SizeI size, int cellSize)
 	{
 		return SoftWarpmapFactory::create()->createWarpmap(WGBP(Warpmap, _.size = size, _.cellSize = cellSize));
+	}
+
+	// Device used to create resources shared by renderings on all software backends.
+
+	GfxDevice_p resourceDevice()
+	{
+		auto pBackend = SoftBackend::create();
+		addDefaultSoftKernels(pBackend);
+		return GfxDeviceGen2::create(pBackend);
 	}
 }
 
@@ -323,6 +335,7 @@ WarpRenderTest::WarpRenderTest()
 	ADD_TEST(offsetPeriodTest);
 	ADD_TEST(clipTest);
 	ADD_TEST(opaqueCanvasTest);
+	ADD_TEST(streamTest);
 }
 
 WarpRenderTest::~WarpRenderTest()
@@ -334,7 +347,9 @@ WarpRenderTest::~WarpRenderTest()
 
 bool WarpRenderTest::identityEdgemapTest(std::ostream& output)
 {
-	auto pEdgemap = makeEdgemap(false, true);
+	auto pRes = resourceDevice();
+
+	auto pEdgemap = makeEdgemap(pRes, false, true);
 	auto pWarpmap = identity(pEdgemap->pixelSize(), 7);
 
 	auto direct = [&](GfxDevice* pDevice)
@@ -362,11 +377,13 @@ bool WarpRenderTest::identityEdgemapTest(std::ostream& output)
 
 bool WarpRenderTest::identityBlitTest(std::ostream& output)
 {
+	auto pRes = resourceDevice();
+
 	bool bOk = true;
 
 	for (auto sampleMethod : { SampleMethod::Nearest, SampleMethod::Bilinear })
 	{
-		auto pSurface = makeSurface(false, sampleMethod);
+		auto pSurface = makeSurface(pRes, false, sampleMethod);
 		auto pWarpmap = identity({ 16, 12 }, 5);
 
 		auto direct = [&](GfxDevice* pDevice)
@@ -407,13 +424,15 @@ bool WarpRenderTest::softVsReferenceTest(std::ostream& output)
 
 bool WarpRenderTest::blendModesTest(std::ostream& output)
 {
+	auto pRes = resourceDevice();
+
 	const BlendMode modes[] = { BlendMode::Replace, BlendMode::Blend, BlendMode::Add, BlendMode::Subtract, BlendMode::Multiply,
 								BlendMode::Invert, BlendMode::Min, BlendMode::Max, BlendMode::Morph, BlendMode::BlendFixedColor };
 
-	auto pEdgemap = makeEdgemap(true);
-	auto pRing = makeRing(40);
-	auto pWave = makeWave(40);
-	auto pSurface = makeSurface(true, SampleMethod::Bilinear);
+	auto pEdgemap = makeEdgemap(pRes, true);
+	auto pRing = makeRing(pRes, 40);
+	auto pWave = makeWave(pRes, 40);
+	auto pSurface = makeSurface(pRes, true, SampleMethod::Bilinear);
 
 	for (BlendMode mode : modes)
 	{
@@ -459,9 +478,11 @@ bool WarpRenderTest::linearBackendTest(std::ostream& output)
 
 bool WarpRenderTest::offsetPeriodTest(std::ostream& output)
 {
-	auto pEdgemap = makeEdgemap(true);
-	auto pArc = makeRing(44, 270.f, -135.f);
-	auto pSurface = makeSurface(true, SampleMethod::Bilinear);
+	auto pRes = resourceDevice();
+
+	auto pEdgemap = makeEdgemap(pRes, true);
+	auto pArc = makeRing(pRes, 44, 270.f, -135.f);
+	auto pSurface = makeSurface(pRes, true, SampleMethod::Bilinear);
 
 	// Edgemap is 48 pixels wide, period is 360 / 270 of that: 64 pixels. Source rectangle of the
 	// blit is 24 pixels wide, period 32 pixels.
@@ -544,4 +565,56 @@ bool WarpRenderTest::opaqueCanvasTest(std::ostream& output)
 	}
 
 	return true;
+}
+
+//____ streamTest() ___________________________________________________________
+// Warps streamed through StreamBackend and StreamPlayer draw exactly as directly. The resources
+// are created through the stream, so Warpmaps, their nodes and periods are streamed too.
+
+bool WarpRenderTest::streamTest(std::ostream& output)
+{
+	auto scene = [](GfxDevice* pDevice)
+	{
+		warpScene(pDevice);
+
+		// Periods changed after creation, sent before the nodes they normalize.
+
+		auto pWarpmap = makeRing(pDevice, 40, 270.f, -135.f);
+		pWarpmap->setPeriods(2.f, 0.f);
+		pDevice->warpDrawEdgemap({ 64 * 110, 64 * 50 }, pWarpmap, makeEdgemap(pDevice, true), { 64 * 30, 0 });
+	};
+
+	auto direct = render(Backend::Soft, scene);
+
+	// Through a stream
+
+	Pixels streamed(c_canvasSize.w * c_canvasSize.h * 4, 0);
+
+	auto pCanvas = SoftSurface::create(WGBP(Surface, _.size = c_canvasSize, _.format = PixelFormat::ARGB_8, _.colorSpace = ColorSpace::Linear, _.canvas = true));
+
+	auto pBackend = SoftBackend::create();
+	addDefaultSoftKernels(pBackend);
+	pBackend->defineCanvas(CanvasRef::Default, pCanvas);
+
+	auto pStreamPlayer = StreamPlayer::create(pBackend, SoftSurfaceFactory::create(), SoftEdgemapFactory::create());
+	auto pStreamEncoder = StreamEncoder::create({ pStreamPlayer, pStreamPlayer->input });
+	auto pStreamBackend = StreamBackend::create(pStreamEncoder);
+	pStreamBackend->defineCanvas(CanvasRef::Default, c_canvasSize, PixelFormat::ARGB_8, 64, ColorSpace::Linear);
+
+	auto pStreamDevice = GfxDeviceGen2::create(pStreamBackend);
+
+	pStreamDevice->beginRender();
+	pStreamDevice->beginCanvasUpdate(CanvasRef::Default);
+	pStreamDevice->fill(c_background);
+	scene(pStreamDevice);
+	pStreamDevice->endCanvasUpdate();
+	pStreamDevice->endRender();
+
+	auto buffer = pCanvas->allocPixelBuffer();
+	pCanvas->pushPixels(buffer);
+	for (int y = 0; y < c_canvasSize.h; y++)
+		std::memcpy(streamed.data() + y * c_canvasSize.w * 4, buffer.pixels + y * buffer.pitch, c_canvasSize.w * 4);
+	pCanvas->freePixelBuffer(buffer);
+
+	return compare(output, "Streamed warps", streamed, "streamed", direct, "direct", 0);
 }
