@@ -1992,14 +1992,69 @@ inline float turnsFromTop(float2 v)
 	return fract(t);
 }
 
+// For a pixel with the center of the ring inside it, v from the center to the pixel center:
+// the part of the pixel swept by a ray from the center, turning clockwise from 12 o'clock to
+// position (in turns). The ray passes the right half of the top side, the right side, the
+// bottom side, the left side and the left half of the top side, sweeping a triangle between
+// the center and each of them.
+
+inline float squareSweep(float2 v, float position)
+{
+	float2 u = float2(sin(6.2831853f * position), -cos(6.2831853f * position));
+
+	float left = 0.5f - v.x;						// Distances from the center to the sides.
+	float right = 0.5f + v.x;
+	float top = 0.5f - v.y;
+	float bottom = 0.5f + v.y;
+
+	// Where the ray leaves the pixel, through the left or right side if tx < ty.
+
+	float tx = (u.x > 0.f ? right : left) / max(abs(u.x), 1e-20f);
+	float ty = (u.y > 0.f ? bottom : top) / max(abs(u.y), 1e-20f);
+	float2 q = u * min(tx, ty);
+
+	// Halves of the top side are told apart by position, as positions of 1.0 point straight up
+	// too and are where the sweep ends.
+
+	float a;										// Twice the area.
+	if( ty <= tx && u.y < 0.f && position < 0.5f )
+		a = top * q.x;
+	else if( tx < ty && u.x > 0.f )
+		a = top * right + right * (top + q.y);
+	else if( ty <= tx && u.y > 0.f )
+		a = top * right + right * (top + bottom) + bottom * (right - q.x);
+	else if( tx < ty )
+		a = top * right + right * (top + bottom) + bottom * (right + left) + left * (bottom - q.y);
+	else
+		a = 2.f + top * q.x;
+
+	return 0.5f * a;
+}
+
 // Splits band, the coverage of the slice area, between the elements: those whose boundaries
 // pass through the pixel get the part between them, the element at the pixel center the rest.
+// If the center of the ring is inside the pixel, all elements get the part of the pixel within
+// their angle.
 
 inline void ringElements(constant float4 * pShape, constant float4 * pColor, int ofs, int n, int base, float band, float2 p, float2 v, float d, thread float4& acc, thread float& covered)
 {
 	if( n == 1 )
 	{
 		addSegment(pShape, pColor, ofs + int(pShape[base].y), band, p, acc, covered);
+		return;
+	}
+
+	if( abs(v.x) < 0.5f && abs(v.y) < 0.5f )
+	{
+		float firstSweep = squareSweep(v, pShape[base].x);
+		float sweep = firstSweep;
+
+		for( int e = 0; e < n; e++ )
+		{
+			float nextSweep = e + 1 < n ? squareSweep(v, pShape[base + e + 1].x) : firstSweep + 1.f;
+			addSegment(pShape, pColor, ofs + int(pShape[base + e].y), band * max(nextSweep - sweep, 0.f), p, acc, covered);
+			sweep = nextSweep;
+		}
 		return;
 	}
 
