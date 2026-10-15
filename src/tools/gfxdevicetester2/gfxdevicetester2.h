@@ -58,6 +58,13 @@ protected:
 		Checkered
 	};
 
+	enum class ClipList
+	{
+		One,											// The whole canvas.
+		Few,											// Checkerboard of 1/8 canvas sized rectangles.
+		Many											// Checkerboard of 1/32 canvas sized rectangles.
+	};
+
 	enum Side
 	{
 		TESTEE = 0,
@@ -109,10 +116,12 @@ protected:
 
 		AccuracyResult		accuracy;
 		PerformanceResult	performance;
+		double				loadedSecondsPerRun = -1;			// From loaded performance results, negative if none.
 
 		Widget_p			pTreeEntry;
 		TextDisplay_p		pPerfTimeCell;
-		TextDisplay_p		pPerfLoopsCell;
+		TextDisplay_p		pPerfLoadedCell;
+		TextDisplay_p		pPerfChangeCell;
 	};
 
 	// Testee, reference and diff boxes for one test, with a slider for amplifying the diff.
@@ -126,6 +135,7 @@ protected:
 
 		int					test = -1;
 		Background			background = Background::Black;
+		ClipList			clipList = ClipList::One;
 		int					diffFactor = 1;
 		vector<uint8_t>		pixels[2];						// Testee and reference read back as ARGB_8.
 	};
@@ -150,6 +160,10 @@ protected:
 
 	static constexpr double	c_progressBudget = 0.05;		// Seconds of accuracy testing per update.
 
+	// Change from loaded performance results that is highlighted as faster or slower.
+
+	static constexpr double	c_perfChangeThreshold = 0.05;
+
 	using Clock = std::chrono::steady_clock;
 
 	//
@@ -167,12 +181,15 @@ protected:
 	Widget_p	create_progress_bar(Slider_p& pBar, TextDisplay_p& pLabel);
 	void		create_viewer(Viewer& viewer);
 	Widget_p	create_image_box(Viewer& viewer, int image, float zoom);
+	TextDisplay_p	create_cell(int test, TextLayout* pLayout = nullptr, TextStyle* pStyle = nullptr, const string& text = string());
+	void		highlight_row(TablePanel* pTable, int row, bool bHighlight);
 
 	void		select_view(View view);
 
 	// Rendering and comparing
 
-	bool		render_test(Side side, int test, Background background);
+	bool		render_test(Side side, int test, Background background, ClipList clipList = ClipList::One);
+	vector<RectSPX>	clip_rects(ClipList clipList);
 	void		fill_background(GfxDevice* pDevice, Background background);
 	bool		read_canvas(Side side, vector<uint8_t>& pixels);
 	void		write_image(Surface* pSurface, const vector<uint8_t>& pixels);
@@ -194,12 +211,19 @@ protected:
 
 	// Performance
 
-	void		start_performance_run();
+	void		start_performance_run(const vector<int>& tests);
 	void		continue_performance_run();
 	void		run_performance_test(int test);
 	double		time_test(Test* pTest, int loops);
 	void		sync_testee();
 	void		refresh_performance_row(int test);
+	void		select_performance_row(int test);
+	void		refresh_performance_details();
+	bool		performance_change(int test, double& ratio) const;
+	static string	format_change(double ratio);
+
+	void		save_performance_results();
+	void		load_performance_results();
 
 	static string	format_time(double seconds);
 
@@ -231,6 +255,9 @@ protected:
 	TextStyle_p			m_pSpecksStyle;
 	TextStyle_p			m_pDiffStyle;
 
+	Skin_p				m_pCellSkin;						// Table cells, normal and in selected row.
+	Skin_p				m_pSelectedCellSkin;
+
 	// Display view
 
 	Viewer				m_displayViewer;
@@ -252,12 +279,17 @@ protected:
 
 	// Performance view
 
+	Viewer				m_performanceViewer;					// Only the testee image is displayed.
 	TablePanel_p		m_pPerformanceTable;
 	TextDisplay_p		m_pPerformanceSummary;
+	TextDisplay_p		m_pPerformanceLoadedLabel;
+	TextDisplay_p		m_pPerformanceDetails;				// Results of the selected test, below its image.
+	int					m_performanceSelected = -1;
 	Button_p			m_pPerformanceRunButton;
 	Slider_p			m_pPerformanceProgress;
 	TextDisplay_p		m_pPerformanceProgressLabel;
 
 	bool				m_bPerformanceRunning = false;
-	int					m_performanceNext = 0;
+	vector<int>			m_performanceQueue;					// Tests to time in this run.
+	int					m_performanceNext = 0;				// Index in m_performanceQueue.
 };
