@@ -27,6 +27,7 @@
 #include <wg_softsurfacefactory.h>
 #include <wg_softedgemap.h>
 #include <wg_softedgemapfactory.h>
+#include <wg_softwarpmapfactory.h>
 
 using namespace wg;
 
@@ -140,6 +141,13 @@ wg_obj wg_createSoftEdgemapFromSpx( const wg_edgemapBP* blueprint, wg_sampleOrig
 wg_obj wg_createSoftEdgemapFactory(void)
 {
 	auto p = SoftEdgemapFactory::create();
+	p->retain();
+	return (wg_obj) static_cast<Object*>(p.rawPtr());
+}
+
+wg_obj wg_createSoftWarpmapFactory(void)
+{
+	auto p = SoftWarpmapFactory::create();
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }

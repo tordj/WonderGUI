@@ -50,6 +50,7 @@ WG_EXPORT wg_obj	wg_createSoftEdgemapFromFloats( const wg_edgemapBP* blueprint, 
 WG_EXPORT wg_obj	wg_createSoftEdgemapFromSpx( const wg_edgemapBP* blueprint, wg_sampleOrigo origo, const wg_spx * pSamples, int edges, int edgePitch, int samplePitch);
 
 WG_EXPORT wg_obj	wg_createSoftEdgemapFactory(void);
+WG_EXPORT wg_obj	wg_createSoftWarpmapFactory(void);
 
 
 

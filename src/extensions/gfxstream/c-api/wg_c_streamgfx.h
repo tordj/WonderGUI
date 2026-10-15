@@ -78,6 +78,7 @@ extern "C" {
 	WG_EXPORT wg_obj	wg_createStreamEdgemapFromSpx( wg_obj streamEncoder, const wg_edgemapBP* blueprint, wg_sampleOrigo origo, const wg_spx * pSamples, int edges, int edgePitch, int samplePitch);
 
 	WG_EXPORT wg_obj	wg_createStreamEdgemapFactory(wg_obj streamEncoder);
+	WG_EXPORT wg_obj	wg_createStreamWarpmapFactory(wg_obj streamEncoder);
 
 
 #ifdef __cplusplus

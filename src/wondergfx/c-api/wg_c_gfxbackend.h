@@ -44,7 +44,7 @@ typedef struct wg_canvasInfo_struct		// NOT BINARY EQUIVALENT!
 
 //____ wg_sessionInfo _________________________________________________________
 
-typedef struct wg_sessionInfo_struct
+typedef struct wg_sessionInfo_struct		// Binary equivalent of GfxBackend::SessionInfo.
 {
 	// Commands
 
@@ -54,7 +54,8 @@ typedef struct wg_sessionInfo_struct
 	int		nFill;
 	int		nBlit;				// Includes Blit, ClipBlit och Tile.
 	int		nBlur;
-	int		nEdgemapDraws;
+	int		nEdgemapDraws;		// Includes DrawEdgemap and TileEdgemap.
+	int		nWarpDraws;			// WarpBlit and WarpDrawEdgemap.
 	int		nLineCoords;		// Total number of coordinates for line commands (=total lines in line commands *2)
 
 	// Total content of coord buffers
@@ -67,6 +68,12 @@ typedef struct wg_sessionInfo_struct
 	int		nColors;			// Total number of colors to be used through all commands.
 	int		nTransforms;		// Total number of transforms for session.
 	int		nObjects;			// Total number of object references for session.
+
+	// Shapes
+
+	int		nShapeDraws;		// Number of DrawShape commands.
+	int		nShapeSegments;		// Total number of segments (fill, outline, slices...) of all shapes.
+	int		nShapeTints;		// Total number of Tints encoded in DrawShape commands.
 
 } wg_sessionInfo;
 
@@ -93,6 +100,7 @@ WG_EXPORT wg_canvasInfo wg_backendCanvasInfo(wg_obj backend, wg_canvasRef ref);
 
 WG_EXPORT wg_obj	wg_backendSurfaceFactory(wg_obj backend);
 WG_EXPORT wg_obj	wg_backendEdgemapFactory(wg_obj backend);
+WG_EXPORT wg_obj	wg_backendWarpmapFactory(wg_obj backend);
 
 
 WG_EXPORT int		wg_backendMaxEdges(wg_obj backend);

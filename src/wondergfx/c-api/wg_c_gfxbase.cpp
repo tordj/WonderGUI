@@ -70,6 +70,18 @@ wg_obj wg_defaultEdgemapFactory()
 	return (wg_obj) static_cast<Object*>(pFactory);
 }
 
+void wg_setDefaultWarpmapFactory( wg_obj factory )
+{
+	WarpmapFactory* pFactory = static_cast<WarpmapFactory*>(reinterpret_cast<Object*>(factory));
+	return GfxBase::setDefaultWarpmapFactory(pFactory);
+}
+
+wg_obj wg_defaultWarpmapFactory()
+{
+	WarpmapFactory * pFactory = GfxBase::defaultWarpmapFactory();
+	return (wg_obj) static_cast<Object*>(pFactory);
+}
+
 void wg_setDefaultGfxDevice( wg_obj device )
 {
 	GfxDevice* pDevice = static_cast<GfxDevice*>(reinterpret_cast<Object*>(device));

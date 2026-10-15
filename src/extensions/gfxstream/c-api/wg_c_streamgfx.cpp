@@ -23,6 +23,7 @@
 #include <wg_c_internal.h>
 
 #include <wg_streambackend.h>
+#include <wg_streamwarpmapfactory.h>
 #include <wg_remotesurface.h>
 #include <wg_remotesurfacefactory.h>
 #include <wg_mirrorsurface.h>
@@ -214,6 +215,14 @@ wg_obj wg_createStreamEdgemapFactory(wg_obj streamEncoder)
 {
 	auto pEncoder = static_cast<StreamEncoder*>(reinterpret_cast<Object*>(streamEncoder));
 	auto p = StreamEdgemapFactory::create(pEncoder);
+	p->retain();
+	return (wg_obj) static_cast<Object*>(p.rawPtr());
+}
+
+wg_obj wg_createStreamWarpmapFactory(wg_obj streamEncoder)
+{
+	auto pEncoder = static_cast<StreamEncoder*>(reinterpret_cast<Object*>(streamEncoder));
+	auto p = StreamWarpmapFactory::create(pEncoder);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }
