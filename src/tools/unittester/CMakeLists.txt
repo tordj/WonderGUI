@@ -9,6 +9,8 @@ set( SOURCES
 	tests/gfxstream.h
 	tests/softgfxdevice.cpp
 	tests/softgfxdevice.h
+	tests/softtint.cpp
+	tests/softtint.h
 	tests/slotlinks.cpp
 	tests/slotlinks.h
 	tests/qoi.cpp

@@ -7,6 +7,7 @@
 
 #include "tests/gfxstream.h"
 #include "tests/softgfxdevice.h"
+#include "tests/softtint.h"
 #include "tests/slotlinks.h"
 #include "tests/qoi.h"
 #include "tests/surfacefile.h"
@@ -24,6 +25,7 @@ TestFramework::TestFramework( std::ostream& output ) :
 {
 	addCollection( new GfxStreamTest() );
 	addCollection( new SoftGfxDeviceTest() );
+	addCollection( new SoftTintTest() );
 	addCollection( new SlotLinksTest() );
 	addCollection( new QOITest() );
 	addCollection( new SurfaceFileTest() );
