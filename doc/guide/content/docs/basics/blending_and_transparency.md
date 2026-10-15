@@ -87,13 +87,13 @@ Since the canvas alpha is kept, an effect mode has no visible effect on fully tr
 
 ## Anti-aliasing
 
-Edges of fills, lines and edgemaps are anti-aliased by the exact area of each pixel that is covered. **A partially covered pixel is drawn as if the canvas had a much higher resolution, the shape was drawn there without anti-aliasing and the subpixels were then averaged.** That is the average of what the blend mode gives the covered part and the original pixel for the rest, weighted by their areas:
+Edges of fills, lines, edgemaps and shapes are anti-aliased by the exact area of each pixel that is covered. **A partially covered pixel is drawn as if the canvas had a much higher resolution, the shape was drawn there without anti-aliasing and the subpixels were then averaged.** That is the average of what the blend mode gives the covered part and the original pixel for the rest, weighted by their areas:
 
 ```
 out = average( op(source, canvas) weighted by coverage,  canvas weighted by (1 − coverage) )
 ```
 
-A pixel crossed by several segments of an edgemap gets the average of what each segment gives its part of the pixel.
+A pixel crossed by several segments of an edgemap or a shape gets the average of what each segment gives its part of the pixel. The segments of a shape (fill and outline of a rounded box; back, outline, hub and slices of a ring) are drawn together, so the canvas doesn't show through where they meet.
 
 Averages of colors are taken as **premultiplied colors**: each color counts by its alpha as well as by its area, so that a transparent part only makes the pixel more transparent and doesn't darken it.
 
@@ -167,6 +167,8 @@ GPU backends can follow them exactly with fixed-function blending, provided that
 - Invert, Min, Max and an Add that saturates, on semi-transparent pixels of canvases with alpha.
 - Anti-aliased edges of Min and Max, since blending by min/max can't be weighted by coverage. Fills and blits on whole pixels are exact.
 - Anti-aliased edges of an Add or Subtract that saturates, by a level or two.
+
+The area of a pixel covered by a shape is exact in ReferenceBackend. The software backends are exact along straight edges and follow circles within 1/64 pixel. GPU backends estimate it from the distance between the pixel center and the edges.
 
 
 
