@@ -64,12 +64,14 @@ namespace wg
 		// Buffer layout, in float4 entries:
 		//
 		//   Edge strips, one per pixel column.
+		//   Raw samples, the left and right side of each column and edge in pixels, for warps.
 		//   Flat colors, one per segment.
 		//   Tint table, one per segment. X is the offset of the segment's tint
 		//   block, -1 for a flat colored segment.
 		//   Tint blocks, a slot per segment big enough for any tint. Only there
 		//   once a segment has had a tint, most edgemaps never do.
 
+		int		_rawSamplesOfs() const { return m_samplesSize / 2; }
 		int		_flatColorsOfs() const { return m_samplesSize; }
 		int		_tintTableOfs() const { return m_samplesSize + m_nbSegments; }
 		int		_tintSlotOfs(int segment) const { return m_samplesSize + m_nbSegments * 2 + segment * c_tintSlotSize; }
@@ -84,7 +86,7 @@ namespace wg
 		id<MTLBuffer>   m_bufferId = nil;
 		float *      	m_pBuffer = nullptr;
 
-		int			m_samplesSize = 0;			// Size of the edge strips, in float4 entries.
+		int			m_samplesSize = 0;			// Size of the edge strips and raw samples, in float4 entries.
 		bool		m_bHasTintSlots = false;
 
 	};

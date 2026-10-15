@@ -26,6 +26,8 @@
 #include <wg_metalsurfacefactory.h>
 #include <wg_metaledgemapfactory.h>
 #include <wg_metaledgemap.h>
+#include <wg_metalwarpmapfactory.h>
+#include <wg_metalwarpmap.h>
 #include <wg_gfxbase.h>
 #include <wg_gfxutil.h>
 
@@ -315,6 +317,15 @@ MetalBackend::~MetalBackend()
 		}
 	}
 
+	for( int shader = 0 ; shader < 3 ; shader++ )
+	{
+		for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+		{
+			for( int format = 0 ; format < 5 ; format++ )
+				[m_warpPipelines[shader][blendMode][format] release];
+		}
+	}
+
 	for( auto& entry : m_mipmapPipelines )
 		[entry.second release];
 
@@ -539,6 +550,37 @@ id<MTLRenderPipelineState> MetalBackend::_compileShapePipeline( bool bTintmap, B
 	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat, true );
 }
 
+//____ _compileWarpPipeline() _________________________________________________
+
+id<MTLRenderPipelineState> MetalBackend::_compileWarpPipeline( WarpFragShader shader, BlendMode blendMode, DestFormat canvasFormat )
+{
+	bool        isAlpha8    = (canvasFormat == DestFormat::Alpha_8);
+
+	NSString* fragmentShaderBase = nil;
+
+	switch( shader )
+	{
+		case WarpFragShader::Edgemap:
+			fragmentShaderBase = @"warpEdgemapFragmentShader";
+			break;
+
+		case WarpFragShader::Blit:
+			fragmentShaderBase = @"warpBlitFragmentShader";
+			break;
+
+		case WarpFragShader::PaletteBlit:
+			fragmentShaderBase = @"warpPaletteBlitFragmentShader";
+			break;
+	}
+
+	NSString* fragmentShader = isAlpha8 ? [fragmentShaderBase stringByAppendingString:@"_A8"] : fragmentShaderBase;
+
+	NSString* label = [NSString stringWithFormat:@"Warp Pipeline (shader=%@, format=%s, blendMode=%s)",
+						fragmentShaderBase, _destFormatName(canvasFormat), toString(blendMode)];
+
+	return _compileRenderPipeline( label, @"warpVertexShader", fragmentShader, blendMode, canvasFormat, true );
+}
+
 
 //____ typeInfo() _________________________________________________________
 
@@ -609,7 +651,10 @@ EdgemapFactory_p MetalBackend::edgemapFactory()
 
 WarpmapFactory_p MetalBackend::warpmapFactory()
 {
-	return m_pWarpmapFactory;		// Not supported yet.
+	if (!m_pWarpmapFactory)
+		m_pWarpmapFactory = MetalWarpmapFactory::create();
+
+	return m_pWarpmapFactory;
 }
 
 //____ canvasInfo() ____________________________________________________________
@@ -720,6 +765,7 @@ void MetalBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, 
 	+ pInfo->nLineCoords/2 * 4
 	+ pInfo->nRects * 4			// This is for possible subpixel fills. We have no way of knowing exactly how much is needed.
 	+ pInfo->nEdgemapDraws * 8
+	+ pInfo->nWarpDraws * 16
 	+ GpuShapes::maxSessionEntries(*pInfo) * 4;
 
 	m_extrasBufferId = [s_metalDevice newBufferWithLength:nExtrasFloats*sizeof(float) options:MTLResourceStorageModeShared];
@@ -1485,13 +1531,138 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 			case Command::WarpBlit:
 			case Command::WarpDrawEdgemap:
 			{
-				// Not supported yet. Step over the command.
-
 				WarpParams params;
 				p = decodeWarp(cmd, p, params);
 
-				pObjects += (cmd == Command::WarpDrawEdgemap) ? 2 : 1;
+				auto pWarpmap = static_cast<MetalWarpmap*>(*pObjects++);
+				auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<MetalEdgemap*>(*pObjects++) : nullptr;
+
+				const RectSPX* pWarpRects = pRects;
 				pRects += params.nRects;
+
+				// Extras, see warpVertexShader() in the shaders.
+
+				CoordI dest = roundToPixels(params.dest);
+				SizeI warpSize = pWarpmap->pixelSize();
+
+				float srcW, srcH;
+
+				if( pEdgemap )
+				{
+					srcW = float(pEdgemap->m_size.w);
+					srcH = float(pEdgemap->m_size.h);
+				}
+				else
+				{
+					srcW = params.source.w / 64.f;
+					srcH = params.source.h / 64.f;
+				}
+
+				int extrasOfs = int(pExtrasMTL - m_pExtrasBuffer) / 4;
+
+				*pExtrasMTL++ = float(dest.x);
+				*pExtrasMTL++ = float(dest.y);
+				*pExtrasMTL++ = float(pWarpmap->cellSize());
+				*pExtrasMTL++ = pEdgemap ? float(pEdgemap->m_nbRenderSegments - 1) : 0.f;
+
+				*pExtrasMTL++ = float(warpSize.w);
+				*pExtrasMTL++ = float(warpSize.h);
+				*pExtrasMTL++ = srcW;
+				*pExtrasMTL++ = srcH;
+
+				*pExtrasMTL++ = params.sourceOffset.x / 64.f;
+				*pExtrasMTL++ = params.sourceOffset.y / 64.f;
+				*pExtrasMTL++ = pWarpmap->uPeriod() * srcW;
+				*pExtrasMTL++ = pWarpmap->vPeriod() * srcH;
+
+				if( pEdgemap )
+				{
+					*pExtrasMTL++ = float(pEdgemap->m_nbSegments - 1);
+					*pExtrasMTL++ = float(pEdgemap->_flatColorsOfs());
+					*pExtrasMTL++ = float(pEdgemap->_tintTableOfs());
+					*pExtrasMTL++ = float(pEdgemap->_rawSamplesOfs());
+				}
+				else
+				{
+					*pExtrasMTL++ = params.source.x / 64.f;
+					*pExtrasMTL++ = params.source.y / 64.f;
+					*pExtrasMTL++ = 0.f;
+					*pExtrasMTL++ = 0.f;
+				}
+
+				// Vertices, a quad for the part of each clip rectangle covered by the Warpmap.
+
+				int vertexOfs = int(pVertexMTL - m_pVertexBuffer);
+				int nVertices = 0;
+				const simd_float2 noUV = { 0.f, 0.f };
+
+				for( int i = 0 ; i < params.nRects ; i++ )
+				{
+					RectI patch = RectI::overlap(roundToPixels(pWarpRects[i]), RectI(dest, warpSize));
+
+					if( patch.w <= 0 || patch.h <= 0 )
+						continue;
+
+					CoordI corners[6] = {	{ patch.x, patch.y }, { patch.x + patch.w, patch.y }, { patch.x + patch.w, patch.y + patch.h },
+											{ patch.x, patch.y }, { patch.x + patch.w, patch.y + patch.h }, { patch.x, patch.y + patch.h } };
+
+					for( auto& corner : corners )
+					{
+						pVertexMTL->coord = corner;
+						pVertexMTL->colorsOfs = 0;
+						pVertexMTL->extrasOfs = extrasOfs;
+						pVertexMTL->uv = noUV;
+						pVertexMTL->tintOfs = m_tintOfs;
+						pVertexMTL++;
+					}
+
+					nVertices += 6;
+				}
+
+				if( nVertices == 0 )
+					break;
+
+				// Buffers, sampler and pipeline.
+
+				[m_renderEncoder setFragmentBuffer:pWarpmap->m_bufferId offset:0 atIndex:(unsigned) FragmentInputIndex::Warpmap];
+
+				WarpFragShader shader = WarpFragShader::Edgemap;
+
+				if( pEdgemap )
+				{
+					[m_renderEncoder setFragmentBuffer:pEdgemap->m_bufferId offset:0 atIndex:(unsigned) FragmentInputIndex::Edgemap];
+				}
+				else
+				{
+					// The source is read at the position of each pixel center, so it only needs to
+					// be wrapped or clamped there. Coverage takes care of its borders.
+
+					MetalSurface* pSurf = m_pActiveBlitSource;
+
+					_setSampler(pSurf, pSurf->isTiling() ? SamplerEdge::Tile : SamplerEdge::Clamp);
+
+					int sourceKind = 0;
+					shader = WarpFragShader::Blit;
+
+					if( pSurf->m_pPixelDescription->type == PixelType::Index )
+					{
+						shader = WarpFragShader::PaletteBlit;
+						sourceKind = pSurf->sampleMethod() == SampleMethod::Bilinear ? 1 : 0;
+					}
+					else if( pSurf->m_pixelFormat == PixelFormat::Alpha_8 )
+						sourceKind = 1;
+					else if( pSurf->m_pPixelDescription->A_mask == 0 )
+						sourceKind = 2;
+
+					[m_renderEncoder setFragmentBytes:&sourceKind length:sizeof(int) atIndex: (unsigned) FragmentInputIndex::SourceKind];
+				}
+
+				auto& pipeline = m_warpPipelines[(int)shader][(int)m_activeBlendMode][(int)m_activeCanvasFormat];
+				if( pipeline == nil )
+					pipeline = _compileWarpPipeline(shader, m_activeBlendMode, m_activeCanvasFormat);
+
+				[m_renderEncoder setRenderPipelineState:pipeline];
+				[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
 				break;
 			}
 

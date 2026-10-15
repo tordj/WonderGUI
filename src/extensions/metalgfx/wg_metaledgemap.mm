@@ -80,7 +80,7 @@ MetalEdgemap_p MetalEdgemap::create( const Edgemap::Blueprint& blueprint, Sample
 
 MetalEdgemap::MetalEdgemap(const Blueprint& bp) : Edgemap(bp)
 {
-	m_samplesSize = bp.size.w * (bp.segments - 1);
+	m_samplesSize = bp.size.w * (bp.segments - 1) * 2;			// Edge strips and raw samples.
 
 	_createBuffer(m_nbTints > 0);
 	_writeColors(0, m_nbSegments);
@@ -116,6 +116,25 @@ void MetalEdgemap::_samplesUpdated(int edgeBegin, int edgeEnd, int sampleBegin, 
 
 	const spx* pEdges = m_pSamples + edgeStripPitch * columnBegin;
 	int outColumnSkip = ((m_nbSegments - 1) - (edgeEnd - edgeBegin)) * 4;
+
+	// Raw samples for warps, the left and right side of each column in pixels.
+
+	auto pRaw = m_pBuffer + (_rawSamplesOfs() + columnBegin * edgeStripPitch + edgeBegin) * 4;
+
+	for (int i = 0; i < nPixelColumns; i++)
+	{
+		for (int j = edgeBegin; j < edgeEnd; j++)
+		{
+			*pRaw++ = pEdges[i * edgeStripPitch + j] / 64.f;
+			*pRaw++ = pEdges[(i + 1) * edgeStripPitch + j] / 64.f;
+			*pRaw++ = 0.f;
+			*pRaw++ = 0.f;
+		}
+
+		pRaw += outColumnSkip;
+	}
+
+	// Edge strips
 
 	auto pOut = m_pBuffer + columnBegin * edgeStripPitch * 4 + edgeBegin * 4;
 

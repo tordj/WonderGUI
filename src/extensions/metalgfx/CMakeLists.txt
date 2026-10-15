@@ -15,6 +15,10 @@ set(SOURCES
 	wg_metaledgemap.mm
 	wg_metaledgemapfactory.h
 	wg_metaledgemapfactory.mm
+	wg_metalwarpmap.h
+	wg_metalwarpmap.mm
+	wg_metalwarpmapfactory.h
+	wg_metalwarpmapfactory.mm
 	wg_shadercontent.mm
 )
 
