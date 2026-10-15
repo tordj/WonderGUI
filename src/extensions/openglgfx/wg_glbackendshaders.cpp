@@ -1426,6 +1426,40 @@ const char GlBackend::shapeVertexShader[] =
 "	addSegment(ofs + 5, fill, p, acc, covered);										" \
 "	addSegment(ofs + 6, outer - fill, p, acc, covered);								" \
 "}																					" \
+"float turnsFromTop(vec2 v)															" \
+"{																					" \
+"	vec2 a = abs(v);																" \
+"	float t = a.x <= a.y ? atan(a.x / max(a.y, 1e-20)) : 1.5707963 - atan(a.y / max(a.x, 1e-20));	" \
+"	t *= 0.15915494;																" \
+"	if (v.y >= 0.0)																	" \
+"		t = 0.5 - t;																" \
+"	if (v.x < 0.0)																	" \
+"		t = 1.0 - t;																" \
+"	return fract(t);																" \
+"}																					" \
+"float squareSweep(vec2 v, float position)											" \
+"{																					" \
+"	vec2 u = vec2(sin(6.2831853 * position), -cos(6.2831853 * position));			" \
+"	float left = 0.5 - v.x;															" \
+"	float right = 0.5 + v.x;														" \
+"	float top = 0.5 - v.y;															" \
+"	float bottom = 0.5 + v.y;														" \
+"	float tx = (u.x > 0.0 ? right : left) / max(abs(u.x), 1e-20);					" \
+"	float ty = (u.y > 0.0 ? bottom : top) / max(abs(u.y), 1e-20);					" \
+"	vec2 q = u * min(tx, ty);														" \
+"	float a;																		" \
+"	if (ty <= tx && u.y < 0.0 && position < 0.5)									" \
+"		a = top * q.x;																" \
+"	else if (tx < ty && u.x > 0.0)													" \
+"		a = top * right + right * (top + q.y);										" \
+"	else if (ty <= tx && u.y > 0.0)													" \
+"		a = top * right + right * (top + bottom) + bottom * (right - q.x);			" \
+"	else if (tx < ty)																" \
+"		a = top * right + right * (top + bottom) + bottom * (right + left) + left * (bottom - q.y);	" \
+"	else																			" \
+"		a = 2.0 + top * q.x;														" \
+"	return 0.5 * a;																	" \
+"}																					" \
 "void ringElements(int ofs, int n, int base, float band, vec2 p, vec2 v, float d, inout vec4 acc, inout float covered)	" \
 "{																					" \
 "	if (n == 1)																		" \
@@ -1433,7 +1467,19 @@ const char GlBackend::shapeVertexShader[] =
 "		addSegment(ofs + int(shapeEntry(base).y), band, p, acc, covered);			" \
 "		return;																		" \
 "	}																				" \
-"	float theta = d > 0.0001 ? fract(atan(v.x, -v.y) * 0.15915494) : 0.0;			" \
+"	if (abs(v.x) < 0.5 && abs(v.y) < 0.5)											" \
+"	{																				" \
+"		float firstSweep = squareSweep(v, shapeEntry(base).x);						" \
+"		float sweep = firstSweep;													" \
+"		for (int e = 0; e < n; e++)													" \
+"		{																			" \
+"			float nextSweep = e + 1 < n ? squareSweep(v, shapeEntry(base + e + 1).x) : firstSweep + 1.0;	" \
+"			addSegment(ofs + int(shapeEntry(base + e).y), band * max(nextSweep - sweep, 0.0), p, acc, covered);	" \
+"			sweep = nextSweep;														" \
+"		}																			" \
+"		return;																		" \
+"	}																				" \
+"	float theta = d > 0.0001 ? turnsFromTop(v) : 0.0;								" \
 "	int lo = 0;																		" \
 "	int hi = n;																		" \
 "	while (lo < hi)																	" \

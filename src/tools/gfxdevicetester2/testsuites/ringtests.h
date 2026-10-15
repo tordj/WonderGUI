@@ -14,6 +14,7 @@ public:
 		addTest("Pies", &RingTests::pies);
 		addTest("Donuts", &RingTests::donuts);
 		addTest("Gauges", &RingTests::gauges);
+		addTest("Axes", &RingTests::axes);
 		addTest("ManySlices", &RingTests::manySlices);
 		addTest("Square", &RingTests::square);
 		addTest("Tinted", &RingTests::tinted);
@@ -113,6 +114,31 @@ public:
 			spec.backColor = HiColor(4096, 4096, 4096, 1500);
 			pDevice->drawRing(spec);
 		}
+		return true;
+	}
+
+	// Rings centered on a pixel center, so that pixel centers lie exactly on the axes through
+	// it, in each direction within a slice of its own color.
+
+	bool axes(GfxDevice * pDevice, const RectI& canvas)
+	{
+		RingSlice slices[4] = { { 0.25f, HiColor(4096, 0, 0, 4096) }, { 0.25f, HiColor(0, 3500, 0, 4096) },
+								{ 0.25f, HiColor(0, 0, 4096, 4096) }, { 0.25f, HiColor(4096, 4096, 0, 4096) } };
+
+		RingSpec pie = ring(64 * 10, 64 * 10, 64 * 115, 0, 0.875f, 4, slices);
+		pDevice->drawRing(pie);
+
+		RingSpec donut = ring(64 * 135, 64 * 10, 64 * 115, 64 * 30, 0.875f, 4, slices);
+		donut.outline = 64 * 2;
+		donut.hubColor = HiColor(3800, 3800, 3800, 4096);
+		pDevice->drawRing(donut);
+
+		RingSpec gauge = ring(64 * 260, 64 * 10, 64 * 115, 64 * 20, 0.875f, 3, slices);
+		gauge.backColor = HiColor(1500, 1500, 1500, 4096);
+		pDevice->drawRing(gauge);
+
+		pDevice->drawRing(ring(64 * 385, 64 * 10, 64 * 15, 0, 0.875f, 4, slices));
+		pDevice->drawRing(ring(64 * 385, 64 * 40, 64 * 31, 64 * 8, 0.875f, 4, slices));
 		return true;
 	}
 
