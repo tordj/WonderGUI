@@ -53,6 +53,7 @@ namespace wg
 	alignas(kCacheLineSize) int SoftBackend::s_mulTab[256];
 
 	alignas(kCacheLineSize) int16_t SoftBackend::s_limit4096Tab[4097 * 3];
+	alignas(kCacheLineSize) uint32_t SoftBackend::s_reciprocalTab[4097];
 	alignas(kCacheLineSize) uint8_t SoftBackend::s_round_channel_5[256];
 	alignas(kCacheLineSize) uint8_t SoftBackend::s_round_channel_6[256];
 
@@ -470,10 +471,7 @@ namespace wg
 					}
 					else
 					{
-						// Subpixel fill
-
-
-						// Fill all but anti-aliased edges
+						// Subpixel fill. Fill all but anti-aliased edges
 
 						int x1 = ((patch.x + 63) >> 6);
 						int y1 = ((patch.y + 63) >> 6);
@@ -482,9 +480,52 @@ namespace wg
 
 						fillPixels(pFunc, bRuns, RectI(x1, y1, x2 - x1, y2 - y1), col);
 
-						//
+						// Draw the sides
 
-						BlendMode	edgeBlendMode = (blendMode == BlendMode::Replace) ? BlendMode::Blend : blendMode; // Need to blend edges and corners even if fill is replace
+						int aaLeft = (4096 - (patch.x & 0x3F) * 64) & 4095;
+						int aaTop = (4096 - (patch.y & 0x3F) * 64) & 4095;
+						int aaRight = ((patch.x + patch.w) & 0x3F) * 64;
+						int aaBottom = ((patch.y + patch.h) & 0x3F) * 64;
+
+						int aaTopLeft = aaTop * aaLeft / 4096;
+						int aaTopRight = aaTop * aaRight / 4096;
+						int aaBottomLeft = aaBottom * aaLeft / 4096;
+						int aaBottomRight = aaBottom * aaRight / 4096;
+
+						RectI pixelPatch = patch / 64;
+
+						// A partly covered pixel gets the average of what the blend mode gives the covered part
+						// and the original pixel for the rest. Fading the source by the coverage gives the same
+						// for most blend modes and is what we do. For the others the coverage kernel averages.
+
+						CoverageOp_p pCoverageOp = nullptr;
+
+						if (!_fadeSameAsAverage(blendMode, col.a == 4096 && m_colTrans.bTintOpaque))
+							pCoverageOp = pKernels->pCoverageKernels[(int)blendMode];
+
+						if (pCoverageOp)
+						{
+							auto edge = [&](int coverage, const RectI& rect)
+							{
+								if (coverage != 0)
+									_drawCoverageEdge(pCoverageOp, rect, coverage, col, m_pCanvasPixels, m_canvasPitch);
+							};
+
+							edge(aaTop, RectI(x1, pixelPatch.y, x2 - x1, 1));
+							edge(aaBottom, RectI(x1, y2, x2 - x1, 1));
+							edge(aaLeft, RectI(pixelPatch.x, y1, 1, y2 - y1));
+							edge(aaRight, RectI(x2, y1, 1, y2 - y1));
+
+							edge(aaTopLeft, RectI(pixelPatch.x, pixelPatch.y, 1, 1));
+							edge(aaTopRight, RectI(x2, pixelPatch.y, 1, 1));
+							edge(aaBottomLeft, RectI(pixelPatch.x, y2, 1, 1));
+							edge(aaBottomRight, RectI(x2, y2, 1, 1));
+							continue;
+						}
+
+						// Edges and corners are blended even if the fill is Replace, by Blend which then gives the same.
+
+						BlendMode	edgeBlendMode = (blendMode == BlendMode::Replace) ? BlendMode::Blend : blendMode;
 
 						bool bEdgeRuns;
 						FillOp_p pEdgeFunc = getKernel(edgeBlendMode, bEdgeRuns);
@@ -500,19 +541,6 @@ namespace wg
 							break;
 						}
 
-						// Draw the sides
-
-						int aaLeft = (4096 - (patch.x & 0x3F) * 64) & 4095;
-						int aaTop = (4096 - (patch.y & 0x3F) * 64) & 4095;
-						int aaRight = ((patch.x + patch.w) & 0x3F) * 64;
-						int aaBottom = ((patch.y + patch.h) & 0x3F) * 64;
-
-						int aaTopLeft = aaTop * aaLeft / 4096;
-						int aaTopRight = aaTop * aaRight / 4096;
-						int aaBottomLeft = aaBottom * aaLeft / 4096;
-						int aaBottomRight = aaBottom * aaRight / 4096;
-
-
 						if (blendMode != BlendMode::Replace)
 						{
 							int alpha = col.a;
@@ -527,8 +555,6 @@ namespace wg
 							aaBottomLeft = aaBottomLeft * alpha >> 12;
 							aaBottomRight = aaBottomRight * alpha >> 12;
 						}
-
-						RectI pixelPatch = patch / 64;
 
 						auto edge = [&](int alpha, const RectI& rect)
 						{
@@ -589,6 +615,11 @@ namespace wg
 				}
 
 
+				// The line kernels are only tinted by the flat tint color. Lines with a Tint are drawn
+				// by the coverage kernel instead, see _drawTintedLine().
+
+				CoverageOp_p pTintedOp = (!m_softTint.isFlat() && pKernels) ? pKernels->pCoverageKernels[(int)m_blendMode] : nullptr;
+
 				uint8_t* pRow;
 				int		rowInc, pixelInc;
 				int 	length, width;
@@ -598,8 +629,7 @@ namespace wg
 				for (int line = 0; line < nLines; line++)
 				{
 					HiColor fillColor = (*pColors++).toLinear();
-
-					// Lines are only tinted by the flat tint color, not by Tints.
+					HiColor tintedColor = fillColor;
 
 					if( m_tintColor != HiColor::White )
 						fillColor = fillColor * m_tintColor;
@@ -667,7 +697,10 @@ namespace wg
 
 							//  Draw
 
-							pOp(clipStart, clipEnd, _pRow, rowInc, pixelInc, _length, width, _pos, slope, fillColor, m_colTrans, { 0,0 });
+							if (pTintedOp)
+								_drawTintedLine(pTintedOp, true, std::max(beg.x, clip.x), _length, width, _pos, slope, clipStart, clipEnd, tintedColor, m_pCanvasPixels, m_canvasPitch);
+							else
+								pOp(clipStart, clipEnd, _pRow, rowInc, pixelInc, _length, width, _pos, slope, fillColor, m_colTrans, { 0,0 });
 						}
 					}
 					else
@@ -719,7 +752,10 @@ namespace wg
 
 							//  Draw
 
-							pOp(clipStart, clipEnd, _pRow, rowInc, pixelInc, _length, width, _pos, slope, fillColor, m_colTrans, { 0,0 });
+							if (pTintedOp)
+								_drawTintedLine(pTintedOp, false, std::max(beg.y, clip.y), _length, width, _pos, slope, clipStart, clipEnd, tintedColor, m_pCanvasPixels, m_canvasPitch);
+							else
+								pOp(clipStart, clipEnd, _pRow, rowInc, pixelInc, _length, width, _pos, slope, fillColor, m_colTrans, { 0,0 });
 						}
 					}
 				}
@@ -888,7 +924,7 @@ namespace wg
 
 				for (int patchIdx = 0; patchIdx < nRects; patchIdx++)
 				{
-					RectI patch = pMyRects[patchIdx] / 64;
+					RectI patch = Util::roundToPixels(pMyRects[patchIdx]);		// Rounded like the position of the edgemap.
 					if (!bTile)
 						patch = RectI::overlap(dest, patch);
 
@@ -978,6 +1014,15 @@ namespace wg
 
 							src.x += patchOfs.x * mtx.xx + patchOfs.y * mtx.yx;
 							src.y += patchOfs.x * mtx.xy + patchOfs.y * mtx.yy;
+
+							// The tile kernels find their position in the source from where they start
+							// reading, which must then be inside it.
+
+							if (cmd == Command::Tile)
+							{
+								src.x &= m_pBlitSource->tileMaskX();
+								src.y &= m_pBlitSource->tileMaskY();
+							}
 
 							if (cmd == Command::Blit)
 								(this->*m_pStraightBlitOp)(sub, src, mtx, sub.pos(), m_pStraightBlitFirstPassOp);
@@ -1806,7 +1851,13 @@ namespace wg
 
 		// Transparent segments are skipped, except in blend modes where they still affect the canvas.
 
-		bool bSkipTransparent = (m_blendMode != BlendMode::Replace && m_blendMode != BlendMode::BlendFixedColor);
+		// Transparent segments can be skipped where a transparent source has no effect: not in Replace
+		// and Morph, which paint with it, nor in Multiply and Min on alpha-only canvases, where the
+		// alpha of the source is the value. BlendFixedColor writes the fixed color.
+
+		bool bAlphaOnly = (m_canvasSoftFormat == SoftFormat::Alpha_8);
+		bool bSkipTransparent = (m_blendMode != BlendMode::Replace && m_blendMode != BlendMode::BlendFixedColor && m_blendMode != BlendMode::Morph &&
+								 !(bAlphaOnly && (m_blendMode == BlendMode::Multiply || m_blendMode == BlendMode::Min)));
 
 		for (int seg = 0; seg < nSegments; seg++)
 		{
@@ -2412,6 +2463,12 @@ namespace wg
 			for (int i = 0; i < 256; i++)
 				s_mulTab[i] = 65536 * i / 255;
 
+			// Init reciprocalTab
+
+			s_reciprocalTab[0] = 0;
+			for (int i = 1; i <= 4096; i++)
+				s_reciprocalTab[i] = 0xFFFFFFFFu / i;
+
 			// Init line thickness table
 
 			for (int i = 0; i < 17; i++)
@@ -2614,10 +2671,9 @@ namespace wg
 		{
 			const HiColor c = seg.tint.flatColor() * m_softTint.flatColor();
 
-			bool bAlphaWeighted = isCoverageAlphaWeighted(m_blendMode);
-			seg.mix[0] = int16_t(bAlphaWeighted ? (c.b * c.a) >> 12 : c.b);
-			seg.mix[1] = int16_t(bAlphaWeighted ? (c.g * c.a) >> 12 : c.g);
-			seg.mix[2] = int16_t(bAlphaWeighted ? (c.r * c.a) >> 12 : c.r);
+			seg.mix[0] = int16_t((c.b * c.a) >> 12);
+			seg.mix[1] = int16_t((c.g * c.a) >> 12);
+			seg.mix[2] = int16_t((c.r * c.a) >> 12);
 			seg.mix[3] = c.a;
 		}
 
@@ -2674,15 +2730,14 @@ namespace wg
 		if ((int)buffer.size() < length * 4)
 			buffer.resize(length * 4);
 
-		const bool bAlphaWeighted = isCoverageAlphaWeighted(pB->m_blendMode);
 		int16_t* p = buffer.data();
 
 		for (int i = 0; i < length; i++)
 		{
 			const HiColor& c = pColors[i];
-			p[0] = int16_t(bAlphaWeighted ? (c.b * c.a) >> 12 : c.b);
-			p[1] = int16_t(bAlphaWeighted ? (c.g * c.a) >> 12 : c.g);
-			p[2] = int16_t(bAlphaWeighted ? (c.r * c.a) >> 12 : c.r);
+			p[0] = int16_t((c.b * c.a) >> 12);
+			p[1] = int16_t((c.g * c.a) >> 12);
+			p[2] = int16_t((c.r * c.a) >> 12);
 			p[3] = c.a;
 			p += 4;
 		}
@@ -2876,6 +2931,133 @@ namespace wg
 
 			for (int i = 0; i < length; i++)
 				pOutput[i] = pOutput[i] * device;
+		}
+	}
+
+	//____ _fadeSameAsAverage() _______________________________________________
+	// Tells if fading the source by the coverage of a partly covered pixel gives the average of
+	// what the blend mode gives the covered part and the original pixel for the rest, as it does
+	// for blend modes that are linear in the alpha of the source: Blend, Invert, Multiply (except
+	// on alpha-only canvases, where alpha is the value) and Replace with an opaque color, which
+	// then is Blend. Add and Subtract are too, but not where they saturate.
+
+	bool SoftBackend::_fadeSameAsAverage(BlendMode mode, bool bOpaqueSource) const
+	{
+		switch (mode)
+		{
+			case BlendMode::Replace:
+				return bOpaqueSource || !SoftFormatInfo::hasAlpha(m_canvasSoftFormat);	// Result is opaque on canvases without alpha.
+			case BlendMode::Multiply:
+				return m_canvasSoftFormat != SoftFormat::Alpha_8;
+			case BlendMode::Add:
+			case BlendMode::Subtract:
+			case BlendMode::Morph:
+			case BlendMode::Min:
+			case BlendMode::Max:
+				return false;
+			default:
+				return true;
+		}
+	}
+
+	//____ _coveragePixel() _____________________________________________________
+	// A pixel for the coverage kernel, covered by coverage (0 -> 4096) of color.
+
+	SoftBackend::CoveragePixel SoftBackend::_coveragePixel(const HiColor& color, int coverage)
+	{
+		int alpha = (color.a * coverage) >> 12;
+
+		CoveragePixel pixel;
+		pixel.b = int16_t((color.b * alpha) >> 12);
+		pixel.g = int16_t((color.g * alpha) >> 12);
+		pixel.r = int16_t((color.r * alpha) >> 12);
+		pixel.a = int16_t(alpha);
+		pixel.coverage = int16_t(coverage);
+		return pixel;
+	}
+
+	//____ _drawCoverageEdge() __________________________________________________
+	// Draws a row or column of pixels, all covered by coverage (0 -> 4096) of color, with the
+	// coverage kernel. The tint is applied as the fill kernels do. Pixel (x,y) is at
+	// pOrigin + y * pitch + x * m_canvasPixelBytes.
+
+	void SoftBackend::_drawCoverageEdge(CoverageOp_p pOp, const RectI& rect, int coverage, HiColor color, uint8_t* pOrigin, int pitch)
+	{
+		if (rect.w <= 0 || rect.h <= 0)
+			return;
+
+		bool bRow = rect.h == 1;
+		int length = bRow ? rect.w : rect.h;
+
+		if ((int)m_coverageEdge.size() < length)
+			m_coverageEdge.resize(length);
+
+		CoveragePixel* pPixels = m_coverageEdge.data();
+
+		if (m_softTint.isFlat())
+		{
+			CoveragePixel pixel = _coveragePixel(color * m_softTint.flatColor(), coverage);
+			for (int i = 0; i < length; i++)
+				pPixels[i] = pixel;
+		}
+		else
+		{
+			HiColor* pColors = _shapeBuffer(0, length);
+			m_softTint.generate(rect.x, rect.y, bRow ? 1 : 0, bRow ? 0 : 1, length, pColors);
+
+			for (int i = 0; i < length; i++)
+				pPixels[i] = _coveragePixel(pColors[i] * color, coverage);
+		}
+
+		uint8_t* pDst = pOrigin + rect.y * pitch + rect.x * m_canvasPixelBytes;
+		pOp(pDst, bRow ? m_canvasPixelBytes : pitch, length, pPixels, m_colTrans);
+	}
+
+	//____ _drawTintedLine() ____________________________________________________
+	// Draws a line with a Tint, which the line kernels don't support, with the coverage kernel.
+	// It steps along the line as the line kernels do and draws the span of pixels across it at
+	// each step with the colors of the tint. The parameters are those of the line kernels, with
+	// majorBeg the coordinate of the first step along the main axis, which is x if bHorizontal,
+	// and positions in canvas coordinates. Pixel (x,y) is at pOrigin + y * pitch + x * m_canvasPixelBytes.
+
+	void SoftBackend::_drawTintedLine(CoverageOp_p pOp, bool bHorizontal, int majorBeg, int length, int width, int pos, int slope,
+									  int clipStart, int clipEnd, HiColor color, uint8_t* pOrigin, int pitch)
+	{
+		for (int i = 0; i < length; i++, pos += slope)
+		{
+			int beg = std::max(pos, clipStart);
+			int end = std::min(pos + width, clipEnd);
+			if (beg >= end)
+				continue;
+
+			int first = beg >> 16;
+			int nPixels = ((end - 1) >> 16) - first + 1;
+			int major = majorBeg + i;
+
+			HiColor* pColors = _shapeBuffer(0, nPixels);
+
+			if (bHorizontal)
+				m_softTint.generate(major, first, 0, 1, nPixels, pColors);
+			else
+				m_softTint.generate(first, major, 1, 0, nPixels, pColors);
+
+			if ((int)m_coverageEdge.size() < nPixels)
+				m_coverageEdge.resize(nPixels);
+
+			CoveragePixel* pPixels = m_coverageEdge.data();
+
+			for (int k = 0; k < nPixels; k++)
+			{
+				int pixelBeg = (first + k) << 16;
+				int coverage = (std::min(end, pixelBeg + 65536) - std::max(beg, pixelBeg)) >> 4;
+
+				pPixels[k] = _coveragePixel(color * pColors[k], coverage);
+			}
+
+			uint8_t* pDst = bHorizontal ? pOrigin + first * pitch + major * m_canvasPixelBytes
+										: pOrigin + major * pitch + first * m_canvasPixelBytes;
+
+			pOp(pDst, bHorizontal ? pitch : m_canvasPixelBytes, nPixels, pPixels, m_colTrans);
 		}
 	}
 
