@@ -870,13 +870,20 @@ namespace wg
 		and wrapped on periodic axes.
 
 		The part of a pixel that is covered (by the source or by each segment of the edgemap) is
-		measured by sampling the pixel at a grid of c_warpSamples * c_warpSamples points. Colors are
-		taken at the center of the pixel: the blit source is sampled there by its sample method,
-		reading pixels around the source rectangle (or wrapping around the surface if it is tiling),
-		and the tints of edgemap segments are evaluated there.
+		measured by sampling the pixel at the points of a Fibonacci lattice, which are spread evenly
+		and all have different x and different y, so that edges in any direction, also straight
+		along x or y, are measured to within a sample. Pixels are first sampled at c_warpQuickSamples
+		points, and again at c_warpSamples if not all in the same segment or all outside.
+
+		Colors are taken at the center of the pixel: the blit source is sampled there by its sample
+		method, reading pixels around the source rectangle (or wrapping around the surface if it is
+		tiling), and the tints of edgemap segments are evaluated there.
 	*/
 
-	static const int c_warpSamples = 16;
+	static const int c_warpQuickSamples = 233;			// Fibonacci numbers, lattice steps are the ones before them.
+	static const int c_warpQuickStep = 144;
+	static const int c_warpSamples = 4181;
+	static const int c_warpStep = 2584;
 
 	void ReferenceBackend::_warp(const WarpParams& params, SoftWarpmap* pWarpmap, SoftEdgemap* pEdgemap, const RectSPX& rect)
 	{
@@ -912,14 +919,45 @@ namespace wg
 		double periodX = pWarpmap->uPeriod() * srcW;
 		double periodY = pWarpmap->vPeriod() * srcH;
 
-		// Position in the source (relative to the source rectangle) at point x,y of the Warpmap.
+		const int cellSize = pWarpmap->cellSize();
+		const SizeI nodes = pWarpmap->nodes();
 
-		auto sourcePos = [&](double x, double y, double& sx, double& sy)
+		// Position in the source (relative to the source rectangle) at point x,y of the Warpmap,
+		// which is in the cell with the given corners (as Warpmap::positionAt()). Pixels are
+		// always within one cell.
+
+		struct Cell
 		{
-			CoordF pos = pWarpmap->positionAt(x, y);
+			double	x0, y0, w, h;
+			CoordF	corners[4];
+		};
 
-			sx = double(pos.x) * srcW + offsetX;
-			sy = double(pos.y) * srcH + offsetY;
+		auto cellOf = [&](int x, int y)
+		{
+			Cell cell;
+			int column = std::clamp(x / cellSize, 0, nodes.w - 2);
+			int row = std::clamp(y / cellSize, 0, nodes.h - 2);
+
+			pWarpmap->cellCorners(column, row, cell.corners);
+			cell.x0 = pWarpmap->nodeX(column);
+			cell.y0 = pWarpmap->nodeY(row);
+			cell.w = pWarpmap->nodeX(column + 1) - cell.x0;
+			cell.h = pWarpmap->nodeY(row + 1) - cell.y0;
+			return cell;
+		};
+
+		auto sourcePos = [&](const Cell& cell, double x, double y, double& sx, double& sy)
+		{
+			const CoordF* c = cell.corners;
+
+			double fx = (x - cell.x0) / cell.w;
+			double fy = (y - cell.y0) / cell.h;
+
+			double u = (c[0].x * (1 - fx) + c[1].x * fx) * (1 - fy) + (c[2].x * (1 - fx) + c[3].x * fx) * fy;
+			double v = (c[0].y * (1 - fx) + c[1].y * fx) * (1 - fy) + (c[2].y * (1 - fx) + c[3].y * fx) * fy;
+
+			sx = u * srcW + offsetX;
+			sy = v * srcH + offsetY;
 
 			if (periodX > 0)
 				sx -= periodX * std::floor(sx / periodX);
@@ -945,30 +983,51 @@ namespace wg
 				if (!_isInsideCanvas(x, y))
 					continue;
 
-				// Coverage of the source or of each segment.
+				Cell cell = cellOf(x - dest.x, y - dest.y);
 
-				double coverage[Edgemap::maxSegments] = {};
-				double sampleArea = 1.0 / (c_warpSamples * c_warpSamples);
+				// Coverage of the source or of each segment, -1 for outside.
+
+				double coverage[Edgemap::maxSegments];
 				double covered = 0;
 
-				for (int sy = 0; sy < c_warpSamples; sy++)
+				auto measure = [&](int nSamples, int step)
 				{
-					for (int sx = 0; sx < c_warpSamples; sx++)
+					for (int seg = 0; seg < nSegments; seg++)
+						coverage[seg] = 0;
+					covered = 0;
+
+					double sampleArea = 1.0 / nSamples;
+					int first = -2;
+					bool bSame = true;
+
+					for (int i = 0; i < nSamples; i++)
 					{
-						double px = x - dest.x + (sx + 0.5) / c_warpSamples;
-						double py = y - dest.y + (sy + 0.5) / c_warpSamples;
+						double px = x - dest.x + (i + 0.5) / nSamples;
+						double py = y - dest.y + (((int64_t(i) * step) % nSamples) + 0.5) / nSamples;
 
 						double posX, posY;
-						sourcePos(px, py, posX, posY);
+						sourcePos(cell, px, py, posX, posY);
 
-						if (!isInside(posX, posY))
-							continue;
+						int seg = -1;
 
-						int seg = pEdgemap ? _edgemapSegmentAt(pEdgemap, posX, posY) : 0;
-						coverage[seg] += sampleArea;
-						covered += sampleArea;
+						if (isInside(posX, posY))
+						{
+							seg = pEdgemap ? _edgemapSegmentAt(pEdgemap, posX, posY) : 0;
+							coverage[seg] += sampleArea;
+							covered += sampleArea;
+						}
+
+						if (first == -2)
+							first = seg;
+						else if (seg != first)
+							bSame = false;
 					}
-				}
+
+					return bSame;
+				};
+
+				if (!measure(c_warpQuickSamples, c_warpQuickStep))
+					measure(c_warpSamples, c_warpStep);
 
 				if (covered <= 0.0)
 					continue;
@@ -976,7 +1035,7 @@ namespace wg
 				// Colors at the center of the pixel.
 
 				double centerX, centerY;
-				sourcePos(x - dest.x + 0.5, y - dest.y + 0.5, centerX, centerY);
+				sourcePos(cell, x - dest.x + 0.5, y - dest.y + 0.5, centerX, centerY);
 
 				Color tint = _deviceTint(x, y);
 
