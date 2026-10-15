@@ -111,14 +111,18 @@ MetalBackend::MetalBackend()
 			desc.minFilter = filter;
 			desc.magFilter = filter;
 
-			for( int tiled = 0 ; tiled < 2 ; tiled++ )
-			{
-				MTLSamplerAddressMode addressMode = (tiled == 0) ? MTLSamplerAddressModeClampToZero : MTLSamplerAddressModeRepeat;
-				desc.rAddressMode = addressMode;
-				desc.sAddressMode = addressMode;
-				desc.tAddressMode = addressMode;
+			// Like the GL and DX12 backends: tiling sources repeat, ClipBlit reads transparent
+			// black outside the source and everything else, including Blur, reads the edge pixels.
 
-				m_samplers[mipmapped][interpolated][tiled] = [s_metalDevice newSamplerStateWithDescriptor:desc];
+			const MTLSamplerAddressMode addressModes[3] = { MTLSamplerAddressModeClampToEdge, MTLSamplerAddressModeRepeat, MTLSamplerAddressModeClampToZero };
+
+			for( int edge = 0 ; edge < 3 ; edge++ )
+			{
+				desc.rAddressMode = addressModes[edge];
+				desc.sAddressMode = addressModes[edge];
+				desc.tAddressMode = addressModes[edge];
+
+				m_samplers[mipmapped][interpolated][edge] = [s_metalDevice newSamplerStateWithDescriptor:desc];
 			}
 		}
 	}
@@ -156,9 +160,9 @@ MetalBackend::~MetalBackend()
 	{
 		for( int interpolated = 0 ; interpolated < 2 ; interpolated++ )
 		{
-			for( int tiled = 0 ; tiled < 2 ; tiled++ )
+			for( int edge = 0 ; edge < 3 ; edge++ )
 			{
-				[m_samplers[mipmapped][interpolated][tiled] release];
+				[m_samplers[mipmapped][interpolated][edge] release];
 			}
 		}
 	}
@@ -928,11 +932,6 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 						}
 
 						[m_renderEncoder setFragmentTexture:pSurf->getTexture() atIndex: (unsigned) TextureIndex::Texture];
-
-						if(pSurf->pixelDescription()->type == PixelType::Index)
-							[m_renderEncoder setFragmentSamplerState: m_samplers[0][0][pSurf->isTiling()] atIndex:0];
-						else
-							[m_renderEncoder setFragmentSamplerState: m_samplers[pSurf->isMipmapped()][pSurf->sampleMethod() == SampleMethod::Bilinear][pSurf->isTiling()] atIndex:0];
 
 						m_pActiveBlitSource = pSurf;
 						pSurf->m_bPendingReads = false;            // Clear this as we pass it by. All pending reads will have encoded before _executeBuffer() ends.
@@ -1801,6 +1800,8 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				{
 					MetalSurface* pSurf = m_pActiveBlitSource;
 
+					_setSampler(pSurf, pSurf->isTiling() ? SamplerEdge::Tile : cmd == Command::ClipBlit ? SamplerEdge::Clip : SamplerEdge::Clamp);
+
 					BlitFragShader shader = BlitFragShader::Normal;
 
 					if(pSurf->m_pPixelDescription->type == PixelType::Index)
@@ -2059,6 +2060,23 @@ float MetalBackend::_scaleThickness(float thickness, float slope)
 	}
 
 	return thickness * scale;
+}
+
+//____ _setSampler() __________________________________________________________
+//
+// Palette based sources are read through a nearest sampler, so that the taps don't
+// blend indexes.
+
+void MetalBackend::_setSampler( MetalSurface * pSurf, SamplerEdge edge )
+{
+	id<MTLSamplerState> sampler;
+
+	if( pSurf->pixelDescription()->type == PixelType::Index )
+		sampler = m_samplers[0][0][(int)edge];
+	else
+		sampler = m_samplers[pSurf->isMipmapped()][pSurf->sampleMethod() == SampleMethod::Bilinear][(int)edge];
+
+	[m_renderEncoder setFragmentSamplerState:sampler atIndex:0];
 }
 
 //____ _generateMipmaps() _____________________________________________________

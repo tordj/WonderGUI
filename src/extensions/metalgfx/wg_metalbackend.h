@@ -185,6 +185,8 @@ namespace wg
 		void						_setPipeline( id<MTLRenderPipelineState> pipeline );
 		void						_drawTriangles( int vertexStart, int vertexCount );	// With the pipeline set by _setPipeline(), in two passes if it has a second.
 
+		enum class SamplerEdge { Clamp = 0, Tile = 1, Clip = 2 };										// How a sampler reads outside the source.
+		void						_setSampler( MetalSurface * pSurface, SamplerEdge edge );
 		void						_generateMipmaps( MetalSurface * pSurface );		// Draws every mip level from level 0.
 		id<MTLRenderPipelineState>	_mipmapPipeline( MTLPixelFormat format );
 
@@ -331,7 +333,7 @@ namespace wg
 
 		id<MTLRenderPipelineState>  m_shapePipelines[2][BlendMode_size][5] = {};					// [bTintmap][BlendMode][DestFormat]
 
-		id<MTLSamplerState>         m_samplers[2][2][2] = {};                        					// [bMipMap][bInterpolate][bTile]
+		id<MTLSamplerState>         m_samplers[2][2][3] = {};                        					// [bMipMap][bInterpolate][SamplerEdge]
 
 		std::map<MTLPixelFormat, id<MTLRenderPipelineState>>	m_mipmapPipelines;					// Created on first use, see _mipmapPipeline().
 
