@@ -89,7 +89,9 @@ namespace wg
 	 * - Colors are taken at the position of the center of the pixel: the surface is sampled there
 	 *   by its sample method (reading the surface around the source rectangle, or wrapping around it
 	 *   if it is tiling), the tints of edgemap segments are evaluated there (in pixels of the
-	 *   edgemap). The device tint is applied in canvas space as usual.
+	 *   edgemap). A center in the gap between copies on a periodic axis is taken in the nearest copy,
+	 *   before its start or after its end, so colors don't jump where copies meet. The device tint is
+	 *   applied in canvas space as usual.
 	 */
 
 	class Warpmap : public Object

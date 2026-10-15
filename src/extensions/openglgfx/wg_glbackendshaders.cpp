@@ -1685,6 +1685,8 @@ WG_GL_CANVAS_BLOCK
 // (a - b) / 2 of the center and a triangle in a corner further out. warpAxisCoverage() gives the
 // part inside the source along one axis, with the copies of the source on a periodic axis.
 // warpPosition() finds the cell with integers, as a division in floats can miss a whole number.
+// warpNearestCopy() moves a center in the gap between copies on a periodic axis to the nearest
+// copy, which is where colors are taken and edges evaluated.
 
 #define WG_GL_WARP_FUNCS \
 "vec4 warpEntry(int i) { return texelFetch(extrasBufferId, warpOfs + i); }			" \
@@ -1704,6 +1706,14 @@ WG_GL_CANVAS_BLOCK
 "	return f > 0.0 ? 1.0 - corner : corner;											" \
 "}																					" \
 "float warpInside(float size, float period) { return period > 0.0 ? min(size, period) : size; }	" \
+"vec2 warpNearestCopy(vec2 s, vec2 size, vec2 period)								" \
+"{																					" \
+"	if (period.x > 0.0 && 2.0 * s.x > warpInside(size.x, period.x) + period.x)		" \
+"		s.x -= period.x;															" \
+"	if (period.y > 0.0 && 2.0 * s.y > warpInside(size.y, period.y) + period.y)		" \
+"		s.y -= period.y;															" \
+"	return s;																		" \
+"}																					" \
 "float warpAxisCoverage(float s, vec2 g, float size, float period)					" \
 "{																					" \
 "	if (period > 0.0 && period <= size)												" \
@@ -1752,7 +1762,8 @@ WG_GL_CANVAS_BLOCK
 // so the border of the area below an edge is sy - edge(sx) = 0. Areas below the top of the
 // source, each edge and the bottom of the source are measured, kept decreasing as an edge is
 // pushed down to the edges above it, and their differences are the parts of the segments.
-// SEGMENT is code run for each part, with the segment in e and the part in part. Needs edgemapId.
+// SEGMENT is code run for each part, with the segment in e, the part in part and the position for
+// colors in sc. Needs edgemapId.
 
 #define WG_GL_WARP_SEGMENTS(SEGMENT) \
 "	vec2 s, dx, dy;																	" \
@@ -1772,10 +1783,8 @@ WG_GL_CANVAS_BLOCK
 "	int pitch = int(e3.x);															" \
 "	int flatColorsOfs = int(e3.y);													" \
 "	int tintTableOfs = int(e3.z);													" \
-"	float ex = s.x;																	" \
-"	float insideX = warpInside(size.x, period.x);									" \
-"	if (period.x > 0.0 && ex >= insideX && ex - insideX > period.x - ex)			" \
-"		ex -= period.x;																" \
+"	vec2 sc = warpNearestCopy(s, size, period);										" \
+"	float ex = sc.x;																" \
 "	int column = clamp(int(floor(ex)), 0, int(size.x) - 1);							" \
 "	float frac = ex - float(column);												" \
 "	int base = int(e3.w) + column * pitch;											" \
@@ -1828,7 +1837,7 @@ WG_GL_WARP_FUNCS
 "	vec4 acc = vec4(0.0);						"
 "	float keep = 0.0;							"
 "	float covered = 0.0;						"
-WG_GL_WARP_SEGMENTS("{ acc += segPart(premul(segColor(e, flatColorsOfs, tintTableOfs, s)) * tint, part, keep); covered += part; }")
+WG_GL_WARP_SEGMENTS("{ acc += segPart(premul(segColor(e, flatColorsOfs, tintTableOfs, sc)) * tint, part, keep); covered += part; }")
 "	if (covered < 1.0 / 256.0)					"
 "		discard;								"
 "	if (keepsResultColors())					"
@@ -1859,7 +1868,7 @@ WG_GL_WARP_FUNCS
 "{												"
 "	float acc = 0.0;							"
 "	float covered = 0.0;						"
-WG_GL_WARP_SEGMENTS("{ acc += segColor(e, flatColorsOfs, tintTableOfs, s).a * part; covered += part; }")
+WG_GL_WARP_SEGMENTS("{ acc += segColor(e, flatColorsOfs, tintTableOfs, sc).a * part; covered += part; }")
 "	if (covered < 1.0 / 256.0)					"
 "		discard;								"
 "	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) : vec4(1.0)) * flatTint;	"
@@ -1909,7 +1918,7 @@ WG_GL_WARP_SEGMENTS("{ acc += segColor(e, flatColorsOfs, tintTableOfs, s).a * pa
 "		cov *= warpAxisCoverage(s.y, vec2(dx.y, dy.y), e1.w, e2.w);					" \
 "	if (cov < 1.0 / 256.0)															" \
 "		discard;																	" \
-"	vec4 c = warpSample(e3.xy + s, dx, dy);											" \
+"	vec4 c = warpSample(e3.xy + warpNearestCopy(s, e1.zw, e2.zw), dx, dy);			" \
 "	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) : vec4(1.0)) * flatTint;	"
 
 const char GlBackend::warpBlitFragmentShader[] =

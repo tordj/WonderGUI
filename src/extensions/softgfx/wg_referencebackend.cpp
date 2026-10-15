@@ -877,7 +877,8 @@ namespace wg
 
 		Colors are taken at the center of the pixel: the blit source is sampled there by its sample
 		method, reading pixels around the source rectangle (or wrapping around the surface if it is
-		tiling), and the tints of edgemap segments are evaluated there.
+		tiling), and the tints of edgemap segments are evaluated there. A center in the gap between
+		copies on a periodic axis is taken in the nearest copy.
 	*/
 
 	static const int c_warpQuickSamples = 233;			// Fibonacci numbers, lattice steps are the ones before them.
@@ -965,6 +966,14 @@ namespace wg
 				sy -= periodY * std::floor(sy / periodY);
 		};
 
+		// Position of a center in the gap between copies moved to the nearest copy, for colors.
+
+		auto nearestCopy = [](double& s, double size, double period)
+		{
+			if (period > 0 && 2 * s > std::min(size, period) + period)
+				s -= period;
+		};
+
 		auto isInside = [&](double sx, double sy)
 		{
 			return sx >= 0 && sy >= 0 && sx < srcW && sy < srcH;
@@ -1036,6 +1045,8 @@ namespace wg
 
 				double centerX, centerY;
 				sourcePos(cell, x - dest.x + 0.5, y - dest.y + 0.5, centerX, centerY);
+				nearestCopy(centerX, srcW, periodX);
+				nearestCopy(centerY, srcH, periodY);
 
 				Color tint = _deviceTint(x, y);
 

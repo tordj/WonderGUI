@@ -151,10 +151,11 @@ namespace wg
 		/*
 			Splits a span of positions (x,y), (x+dx, y+dy) ... into parts where positions wrapped into
 			the periods stay linear, calling func(begin, length, x, y) with the wrapped start of each.
+			Positions are wrapped into low -> low + period.
 		*/
 
 		template<class Func>
-		void forWrappedSpans(const int64_t period[2], int64_t x, int64_t y, int64_t dx, int64_t dy, int length, Func&& func)
+		void forWrappedSpans(const int64_t period[2], const int64_t low[2], int64_t x, int64_t y, int64_t dx, int64_t dy, int length, Func&& func)
 		{
 			int i = 0;
 			while (i < length)
@@ -169,13 +170,13 @@ namespace wg
 					if (p <= 0)
 						continue;
 
-					pos[a] = wrap(pos[a], p);
+					pos[a] = low[a] + wrap(pos[a] - low[a], p);
 
 					int64_t m = n;
 					if (step[a] > 0)
-						m = ceilDiv(p - pos[a], step[a]);
+						m = ceilDiv(low[a] + p - pos[a], step[a]);
 					else if (step[a] < 0)
-						m = floorDiv(pos[a], -step[a]) + 1;
+						m = floorDiv(pos[a] - low[a], -step[a]) + 1;
 
 					n = int(std::max(int64_t(1), std::min(int64_t(n), m)));
 				}
@@ -296,6 +297,7 @@ namespace wg
 
 			w.period[a] = period;
 			w.inside[a] = period > 0 ? std::min(w.size[a], period) : w.size[a];
+			w.colorLow[a] = period > 0 ? (w.inside[a] + period) / 2 + 1 - period : 0;
 			w.bAlwaysInside[a] = period > 0 && period <= w.size[a];
 			w.offset[a] = period > 0 ? wrap(offsets[a], period) : std::clamp(offsets[a], -c_maxPos, c_maxPos);
 		}
@@ -1108,7 +1110,8 @@ namespace wg
 	}
 
 	//____ _warpTintSpan() ______________________________________________________
-	// Colors of a segment tint for positions (x,y), (x+dx, y+dy) ... in edgemap pixels, wrapped into the periods.
+	// Colors of a segment tint for positions (x,y), (x+dx, y+dy) ... in edgemap pixels, wrapped into the periods
+	// with a center in the gap between copies in the nearest one (see WarpSetup::colorLow).
 
 	void SoftBackend::_warpTintSpan(const SoftTint& tint, int64_t x, int64_t y, int64_t dx, int64_t dy, int length, HiColor* pOutput)
 	{
@@ -1120,7 +1123,7 @@ namespace wg
 			return;
 		}
 
-		forWrappedSpans(m_warp.period, x, y, dx, dy, length, [&](int begin, int n, int64_t px, int64_t py)
+		forWrappedSpans(m_warp.period, m_warp.colorLow, x, y, dx, dy, length, [&](int begin, int n, int64_t px, int64_t py)
 		{
 			tint.generateSpan(px, py, dx, dy, n, pOutput + begin);
 		});
@@ -1129,7 +1132,8 @@ namespace wg
 	//____ _warpReadSpan() ______________________________________________________
 	/*
 		Reads the blit source for positions (x,y), (x+dx, y+dy) ... in pixels of the source rectangle,
-		wrapped into the periods. A non-tiling surface is read as if its edge pixels continued outside
+		wrapped into the periods with a center in the gap between copies in the nearest one (see
+		WarpSetup::colorLow). A non-tiling surface is read as if its edge pixels continued outside
 		it, which the kernels can't do, so positions outside are clamped and read one by one. If
 		pCoverage is set, pixels without coverage are not read.
 	*/
@@ -1143,7 +1147,7 @@ namespace wg
 
 		binalInt matrix[2][2] = { { binalInt(toBinal(dx)), binalInt(toBinal(dy)) }, { 0, 0 } };
 
-		forWrappedSpans(w.period, x, y, dx, dy, length, [&](int begin, int n, int64_t px, int64_t py)
+		forWrappedSpans(w.period, w.colorLow, x, y, dx, dy, length, [&](int begin, int n, int64_t px, int64_t py)
 		{
 			int64_t sx = w.sourcePos[0] + px - half;
 			int64_t sy = w.sourcePos[1] + py - half;

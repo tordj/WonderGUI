@@ -390,6 +390,8 @@ namespace wg
 			int64_t			size[2];			// Size of source.
 			int64_t			period[2];			// 0 if not periodic.
 			int64_t			inside[2];			// Part of each period inside the source.
+			int64_t			colorLow[2];		// Colors are read at positions wrapped into colorLow -> colorLow + period,
+												// which puts a center in the gap between copies in the nearest one.
 			bool			bAlwaysInside[2];	// Periodic with period <= size, always inside.
 			int64_t			offset[2];			// Source offset, wrapped into period.
 
