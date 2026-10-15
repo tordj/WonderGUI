@@ -75,6 +75,13 @@ namespace wg
 
 		void		generate(int x, int y, int dx, int dy, int length, HiColor* pOutput) const;
 
+		// Generate colors at positions (x,y), (x+dx, y+dy) ... length positions, in pixels with
+		// 16 binals. Unlike generate() these are positions, not pixels, so pixel (x,y) is sampled
+		// at (x + 0.5, y + 0.5). Used where pixels are mapped to arbitrary positions, as by Warpmaps.
+		// Positions are expected to stay within +-2^20.
+
+		void		generateSpan(int64_t x, int64_t y, int64_t dx, int64_t dy, int length, HiColor* pOutput) const;
+
 	protected:
 
 		struct Layer
@@ -99,15 +106,19 @@ namespace wg
 			int64_t			originX;
 			int64_t			originY;		// Radial only.
 
-			int64_t			stepX16;		// Linear only, stepX and stepY with 16 binals, each rounded
-			int64_t			stepY16;		// once from floating point.
+			int64_t			stepX16;		// stepX and stepY with 16 binals, each rounded once from
+			int64_t			stepY16;		// floating point.
 
 			mutable int		radialHints[2];	// Radial only, LUT index / 2 at start and end of last span, -1 if none.
 		};
 
-		void		_generateLayer(const Layer& layer, int x, int y, int dx, int dy, int length, HiColor* pOutput) const;
+		template<class LayerGenerator>
+		void		_mixLayers(int length, HiColor* pOutput, LayerGenerator&& generateLayer) const;
+
 		void		_generateLinear(const Layer& layer, int x, int y, int dx, int dy, int length, HiColor* pOutput) const;
 		void		_generateRadial(const Layer& layer, int x, int y, int dx, int dy, int length, HiColor* pOutput) const;
+		void		_linearSpan(const Layer& layer, int64_t pos, int64_t step, int length, HiColor* pOutput) const;
+		void		_radialSpan(const Layer& layer, int64_t u, int64_t v, int64_t du, int64_t dv, int length, HiColor* pOutput) const;
 
 		int			m_nLayers = 0;
 		Layer		m_layers[Tint::c_maxMixComponents];
