@@ -89,7 +89,12 @@ MetalBackend::MetalBackend()
 	NSString *shaderString = [[NSString alloc] initWithUTF8String:shaderSource.c_str()];
 	m_library = [s_metalDevice newLibraryWithSource:shaderString options:nil error:&error];
 
-	[error release];
+	if( m_library == nil )
+	{
+		NSString * pMessage = [NSString stringWithFormat:@"Failed to compile shaders: %@", error ? error.localizedDescription : @"unknown error"];
+		GfxBase::throwError(ErrorLevel::Critical, ErrorCode::Internal, pMessage.UTF8String, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+	}
+
 	[shaderString release];
 
 	// Create samplers
@@ -367,7 +372,7 @@ id<MTLRenderPipelineState> MetalBackend::_compileLinePipeline( BlendMode blendMo
 	NSString* label = [NSString stringWithFormat:@"Line Pipeline (format=%s, blendMode=%s)",
 						_destFormatName(canvasFormat), toString(blendMode)];
 
-	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat );
+	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat, true );
 }
 
 
@@ -385,7 +390,7 @@ id<MTLRenderPipelineState> MetalBackend::_compileFillPipeline( bool bTintmap, Bl
 	NSString* label = [NSString stringWithFormat:@"%@Fill Pipeline (format=%s, blendMode=%s, tintmap=%s)",
 						bTintmap ? @"Tintmap" : @"", _destFormatName(canvasFormat), toString(blendMode), bTintmap ? "true" : "false"];
 
-	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat );
+	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat, false );
 }
 
 //____ _compileFillAAPipeline() _______________________________________________
@@ -402,7 +407,7 @@ id<MTLRenderPipelineState> MetalBackend::_compileFillAAPipeline( bool bTintmap, 
 	NSString* label = [NSString stringWithFormat:@"AA%@Fill Pipeline (format=%s, blendMode=%s, tintmap=%s)",
 						bTintmap ? @"Tintmap" : @"", _destFormatName(canvasFormat), toString(blendMode), bTintmap ? "true" : "false"];
 
-	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat );
+	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat, true );
 }
 
 
@@ -443,7 +448,7 @@ id<MTLRenderPipelineState> MetalBackend::_compileBlurPipeline( BlurFragShader sh
 
 	NSString* label 			= [namePrefix stringByAppendingFormat:@" Pipeline (format=%s, blendMode=%s, tintmap=%s)", _destFormatName(canvasFormat), toString(blendMode), bTintmap ? "true" : "false"];
 
-	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat );
+	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat, false );
 }
 
 //____ _compileBlitPipeline() _________________________________________________
@@ -493,7 +498,7 @@ id<MTLRenderPipelineState> MetalBackend::_compileBlitPipeline( BlitFragShader sh
 	NSString* label = [namePrefix stringByAppendingFormat:@" Pipeline (format=%s, blendMode=%s, tintmap=%s)",
 						_destFormatName(canvasFormat), toString(blendMode), bTintmap ? "true" : "false"];
 
-	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat );
+	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat, false );
 }
 
 //____ _compileSegmentsPipeline() _____________________________________________
@@ -510,7 +515,7 @@ id<MTLRenderPipelineState> MetalBackend::_compileSegmentsPipeline( int shaderInd
 	NSString* label = [NSString stringWithFormat:@"Segments Pipeline (shader=%d, format=%s, blendMode=%s, tintmap=%s)",
 						shaderIndex, _destFormatName(canvasFormat), toString(blendMode), bTintmap ? "true" : "false"];
 
-	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat );
+	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat, false );
 }
 
 //____ _compileShapePipeline() ________________________________________________
@@ -527,7 +532,7 @@ id<MTLRenderPipelineState> MetalBackend::_compileShapePipeline( bool bTintmap, B
 	NSString* label = [NSString stringWithFormat:@"Shape Pipeline (format=%s, blendMode=%s, tintmap=%s)",
 						_destFormatName(canvasFormat), toString(blendMode), bTintmap ? "true" : "false"];
 
-	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat );
+	return _compileRenderPipeline( label, vertexShader, fragmentShader, blendMode, canvasFormat, true );
 }
 
 
@@ -705,35 +710,12 @@ void MetalBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, 
 	m_metalCommandBuffer = [s_metalCommandQueue commandBuffer];
 	m_metalCommandBuffer.label = @"MetalBackend";
 
-	//
+	// Set canvas, which also resets states to start values.
 
 	if( pCanvasSurface )
 		setCanvas(pCanvasSurface);
 	else
 		setCanvas( canvasRef );
-
-
-	// Reset states to start values
-
-	m_tintColorOfs 			= -1;
-	m_tintOfs 				= -1;
-
-	m_pActiveBlitSource		= nullptr;
-	m_activeBlendMode		= BlendMode::Blend;
-	m_activeMorphFactor		= 0.5f;
-	m_activeBlurRadius		= 64;
-
-	m_morphFactorInUse		= -1;
-
-	// Reset uniform to start state
-
-	m_uniform.flatTint[0] = 1.f;
-	m_uniform.flatTint[1] = 1.f;
-	m_uniform.flatTint[2] = 1.f;
-	m_uniform.flatTint[3] = 1.f;
-
-	[m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
-
 }
 
 //____ endSession() __________________________________________________________
@@ -808,6 +790,7 @@ void MetalBackend::setCanvas(Surface* _pSurface)
 	if( m_renderEncoder != nil )
 		[m_renderEncoder endEncoding];
 
+	_resetStates();
 	m_renderEncoder = _setCanvas(pSurface, pSurface->pixelWidth(), pSurface->pixelHeight() );
 }
 
@@ -819,7 +802,27 @@ void MetalBackend::setCanvas(CanvasRef ref)
 	if( m_renderEncoder != nil )
 		[m_renderEncoder endEncoding];
 
+	_resetStates();
 	m_renderEncoder = _setCanvas(nullptr, m_defaultCanvas.size.w/64, m_defaultCanvas.size.h/64 );
+}
+
+//____ _resetStates() _________________________________________________________
+//
+// States start over with each canvas, as the device sets them again for it, like
+// SoftBackend does. Called before _setCanvas(), which hands them to the new render
+// encoder. That has no blit source until one is set.
+
+void MetalBackend::_resetStates()
+{
+	m_tintColorOfs			= -1;
+	m_tintOfs				= -1;
+
+	m_pActiveBlitSource		= nullptr;
+	m_activeBlendMode		= BlendMode::Blend;
+	m_activeMorphFactor		= 0.5f;
+	m_activeBlurRadius		= 64;
+
+	m_uniform.flatTint = { 1.f, 1.f, 1.f, 1.f };
 }
 
 //____ setObjects() ________________________________________________________
@@ -962,35 +965,14 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 
 				if (statesChanged & uint8_t(StateChange::BlendMode))
 				{
-					BlendMode mode = (BlendMode) * p++;
-
-					m_activeBlendMode = mode;
-
-					// If BlendMode is Morph we must make sure Metal's blendColor is set accordingly
-
-					if( mode == BlendMode::Morph )
-					{
-						if( m_morphFactorInUse != m_activeMorphFactor )
-						{
-							[m_renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:m_activeMorphFactor];
-
-							m_morphFactorInUse = m_activeMorphFactor;
-						}
-					}
+					m_activeBlendMode = (BlendMode) * p++;
 				}
 
 				if (statesChanged & uint8_t(StateChange::MorphFactor))
 				{
-					float morphFactor = (* p++) / 4096.f;
+					m_activeMorphFactor = (* p++) / 4096.f;
 
-					m_activeMorphFactor = morphFactor;
-
-					if( m_activeBlendMode == BlendMode::Morph && m_morphFactorInUse != morphFactor )
-					{
-						[m_renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:morphFactor];
-
-						m_morphFactorInUse = morphFactor;
-					}
+					[m_renderEncoder setFragmentBytes:&m_activeMorphFactor length:sizeof(float) atIndex:(unsigned) FragmentInputIndex::MorphFactor];
 				}
 
 				if (statesChanged & uint8_t(StateChange::FixedBlendColor))
@@ -1310,31 +1292,37 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 					pVertexMTL->coord = c1;
 					pVertexMTL->colorsOfs = colorsOfs;
 					pVertexMTL->extrasOfs = extrasOfs;
+					pVertexMTL->tintOfs = m_tintOfs;
 					pVertexMTL++;
 
 					pVertexMTL->coord = c2;
 					pVertexMTL->colorsOfs = colorsOfs;
 					pVertexMTL->extrasOfs = extrasOfs;
+					pVertexMTL->tintOfs = m_tintOfs;
 					pVertexMTL++;
 
 					pVertexMTL->coord = c3;
 					pVertexMTL->colorsOfs = colorsOfs;
 					pVertexMTL->extrasOfs = extrasOfs;
+					pVertexMTL->tintOfs = m_tintOfs;
 					pVertexMTL++;
 
 					pVertexMTL->coord = c1;
 					pVertexMTL->colorsOfs = colorsOfs;
 					pVertexMTL->extrasOfs = extrasOfs;
+					pVertexMTL->tintOfs = m_tintOfs;
 					pVertexMTL++;
 
 					pVertexMTL->coord = c3;
 					pVertexMTL->colorsOfs = colorsOfs;
 					pVertexMTL->extrasOfs = extrasOfs;
+					pVertexMTL->tintOfs = m_tintOfs;
 					pVertexMTL++;
 
 					pVertexMTL->coord = c4;
 					pVertexMTL->colorsOfs = colorsOfs;
 					pVertexMTL->extrasOfs = extrasOfs;
+					pVertexMTL->tintOfs = m_tintOfs;
 					pVertexMTL++;
 
 					*pExtrasMTL++ = s;
@@ -1570,7 +1558,7 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 
 				for (int i = 0; i < nRects; i++)
 				{
-					RectI patch = (*pRects++) / 64;
+					RectI patch = roundToPixels(*pRects++);		// Rounded like the position of the edgemap.
 
 					int		dx1 = patch.x;
 					int		dx2 = patch.x + patch.w;
@@ -1956,7 +1944,7 @@ id<MTLRenderCommandEncoder> MetalBackend::_setCanvas( MetalSurface * pCanvas, in
 	}
 
 	[renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double) width, (double) height, 0.0, 1.0 }];
-	[renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:m_activeMorphFactor];
+	[renderEncoder setFragmentBytes:&m_activeMorphFactor length:sizeof(float) atIndex:(unsigned) FragmentInputIndex::MorphFactor];
 
 
 	// Updating canvas info for our shaders
@@ -2080,7 +2068,7 @@ id<MTLRenderPipelineState> MetalBackend::_mipmapPipeline( MTLPixelFormat format 
 	if( it != m_mipmapPipelines.end() )
 		return it->second;
 
-	NSError *error = nil;
+	NSError *error = nil;			// Autoreleased.
 	MTLRenderPipelineDescriptor *descriptor = [[MTLRenderPipelineDescriptor alloc] init];
 
 	descriptor.label = @"Mipmap Pipeline";
@@ -2090,7 +2078,12 @@ id<MTLRenderPipelineState> MetalBackend::_mipmapPipeline( MTLPixelFormat format 
 	descriptor.colorAttachments[0].blendingEnabled = NO;
 
 	id<MTLRenderPipelineState> pipelineState = [s_metalDevice newRenderPipelineStateWithDescriptor:descriptor error:&error];
-	[error release];
+
+	if( pipelineState == nil )
+	{
+		NSString * pMessage = [NSString stringWithFormat:@"Failed to create Mipmap Pipeline: %@", error ? error.localizedDescription : @"unknown error"];
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::RenderFailure, pMessage.UTF8String, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+	}
 
 	[descriptor.vertexFunction release];
 	[descriptor.fragmentFunction release];
@@ -2101,16 +2094,53 @@ id<MTLRenderPipelineState> MetalBackend::_mipmapPipeline( MTLPixelFormat format 
 }
 
 //____ _compileRenderPipeline() _______________________________________________
+/*
+	Canvases with alpha hold premultiplied colors, which lets fixed-function blending follow the
+	blend rules exactly: Blend is Porter-Duff over, Morph a premultiplied cross-fade and a partly
+	covered pixel gets the average of the blend result and the canvas. The fragment shader is
+	specialized to pass what it draws to the blender as the mode needs it, see writeColor() in
+	the shaders:
+
+	- Replace and Morph keep the uncovered part of the pixel by the second color of dual-source
+	  blending. Replace only blends in pipelines that can cover pixels partly (bPartialCoverage).
+	- Effect modes keep the alpha of the canvas. Multiply and Subtract are exact, as is Add where
+	  it doesn't saturate. Invert, Min and Max are exact on opaque pixels, Min and Max are
+	  approximated on partly covered pixels by fading the source by coverage.
+	- On Alpha_8 canvases, effect modes use the alpha of the source as the value.
+	- Canvases without alpha are opaque. Their alpha bytes are undefined and left alone.
+*/
 
 id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label, NSString* vertexShader,
-																NSString* fragmentShader, BlendMode blendMode, DestFormat destFormat )
+																NSString* fragmentShader, BlendMode blendMode, DestFormat destFormat, bool bPartialCoverage )
 {
-	NSError *error = nil;
+	bool bNoAlpha = ( destFormat == DestFormat::BGRX8_linear || destFormat == DestFormat::BGRX8_sRGB );
+	bool bAlphaOnly = (destFormat == DestFormat::Alpha_8);
+
+	// Function constants of the fragment shader, see writeColor() and writeAlpha() in the shaders.
+
+	int		outputMode = 0;
+	bool	bMorph = (blendMode == BlendMode::Morph);
+
+	if( blendMode == BlendMode::Replace || blendMode == BlendMode::Morph || (blendMode == BlendMode::Multiply && bAlphaOnly) )
+		outputMode = 1;
+	else if( blendMode == BlendMode::Min )
+		outputMode = 2;
+
+	MTLFunctionConstantValues * pConstants = [[MTLFunctionConstantValues alloc] init];
+	[pConstants setConstantValue:&outputMode type:MTLDataTypeInt atIndex:0];
+	[pConstants setConstantValue:&bNoAlpha type:MTLDataTypeBool atIndex:1];
+	[pConstants setConstantValue:&bMorph type:MTLDataTypeBool atIndex:2];
+
+	NSError * pError = nil;			// Autoreleased.
 	MTLRenderPipelineDescriptor *descriptor = [[MTLRenderPipelineDescriptor alloc] init];
 
 	descriptor.label = label;
 	descriptor.vertexFunction = [m_library newFunctionWithName:vertexShader];
-	descriptor.fragmentFunction = [m_library newFunctionWithName:fragmentShader];
+	descriptor.fragmentFunction = [m_library newFunctionWithName:fragmentShader constantValues:pConstants error:&pError];
+
+	[pConstants release];
+
+	MTLRenderPipelineColorAttachmentDescriptor * pAttachment = descriptor.colorAttachments[0];
 
 	// Set pixelFormat
 
@@ -2118,169 +2148,83 @@ id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label
 	{
 		case DestFormat::BGRA8_linear:
 		case DestFormat::BGRX8_linear:
-			descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+			pAttachment.pixelFormat = MTLPixelFormatBGRA8Unorm;
 			break;
 
 		case DestFormat::BGRA8_sRGB:
 		case DestFormat::BGRX8_sRGB:
-			descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
+			pAttachment.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
 			break;
 
 		case DestFormat::Alpha_8:
-			descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatR8Unorm;
+			pAttachment.pixelFormat = MTLPixelFormatR8Unorm;
 			break;
 
 		default:
 			assert(false);
 	}
 
-	bool bNoAlpha = ( destFormat == DestFormat::BGRX8_linear || destFormat == DestFormat::BGRX8_sRGB );
+	// Blend operation and factors, for colors and alpha alike unless the alpha of the canvas is kept.
 
-
-	bool bAlphaOnly = (destFormat == DestFormat::Alpha_8);
+	BOOL				bBlending = YES;
+	MTLBlendOperation	operation = MTLBlendOperationAdd;
+	MTLBlendFactor		srcFactor = MTLBlendFactorOne;
+	MTLBlendFactor		dstFactor = MTLBlendFactorZero;
+	bool				bKeepAlpha = false;
 
 	switch( blendMode )
 	{
 		case BlendMode::Replace:
-
-			if( bNoAlpha )
-			{
-				descriptor.colorAttachments[0].blendingEnabled = YES;
-				descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
-				descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
-				descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorZero;
-			}
-			else
-				descriptor.colorAttachments[0].blendingEnabled = NO;
+			srcFactor = MTLBlendFactorOne;
+			dstFactor = MTLBlendFactorOneMinusSource1Alpha;
+			bBlending = bPartialCoverage;
 			break;
 
 		case BlendMode::Undefined:
 		case BlendMode::Blend:
-		case BlendMode::BlendFixedColor:		// Blending normally is an allowed stand-in, as in GL and DX12.
-			descriptor.colorAttachments[0].blendingEnabled = YES;
-			descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
-			descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
-
-			if(bAlphaOnly)
-			{
-				descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
-				descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceColor;
-			}
-			else
-			{
-				descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
-				descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
-			}
-
+		case BlendMode::BlendFixedColor:		// Drawn as Blend, which gives the same result.
+			srcFactor = MTLBlendFactorOne;
+			dstFactor = MTLBlendFactorOneMinusSourceAlpha;
 			break;
 
 		case BlendMode::Morph:
-			descriptor.colorAttachments[0].blendingEnabled = YES;
-			descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorBlendAlpha;
-			descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusBlendAlpha;
-			descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorBlendAlpha;
-			descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusBlendAlpha;
+			srcFactor = MTLBlendFactorOne;
+			dstFactor = MTLBlendFactorOneMinusSource1Alpha;
 			break;
 
 		case BlendMode::Add:
-
-			descriptor.colorAttachments[0].blendingEnabled = YES;
-			descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-			descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-
-			if( bAlphaOnly )
-			{
-				descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
-				descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
-			}
-			else
-			{
-				descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
-				descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
-			}
-			break;
-
 		case BlendMode::Subtract:
+			// Premultiplied colors of the canvas change by the source times the alpha of the canvas.
 
-			descriptor.colorAttachments[0].blendingEnabled = YES;
-			descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationReverseSubtract;
-			descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationReverseSubtract;
-			descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-			descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-
-			if( bAlphaOnly )
-			{
-				descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
-				descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
-			}
-			else
-			{
-				descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
-				descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
-			}
+			operation = (blendMode == BlendMode::Add) ? MTLBlendOperationAdd : MTLBlendOperationReverseSubtract;
+			srcFactor = (bAlphaOnly || bNoAlpha) ? MTLBlendFactorOne : MTLBlendFactorDestinationAlpha;
+			dstFactor = MTLBlendFactorOne;
+			bKeepAlpha = true;
 			break;
 
 		case BlendMode::Multiply:
-
-			descriptor.colorAttachments[0].blendingEnabled = YES;
-			descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorDestinationColor;
-			descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorZero;
-			descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-			descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-
+			srcFactor = MTLBlendFactorDestinationColor;
+			dstFactor = MTLBlendFactorOneMinusSource1Alpha;
+			bKeepAlpha = true;
 			break;
 
 		case BlendMode::Invert:
-
-			descriptor.colorAttachments[0].blendingEnabled = YES;
-			descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOneMinusDestinationColor;
-			descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceColor;
-			descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-			descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-
+			srcFactor = MTLBlendFactorOneMinusDestinationColor;
+			dstFactor = MTLBlendFactorOneMinusSourceColor;
+			bKeepAlpha = true;
 			break;
 
 		case BlendMode::Min:
-
-			descriptor.colorAttachments[0].blendingEnabled = YES;
-			descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationMin;
-			descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
-			descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
-			descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-			descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-			break;
-
 		case BlendMode::Max:
-
-			descriptor.colorAttachments[0].blendingEnabled = YES;
-			descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationMax;
-			descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
-			descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
-			descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-			descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+			operation = (blendMode == BlendMode::Min) ? MTLBlendOperationMin : MTLBlendOperationMax;
+			srcFactor = MTLBlendFactorOne;
+			dstFactor = MTLBlendFactorOne;
+			bKeepAlpha = true;
 			break;
 
 		case BlendMode::Ignore:
-
-			descriptor.colorAttachments[0].blendingEnabled = YES;
-			descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-			descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorZero;
-			descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
-			descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-			descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+			srcFactor = MTLBlendFactorZero;
+			dstFactor = MTLBlendFactorOne;
 			break;
 
 		default:
@@ -2288,15 +2232,37 @@ id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label
 			break;
 	}
 
-	if(bNoAlpha)
+	pAttachment.blendingEnabled = bBlending;
+	pAttachment.rgbBlendOperation = operation;
+	pAttachment.sourceRGBBlendFactor = srcFactor;
+	pAttachment.destinationRGBBlendFactor = dstFactor;
+
+	if( bKeepAlpha && !bAlphaOnly )
 	{
-		descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-		descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-		descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+		pAttachment.alphaBlendOperation = MTLBlendOperationAdd;
+		pAttachment.sourceAlphaBlendFactor = MTLBlendFactorZero;
+		pAttachment.destinationAlphaBlendFactor = MTLBlendFactorOne;
+	}
+	else
+	{
+		pAttachment.alphaBlendOperation = operation;
+		pAttachment.sourceAlphaBlendFactor = srcFactor;
+		pAttachment.destinationAlphaBlendFactor = dstFactor;
 	}
 
-	id<MTLRenderPipelineState> pipelineState = [s_metalDevice newRenderPipelineStateWithDescriptor:descriptor error:&error];
-	[error release];
+	if( bNoAlpha )
+		pAttachment.writeMask = MTLColorWriteMaskRed | MTLColorWriteMaskGreen | MTLColorWriteMaskBlue;
+
+	id<MTLRenderPipelineState> pipelineState = nil;
+
+	if( descriptor.vertexFunction != nil && descriptor.fragmentFunction != nil )
+		pipelineState = [s_metalDevice newRenderPipelineStateWithDescriptor:descriptor error:&pError];
+
+	if( pipelineState == nil )
+	{
+		NSString * pMessage = [NSString stringWithFormat:@"Failed to create %@: %@", label, pError ? pError.localizedDescription : @"shader function missing"];
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::RenderFailure, pMessage.UTF8String, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+	}
 
 	[descriptor.vertexFunction release];
 	[descriptor.fragmentFunction release];
