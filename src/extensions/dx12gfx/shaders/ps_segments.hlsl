@@ -61,14 +61,45 @@ float4 segmentColor(uint seg, uint2 segColorsOfs, float2 epos)
 }
 
 
+// A segment's premultiplied color pc covers part of the pixel. Usually it just counts
+// by that part. On a canvas without alpha, Replace and Morph keep the color of what
+// they give each segment, which is (canvas * (1 - m) + pc * m) / (1 - m + pc.a * m),
+// where m is the morph factor (1 for Replace). That is averaged by area, so each
+// segment adds its part of the second term and of how much of the canvas is kept
+// (keep). A segment whose result is transparent gives black, like a transparent
+// Replace does.
+
+bool keepsResultColors()
+{
+    return outputMode == 1u && canvasKind == 1u;
+}
+
+float4 segmentPart(float4 pc, float part, inout float keep)
+{
+    float4 result = pc * part;
+
+    if (keepsResultColors())
+    {
+        float m = morphFactor;
+        float resultAlpha = 1.0f - m + pc.a * m;
+        float scale = resultAlpha > 0.0f ? part / resultAlpha : 0.0f;
+
+        keep += scale * (1.0f - m);
+        result = pc * (scale * m);
+    }
+
+    return result;
+}
+
+
 PS_OUTPUT main(PS_INPUT input)
 {
     // Walking down a column of the edgemap, one edge at a time. Each edge says
     // where it begins and how steeply it runs, which is enough to tell how much
     // of this pixel falls above it. The difference between one edge's coverage
     // and the next is how much of the pixel belongs to the segment between them.
-    // The segments together cover the whole pixel, their premultiplied colors
-    // weighted by those parts.
+    // The segments together cover the whole pixel, their premultiplied and tinted
+    // colors weighted by those parts, see segmentPart().
 
     uint nEdges = edgemapEdges;
     uint pitch = edgemapPitch;
@@ -82,7 +113,10 @@ PS_OUTPUT main(PS_INPUT input)
 
     float2 epos = float2(floor(texUV.x) + 0.5f, texUV.y + 0.5f);
 
+    float4 tint = premul(input.color * tintColor(input.position.xy));
+
     float4 acc = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float keep = 0.0f;
 
     float factor = 1.0f;
 
@@ -102,9 +136,11 @@ PS_OUTPUT main(PS_INPUT input)
         else if (x + edge.g > 1.0f)
             adder = edge.a;
 
-        float factor2 = clamp(x + adder, 0.0f, 1.0f);
+        // An edge above the one before is pushed down to it.
 
-        acc += premul(col) * (factor - factor2);
+        float factor2 = min(clamp(x + adder, 0.0f, 1.0f), factor);
+
+        acc += segmentPart(premul(col) * tint, factor - factor2, keep);
 
         factor = factor2;
     }
@@ -113,7 +149,20 @@ PS_OUTPUT main(PS_INPUT input)
 
     float4 lastCol = segmentColor(nEdges, input.segColorsOfs, epos);
 
-    acc += premul(lastCol) * factor;
+    acc += segmentPart(premul(lastCol) * tint, factor, keep);
 
-    return writeOutput(acc * premul(input.color * tintColor(input.position.xy)), 1.0f);
+    // Where segmentPart() has divided the segments by their result alphas, they are
+    // output as they are, with how much of the canvas they keep.
+
+    PS_OUTPUT output = writeOutput(acc, 1.0f);
+
+    if (keepsResultColors())
+    {
+        output.color = acc;
+#ifdef WG_DUAL_SOURCE
+        output.factor = float4(1.0f - keep, 1.0f - keep, 1.0f - keep, 1.0f - keep);
+#endif
+    }
+
+    return output;
 }

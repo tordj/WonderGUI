@@ -1202,6 +1202,29 @@ WG_GL_CANVAS_BLOCK
 "	return uv;																	" \
 "}																				"
 
+// A segment's premultiplied color pc covers part of the pixel. Usually it just counts by that
+// part. On a canvas without alpha, Replace and Morph keep the color of what they give each
+// segment, which is (canvas * (1 - m) + pc * m) / (1 - m + pc.a * m), where m is the morph
+// factor (1 for Replace). That is averaged by area, so each segment adds its part of the second
+// term and of how much of the canvas is kept (keep). A segment whose result is transparent gives
+// black, like a transparent Replace does. Needs WG_GL_OUTPUT.
+
+#define WG_GL_SEGPART_FUNC \
+"bool keepsResultColors() { return blendInfo.x > 0.5 && blendInfo.x < 1.5 && blendInfo.z > 0.5; }	" \
+"vec4 segPart(vec4 pc, float part, inout float keep)								" \
+"{																				" \
+"	if (keepsResultColors())													" \
+"	{																			" \
+"		float m = blendInfo.y;													" \
+"		float resultAlpha = 1.0 - m + pc.a * m;									" \
+"		if (resultAlpha <= 0.0)													" \
+"			return vec4(0.0);													" \
+"		keep += part * (1.0 - m) / resultAlpha;									" \
+"		return pc * (part * m / resultAlpha);									" \
+"	}																			" \
+"	return pc * part;															" \
+"}																				"
+
 const char GlBackend::segmentsFragmentShader[] =
 
 "#version 330 core\n"
@@ -1219,10 +1242,13 @@ WG_GL_OUTPUT
 WG_GL_TINT_FUNC
 WG_GL_SEGCOLOR_FUNC
 WG_GL_WRAP_FUNC
+WG_GL_SEGPART_FUNC
 "void main()									"
 "{												"
 "	vec2 texUV = wrapUV(mapUV, tileSize);"
+"	vec4 tint = premul((tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, tintPos) : vec4(1.0)) * flatTint);"
 "	vec4 acc = vec4(0.0);"
+"	float keep = 0.0;"
 "	float factor = 1.f;"
 "	vec2 epos = vec2(floor(texUV.x) + 0.5, texUV.y + 0.5);"		// Pixel center in edgemap space.
 "	for( int i = 0 ; i < $EDGES ; i++ )"
@@ -1235,14 +1261,19 @@ WG_GL_WRAP_FUNC
 "			adder = edge.b;"
 "		else if (x + edge.g > 1.f)"
 "			adder = edge.a;"
-"		float factor2 = clamp(x + adder, 0.f, 1.f);"
-"		acc += vec4(col.rgb * col.a, col.a) * (factor - factor2);"
+"		float factor2 = min(clamp(x + adder, 0.f, 1.f), factor);"		// An edge above the one before is pushed down to it.
+"		acc += segPart(premul(col) * tint, factor - factor2, keep);"
 "		factor = factor2;"
 "	}"
 "	vec4 col = segColor($EDGES, flatColorsOfs, tintTableOfs, epos);"
-"	acc += vec4(col.rgb * col.a, col.a) * factor;"
-"	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, tintPos) : vec4(1.0)) * flatTint;"
-"	writeColor(acc * premul(tint), 1.0);"
+"	acc += segPart(premul(col) * tint, factor, keep);"
+"	if (keepsResultColors())"
+"	{"
+"		color = acc;"
+"		colorFactor = vec4(1.0 - keep);"
+"	}"
+"	else"
+"		writeColor(acc, 1.0);"
 "}";
 
 
@@ -1279,7 +1310,7 @@ WG_GL_WRAP_FUNC
 "			adder = edge.b;"
 "		else if (x + edge.g > 1.f)"
 "			adder = edge.a;"
-"		float factor2 = clamp(x + adder, 0.f, 1.f);"
+"		float factor2 = min(clamp(x + adder, 0.f, 1.f), factor);"		// An edge above the one before is pushed down to it.
 "		acc += vec4(col.rgb * col.a, col.a) * (factor - factor2);"
 "		factor = factor2;"
 "	}"
