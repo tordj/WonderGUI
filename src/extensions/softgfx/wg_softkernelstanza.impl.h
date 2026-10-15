@@ -2686,7 +2686,7 @@ void _draw_coverage_span(uint8_t* WG_RESTRICT pDst, int pixelPitch, int length, 
 		int backWeight = (backA * keep + 2048) >> 12;
 		outA = ((srcA * srcScale + 2048) >> 12) + backWeight;
 
-		if constexpr (!bAlphaOnly)
+		if constexpr (DSTFORMAT != SoftFormat::Alpha_8)		// Not bAlphaOnly, which MSVC can't use in a lambda.
 		{
 			if (outA == 4096)
 			{
