@@ -1751,17 +1751,20 @@ namespace wg
 				s = (begin.y + 0.5f) - (begin.x + 0.5f) * slope;
 				w = width / 2 + 0.5f;
 
-				float y1 = begin.y - width / 2;
-				float y2 = end.y - width / 2;
+				// The quad holds every pixel whose center is closer than w to the center of the line,
+				// rounded outwards. The line passes through the centers of the pixels at begin and end.
+
+				float y1 = begin.y + 0.5f - slope / 2;				// Center of the line at the left side of the quad.
+				float y2 = y1 + slope * length;					// ...and at the right side.
 
 				c1.x = begin.x;
-				c1.y = int(y1) - 1;
+				c1.y = int(std::floor(y1 - w));
 				c2.x = end.x;
-				c2.y = int(y2) - 1;
+				c2.y = int(std::floor(y2 - w));
 				c3.x = end.x;
-				c3.y = int(y2 + width) + 2;
+				c3.y = int(std::ceil(y2 + w));
 				c4.x = begin.x;
-				c4.y = int(y1 + width) + 2;
+				c4.y = int(std::ceil(y1 + w));
 			}
 			else
 			{
@@ -1781,16 +1784,19 @@ namespace wg
 				s = (begin.x + 0.5f) - (begin.y + 0.5f) * slope;
 				w = width / 2 + 0.5f;
 
-				float x1 = begin.x - width / 2;
-				float x2 = end.x - width / 2;
+				// The quad holds every pixel whose center is closer than w to the center of the line,
+				// rounded outwards. The line passes through the centers of the pixels at begin and end.
 
-				c1.x = int(x1) - 1;
+				float x1 = begin.x + 0.5f - slope / 2;				// Center of the line at the top of the quad.
+				float x2 = x1 + slope * length;					// ...and at the bottom.
+
+				c1.x = int(std::floor(x1 - w));
 				c1.y = begin.y;
-				c2.x = int(x1 + width) + 2;
+				c2.x = int(std::ceil(x1 + w));
 				c2.y = begin.y;
-				c3.x = int(x2 + width) + 2;
+				c3.x = int(std::ceil(x2 + w));
 				c3.y = end.y;
-				c4.x = int(x2) - 1;
+				c4.x = int(std::floor(x2 - w));
 				c4.y = end.y;
 			}
 
