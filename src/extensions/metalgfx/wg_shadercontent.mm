@@ -47,7 +47,7 @@ typedef struct             // Uniform buffer object for fragment shader blur inf
 // of dual-source blending (see MetalBackend::_compileRenderPipeline()). Each pipeline sets the
 // function constants:
 //
-//   c_outputMode 0: pc, with its alpha as the second color (Blend and the effect modes but Min).
+//   c_outputMode 0: pc, with its alpha as the second color (Blend, Subtract and Multiply).
 //   c_outputMode 1: pc times m, with the covered part times m as the second color, which tells
 //                   the blender how much of the canvas to keep. m is the morph factor for Morph
 //                   (c_morph) and 1 for Replace. Canvases without alpha (c_noAlpha) keep the color
@@ -56,6 +56,8 @@ typedef struct             // Uniform buffer object for fragment shader blur inf
 //                   it here. A transparent Replace writes the color of the source, which
 //                   premultiplied is black.
 //   c_outputMode 2: the source faded towards white by the alpha of pc (Min).
+//   c_outputMode 3: pc with its strongest channel as alpha, by which Add, Invert and Max raise
+//                   the alpha of the canvas.
 //
 // On Alpha_8 canvases, which hold alpha in the red channel, effect modes take the alpha of the
 // source as the value, like an opaque source of that color, and mode 1 is also used by Multiply.
@@ -79,7 +81,12 @@ inline FragOutput writeColor(float4 pc, float cov, float morphFactor)
 {
 	FragOutput out;
 
-	if( c_outputMode == 2 )
+	if( c_outputMode == 3 )
+	{
+		out.color = float4(pc.rgb, max(pc.r, max(pc.g, pc.b)));
+		out.factor = float4(0.f);
+	}
+	else if( c_outputMode == 2 )
 	{
 		out.color = float4(float3(1.f - pc.a) + pc.rgb, 1.f);
 		out.factor = float4(0.f);

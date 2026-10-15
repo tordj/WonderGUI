@@ -192,9 +192,9 @@ The area of a pixel covered by a shape is exact in ReferenceBackend. The softwar
 |---|---|---|---|
 | Blend as Porter-Duff over | Yes | Yes | Yes |
 | Source alpha as strength of effect modes | All | All | All |
-| Effect modes on the light of the canvas | Yes | Yes | OpenGL, DirectX 12 |
+| Effect modes on the light of the canvas | Yes | Yes | Yes |
 | Paint modes: anti-aliasing as average of subpixels | Yes | Yes | Yes |
-| Effect modes: anti-aliasing as strength scaled by coverage | Yes | Yes | OpenGL, DirectX 12 |
+| Effect modes: anti-aliasing as strength scaled by coverage | Yes | Yes | Yes |
 | Subpixels averaged as premultiplied colors | Yes | Yes | Yes |
 | Morph as premultiplied cross-fade | Yes | Yes | Yes |
 | Premultiplied bilinear sampling | Yes | Yes | Yes |
@@ -202,6 +202,6 @@ The area of a pixel covered by a shape is exact in ReferenceBackend. The softwar
 
 The software backends draw BlendFixedColor onto the fixed color, as described under Paint modes.
 
-The GPU backends keep canvases and other surfaces with alpha premultiplied and use dual-source blending, as described under Exactness. Colors of nearly transparent pixels therefore lose some precision when read back from them. MetalBackend still follows the previous definition of the effect modes, which kept the alpha of the canvas and averaged subpixels.
+The GPU backends keep canvases and other surfaces with alpha premultiplied and use dual-source blending, as described under Exactness. Colors of nearly transparent pixels therefore lose some precision when read back from them.
 
 GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests.

@@ -182,9 +182,6 @@ namespace wg
 		id<MTLRenderPipelineState> _compileRenderPipeline( NSString* label, NSString* vertexShader,
 									NSString* fragmentShader, BlendMode blendMode, DestFormat destFormat, bool bPartialCoverage );
 
-		void						_setPipeline( id<MTLRenderPipelineState> pipeline );
-		void						_drawTriangles( int vertexStart, int vertexCount );	// With the pipeline set by _setPipeline(), in two passes if it has a second.
-
 		enum class SamplerEdge { Clamp = 0, Tile = 1, Clip = 2 };										// How a sampler reads outside the source.
 		void						_setSampler( MetalSurface * pSurface, SamplerEdge edge );
 		void						_generateMipmaps( MetalSurface * pSurface );		// Draws every mip level from level 0.
@@ -336,12 +333,6 @@ namespace wg
 		id<MTLSamplerState>         m_samplers[2][2][3] = {};                        					// [bMipMap][bInterpolate][SamplerEdge]
 
 		std::map<MTLPixelFormat, id<MTLRenderPipelineState>>	m_mipmapPipelines;					// Created on first use, see _mipmapPipeline().
-
-		// Second passes of pipelines drawing Invert, Min and Max onto canvases with alpha, see
-		// _compileRenderPipeline(). The second pass of Min is the pipeline itself.
-
-		std::map<id<MTLRenderPipelineState>, id<MTLRenderPipelineState>>	m_secondPassPipelines;
-		id<MTLRenderPipelineState>	m_activePipeline = nil;										// Set by _setPipeline().
 
 		static const char shaders[];
 

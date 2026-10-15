@@ -318,12 +318,6 @@ MetalBackend::~MetalBackend()
 	for( auto& entry : m_mipmapPipelines )
 		[entry.second release];
 
-	for( auto& entry : m_secondPassPipelines )
-	{
-		if( entry.second != entry.first )
-			[entry.second release];
-	}
-
 	[m_library release];
 }
 
@@ -1071,8 +1065,8 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 								if( m_fillAAPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] == nil )
 									m_fillAAPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] = _compileFillAAPipeline(m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat);
 
-								_setPipeline(m_fillAAPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat]);
-								_drawTriangles(vertexOfs, nRectsWritten*6);
+								[m_renderEncoder setRenderPipelineState:m_fillAAPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
+								[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nRectsWritten*6];
 
 								vertexOfs = int(pVertexMTL - m_pVertexBuffer);
 								nRectsWritten = 0;
@@ -1092,8 +1086,8 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 								if( m_fillPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] == nil )
 									m_fillPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] = _compileFillPipeline(m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat);
 
-								_setPipeline(m_fillPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat]);
-								_drawTriangles(vertexOfs, nRectsWritten*6);
+								[m_renderEncoder setRenderPipelineState:m_fillPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
+								[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nRectsWritten*6];
 
 								vertexOfs = int(pVertexMTL - m_pVertexBuffer);
 								nRectsWritten = 0;
@@ -1186,17 +1180,17 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 					if( m_fillPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] == nil )
 						m_fillPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] = _compileFillPipeline(m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat);
 
-					_setPipeline(m_fillPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat]);
+					[m_renderEncoder setRenderPipelineState:m_fillPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
 				}
 				else
 				{
 					if( m_fillAAPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] == nil )
 						m_fillAAPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] = _compileFillAAPipeline(m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat);
 
-					_setPipeline(m_fillAAPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat]);
+					[m_renderEncoder setRenderPipelineState:m_fillAAPipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
 				}
 
-				_drawTriangles(vertexOfs, nRectsWritten*6);
+				[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nRectsWritten*6];
 				break;
 			}
 
@@ -1361,23 +1355,14 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 					if( m_linePipelines[(int)m_activeBlendMode][(int)m_activeCanvasFormat] == nil )
 						m_linePipelines[(int)m_activeBlendMode][(int)m_activeCanvasFormat] = _compileLinePipeline(m_activeBlendMode, m_activeCanvasFormat);
 
-					_setPipeline(m_linePipelines[(int)m_activeBlendMode][(int)m_activeCanvasFormat]);
+					[m_renderEncoder setRenderPipelineState:m_linePipelines[(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
 
 					for (int i = 0; i < nClipRects; i++)
 					{
 						RectI clip = (*pRects++)/64;
 						MTLScissorRect metalClip = {(unsigned) clip.x, (unsigned) clip.y, (unsigned) clip.w, (unsigned) clip.h};
 						[m_renderEncoder setScissorRect:metalClip];
-
-						// Lines may cross, so ones drawn in two passes are drawn one at a time.
-
-						if( m_secondPassPipelines.count(m_activePipeline) )
-						{
-							for( int line = 0 ; line < nLinesWritten ; line++ )
-								_drawTriangles(vertexOfs + line * 6, 6);
-						}
-						else
-							_drawTriangles(vertexOfs, nLinesWritten*6);
+						[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nLinesWritten*6];
 					}
 
 					MTLScissorRect orgClip = {0, 0, (unsigned) m_activeCanvasSize.w, (unsigned) m_activeCanvasSize.h};
@@ -1479,8 +1464,8 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				if( pipeline == nil )
 					pipeline = _compileShapePipeline(m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat);
 
-				_setPipeline(pipeline);
-				_drawTriangles(vertexOfs, nRects*6);
+				[m_renderEncoder setRenderPipelineState:pipeline];
+				[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nRects*6];
 				break;
 			}
 
@@ -1670,8 +1655,8 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				if( m_segmentsPipelines[nSegments-1][m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] == nil )
 					m_segmentsPipelines[nSegments-1][m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] = _compileSegmentsPipeline(nSegments-1, m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat);
 
-				_setPipeline(m_segmentsPipelines[nSegments-1][m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat]);
-				_drawTriangles(vertexOfs, nRects*6);
+				[m_renderEncoder setRenderPipelineState:m_segmentsPipelines[nSegments-1][m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
+				[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nRects*6];
 
 				break;
 			}
@@ -1861,7 +1846,7 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 						if( pipeline == nil )
 							pipeline = _compileBlurPipeline( blurShader, m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat );
 
-						_setPipeline(pipeline);
+						[m_renderEncoder setRenderPipelineState:pipeline ];
 					}
 					else
 					{
@@ -1889,10 +1874,10 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 						if(m_blitPipelines[(int)shader][m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] == nil )
 							m_blitPipelines[(int)shader][m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] = _compileBlitPipeline( shader, m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat );
 
-						_setPipeline(m_blitPipelines[(int)shader][m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat]);
+						[m_renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
 					}
 
-					_drawTriangles(vertexOfs, nRects*6);
+					[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nRects*6];
 					vertexOfs += nRects*6;
 				}
 
@@ -1929,36 +1914,6 @@ void MetalBackend::autopresent( id<MTLDrawable> drawable )
 	m_drawableToAutoPresent = drawable;
 }
 
-
-//____ _setPipeline() _________________________________________________________
-
-void MetalBackend::_setPipeline( id<MTLRenderPipelineState> pipeline )
-{
-	[m_renderEncoder setRenderPipelineState:pipeline];
-	m_activePipeline = pipeline;
-}
-
-//____ _drawTriangles() _______________________________________________________
-//
-// Draws triangles from the vertex buffer with the pipeline set by _setPipeline(), twice
-// if it has a second pass, see _compileRenderPipeline().
-
-void MetalBackend::_drawTriangles( int vertexStart, int vertexCount )
-{
-	[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexStart vertexCount:vertexCount];
-
-	auto it = m_secondPassPipelines.find(m_activePipeline);
-	if( it != m_secondPassPipelines.end() )
-	{
-		if( it->second != m_activePipeline )
-			[m_renderEncoder setRenderPipelineState:it->second];
-
-		[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexStart vertexCount:vertexCount];
-
-		if( it->second != m_activePipeline )
-			[m_renderEncoder setRenderPipelineState:m_activePipeline];
-	}
-}
 
 //____ _setCanvas() ___________________________________________________________
 
@@ -2170,10 +2125,10 @@ id<MTLRenderPipelineState> MetalBackend::_mipmapPipeline( MTLPixelFormat format 
 
 	- Replace and Morph keep the uncovered part of the pixel by the second color of dual-source
 	  blending. Replace only blends in pipelines that can cover pixels partly (bPartialCoverage).
-	- Effect modes keep the alpha of the canvas. Multiply and Subtract are exact, as is Add where
-	  it doesn't saturate. Invert, Min and Max are drawn in two passes onto canvases with alpha,
-	  see below, which makes them exact too. Min and Max are approximated on partly covered
-	  pixels by fading the source by coverage.
+	- Effect modes work on the premultiplied colors of the canvas, as the blend rules define them,
+	  with the source as its light (pc) and partial coverage fading it. Add, Invert and Max raise
+	  the alpha of the canvas by the strongest channel of pc, which the fragment shaders output as
+	  alpha for them. Subtract, Multiply and Min keep it.
 	- On Alpha_8 canvases, effect modes use the alpha of the source as the value.
 	- Canvases without alpha are opaque. Their alpha bytes are undefined and left alone.
 */
@@ -2193,6 +2148,8 @@ id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label
 		outputMode = 1;
 	else if( blendMode == BlendMode::Min )
 		outputMode = 2;
+	else if( (blendMode == BlendMode::Add || blendMode == BlendMode::Invert || blendMode == BlendMode::Max) && !bAlphaOnly )
+		outputMode = 3;
 
 	MTLFunctionConstantValues * pConstants = [[MTLFunctionConstantValues alloc] init];
 	[pConstants setConstantValue:&outputMode type:MTLDataTypeInt atIndex:0];
@@ -2232,13 +2189,15 @@ id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label
 			assert(false);
 	}
 
-	// Blend operation and factors, for colors and alpha alike unless the alpha of the canvas is kept.
+	// Blend operation and factors, for colors and alpha alike unless the alpha of the canvas is kept
+	// or inverted.
 
 	BOOL				bBlending = YES;
 	MTLBlendOperation	operation = MTLBlendOperationAdd;
 	MTLBlendFactor		srcFactor = MTLBlendFactorOne;
 	MTLBlendFactor		dstFactor = MTLBlendFactorZero;
 	bool				bKeepAlpha = false;
+	bool				bInvertAlpha = false;
 
 	switch( blendMode )
 	{
@@ -2262,12 +2221,13 @@ id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label
 
 		case BlendMode::Add:
 		case BlendMode::Subtract:
-			// Premultiplied colors of the canvas change by the source times the alpha of the canvas.
+			// The source is added to or subtracted from the premultiplied colors of the canvas. Add
+			// also adds the alpha the fragment shader outputs to that of the canvas, Subtract keeps it.
 
 			operation = (blendMode == BlendMode::Add) ? MTLBlendOperationAdd : MTLBlendOperationReverseSubtract;
-			srcFactor = (bAlphaOnly || bNoAlpha) ? MTLBlendFactorOne : MTLBlendFactorDestinationAlpha;
+			srcFactor = MTLBlendFactorOne;
 			dstFactor = MTLBlendFactorOne;
-			bKeepAlpha = true;
+			bKeepAlpha = (blendMode == BlendMode::Subtract);
 			break;
 
 		case BlendMode::Multiply:
@@ -2277,17 +2237,22 @@ id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label
 			break;
 
 		case BlendMode::Invert:
+			// The alpha the fragment shader outputs is put over that of the canvas.
+
 			srcFactor = MTLBlendFactorOneMinusDestinationColor;
 			dstFactor = MTLBlendFactorOneMinusSourceColor;
-			bKeepAlpha = true;
+			bInvertAlpha = !bAlphaOnly;
 			break;
 
 		case BlendMode::Min:
 		case BlendMode::Max:
+			// Max also takes the larger of the alpha the fragment shader outputs and that of the
+			// canvas, Min keeps it.
+
 			operation = (blendMode == BlendMode::Min) ? MTLBlendOperationMin : MTLBlendOperationMax;
 			srcFactor = MTLBlendFactorOne;
 			dstFactor = MTLBlendFactorOne;
-			bKeepAlpha = true;
+			bKeepAlpha = (blendMode == BlendMode::Min);
 			break;
 
 		case BlendMode::Ignore:
@@ -2300,38 +2265,6 @@ id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label
 			break;
 	}
 
-	// Invert, Min and Max need the alpha of the canvas to scale the source by, which their
-	// blend operations can't do. On canvases with alpha they are drawn twice, with blend
-	// states that together give the exact result, since the canvas clamps what is blended
-	// to 0.0-1.0, see _drawTriangles(). Pd is the premultiplied canvas color, ad its alpha
-	// (kept by both passes) and s what the fragment shader outputs:
-	//
-	// - Invert: Pd + s - 2*Pd*s, then minus s*(1 - ad), which is Pd*(1 - 2*s) + ad*s.
-	// - Min: ad*s - Pd clamped to 0.0 twice, which is min(Pd, ad*s). Both passes are the same.
-	// - Max: Pd - ad*s clamped to 0.0, then plus ad*s, which is max(Pd, ad*s).
-
-	bool bTwoPasses = !bNoAlpha && !bAlphaOnly &&
-					  (blendMode == BlendMode::Invert || blendMode == BlendMode::Min || blendMode == BlendMode::Max);
-
-	MTLBlendOperation	secondOperation = MTLBlendOperationAdd;
-	MTLBlendFactor		secondSrcFactor = MTLBlendFactorDestinationAlpha;
-
-	if( bTwoPasses )
-	{
-		if( blendMode == BlendMode::Invert )
-		{
-			secondOperation = MTLBlendOperationReverseSubtract;
-			secondSrcFactor = MTLBlendFactorOneMinusDestinationAlpha;
-		}
-		else
-		{
-			operation = (blendMode == BlendMode::Min) ? MTLBlendOperationSubtract : MTLBlendOperationReverseSubtract;
-			secondOperation = (blendMode == BlendMode::Min) ? MTLBlendOperationSubtract : MTLBlendOperationAdd;
-			srcFactor = MTLBlendFactorDestinationAlpha;
-			dstFactor = MTLBlendFactorOne;
-		}
-	}
-
 	pAttachment.blendingEnabled = bBlending;
 	pAttachment.rgbBlendOperation = operation;
 	pAttachment.sourceRGBBlendFactor = srcFactor;
@@ -2341,6 +2274,12 @@ id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label
 	{
 		pAttachment.alphaBlendOperation = MTLBlendOperationAdd;
 		pAttachment.sourceAlphaBlendFactor = MTLBlendFactorZero;
+		pAttachment.destinationAlphaBlendFactor = MTLBlendFactorOne;
+	}
+	else if( bInvertAlpha )
+	{
+		pAttachment.alphaBlendOperation = MTLBlendOperationAdd;
+		pAttachment.sourceAlphaBlendFactor = MTLBlendFactorOneMinusDestinationAlpha;
 		pAttachment.destinationAlphaBlendFactor = MTLBlendFactorOne;
 	}
 	else
@@ -2362,28 +2301,6 @@ id<MTLRenderPipelineState> MetalBackend::_compileRenderPipeline( NSString* label
 	{
 		NSString * pMessage = [NSString stringWithFormat:@"Failed to create %@: %@", label, pError ? pError.localizedDescription : @"shader function missing"];
 		GfxBase::throwError(ErrorLevel::Error, ErrorCode::RenderFailure, pMessage.UTF8String, this, &TYPEINFO, __func__, __FILE__, __LINE__);
-	}
-	else if( bTwoPasses )
-	{
-		id<MTLRenderPipelineState> secondPass = pipelineState;
-
-		if( blendMode != BlendMode::Min )
-		{
-			pAttachment.rgbBlendOperation = secondOperation;
-			pAttachment.sourceRGBBlendFactor = secondSrcFactor;
-			pAttachment.destinationRGBBlendFactor = MTLBlendFactorOne;
-
-			secondPass = [s_metalDevice newRenderPipelineStateWithDescriptor:descriptor error:&pError];
-
-			if( secondPass == nil )
-			{
-				NSString * pMessage = [NSString stringWithFormat:@"Failed to create second pass of %@: %@", label, pError ? pError.localizedDescription : @"unknown error"];
-				GfxBase::throwError(ErrorLevel::Error, ErrorCode::RenderFailure, pMessage.UTF8String, this, &TYPEINFO, __func__, __FILE__, __LINE__);
-			}
-		}
-
-		if( secondPass != nil )
-			m_secondPassPipelines[pipelineState] = secondPass;
 	}
 
 	[descriptor.vertexFunction release];
