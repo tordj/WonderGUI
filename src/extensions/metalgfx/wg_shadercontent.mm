@@ -1517,12 +1517,36 @@ inline float4 segColor(int seg, SegmentsFragInput in, constant float4 * pEdgemap
 
 //____ segmentsFragmentShader() ____________________________________________
 
+// A segment's premultiplied color pc, which covers part of the pixel. Usually just pc weighted
+// by that part. On a canvas without alpha, Replace and Morph keep the color of what they give
+// each segment, which is (canvas * (1 - m) + pc * m) / (1 - m + pc.a * m), where m is the morph
+// factor (1 for Replace). That is averaged by area, so each segment adds its part of the second
+// term and of how much of the canvas is kept (keep). A segment whose result is transparent gives
+// black, like a transparent Replace does.
+
+inline float4 segPart(float4 pc, float part, float morphFactor, thread float& keep)
+{
+	if( c_outputMode == 1 && c_noAlpha )
+	{
+		float m = c_morph ? morphFactor : 1.f;
+		float resultAlpha = 1.f - m + pc.a * m;
+
+		if( resultAlpha <= 0.f )
+			return float4(0.f);
+
+		keep += part * (1.f - m) / resultAlpha;
+		return pc * (part * m / resultAlpha);
+	}
+
+	return pc * part;
+}
+
 // The segments together cover the whole pixel, each the part of it between its edges.
-// Returns their colors premultiplied and weighted by those parts.
+// Returns their colors premultiplied, tinted and weighted by those parts, see segPart().
 
 template <int EDGES>
 inline float4 segFragShaderCore(SegmentsFragInput in,
-                                    constant float4  *pEdgemap)
+                                    constant float4  *pEdgemap, float4 tint, float morphFactor, thread float& keep)
 {
 	in.texUV = wrapUV(in.texUV, in.tileSize);
 
@@ -1542,122 +1566,144 @@ inline float4 segFragShaderCore(SegmentsFragInput in,
             adder = edge.b;
         else if (x + edge.g > 1.f)
 			adder = edge.a;
-        float factor2 = clamp(x + adder, 0.f, 1.f);
+        float factor2 = min(clamp(x + adder, 0.f, 1.f), factor);		// An edge above the one before is pushed down to it.
 
-        acc += premul(col) * (factor - factor2);
+        acc += segPart(premul(col) * tint, factor - factor2, morphFactor, keep);
         factor = factor2;
     }
 
 	float4 col = segColor(EDGES, in, pEdgemap, epos);
-	acc += premul(col) * factor;
+	acc += segPart(premul(col) * tint, factor, morphFactor, keep);
 
 	return acc;
 };
+
+// Output of the segments shaders. On canvases without alpha, Replace and Morph keep the color
+// of the result of each segment, so segPart() has already divided them by their alphas and
+// summed up how much of the canvas they keep. Other pipelines get the sum of the segments as
+// any other shader does.
+
+template <int EDGES>
+inline FragOutput writeSegments(SegmentsFragInput in, constant float4 * pEdgemap, float4 tint, float morphFactor)
+{
+	float keep = 0.f;
+	float4 pc = segFragShaderCore<EDGES>(in, pEdgemap, tint, morphFactor, keep);
+
+	if( c_outputMode == 1 && c_noAlpha )
+	{
+		FragOutput out;
+		out.color = pc;
+		out.factor = float4(1.f - keep);
+		return out;
+	}
+
+	return writeColor(pc, 1.0, morphFactor);
+}
 
 
 fragment FragOutput segmentsFragmentShader1(SegmentsFragInput in [[stage_in]],
                                             constant float4 * pEdgemap [[buffer(3)]],
                                             constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<1>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<1>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader2(SegmentsFragInput in [[stage_in]],
                                             constant float4 * pEdgemap [[buffer(3)]],
                                             constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<2>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<2>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader3(SegmentsFragInput in [[stage_in]],
                                             constant float4 * pEdgemap [[buffer(3)]],
                                             constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<3>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<3>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader4(SegmentsFragInput in [[stage_in]],
                                             constant float4 * pEdgemap [[buffer(3)]],
                                             constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<4>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<4>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader5(SegmentsFragInput in [[stage_in]],
                                             constant float4 * pEdgemap [[buffer(3)]],
                                             constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<5>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<5>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader6(SegmentsFragInput in [[stage_in]],
                                             constant float4 * pEdgemap [[buffer(3)]],
                                             constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<6>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<6>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader7(SegmentsFragInput in [[stage_in]],
                                             constant float4 * pEdgemap [[buffer(3)]],
                                             constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<7>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<7>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader8(SegmentsFragInput in [[stage_in]],
                                             constant float4 * pEdgemap [[buffer(3)]],
                                             constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<8>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<8>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader9(SegmentsFragInput in [[stage_in]],
                                             constant float4 * pEdgemap [[buffer(3)]],
                                             constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<9>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<9>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader10(SegmentsFragInput in [[stage_in]],
                                              constant float4 * pEdgemap [[buffer(3)]],
                                              constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<10>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<10>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader11(SegmentsFragInput in [[stage_in]],
                                              constant float4 * pEdgemap [[buffer(3)]],
                                              constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<11>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<11>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader12(SegmentsFragInput in [[stage_in]],
                                              constant float4 * pEdgemap [[buffer(3)]],
                                              constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<12>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<12>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader13(SegmentsFragInput in [[stage_in]],
                                              constant float4 * pEdgemap [[buffer(3)]],
                                              constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<13>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<13>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader14(SegmentsFragInput in [[stage_in]],
                                              constant float4 * pEdgemap [[buffer(3)]],
                                              constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<14>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<14>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 fragment FragOutput segmentsFragmentShader15(SegmentsFragInput in [[stage_in]],
                                              constant float4 * pEdgemap [[buffer(3)]],
                                              constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<15>(in,pEdgemap) * premul(in.color), 1.0, morphFactor);
+	return writeSegments<15>(in, pEdgemap, premul(in.color), morphFactor);
 }
 
 
@@ -1666,7 +1712,7 @@ fragment FragOutput segmentsTintmapFragmentShader1(SegmentsFragInput in [[stage_
                                                    constant float4 * pEdgemap [[buffer(3)]],
                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<1>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<1>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader2(SegmentsFragInput in [[stage_in]],
@@ -1674,7 +1720,7 @@ fragment FragOutput segmentsTintmapFragmentShader2(SegmentsFragInput in [[stage_
                                                    constant float4 * pEdgemap [[buffer(3)]],
                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<2>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<2>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader3(SegmentsFragInput in [[stage_in]],
@@ -1682,7 +1728,7 @@ fragment FragOutput segmentsTintmapFragmentShader3(SegmentsFragInput in [[stage_
                                                    constant float4 * pEdgemap [[buffer(3)]],
                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<3>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<3>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader4(SegmentsFragInput in [[stage_in]],
@@ -1690,7 +1736,7 @@ fragment FragOutput segmentsTintmapFragmentShader4(SegmentsFragInput in [[stage_
                                                    constant float4 * pEdgemap [[buffer(3)]],
                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<4>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<4>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader5(SegmentsFragInput in [[stage_in]],
@@ -1698,7 +1744,7 @@ fragment FragOutput segmentsTintmapFragmentShader5(SegmentsFragInput in [[stage_
                                                    constant float4 * pEdgemap [[buffer(3)]],
                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<5>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<5>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader6(SegmentsFragInput in [[stage_in]],
@@ -1706,7 +1752,7 @@ fragment FragOutput segmentsTintmapFragmentShader6(SegmentsFragInput in [[stage_
                                                    constant float4 * pEdgemap [[buffer(3)]],
                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<6>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<6>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader7(SegmentsFragInput in [[stage_in]],
@@ -1714,7 +1760,7 @@ fragment FragOutput segmentsTintmapFragmentShader7(SegmentsFragInput in [[stage_
                                                    constant float4 * pEdgemap [[buffer(3)]],
                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<7>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<7>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader8(SegmentsFragInput in [[stage_in]],
@@ -1722,7 +1768,7 @@ fragment FragOutput segmentsTintmapFragmentShader8(SegmentsFragInput in [[stage_
                                                    constant float4 * pEdgemap [[buffer(3)]],
                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<8>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<8>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader9(SegmentsFragInput in [[stage_in]],
@@ -1730,7 +1776,7 @@ fragment FragOutput segmentsTintmapFragmentShader9(SegmentsFragInput in [[stage_
                                                    constant float4 * pEdgemap [[buffer(3)]],
                                                    constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<9>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<9>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader10(SegmentsFragInput in [[stage_in]],
@@ -1738,7 +1784,7 @@ fragment FragOutput segmentsTintmapFragmentShader10(SegmentsFragInput in [[stage
                                                     constant float4 * pEdgemap [[buffer(3)]],
                                                     constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<10>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<10>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader11(SegmentsFragInput in [[stage_in]],
@@ -1746,7 +1792,7 @@ fragment FragOutput segmentsTintmapFragmentShader11(SegmentsFragInput in [[stage
                                                     constant float4 * pEdgemap [[buffer(3)]],
                                                     constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<11>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<11>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader12(SegmentsFragInput in [[stage_in]],
@@ -1754,7 +1800,7 @@ fragment FragOutput segmentsTintmapFragmentShader12(SegmentsFragInput in [[stage
                                                     constant float4 * pEdgemap [[buffer(3)]],
                                                     constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<12>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<12>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader13(SegmentsFragInput in [[stage_in]],
@@ -1762,7 +1808,7 @@ fragment FragOutput segmentsTintmapFragmentShader13(SegmentsFragInput in [[stage
                                                     constant float4 * pEdgemap [[buffer(3)]],
                                                     constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<13>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<13>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader14(SegmentsFragInput in [[stage_in]],
@@ -1770,7 +1816,7 @@ fragment FragOutput segmentsTintmapFragmentShader14(SegmentsFragInput in [[stage
                                                     constant float4 * pEdgemap [[buffer(3)]],
                                                     constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<14>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<14>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 fragment FragOutput segmentsTintmapFragmentShader15(SegmentsFragInput in [[stage_in]],
@@ -1778,7 +1824,7 @@ fragment FragOutput segmentsTintmapFragmentShader15(SegmentsFragInput in [[stage
                                                     constant float4 * pEdgemap [[buffer(3)]],
                                                     constant float & morphFactor [[buffer(5)]])
 {
-	return writeColor(segFragShaderCore<15>(in,pEdgemap) * premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), 1.0, morphFactor);
+	return writeSegments<15>(in, pEdgemap, premul(evalTint(pColor, in.tintOfs, in.position.xy) * in.color), morphFactor);
 }
 
 
@@ -1807,7 +1853,7 @@ inline float segFragShaderCore_A8(SegmentsFragInput in,
 			adder = edge.b;
 		else if (x + edge.g > 1.f)
 			adder = edge.a;
-		float factor2 = clamp(x + adder, 0.f, 1.f);
+		float factor2 = min(clamp(x + adder, 0.f, 1.f), factor);		// An edge above the one before is pushed down to it.
 
 		totalAlpha += (factor - factor2)*alpha;
 
