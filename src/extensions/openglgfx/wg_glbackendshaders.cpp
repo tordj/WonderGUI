@@ -1638,6 +1638,321 @@ WG_GL_SHAPE_FUNCS
 "}";
 
 
+// Warps (Command::WarpBlit and WarpDrawEdgemap), see Warpmap for the definition they follow.
+// Each pixel finds the cell of the Warpmap it is in and interpolates the position in the source
+// at its center, and how fast that changes along x and y of the canvas. Coverage is worked out
+// from those, taking each border of the source and each edge of an edgemap as straight over the
+// pixel. Extras of a warp, four entries:
+//
+//   0: position of Warpmap on canvas, cell size, number of edges.
+//   1: size of Warpmap, size of source in pixels.
+//   2: source offset in pixels of the source, periods in pixels of the source (0 if none).
+//   3: edgemaps: edges per column, offsets of flat colors, tint table and raw samples in the
+//      edgemap buffer. Blits: position of source rectangle in the surface.
+//
+// The cells of the Warpmap are in its buffer, see GlWarpmap.
+
+const char GlBackend::warpVertexShader[] =
+
+"#version 330 core\n"
+
+WG_GL_CANVAS_BLOCK
+
+"uniform samplerBuffer colorBufferId;					"
+"layout(location = 0) in ivec2 pos;                     "
+"layout(location = 2) in int colorOfs;                  "
+"layout(location = 3) in int extrasOfs;                 "
+"layout(location = 4) in vec2 tintmapOfs;               "
+"flat out int warpOfs;									"
+"flat out int tintOfs;									"
+"out vec2 canvasPos;									"
+"flat out vec4 flatTint;								"
+
+"void main()											"
+"{                                                      "
+"   gl_Position.x = pos.x*2/canvasWidth - 1.0;              "
+"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasHeight - 1.0;    "
+"   gl_Position.z = 0.0;                                    "
+"   gl_Position.w = 1.0;                                    "
+"   warpOfs = extrasOfs;								"
+"   tintOfs = int(tintmapOfs.x);						"
+"   canvasPos = vec2(pos);								"
+"   flatTint = texelFetch(colorBufferId, colorOfs);		"
+"}                                                      ";
+
+// Needs extrasBufferId, warpmapId and warpOfs. warpHalfPlane() gives the part of the pixel where
+// f + g.x * dx + g.y * dy >= 0, dx and dy going from -0.5 to 0.5 over it, which is linear within
+// (a - b) / 2 of the center and a triangle in a corner further out. warpAxisCoverage() gives the
+// part inside the source along one axis, with the copies of the source on a periodic axis.
+
+#define WG_GL_WARP_FUNCS \
+"vec4 warpEntry(int i) { return texelFetch(extrasBufferId, warpOfs + i); }			" \
+"float warpHalfPlane(float f, vec2 g)												" \
+"{																					" \
+"	vec2 ag = abs(g);																" \
+"	float a = max(ag.x, ag.y);														" \
+"	float b = min(ag.x, ag.y);														" \
+"	if (2.0 * f >= a + b)															" \
+"		return 1.0;																	" \
+"	if (2.0 * f <= -(a + b))														" \
+"		return 0.0;																	" \
+"	if (2.0 * abs(f) <= a - b)														" \
+"		return 0.5 + f / a;															" \
+"	float t = a + b - 2.0 * abs(f);													" \
+"	float corner = t * t / (8.0 * a * b);											" \
+"	return f > 0.0 ? 1.0 - corner : corner;											" \
+"}																					" \
+"float warpInside(float size, float period) { return period > 0.0 ? min(size, period) : size; }	" \
+"float warpAxisCoverage(float s, vec2 g, float size, float period)					" \
+"{																					" \
+"	if (period > 0.0 && period <= size)												" \
+"		return 1.0;																	" \
+"	float inside = warpInside(size, period);										" \
+"	float ext = 0.5 * (abs(g.x) + abs(g.y));										" \
+"	if (s - ext >= 0.0 && s + ext <= inside)										" \
+"		return 1.0;																	" \
+"	if (period <= 0.0)																" \
+"		return warpHalfPlane(s, g) - warpHalfPlane(s - inside, g);					" \
+"	float c = 0.0;																	" \
+"	for (int k = -1; k <= 1; k++)													" \
+"	{																				" \
+"		float lo = float(k) * period;												" \
+"		c += warpHalfPlane(s - lo, g) - warpHalfPlane(s - lo - inside, g);			" \
+"	}																				" \
+"	return min(c, 1.0);																" \
+"}																					" \
+"void warpPosition(vec2 p, out vec2 s, out vec2 dx, out vec2 dy)					" \
+"{																					" \
+"	vec4 e0 = warpEntry(0);															" \
+"	vec4 e1 = warpEntry(1);															" \
+"	vec4 e2 = warpEntry(2);															" \
+"	vec2 q = p - e0.xy;																" \
+"	float cellSize = e0.z;															" \
+"	vec2 cells = ceil(e1.xy / cellSize);											" \
+"	vec2 cell = clamp(floor(q / cellSize), vec2(0.0), cells - 1.0);					" \
+"	vec2 c0 = cell * cellSize;														" \
+"	vec2 c1 = min(c0 + cellSize, e1.xy);											" \
+"	vec2 f = (q - c0) / (c1 - c0);													" \
+"	int i = (int(cell.y) * int(cells.x) + int(cell.x)) * 2;							" \
+"	vec4 top = texelFetch(warpmapId, i);											" \
+"	vec4 bottom = texelFetch(warpmapId, i + 1);										" \
+"	vec2 u = mix(mix(top.xy, top.zw, f.x), mix(bottom.xy, bottom.zw, f.x), f.y);	" \
+"	s = u * e1.zw + e2.xy;															" \
+"	dx = mix(top.zw - top.xy, bottom.zw - bottom.xy, f.y) / (c1.x - c0.x) * e1.zw;	" \
+"	dy = mix(bottom.xy - top.xy, bottom.zw - top.zw, f.x) / (c1.y - c0.y) * e1.zw;	" \
+"	if (e2.z > 0.0)																	" \
+"		s.x -= e2.z * floor(s.x / e2.z);											" \
+"	if (e2.w > 0.0)																	" \
+"		s.y -= e2.w * floor(s.y / e2.w);											" \
+"}																					"
+
+// Coverage of the segments of an edgemap. Edges are linear across the column at the center of
+// the pixel (the nearest copy's for a center in the gap between copies on a periodic axis),
+// so the border of the area below an edge is sy - edge(sx) = 0. Areas below the top of the
+// source, each edge and the bottom of the source are measured, kept decreasing as an edge is
+// pushed down to the edges above it, and their differences are the parts of the segments.
+// SEGMENT is code run for each part, with the segment in e and the part in part. Needs edgemapId.
+
+#define WG_GL_WARP_SEGMENTS(SEGMENT) \
+"	vec2 s, dx, dy;																	" \
+"	warpPosition(canvasPos, s, dx, dy);												" \
+"	vec4 e0 = warpEntry(0);															" \
+"	vec4 e1 = warpEntry(1);															" \
+"	vec4 e2 = warpEntry(2);															" \
+"	vec4 e3 = warpEntry(3);															" \
+"	vec2 size = e1.zw;																" \
+"	vec2 period = e2.zw;															" \
+"	vec2 gx = vec2(dx.x, dy.x);														" \
+"	vec2 gy = vec2(dx.y, dy.y);														" \
+"	float covX = warpAxisCoverage(s.x, gx, size.x, period.x);						" \
+"	if (covX <= 0.0)																" \
+"		discard;																	" \
+"	int nEdges = int(e0.w);															" \
+"	int pitch = int(e3.x);															" \
+"	int flatColorsOfs = int(e3.y);													" \
+"	int tintTableOfs = int(e3.z);													" \
+"	float ex = s.x;																	" \
+"	float insideX = warpInside(size.x, period.x);									" \
+"	if (period.x > 0.0 && ex >= insideX && ex - insideX > period.x - ex)			" \
+"		ex -= period.x;																" \
+"	int column = clamp(int(floor(ex)), 0, int(size.x) - 1);							" \
+"	float frac = ex - float(column);												" \
+"	int base = int(e3.w) + column * pitch;											" \
+"	float insideY = warpInside(size.y, period.y);									" \
+"	float ext = 0.5 * (abs(gy.x) + abs(gy.y));										" \
+"	int kBeg = period.y > 0.0 ? -1 : 0;												" \
+"	for (int k = kBeg; k <= -kBeg; k++)												" \
+"	{																				" \
+"		float sy = s.y - float(k) * period.y;										" \
+"		if (sy + ext <= 0.0 || sy - ext >= insideY)									" \
+"			continue;																" \
+"		float above = warpHalfPlane(sy, gy);										" \
+"		for (int e = 0; e <= nEdges; e++)											" \
+"		{																			" \
+"			float below;															" \
+"			if (e < nEdges)															" \
+"			{																		" \
+"				vec2 lr = texelFetch(edgemapId, base + e).xy;						" \
+"				float slope = lr.y - lr.x;											" \
+"				below = min(above, warpHalfPlane(sy - lr.x - slope * frac, gy - slope * gx));	" \
+"			}																		" \
+"			else																	" \
+"				below = min(above, warpHalfPlane(sy - insideY, gy));				" \
+"			float part = (above - below) * covX;									" \
+"			if (part > 0.0)															" \
+SEGMENT \
+"			above = below;															" \
+"		}																			" \
+"	}																				"
+
+const char GlBackend::warpEdgemapFragmentShader[] =
+
+"#version 330 core\n"
+WG_GL_OUTPUT
+"uniform samplerBuffer extrasBufferId;			"
+"uniform samplerBuffer tintmapBufferId;			"
+"uniform samplerBuffer edgemapId;				"
+"uniform samplerBuffer warpmapId;				"
+"flat in int warpOfs;							"
+"flat in int tintOfs;							"
+"in vec2 canvasPos;								"
+"flat in vec4 flatTint;							"
+WG_GL_TINT_FUNC
+WG_GL_SEGCOLOR_FUNC
+WG_GL_SEGPART_FUNC
+WG_GL_WARP_FUNCS
+"void main()									"
+"{												"
+"	vec4 tint = premul((tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) : vec4(1.0)) * flatTint);	"
+"	vec4 acc = vec4(0.0);						"
+"	float keep = 0.0;							"
+"	float covered = 0.0;						"
+WG_GL_WARP_SEGMENTS("{ acc += segPart(premul(segColor(e, flatColorsOfs, tintTableOfs, s)) * tint, part, keep); covered += part; }")
+"	if (covered < 1.0 / 256.0)					"
+"		discard;								"
+"	if (keepsResultColors())					"
+"	{											"
+"		color = acc;							"
+"		colorFactor = vec4(covered - keep);		"
+"	}											"
+"	else										"
+"		writeColor(acc, covered);				"
+"}";
+
+const char GlBackend::warpEdgemapFragmentShader_A8[] =
+
+"#version 330 core\n"
+WG_GL_OUTPUT_A8
+"uniform samplerBuffer extrasBufferId;			"
+"uniform samplerBuffer tintmapBufferId;			"
+"uniform samplerBuffer edgemapId;				"
+"uniform samplerBuffer warpmapId;				"
+"flat in int warpOfs;							"
+"flat in int tintOfs;							"
+"in vec2 canvasPos;								"
+"flat in vec4 flatTint;							"
+WG_GL_TINT_FUNC
+WG_GL_SEGCOLOR_FUNC
+WG_GL_WARP_FUNCS
+"void main()									"
+"{												"
+"	float acc = 0.0;							"
+"	float covered = 0.0;						"
+WG_GL_WARP_SEGMENTS("{ acc += segColor(e, flatColorsOfs, tintTableOfs, s).a * part; covered += part; }")
+"	if (covered < 1.0 / 256.0)					"
+"		discard;								"
+"	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) : vec4(1.0)) * flatTint;	"
+"	writeAlpha(acc * tint.a, covered);			"
+"}";
+
+// The blit source is sampled at the position of the center of the pixel, with its sample method,
+// wrapped or clamped to the texture as it is set up. sourceKind tells how to read it: 0 colors,
+// 1 alpha only (Alpha_8 as white with alpha), 2 palette with nearest sampling and 3 palette with
+// bilinear sampling, which looks up the four texels around the position. Gradients are given
+// for mipmapped surfaces, which the derivatives of positions that wrap would get wrong.
+
+#define WG_GL_WARP_SAMPLE \
+"uniform sampler2D texId;															" \
+"uniform sampler2D paletteId;														" WG_GL_PALETTE_FUNC \
+"uniform int sourceKind;															" \
+"vec4 warpSample(vec2 p, vec2 gx, vec2 gy)											" \
+"{																					" \
+"	vec2 texSize = vec2(textureSize(texId, 0));										" \
+"	if (sourceKind == 2)															" \
+"		return paletteLookup(textureLod(texId, p / texSize, 0.0).r);				" \
+"	if (sourceKind == 3)															" \
+"	{																				" \
+"		vec2 q = p - 0.5;															" \
+"		vec2 base = floor(q);														" \
+"		vec2 f = q - base;															" \
+"		vec2 uv00 = (base + 0.5) / texSize;											" \
+"		vec2 uv11 = (base + 1.5) / texSize;											" \
+"		vec4 c00 = paletteLookup(textureLod(texId, uv00, 0.0).r);					" \
+"		vec4 c01 = paletteLookup(textureLod(texId, vec2(uv11.x, uv00.y), 0.0).r);	" \
+"		vec4 c10 = paletteLookup(textureLod(texId, vec2(uv00.x, uv11.y), 0.0).r);	" \
+"		vec4 c11 = paletteLookup(textureLod(texId, uv11, 0.0).r);					" \
+"		return mix(mix(c00, c01, f.x), mix(c10, c11, f.x), f.y);					" \
+"	}																				" \
+"	vec4 c = textureGrad(texId, p / texSize, gx / texSize, gy / texSize);			" \
+"	return sourceKind == 1 ? vec4(c.r) : c;											" \
+"}																					"
+
+#define WG_GL_WARP_BLIT_COVERAGE \
+"	vec2 s, dx, dy;																	" \
+"	warpPosition(canvasPos, s, dx, dy);												" \
+"	vec4 e1 = warpEntry(1);															" \
+"	vec4 e2 = warpEntry(2);															" \
+"	vec4 e3 = warpEntry(3);															" \
+"	float cov = warpAxisCoverage(s.x, vec2(dx.x, dy.x), e1.z, e2.z);				" \
+"	if (cov > 0.0)																	" \
+"		cov *= warpAxisCoverage(s.y, vec2(dx.y, dy.y), e1.w, e2.w);					" \
+"	if (cov < 1.0 / 256.0)															" \
+"		discard;																	" \
+"	vec4 c = warpSample(e3.xy + s, dx, dy);											" \
+"	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) : vec4(1.0)) * flatTint;	"
+
+const char GlBackend::warpBlitFragmentShader[] =
+
+"#version 330 core\n"
+WG_GL_OUTPUT
+"uniform samplerBuffer extrasBufferId;			"
+"uniform samplerBuffer tintmapBufferId;			"
+"uniform samplerBuffer warpmapId;				"
+"flat in int warpOfs;							"
+"flat in int tintOfs;							"
+"in vec2 canvasPos;								"
+"flat in vec4 flatTint;							"
+WG_GL_TINT_FUNC
+WG_GL_WARP_FUNCS
+WG_GL_WARP_SAMPLE
+"void main()									"
+"{												"
+WG_GL_WARP_BLIT_COVERAGE
+"	writeColor(c * premul(tint) * cov, cov);	"
+"}";
+
+const char GlBackend::warpBlitFragmentShader_A8[] =
+
+"#version 330 core\n"
+WG_GL_OUTPUT_A8
+"uniform samplerBuffer extrasBufferId;			"
+"uniform samplerBuffer tintmapBufferId;			"
+"uniform samplerBuffer warpmapId;				"
+"flat in int warpOfs;							"
+"flat in int tintOfs;							"
+"in vec2 canvasPos;								"
+"flat in vec4 flatTint;							"
+WG_GL_TINT_FUNC
+WG_GL_WARP_FUNCS
+WG_GL_WARP_SAMPLE
+"void main()									"
+"{												"
+WG_GL_WARP_BLIT_COVERAGE
+"	writeAlpha(c.a * tint.a * cov, cov);		"
+"}";
+
+
+
 
 
 /*

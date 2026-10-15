@@ -30,6 +30,8 @@
 #include <wg_glsurfacefactory.h>
 #include <wg_gledgemap.h>
 #include <wg_gledgemapfactory.h>
+#include <wg_glwarpmap.h>
+#include <wg_glwarpmapfactory.h>
 #include <wg_gpushapes.h>
 #include <wg_gfxbase.h>
 #include <wg_gfxutil.h>
@@ -920,13 +922,100 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 		case Command::WarpBlit:
 		case Command::WarpDrawEdgemap:
 		{
-			// Not supported yet. Step over the command.
-
 			WarpParams params;
 			p = decodeWarp(cmd, p, params);
 
-			pObjects += (cmd == Command::WarpDrawEdgemap) ? 2 : 1;
+			auto pWarpmap = static_cast<GlWarpmap*>(*pObjects++);
+			auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<GlEdgemap*>(*pObjects++) : nullptr;
+
+			const RectSPX* pWarpRects = pRects;
 			pRects += params.nRects;
+
+			// Extras, see warpVertexShader.
+
+			CoordI dest = roundToPixels(params.dest);
+			SizeI warpSize = pWarpmap->pixelSize();
+
+			float srcW, srcH;
+
+			if (pEdgemap)
+			{
+				srcW = float(pEdgemap->m_size.w);
+				srcH = float(pEdgemap->m_size.h);
+			}
+			else
+			{
+				srcW = params.source.w / 64.f;
+				srcH = params.source.h / 64.f;
+			}
+
+			int extrasOfs = int(pExtrasGL - m_pExtrasBuffer) / 4;
+
+			*pExtrasGL++ = GLfloat(dest.x);
+			*pExtrasGL++ = GLfloat(dest.y);
+			*pExtrasGL++ = GLfloat(pWarpmap->cellSize());
+			*pExtrasGL++ = pEdgemap ? GLfloat(pEdgemap->m_nbRenderSegments - 1) : 0.f;
+
+			*pExtrasGL++ = GLfloat(warpSize.w);
+			*pExtrasGL++ = GLfloat(warpSize.h);
+			*pExtrasGL++ = srcW;
+			*pExtrasGL++ = srcH;
+
+			*pExtrasGL++ = params.sourceOffset.x / 64.f;
+			*pExtrasGL++ = params.sourceOffset.y / 64.f;
+			*pExtrasGL++ = pWarpmap->uPeriod() * srcW;
+			*pExtrasGL++ = pWarpmap->vPeriod() * srcH;
+
+			if (pEdgemap)
+			{
+				*pExtrasGL++ = GLfloat(pEdgemap->m_nbSegments - 1);
+				*pExtrasGL++ = GLfloat(pEdgemap->_flatColorsOfs());
+				*pExtrasGL++ = GLfloat(pEdgemap->_tintTableOfs());
+				*pExtrasGL++ = GLfloat(pEdgemap->_rawSamplesOfs());
+			}
+			else
+			{
+				*pExtrasGL++ = params.source.x / 64.f;
+				*pExtrasGL++ = params.source.y / 64.f;
+				*pExtrasGL++ = 0.f;
+				*pExtrasGL++ = 0.f;
+			}
+
+			// Vertices, a quad for the part of each clip rectangle covered by the Warpmap.
+
+			int flatTintOfs = m_tintColorOfs >= 0 ? m_tintColorOfs : 0;		// Entry 0 is white.
+			int nVertices = 0;
+
+			for (int i = 0; i < params.nRects; i++)
+			{
+				RectI patch = RectI::overlap(roundToPixels(pWarpRects[i]), RectI(dest, warpSize));
+
+				if (patch.w <= 0 || patch.h <= 0)
+					continue;
+
+				CoordI corners[6] = {	{ patch.x, patch.y }, { patch.x + patch.w, patch.y }, { patch.x + patch.w, patch.y + patch.h },
+										{ patch.x, patch.y }, { patch.x + patch.w, patch.y + patch.h }, { patch.x, patch.y + patch.h } };
+
+				for (auto& corner : corners)
+				{
+					pVertexGL->coord = corner;
+					pVertexGL->uv = { 0.f, 0.f };
+					pVertexGL->colorsOfs = flatTintOfs;
+					pVertexGL->extrasOfs = extrasOfs;
+					pVertexGL->tintmapOfs = { float(m_tintOfs), 0.f };
+					pVertexGL->colorstripOfs = { 0.f, 0.f };
+					pVertexGL++;
+				}
+
+				nVertices += 6;
+			}
+
+			m_objects.push_back(pWarpmap);
+			if (pEdgemap)
+				m_objects.push_back(pEdgemap);
+
+			*pCommandGL++ = pEdgemap ? CommandGL::WarpEdgemap : CommandGL::WarpBlit;
+			*pCommandGL++ = nVertices;
 			break;
 		}
 
@@ -1673,7 +1762,10 @@ EdgemapFactory_p GlBackend::edgemapFactory()
 
 WarpmapFactory_p GlBackend::warpmapFactory()
 {
-	return m_pWarpmapFactory;		// Not supported yet.
+	if (!m_pWarpmapFactory)
+		m_pWarpmapFactory = GlWarpmapFactory::create();
+
+	return m_pWarpmapFactory;
 }
 
 
@@ -1859,6 +1951,7 @@ void GlBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, int
 		+ pInfo->nLineCoords/2 * 4
 		+ pInfo->nRects * 8			// This is margin for blits (+8) and  subpixel fills (+4).
 		+ pInfo->nEdgemapDraws * 8
+		+ pInfo->nWarpDraws * 16
 		+ GpuShapes::maxSessionEntries(*pInfo) * 4;
 
 	m_pExtrasBuffer = new GLfloat[nExtrasFloats];
@@ -1874,6 +1967,7 @@ void GlBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, int
 		+ pInfo->nLines * 3 + pInfo->nLineClipRects * 4
 		+ pInfo->nEdgemapDraws * 3
 		+ pInfo->nShapeDraws * 2
+		+ pInfo->nWarpDraws * 2
 		+ pInfo->nSetCanvas];
 
 	m_commandQueueSize = 0;
@@ -2219,6 +2313,56 @@ void GlBackend::endSession()
 			{
 				int nVertices = *pCmd++;
 				glUseProgram(m_shapeProg[m_bActiveCanvasIsA8]);
+				_setPartialCoverage(true);
+
+				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+				vertexOfs += nVertices;
+				break;
+			}
+
+			case CommandGL::WarpEdgemap:
+			case CommandGL::WarpBlit:
+			{
+				auto pWarpmap = static_cast<GlWarpmap*>(m_objects[objectOfs++]);
+
+				glActiveTexture(GL_TEXTURE5);
+				glBindTexture(GL_TEXTURE_BUFFER, pWarpmap->m_textureId);
+
+				GLuint prog;
+
+				if (cmd == CommandGL::WarpEdgemap)
+				{
+					auto pEdgemap = static_cast<GlEdgemap*>(m_objects[objectOfs++]);
+
+					glActiveTexture(GL_TEXTURE4);
+					glBindTexture(GL_TEXTURE_BUFFER, pEdgemap->m_textureId);
+					glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, pEdgemap->m_bufferId);
+
+					prog = m_warpEdgemapProg[m_bActiveCanvasIsA8];
+					glUseProgram(prog);
+				}
+				else
+				{
+					GlSurface* pSurf = m_pActiveBlitSource;
+
+					prog = m_warpBlitProg[m_bActiveCanvasIsA8];
+					glUseProgram(prog);
+
+					int sourceKind = 0;
+					if (pSurf->pixelDescription()->type == PixelType::Index)
+					{
+						sourceKind = pSurf->sampleMethod() == SampleMethod::Bilinear ? 3 : 2;
+						_setPaletteInfo(prog, pSurf);
+					}
+					else if (pSurf->pixelFormat() == PixelFormat::Alpha_8)
+						sourceKind = 1;
+
+					glUniform1i(glGetUniformLocation(prog, "sourceKind"), sourceKind);
+				}
+
+				glActiveTexture(GL_TEXTURE0);
+
+				int nVertices = *pCmd++;
 				_setPartialCoverage(true);
 
 				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
@@ -2639,6 +2783,27 @@ void GlBackend::_loadPrograms(int uboBindingPoint)
 		LOG_INIT_GLERROR(glGetError());
 	}
 
+	// Create and init Warp shaders. Texture unit 4 is used for the edgemap buffer and 5 for the warpmap buffer.
+
+	for (int i = 0; i < 2; i++)
+	{
+		GLuint progId = _loadOrCompileProgram(programNb++, warpVertexShader, i == 0 ? warpEdgemapFragmentShader : warpEdgemapFragmentShader_A8);
+		_setUniforms(progId, uboBindingPoint);
+		glUniform1i(glGetUniformLocation(progId, "edgemapId"), 4);
+		glUniform1i(glGetUniformLocation(progId, "warpmapId"), 5);
+		m_warpEdgemapProg[i] = progId;
+		LOG_INIT_GLERROR(glGetError());
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		GLuint progId = _loadOrCompileProgram(programNb++, warpVertexShader, i == 0 ? warpBlitFragmentShader : warpBlitFragmentShader_A8);
+		_setUniforms(progId, uboBindingPoint);
+		glUniform1i(glGetUniformLocation(progId, "warpmapId"), 5);
+		m_warpBlitProg[i] = progId;
+		LOG_INIT_GLERROR(glGetError());
+	}
+
 	LOG_INIT_GLERROR(glGetError());
 }
 
@@ -2781,6 +2946,12 @@ Blob_p GlBackend::_generateProgramBlob()
 
 	programs[prg++] = m_shapeProg[0];
 	programs[prg++] = m_shapeProg[1];
+
+	programs[prg++] = m_warpEdgemapProg[0];
+	programs[prg++] = m_warpEdgemapProg[1];
+
+	programs[prg++] = m_warpBlitProg[0];
+	programs[prg++] = m_warpBlitProg[1];
 
 	assert(prg == c_nbPrograms);
 
