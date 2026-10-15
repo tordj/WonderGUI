@@ -354,44 +354,46 @@ namespace wg
         
 		if( bHasTextureData || m_pPalette )
 		{
-			id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
-			id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
-			commandBuffer.label = @"_createAndSyncTextures Command Buffer";
+			@autoreleasepool {
+				id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
+				id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
+				commandBuffer.label = @"_createAndSyncTextures Command Buffer";
 
-			id<MTLBuffer> pixelUpload = nil;
-			id<MTLBuffer> paletteUpload = nil;
+				id<MTLBuffer> pixelUpload = nil;
+				id<MTLBuffer> paletteUpload = nil;
 
-			if( bHasTextureData )
-				pixelUpload = _encodeTextureUpload(blitCommandEncoder, RectI(0, 0, m_size.w, m_size.h));
+				if( bHasTextureData )
+					pixelUpload = _encodeTextureUpload(blitCommandEncoder, RectI(0, 0, m_size.w, m_size.h));
 
-			if( m_pPalette )
-				paletteUpload = _encodePaletteUpload(blitCommandEncoder);
+				if( m_pPalette )
+					paletteUpload = _encodePaletteUpload(blitCommandEncoder);
 
-			// MetalBackend draws the mip levels before the texture is first read,
-			// see MetalBackend::_generateMipmaps().
+				// MetalBackend draws the mip levels before the texture is first read,
+				// see MetalBackend::_generateMipmaps().
 
-			if(m_bMipmapped)
-				m_bMipmapStale = true;
+				if(m_bMipmapped)
+					m_bMipmapStale = true;
 			
-			[blitCommandEncoder endEncoding];
-			blitCommandEncoder = nil;
-/*
-			m_bTextureSyncInProgress = true;
+				[blitCommandEncoder endEncoding];
+				blitCommandEncoder = nil;
+	/*
+				m_bTextureSyncInProgress = true;
 			
-			// Add a completion handler and commit the command buffer.
-			[commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
-				// Private texture is populated.
+				// Add a completion handler and commit the command buffer.
+				[commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+					// Private texture is populated.
 				
-				m_bTextureSyncInProgress = false;
-			}];
-*/
-			[commandBuffer commit];
-			[commandBuffer waitUntilCompleted];
+					m_bTextureSyncInProgress = false;
+				}];
+	*/
+				[commandBuffer commit];
+				[commandBuffer waitUntilCompleted];
 
-			commandBuffer = nil;
+				commandBuffer = nil;
 
-			[pixelUpload release];
-			[paletteUpload release];
+				[pixelUpload release];
+				[paletteUpload release];
+			}
 		}
     }
 
@@ -576,27 +578,29 @@ namespace wg
         MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h,1};
         MTLOrigin textureOrigin = { 0, 0, 0};
         
-        id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
-		commandBuffer.label = @"_syncBufferAndWait Command Buffer";
+        @autoreleasepool {
+	        id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
+			commandBuffer.label = @"_syncBufferAndWait Command Buffer";
 
 		
-        id <MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
-        [blitCommandEncoder     copyFromTexture:    m_texture
-                                sourceSlice:        0
-                                sourceLevel:        0
-                                sourceOrigin:       textureOrigin
-                                sourceSize:         textureSize
-                                toBuffer:           m_textureBuffer
-                                destinationOffset:  0
-                                destinationBytesPerRow: m_pixelSize * m_size.w
-                                destinationBytesPerImage: m_pixelSize * m_size.w * m_size.h ];
-        [blitCommandEncoder endEncoding];
-        blitCommandEncoder = nil;
+	        id <MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
+	        [blitCommandEncoder     copyFromTexture:    m_texture
+	                                sourceSlice:        0
+	                                sourceLevel:        0
+	                                sourceOrigin:       textureOrigin
+	                                sourceSize:         textureSize
+	                                toBuffer:           m_textureBuffer
+	                                destinationOffset:  0
+	                                destinationBytesPerRow: m_pixelSize * m_size.w
+	                                destinationBytesPerImage: m_pixelSize * m_size.w * m_size.h ];
+	        [blitCommandEncoder endEncoding];
+	        blitCommandEncoder = nil;
 
-        [commandBuffer commit];
+	        [commandBuffer commit];
 
-        [commandBuffer waitUntilCompleted];
-        commandBuffer = nil;
+	        [commandBuffer waitUntilCompleted];
+	        commandBuffer = nil;
+        }
 
         if( _isPremultiplied() )
             _convertAlpha((uint8_t*)[m_textureBuffer contents], m_size.w * m_pixelSize, m_size.w, m_size.h, false);
@@ -609,34 +613,36 @@ namespace wg
 
     void MetalSurface::_syncTexture(RectI region)
 {
-		id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
-		commandBuffer.label = @"_syncTexture Command Buffer";
+		@autoreleasepool {
+			id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
+			commandBuffer.label = @"_syncTexture Command Buffer";
 
-		id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
-		id<MTLBuffer> upload = _encodeTextureUpload(blitCommandEncoder, region);
+			id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
+			id<MTLBuffer> upload = _encodeTextureUpload(blitCommandEncoder, region);
 
-        if(m_bMipmapped)
-            m_bMipmapStale = true;
-//            [blitCommandEncoder generateMipmapsForTexture:m_texture];
+	        if(m_bMipmapped)
+	            m_bMipmapStale = true;
+	//            [blitCommandEncoder generateMipmapsForTexture:m_texture];
         
-        [blitCommandEncoder endEncoding];
-        blitCommandEncoder = nil;
+	        [blitCommandEncoder endEncoding];
+	        blitCommandEncoder = nil;
         
-/*
-		 m_bTextureSyncInProgress = true;
+	/*
+			 m_bTextureSyncInProgress = true;
 
-        // Add a completion handler and commit the command buffer.
-        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
-            // Private texture is populated.
+	        // Add a completion handler and commit the command buffer.
+	        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+	            // Private texture is populated.
             
-            m_bTextureSyncInProgress = false;
-        }];
- */
-        [commandBuffer commit];
-		[commandBuffer waitUntilCompleted];
+	            m_bTextureSyncInProgress = false;
+	        }];
+	 */
+	        [commandBuffer commit];
+			[commandBuffer waitUntilCompleted];
 
-        commandBuffer = nil;
-        [upload release];
+	        commandBuffer = nil;
+	        [upload release];
+		}
 
 //        _waitForSyncedTexture();
     }
@@ -646,18 +652,20 @@ namespace wg
 
     void MetalSurface::_syncPalette()
     {
-        id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
-        commandBuffer.label = @"_syncPalette Command Buffer";
+        @autoreleasepool {
+	        id<MTLCommandBuffer> commandBuffer = [MetalBackend::s_metalCommandQueue commandBuffer];
+	        commandBuffer.label = @"_syncPalette Command Buffer";
 
-        id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
-        id<MTLBuffer> upload = _encodePaletteUpload(blitCommandEncoder);
-        [blitCommandEncoder endEncoding];
-        blitCommandEncoder = nil;
+	        id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
+	        id<MTLBuffer> upload = _encodePaletteUpload(blitCommandEncoder);
+	        [blitCommandEncoder endEncoding];
+	        blitCommandEncoder = nil;
 
-        [commandBuffer commit];
-        [commandBuffer waitUntilCompleted];
-        commandBuffer = nil;
-        [upload release];
+	        [commandBuffer commit];
+	        [commandBuffer waitUntilCompleted];
+	        commandBuffer = nil;
+	        [upload release];
+        }
     }
 
     //____ _encodeTextureUpload() _______________________________________________

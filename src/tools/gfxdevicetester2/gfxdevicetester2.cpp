@@ -1,5 +1,10 @@
 #include <algorithm>
 #include <cmath>
+#include <ctime>
+#include <fstream>
+#include <limits>
+#include <map>
+#include <sstream>
 
 #include <wondergfx.h>
 #include <wg_referencebackend.h>
@@ -107,7 +112,7 @@ void GfxDeviceTester2::exit()
 
 	destroy_tests();
 
-	for (auto& viewer : { &m_displayViewer, &m_accuracyViewer })
+	for (auto& viewer : { &m_displayViewer, &m_accuracyViewer, &m_performanceViewer })
 	{
 		for (auto& p : viewer->pImages)
 			p = nullptr;
@@ -279,6 +284,9 @@ bool GfxDeviceTester2::setup_chrome()
 	m_pSpecksStyle = verdictStyle(Color::DarkOrange);
 	m_pDiffStyle = verdictStyle(Color::Red);
 
+	m_pCellSkin = ColorSkin::create({ .color = Color::Transparent, .padding = Border(2, 8) });
+	m_pSelectedCellSkin = ColorSkin::create({ .color = Color::Aquamarine, .padding = Border(2, 8) });
+
 	// Navigation bar with a button for each view.
 
 	auto pNavBar = PackPanel::create({ .axis = Axis::X, .layout = m_pLayout, .skin = wkit::Skins::Plate, .spacing = 4 });
@@ -322,16 +330,22 @@ bool GfxDeviceTester2::setup_chrome()
 
 	m_pWindow->mainCapsule()->slot = pRoot;
 
-	// Clicks on the cells of the accuracy table select their row.
+	// Clicks on the cells of the accuracy and performance tables select their row.
+	// Each cell has the index of its test as id, headings have -1.
 
 	m_routes.push_back(Base::msgRouter()->addRoute(MsgType::MouseClick, [this](Msg* pMsg) {
 		auto pSource = pMsg->sourceRawPtr();
-		if (!pSource || !m_pAccuracyTable || !pSource->isInstanceOf(Widget::TYPEINFO))
+		if (!pSource || !pSource->isInstanceOf(Widget::TYPEINFO))
 			return;
 
 		auto pWidget = static_cast<Widget*>(pSource);
-		if (pWidget->parent() == m_pAccuracyTable && pWidget->id() >= 0)
+		if (pWidget->id() < 0)
+			return;
+
+		if (pWidget->parent() == m_pAccuracyTable)
 			select_accuracy_row(pWidget->id());
+		else if (pWidget->parent() == m_pPerformanceTable)
+			select_performance_row(pWidget->id());
 	}));
 
 	return true;
@@ -373,6 +387,34 @@ Widget_p GfxDeviceTester2::create_display_view()
 		}));
 	}
 
+	// Clip list buttons.
+
+	auto pClipLabel = TextDisplay::create({ .display = {.style = wkit::TextStyles::Strong, .text = "      Clip rects: " } });
+	pTopBar->slots.pushBack(pClipLabel, { .weight = 0 });
+
+	auto pClipGroup = ToggleGroup::create();
+
+	const char* clipNames[3] = { "One", "Few", "Many" };
+
+	for (int i = 0; i < 3; i++)
+	{
+		auto pButton = WGCREATE(wkit::ToggleButton, _.label.text = clipNames[i]);
+		pClipGroup->add(pButton);
+		if (i == 0)
+			pButton->setChecked(true);
+
+		pTopBar->slots.pushBack(pButton, { .weight = 0 });
+
+		ClipList clipList = ClipList(i);
+		m_routes.push_back(Base::msgRouter()->addRoute(pButton, MsgType::Toggle, [this, clipList](Msg* pMsg) {
+			if (static_cast<ToggleMsg*>(pMsg)->isChecked() && m_displayViewer.clipList != clipList)
+			{
+				m_displayViewer.clipList = clipList;
+				refresh_viewer(m_displayViewer);
+			}
+		}));
+	}
+
 	pTopBar->slots.pushBack(Filler::create(), { .weight = 1 });
 
 	// The three boxes.
@@ -392,11 +434,11 @@ Widget_p GfxDeviceTester2::create_display_view()
 	pMain->slots.pushBack(m_displayViewer.pTitle, { .weight = 0 });
 	pMain->slots.pushBack(pScroller, { .weight = 1 });
 
-	// Test tree to the right.
+	// Test tree to the left.
 
 	auto pBase = PackPanel::create({ .axis = Axis::X, .layout = m_pLayout });
-	pBase->slots.pushBack(pMain, { .weight = 1 });
 	pBase->slots.pushBack(create_test_tree(), { .weight = 0 });
+	pBase->slots.pushBack(pMain, { .weight = 1 });
 
 	return pBase;
 }
@@ -564,11 +606,13 @@ Widget_p GfxDeviceTester2::create_progress_bar(Slider_p& pBar, TextDisplay_p& pL
 			_.defaultSize = Size(240, 16),
 			_.padding = 1))));
 
-	pLabel = TextDisplay::create({ .display = {.style = wkit::TextStyles::Default, .text = "" } });
+	pLabel = TextDisplay::create({ .display = {.layout = m_pRightAligned, .style = wkit::TextStyles::Default, .text = "" } });
+
+	// Label first, so the bar stays in place when the length of the text changes.
 
 	auto pPack = PackPanel::create({ .axis = Axis::X, .layout = m_pLayout, .spacing = 8 });
-	pPack->slots.pushBack(pBar, { .weight = 0 });
 	pPack->slots.pushBack(pLabel, { .weight = 1 });
+	pPack->slots.pushBack(pBar, { .weight = 0 });
 	return pPack;
 }
 
@@ -651,34 +695,107 @@ Widget_p GfxDeviceTester2::create_accuracy_view()
 
 Widget_p GfxDeviceTester2::create_performance_view()
 {
-	auto pTable = TablePanel::create({ .columnSpacing = 16, .rowSpacing = 4, .skin = ColorSkin::create({ .color = Color::White, .padding = 4 }) });
+	create_viewer(m_performanceViewer);
+
+	// Table
+
+	const int nbColumns = 5;
+
+	auto pTable = TablePanel::create({ .columnSpacing = 0, .rowSpacing = 0, .skin = ColorSkin::create({ .color = Color::White, .padding = 4 }) });
 	pTable->setRowSkins(ColorSkin::create(Color::White), ColorSkin::create(Color::PapayaWhip));
 
 	m_pPerformanceTable = pTable;
 
-	pTable->resize(1 + (int)m_tests.size(), 4);
+	pTable->resize(1 + (int)m_tests.size(), nbColumns);
 
-	const char* headings[4] = { "SUITE", "TEST", "TIME PER RUN", "LOOPS" };
-	for (int col = 0; col < 4; col++)
-		pTable->slots[0][col] = TextDisplay::create({ .display = {.layout = col < 2 ? nullptr : m_pRightAligned, .style = wkit::TextStyles::Heading6, .text = headings[col] } });
+	const char* headings[nbColumns] = { "SUITE", "TEST", "TIME PER RUN", "LOADED", "CHANGE" };
+	for (int col = 0; col < nbColumns; col++)
+		pTable->slots[0][col] = create_cell(-1, col < 2 ? nullptr : m_pRightAligned, wkit::TextStyles::Heading6, headings[col]);
 
 	for (int i = 0; i < (int)m_tests.size(); i++)
 	{
 		auto& test = m_tests[i];
 
-		test.pPerfTimeCell = TextDisplay::create({ .display = {.layout = m_pRightAligned, .style = wkit::TextStyles::Default } });
-		test.pPerfLoopsCell = TextDisplay::create({ .display = {.layout = m_pRightAligned, .style = wkit::TextStyles::Default } });
+		test.pPerfTimeCell = create_cell(i, m_pRightAligned);
+		test.pPerfLoadedCell = create_cell(i, m_pRightAligned);
+		test.pPerfChangeCell = create_cell(i, m_pRightAligned);
 
-		pTable->slots[1 + i][0] = TextDisplay::create({ .display = {.style = wkit::TextStyles::Default, .text = m_suites[test.suite].name.c_str() } });
-		pTable->slots[1 + i][1] = TextDisplay::create({ .display = {.style = wkit::TextStyles::Default, .text = test.name.c_str() } });
+		pTable->slots[1 + i][0] = create_cell(i, nullptr, nullptr, m_suites[test.suite].name);
+		pTable->slots[1 + i][1] = create_cell(i, nullptr, nullptr, test.name);
 		pTable->slots[1 + i][2] = test.pPerfTimeCell;
-		pTable->slots[1 + i][3] = test.pPerfLoopsCell;
+		pTable->slots[1 + i][3] = test.pPerfLoadedCell;
+		pTable->slots[1 + i][4] = test.pPerfChangeCell;
 
 		refresh_performance_row(i);
 	}
 
 	auto pTableScroller = wkit::ScrollCapsuleY::create();
 	pTableScroller->slot = pTable;
+
+	// Selected test, as rendered by the testee.
+
+	auto pPreview = PackPanel::create({ .axis = Axis::Y, .layout = m_pLayout, .spacing = 8 });
+	pPreview->slots.pushBack(m_performanceViewer.pTitle, { .weight = 0 });
+	pPreview->slots.pushBack(create_image_box(m_performanceViewer, TESTEE, 1.f), { .weight = 0 });
+
+	m_pPerformanceDetails = TextDisplay::create({ .display = {.style = wkit::TextStyles::Default, .text = "Select a test to see it here." } });
+
+	auto pRunSelectedButton = WGCREATE(wkit::Button, _.label.text = "RUN SELECTED TEST");
+	m_routes.push_back(Base::msgRouter()->addRoute(pRunSelectedButton, MsgType::Select, [this](Msg* pMsg) {
+		if (!m_bPerformanceRunning && m_performanceSelected >= 0)
+			start_performance_run({ m_performanceSelected });
+	}));
+
+	auto pDetailsRow = PackPanel::create({ .axis = Axis::X, .layout = m_pLayout, .spacing = 8 });
+	pDetailsRow->slots.pushBack(m_pPerformanceDetails, { .weight = 1 });
+	pDetailsRow->slots.pushBack(pRunSelectedButton, { .weight = 0 });
+
+	pPreview->slots.pushBack(pDetailsRow, { .weight = 0 });
+
+	auto pPreviewScroller = wkit::ScrollCapsuleY::create();
+	pPreviewScroller->slot = PaddingCapsule::create({ .child = pPreview, .padding = 8 });
+
+	auto pMid = PackPanel::create({ .axis = Axis::X, .layout = m_pLayout });
+	pMid->slots.pushBack(pTableScroller, { .weight = 1 });
+	pMid->slots.pushBack(pPreviewScroller, { .weight = 0 });
+
+	// Bar for saving and loading results.
+
+	auto pFileBar = PackPanel::create({ .axis = Axis::X, .layout = m_pLayout, .skin = wkit::Skins::Plate, .spacing = 8 });
+
+	auto pSaveButton = WGCREATE(wkit::Button, _.label.text = "SAVE RESULTS...");
+	m_routes.push_back(Base::msgRouter()->addRoute(pSaveButton, MsgType::Select, [this](Msg* pMsg) { save_performance_results(); }));
+
+	auto pLoadButton = WGCREATE(wkit::Button, _.label.text = "LOAD RESULTS...");
+	m_routes.push_back(Base::msgRouter()->addRoute(pLoadButton, MsgType::Select, [this](Msg* pMsg) { load_performance_results(); }));
+
+	m_pPerformanceLoadedLabel = TextDisplay::create({ .display = {.style = wkit::TextStyles::Default, .text = "No results loaded to compare with." } });
+
+	pFileBar->slots.pushBack(pSaveButton, { .weight = 0 });
+	pFileBar->slots.pushBack(pLoadButton, { .weight = 0 });
+	pFileBar->slots.pushBack(m_pPerformanceLoadedLabel, { .weight = 1 });
+
+	// Number of passes through the tests. Each test keeps its best result.
+
+	auto pPassesLabel = TextDisplay::create({ .display = {.style = wkit::TextStyles::Strong, .text = "Passes: " } });
+	pFileBar->slots.pushBack(pPassesLabel, { .weight = 0 });
+
+	auto pPassesGroup = ToggleGroup::create();
+
+	for (int passes : { 1, 3, 5, 10, 20 })
+	{
+		auto pButton = WGCREATE(wkit::ToggleButton, _.label.text = std::to_string(passes).c_str());
+		pPassesGroup->add(pButton);
+		if (passes == m_performancePasses)
+			pButton->setChecked(true);
+
+		pFileBar->slots.pushBack(pButton, { .weight = 0 });
+
+		m_routes.push_back(Base::msgRouter()->addRoute(pButton, MsgType::Toggle, [this, passes](Msg* pMsg) {
+			if (static_cast<ToggleMsg*>(pMsg)->isChecked())
+				m_performancePasses = passes;
+		}));
+	}
 
 	// Bottom bar
 
@@ -687,16 +804,22 @@ Widget_p GfxDeviceTester2::create_performance_view()
 	m_pPerformanceSummary = TextDisplay::create({ .display = {.style = wkit::TextStyles::Default,
 		.text = "Times each test on the testee only. Init and exit are not included." } });
 
-	m_pPerformanceRunButton = WGCREATE(wkit::Button, _.label.text = "RUN");
+	m_pPerformanceRunButton = WGCREATE(wkit::Button, _.label.text = "RUN ALL TESTS");
 	m_routes.push_back(Base::msgRouter()->addRoute(m_pPerformanceRunButton, MsgType::Select, [this](Msg* pMsg) {
 		if (m_bPerformanceRunning)
 		{
 			m_bPerformanceRunning = false;
-			m_pPerformanceRunButton->label.setText("RUN");
+			m_pPerformanceRunButton->label.setText("RUN ALL TESTS");
 			m_pPerformanceProgressLabel->display.setText("Stopped");
 		}
 		else
-			start_performance_run();
+		{
+			vector<int> all(m_tests.size());
+			for (int i = 0; i < (int)all.size(); i++)
+				all[i] = i;
+
+			start_performance_run(all);
+		}
 	}));
 
 	pBottom->slots.pushBack(m_pPerformanceSummary, { .weight = 1 });
@@ -704,15 +827,41 @@ Widget_p GfxDeviceTester2::create_performance_view()
 	pBottom->slots.pushBack(m_pPerformanceRunButton, { .weight = 0 });
 
 	auto pBase = PackPanel::create({ .axis = Axis::Y, .layout = m_pLayout });
-	// Placed directly in pBase, the scroller ends up a bit too tall and pushes the
-	// bottom bar partly out of view. Inside a horizontal PackPanel it doesn't.
-
-	auto pMid = PackPanel::create({ .axis = Axis::X, .layout = m_pLayout });
-	pMid->slots.pushBack(pTableScroller, { .weight = 1 });
+	pBase->slots.pushBack(pFileBar, { .weight = 0 });
 	pBase->slots.pushBack(pMid, { .weight = 1 });
 	pBase->slots.pushBack(pBottom, { .weight = 0 });
 
 	return pBase;
+}
+
+//____ create_cell() __________________________________________________________
+/*
+	A cell of the accuracy or performance table. The id is the index of the test
+	of its row, or -1 for headings. Clicking a cell selects its row.
+*/
+
+TextDisplay_p GfxDeviceTester2::create_cell(int test, TextLayout* pLayout, TextStyle* pStyle, const string& text)
+{
+	return TextDisplay::create({
+		.display = {.layout = pLayout, .style = pStyle ? pStyle : wkit::TextStyles::Default.rawPtr(), .text = text.c_str() },
+		.id = test,
+		.markPolicy = MarkPolicy::Geometry,
+		.skin = m_pCellSkin });
+}
+
+//____ highlight_row() ________________________________________________________
+
+void GfxDeviceTester2::highlight_row(TablePanel* pTable, int row, bool bHighlight)
+{
+	if (row < 0 || row >= pTable->rows.size())
+		return;
+
+	for (int col = 0; col < pTable->columns.size(); col++)
+	{
+		Widget* pCell = pTable->slots[row][col]._widget();
+		if (pCell)
+			pCell->setSkin(bHighlight ? m_pSelectedCellSkin : m_pCellSkin);
+	}
 }
 
 //____ select_view() __________________________________________________________
@@ -748,7 +897,7 @@ void GfxDeviceTester2::show_in_display(int test)
 	Renders a test, including its init and exit, on one of the backends.
 */
 
-bool GfxDeviceTester2::render_test(Side side, int test, Background background)
+bool GfxDeviceTester2::render_test(Side side, int test, Background background, ClipList clipList)
 {
 	auto& entry = m_tests[test];
 	if (!m_suites[entry.suite].bWorking)
@@ -765,6 +914,13 @@ bool GfxDeviceTester2::render_test(Side side, int test, Background background)
 
 	fill_background(pDevice, background);
 
+	vector<RectSPX> clipRects;
+	if (clipList != ClipList::One)
+	{
+		clipRects = clip_rects(clipList);
+		pDevice->setClipList((int)clipRects.size(), clipRects.data());
+	}
+
 	if (pTest->init)
 		pTest->init(pDevice, canvas);
 
@@ -773,9 +929,36 @@ bool GfxDeviceTester2::render_test(Side side, int test, Background background)
 	if (pTest->exit)
 		pTest->exit(pDevice, canvas);
 
+	if (clipList != ClipList::One)
+		pDevice->resetClipList();
+
 	pDevice->endCanvasUpdate();
 	pDevice->endRender();
 	return true;
+}
+
+//____ clip_rects() ___________________________________________________________
+/*
+	Rectangles laid out like the black squares of a checkerboard. For the few
+	and many lists, each side of a rectangle is 1/8 or 1/32 of the canvas.
+*/
+
+vector<RectSPX> GfxDeviceTester2::clip_rects(ClipList clipList)
+{
+	SizeSPX canvasSize = m_canvasSize * 64;
+	SizeSPX rectSize = clipList == ClipList::Few ? canvasSize / 8 : clipList == ClipList::Many ? canvasSize / 32 : canvasSize;
+
+	vector<RectSPX> rects;
+
+	for (spx y = 0; y + rectSize.h <= canvasSize.h; y += rectSize.h)
+	{
+		spx x = (y / rectSize.h) % 2 == 0 ? 0 : rectSize.w;
+
+		for (; x + rectSize.w <= canvasSize.w; x += rectSize.w * 2)
+			rects.push_back({ x, y, rectSize.w, rectSize.h });
+	}
+
+	return rects;
 }
 
 //____ fill_background() ______________________________________________________
@@ -919,7 +1102,7 @@ void GfxDeviceTester2::refresh_viewer(Viewer& viewer)
 	bool bOk = true;
 	for (int side = 0; side < 2; side++)
 	{
-		if (render_test(Side(side), viewer.test, viewer.background) && read_canvas(Side(side), viewer.pixels[side]))
+		if (render_test(Side(side), viewer.test, viewer.background, viewer.clipList) && read_canvas(Side(side), viewer.pixels[side]))
 			write_image(viewer.pImages[side], viewer.pixels[side]);
 		else
 		{
@@ -1083,12 +1266,9 @@ void GfxDeviceTester2::refresh_accuracy_table()
 	auto pTable = m_pAccuracyTable;
 	pTable->resize(1 + (int)m_tests.size(), nbColumns);
 
-	Skin_p pCellSkin = ColorSkin::create({ .color = Color::Transparent, .padding = Border(2, 8) });
-
 	const char* headings[nbColumns] = { "SUITE", "TEST", "MAX", "MEAN", "OVER", "WORST AT", "RESULT" };
 	for (int col = 0; col < nbColumns; col++)
-		pTable->slots[0][col] = TextDisplay::create({ .display = {.layout = col < 2 ? nullptr : m_pRightAligned, .style = wkit::TextStyles::Heading6, .text = headings[col] },
-			.id = -1, .skin = pCellSkin });
+		pTable->slots[0][col] = create_cell(-1, col < 2 ? nullptr : m_pRightAligned, wkit::TextStyles::Heading6, headings[col]);
 
 	int nbDone = 0, nbOk = 0, nbSpecks = 0, nbDiff = 0, nbFailed = 0;
 
@@ -1154,13 +1334,7 @@ void GfxDeviceTester2::refresh_accuracy_table()
 			values[6] = "-";
 
 		for (int col = 0; col < nbColumns; col++)
-		{
-			pTable->slots[1 + row][col] = TextDisplay::create({
-				.display = {.layout = col < 2 ? nullptr : m_pRightAligned, .style = col == 6 ? pVerdictStyle : wkit::TextStyles::Default, .text = values[col].c_str() },
-				.id = testIndex,
-				.markPolicy = MarkPolicy::Geometry,
-				.skin = pCellSkin });
-		}
+			pTable->slots[1 + row][col] = create_cell(testIndex, col < 2 ? nullptr : m_pRightAligned, col == 6 ? pVerdictStyle : wkit::TextStyles::Default, values[col]);
 	}
 
 	// Restore selection, the row might have moved.
@@ -1183,44 +1357,41 @@ void GfxDeviceTester2::refresh_accuracy_table()
 
 void GfxDeviceTester2::select_accuracy_row(int test)
 {
-	static Skin_p s_pNormalSkin = ColorSkin::create({ .color = Color::Transparent, .padding = Border(2, 8) });
-	static Skin_p s_pSelectedSkin = ColorSkin::create({ .color = Color::Aquamarine, .padding = Border(2, 8) });
-
-	auto setRowSkin = [this](int test, Skin* pSkin) {
+	auto rowOf = [this](int test) {
 		auto it = std::find(m_accuracyRowOrder.begin(), m_accuracyRowOrder.end(), test);
-		if (it == m_accuracyRowOrder.end())
-			return;
-
-		int row = 1 + int(it - m_accuracyRowOrder.begin());
-		for (int col = 0; col < m_pAccuracyTable->columns.size(); col++)
-		{
-			Widget* pCell = m_pAccuracyTable->slots[row][col]._widget();
-			if (pCell)
-				pCell->setSkin(pSkin);
-		}
+		return it == m_accuracyRowOrder.end() ? -1 : 1 + int(it - m_accuracyRowOrder.begin());
 	};
 
 	if (m_accuracySelected >= 0)
-		setRowSkin(m_accuracySelected, s_pNormalSkin);
+		highlight_row(m_pAccuracyTable, rowOf(m_accuracySelected), false);
 
 	m_accuracySelected = test;
-	setRowSkin(test, s_pSelectedSkin);
+	highlight_row(m_pAccuracyTable, rowOf(test), true);
 
 	if (m_accuracyViewer.test != test)
 		show_test(m_accuracyViewer, test);
 }
 
 //____ start_performance_run() ________________________________________________
+/*
+	Times the given tests, one per update, in as many passes as set. Results of
+	other tests are kept.
+*/
 
-void GfxDeviceTester2::start_performance_run()
+void GfxDeviceTester2::start_performance_run(const vector<int>& tests)
 {
-	for (int i = 0; i < (int)m_tests.size(); i++)
+	for (int test : tests)
 	{
-		m_tests[i].performance = PerformanceResult();
-		refresh_performance_row(i);
+		m_tests[test].performance = PerformanceResult();
+		refresh_performance_row(test);
 	}
 
+	refresh_performance_details();
+
 	m_bPerformanceRunning = true;
+	m_performanceQueue = tests;
+	m_performanceRunPasses = m_performancePasses;
+	m_performancePass = 0;
 	m_performanceNext = 0;
 
 	m_pPerformanceRunButton->label.setText("STOP");
@@ -1230,60 +1401,87 @@ void GfxDeviceTester2::start_performance_run()
 
 //____ continue_performance_run() _____________________________________________
 /*
-	Times one test per update, so the progress bar keeps moving and the window
-	stays responsive.
+	Times tests until our time budget for this update is spent, then lets the
+	progress bar and window update.
 */
 
 void GfxDeviceTester2::continue_performance_run()
 {
-	int nbTests = (int)m_tests.size();
+	int nbTests = (int)m_performanceQueue.size();
 
-	if (m_performanceNext < nbTests)
+	auto start = Clock::now();
+
+	while (m_performancePass < m_performanceRunPasses && std::chrono::duration<double>(Clock::now() - start).count() < c_perfUpdateBudget)
 	{
-		run_performance_test(m_performanceNext);
-		refresh_performance_row(m_performanceNext);
+		int test = m_performanceQueue[m_performanceNext];
+
+		if (m_performancePass == 0 && m_performanceNext == 0)
+			warm_up_testee(test);
+
 		m_performanceNext++;
+		run_performance_pass(test);
+		refresh_performance_row(test);
+
+		if (test == m_performanceSelected)
+			refresh_performance_details();
+
+		if (m_performanceNext == nbTests)
+		{
+			m_performancePass++;
+			m_performanceNext = 0;
+		}
 	}
 
 	char label[256];
 
-	if (m_performanceNext < nbTests)
+	if (m_performancePass < m_performanceRunPasses)
 	{
-		auto& next = m_tests[m_performanceNext];
-		snprintf(label, sizeof(label), "%d / %d   %s / %s", m_performanceNext, nbTests, m_suites[next.suite].name.c_str(), next.name.c_str());
+		auto& next = m_tests[m_performanceQueue[m_performanceNext]];
+		snprintf(label, sizeof(label), "Pass %d / %d   %d / %d   %s / %s", m_performancePass + 1, m_performanceRunPasses,
+			m_performanceNext, nbTests, m_suites[next.suite].name.c_str(), next.name.c_str());
 	}
 	else
 	{
-		snprintf(label, sizeof(label), "Done, %d tests", nbTests);
+		snprintf(label, sizeof(label), nbTests == 1 ? "Done, %d test" : "Done, %d tests", nbTests);
 
 		m_bPerformanceRunning = false;
-		m_pPerformanceRunButton->label.setText("RUN");
+		m_pPerformanceRunButton->label.setText("RUN ALL TESTS");
 
 		double total = 0;
+		int nbTimed = 0;
 		int nbFailed = 0;
 		for (auto& test : m_tests)
 		{
+			if (!test.performance.bDone)
+				continue;
+
 			if (test.performance.bFailed)
 				nbFailed++;
 			else
+			{
 				total += test.performance.secondsPerRun;
+				nbTimed++;
+			}
 		}
 
-		string summary = "Sum of one run of each test: " + format_time(total) + ".";
+		string summary = std::to_string(nbTimed) + (nbTimed == 1 ? " test timed" : " tests timed") + ", one run of each adds up to " + format_time(total) + ".";
 		if (nbFailed > 0)
-			summary += " " + std::to_string(nbFailed) + " tests could not be run.";
+			summary += " " + std::to_string(nbFailed) + (nbFailed == 1 ? " test" : " tests") + " could not be run.";
 		summary += " Init and exit are not included.";
 
-		m_pPerformanceSummary->display.setText(summary);
+		m_pPerformanceSummary->display.setText(summary.c_str());
 	}
 
-	m_pPerformanceProgress->setValue(nbTests > 0 ? m_performanceNext / float(nbTests) : 1.f);
+	int nbSteps = nbTests * m_performanceRunPasses;
+	int nbStepsDone = std::min(nbSteps, m_performancePass * nbTests + m_performanceNext);
+
+	m_pPerformanceProgress->setValue(nbSteps > 0 ? nbStepsDone / float(nbSteps) : 1.f);
 	m_pPerformanceProgressLabel->display.setText(label);
 }
 
-//____ run_performance_test() _________________________________________________
+//____ run_performance_pass() _________________________________________________
 /*
-	Times a test on the testee.
+	Times a test on the testee, once per pass.
 
 	Each measurement times a number of calls to run() including the endRender()
 	and a read back of a pixel, which makes sure the backend has finished its work,
@@ -1291,48 +1489,107 @@ void GfxDeviceTester2::continue_performance_run()
 	to run() is measured as a baseline and subtracted. That way neither init(),
 	exit() nor the overhead of a render pass are included.
 
-	The number of calls to run() is increased until a measurement takes long enough
-	to be accurate. Then the fastest of a few measurements is kept, as it is the one
-	least disturbed by anything else going on.
+	The first pass calibrates the number of calls to run() so that a measurement
+	takes long enough to be accurate. Each pass then warms up by running the test
+	for a while, so caches and clock speeds have settled, and keeps the fastest
+	of a number of measurements, as it is the one least disturbed by anything else
+	going on.
+
+	Timings are noisy in bursts, from other processes, power management and such,
+	which can make all measurements of one pass slow. Making several passes through
+	all tests spreads the measurements of each test over time, so the fastest of
+	them is much more likely to be undisturbed.
 */
 
-void GfxDeviceTester2::run_performance_test(int test)
+void GfxDeviceTester2::run_performance_pass(int test)
 {
-	auto& result = m_tests[test].performance;
-	result = PerformanceResult();
-	result.bDone = true;
+	auto& r = m_tests[test].performance;
 
 	if (!m_suites[m_tests[test].suite].bWorking)
 	{
-		result.bFailed = true;
+		r.bDone = true;
+		r.bFailed = true;
 		return;
 	}
 
 	Test* pTest = m_tests[test].pTests[TESTEE];
 
-	// Warm up, so any first time setup (caches, shaders, buffers) isn't measured.
-	// Since that makes it slower than later runs, it gives us a low first guess
-	// of the number of loops needed.
+	if (r.loops == 0)
+	{
+		r.baseline = std::numeric_limits<double>::max();
+		r.loops = calibrate_test(pTest, r.baseline);
+	}
 
-	double warmup = time_test(pTest, 1);
-	double baseline = std::min(time_test(pTest, 0), time_test(pTest, 0));
+	// Warm up.
+
+	double fastest = time_test(pTest, r.loops);
+
+	auto start = Clock::now();
+	while (std::chrono::duration<double>(Clock::now() - start).count() < c_perfWarmupTime)
+		fastest = std::min(fastest, time_test(pTest, r.loops));
+
+	// Measure. Tests that are slow even without looping get fewer rounds,
+	// noise is small in comparison and we don't want to wait forever.
+
+	int rounds = fastest > c_perfTargetTime * 10 ? c_perfSlowRounds : c_perfRounds;
+
+	for (int round = 0; round < rounds; round++)
+	{
+		r.baseline = std::min(r.baseline, time_test(pTest, 0));
+		fastest = std::min(fastest, time_test(pTest, r.loops));
+	}
+
+	r.passes.push_back(fastest);
+
+	r.secondsPerRun = std::max(0.0, *std::min_element(r.passes.begin(), r.passes.end()) - r.baseline) / r.loops;
+	r.bDone = true;
+}
+
+//____ warm_up_testee() _______________________________________________________
+/*
+	Keeps the testee busy with a test for c_perfRunWarmupTime, so a GPU has its
+	clocks up before we calibrate and time anything.
+*/
+
+void GfxDeviceTester2::warm_up_testee(int test)
+{
+	if (!m_suites[m_tests[test].suite].bWorking)
+		return;
+
+	Test* pTest = m_tests[test].pTests[TESTEE];
+
+	double baseline = std::numeric_limits<double>::max();
+	int loops = calibrate_test(pTest, baseline);
+
+	auto start = Clock::now();
+	while (std::chrono::duration<double>(Clock::now() - start).count() < c_perfRunWarmupTime)
+		time_test(pTest, loops);
+}
+
+//____ calibrate_test() _______________________________________________________
+/*
+	Returns the number of calls to run() needed for a measurement to take at least
+	c_perfTargetTime. Lowers baseline to the fastest measurement without calls.
+*/
+
+int GfxDeviceTester2::calibrate_test(Test* pTest, double& baseline)
+{
+	// A first run includes any first time setup (caches, shaders, buffers), making
+	// it slower than later ones. That gives us a low first guess.
+
+	double first = time_test(pTest, 1);
+	baseline = std::min({ baseline, time_test(pTest, 0), time_test(pTest, 0) });
 
 	int loops = 1;
-	if (warmup - baseline > 0)
-		loops = (int) std::clamp(std::floor(c_perfTargetTime / (warmup - baseline)), 1.0, double(c_perfMaxLoops));
-
-	// Increase number of loops until a measurement takes long enough.
-
-	double fastest;
+	if (first - baseline > 0)
+		loops = (int) std::clamp(std::floor(c_perfTargetTime / (first - baseline)), 1.0, double(c_perfMaxLoops));
 
 	while (true)
 	{
-		fastest = time_test(pTest, loops);
-
-		double time = fastest - baseline;
+		double time = time_test(pTest, loops) - baseline;
 
 		if (time >= c_perfTargetTime || loops >= c_perfMaxLoops)
-			break;
+			return loops;
 
 		// Aim a bit over the target, but grow at least 2x and at most 100x each step.
 
@@ -1342,26 +1599,25 @@ void GfxDeviceTester2::run_performance_test(int test)
 		loops = (int) std::min(double(c_perfMaxLoops), std::ceil(loops * factor));
 		baseline = std::min(baseline, time_test(pTest, 0));
 	}
+}
 
-	// Measure. Tests that are slow even without looping get fewer rounds,
-	// noise is small in comparison and we don't want to wait forever.
+//____ PerformanceResult::spread() ____________________________________________
 
-	int rounds = fastest > c_perfTargetTime * 10 ? c_perfSlowRounds : c_perfRounds;
+double GfxDeviceTester2::PerformanceResult::spread() const
+{
+	if (passes.size() < 2 || loops == 0)
+		return 0;
 
-	for (int round = 1; round < rounds; round++)
-	{
-		baseline = std::min(baseline, time_test(pTest, 0));
-		fastest = std::min(fastest, time_test(pTest, loops));
-	}
+	auto [pFastest, pSlowest] = std::minmax_element(passes.begin(), passes.end());
 
-	result.loops = loops;
-	result.secondsPerRun = std::max(0.0, fastest - baseline) / loops;
+	double fastest = *pFastest - baseline;
+	return fastest > 0 ? (*pSlowest - baseline) / fastest - 1.0 : 0;
 }
 
 //____ time_test() ____________________________________________________________
 /*
 	Seconds from just before the first call to run() until the testee has finished
-	rendering. See run_performance_test().
+	rendering. See run_performance_pass().
 */
 
 double GfxDeviceTester2::time_test(Test* pTest, int loops)
@@ -1418,24 +1674,281 @@ void GfxDeviceTester2::refresh_performance_row(int test)
 	auto& entry = m_tests[test];
 	auto& r = entry.performance;
 
+	TextStyle_p pTimeStyle = wkit::TextStyles::Default;
+	TextStyle_p pChangeStyle = wkit::TextStyles::Default;
+	string time, loaded, change;
+
 	if (!r.bDone)
-	{
-		entry.pPerfTimeCell->display.setText("-");
-		entry.pPerfTimeCell->display.setStyle(wkit::TextStyles::Default);
-		entry.pPerfLoopsCell->display.setText("");
-	}
+		time = "-";
 	else if (r.bFailed)
 	{
-		entry.pPerfTimeCell->display.setText("FAILED");
-		entry.pPerfTimeCell->display.setStyle(m_pDiffStyle);
-		entry.pPerfLoopsCell->display.setText("");
+		time = "FAILED";
+		pTimeStyle = m_pDiffStyle;
 	}
 	else
+		time = format_time(r.secondsPerRun);
+
+	if (entry.loadedSecondsPerRun >= 0)
+		loaded = format_time(entry.loadedSecondsPerRun);
+
+	double ratio;
+	if (performance_change(test, ratio))
 	{
-		entry.pPerfTimeCell->display.setText(format_time(r.secondsPerRun));
-		entry.pPerfTimeCell->display.setStyle(wkit::TextStyles::Default);
-		entry.pPerfLoopsCell->display.setText(std::to_string(r.loops));
+		change = format_change(ratio);
+
+		if (ratio > c_perfChangeThreshold)
+			pChangeStyle = m_pDiffStyle;
+		else if (ratio < -c_perfChangeThreshold)
+			pChangeStyle = m_pOkStyle;
 	}
+
+	entry.pPerfTimeCell->display.setText(time.c_str());
+	entry.pPerfTimeCell->display.setStyle(pTimeStyle);
+	entry.pPerfLoadedCell->display.setText(loaded.c_str());
+	entry.pPerfChangeCell->display.setText(change.c_str());
+	entry.pPerfChangeCell->display.setStyle(pChangeStyle);
+}
+
+//____ select_performance_row() _______________________________________________
+
+void GfxDeviceTester2::select_performance_row(int test)
+{
+	if (m_performanceSelected >= 0)
+		highlight_row(m_pPerformanceTable, 1 + m_performanceSelected, false);
+
+	m_performanceSelected = test;
+	highlight_row(m_pPerformanceTable, 1 + test, true);
+
+	if (m_performanceViewer.test != test)
+		show_test(m_performanceViewer, test);
+
+	refresh_performance_details();
+}
+
+//____ refresh_performance_details() __________________________________________
+
+void GfxDeviceTester2::refresh_performance_details()
+{
+	if (m_performanceSelected < 0)
+		return;
+
+	auto& test = m_tests[m_performanceSelected];
+	auto& r = test.performance;
+
+	string details;
+
+	if (!r.bDone)
+		details = "Not timed yet.";
+	else if (r.bFailed)
+		details = "Could not be run.";
+	else
+	{
+		char spread[64] = "";
+		if (r.passes.size() > 1)
+			snprintf(spread, sizeof(spread), ", passes within %.1f %%", r.spread() * 100.0);
+
+		details = "Time per run: " + format_time(r.secondsPerRun) + " (best of " + std::to_string(r.passes.size())
+			+ (r.passes.size() == 1 ? " pass" : " passes") + spread + ")\nLoops per measurement: " + std::to_string(r.loops);
+	}
+
+	if (test.loadedSecondsPerRun >= 0)
+	{
+		details += "\nLoaded: " + format_time(test.loadedSecondsPerRun);
+
+		double ratio;
+		if (performance_change(m_performanceSelected, ratio))
+			details += "   Change: " + format_change(ratio);
+	}
+
+	m_pPerformanceDetails->display.setText(details.c_str());
+}
+
+//____ save_performance_results() _____________________________________________
+/*
+	Saves the results as text, one test per line:
+
+		<suite> TAB <test> TAB <seconds per run> TAB <loops>
+
+	Lines starting with '#' are comments. Tests are identified by suite and
+	name, so results can be compared after tests have been added or removed.
+*/
+
+void GfxDeviceTester2::save_performance_results()
+{
+	int nbResults = 0;
+	for (auto& test : m_tests)
+	{
+		if (test.performance.bDone && !test.performance.bFailed)
+			nbResults++;
+	}
+
+	if (nbResults == 0)
+	{
+		m_pPerformanceLoadedLabel->display.setText("No results to save, run the performance test first.");
+		return;
+	}
+
+	string path = m_pAPI->saveFileDialog("Save Performance Results", "", "performance.txt", { "*.txt" }, "Performance results");
+	if (path.empty())
+		return;
+
+	// Add an extension if none was given.
+
+	size_t nameStart = path.find_last_of("/\\");
+	if (path.find('.', nameStart == string::npos ? 0 : nameStart) == string::npos)
+		path += ".txt";
+
+	std::ofstream file(path);
+	if (!file)
+	{
+		m_pPerformanceLoadedLabel->display.setText(("Could not save to " + path).c_str());
+		return;
+	}
+
+	char date[64] = "";
+	std::time_t now = std::time(nullptr);
+	std::strftime(date, sizeof(date), "%Y-%m-%d %H:%M", std::localtime(&now));
+
+	file << "# GfxDeviceTester2 performance results\n";
+	file << "# Testee: " << m_backends[TESTEE].name << "\n";
+	file << "# Saved: " << date << "\n";
+	file << "# Suite\tTest\tSeconds per run\tLoops\n";
+
+	char seconds[64];
+	for (auto& test : m_tests)
+	{
+		auto& r = test.performance;
+		if (r.bDone && !r.bFailed)
+		{
+			snprintf(seconds, sizeof(seconds), "%.9g", r.secondsPerRun);
+			file << m_suites[test.suite].name << '\t' << test.name << '\t' << seconds << '\t' << r.loops << '\n';
+		}
+	}
+
+	file.close();
+
+	if (!file)
+		m_pPerformanceLoadedLabel->display.setText(("Could not save to " + path).c_str());
+	else
+		m_pPerformanceLoadedLabel->display.setText(("Saved " + std::to_string(nbResults) + " results to " + path).c_str());
+}
+
+//____ load_performance_results() _____________________________________________
+/*
+	Loads results saved by save_performance_results() into the LOADED column.
+	Tests are matched by suite and name. Results for tests we don't have are
+	ignored, our tests without results get none.
+*/
+
+void GfxDeviceTester2::load_performance_results()
+{
+	string path = m_pAPI->openFileDialog("Load Performance Results", "", "", { "*.txt" }, "Performance results");
+	if (path.empty())
+		return;
+
+	std::ifstream file(path);
+	if (!file)
+	{
+		m_pPerformanceLoadedLabel->display.setText(("Could not open " + path).c_str());
+		return;
+	}
+
+	std::map<string, double> results;
+	string testee;
+	string line;
+
+	while (std::getline(file, line))
+	{
+		if (!line.empty() && line.back() == '\r')
+			line.pop_back();
+
+		if (line.empty())
+			continue;
+
+		if (line[0] == '#')
+		{
+			const string testeePrefix = "# Testee: ";
+			if (line.compare(0, testeePrefix.size(), testeePrefix) == 0)
+				testee = line.substr(testeePrefix.size());
+			continue;
+		}
+
+		std::istringstream fields(line);
+		string suite, name, seconds;
+		if (!std::getline(fields, suite, '\t') || !std::getline(fields, name, '\t') || !std::getline(fields, seconds, '\t'))
+			continue;
+
+		char* pEnd = nullptr;
+		double value = std::strtod(seconds.c_str(), &pEnd);
+		if (pEnd == seconds.c_str() || value < 0)
+			continue;
+
+		results[suite + '\t' + name] = value;
+	}
+
+	if (results.empty())
+	{
+		m_pPerformanceLoadedLabel->display.setText(("No performance results found in " + path).c_str());
+		return;
+	}
+
+	int nbMatched = 0;
+	for (int i = 0; i < (int)m_tests.size(); i++)
+	{
+		auto& test = m_tests[i];
+		auto it = results.find(m_suites[test.suite].name + '\t' + test.name);
+
+		test.loadedSecondsPerRun = it != results.end() ? it->second : -1;
+		if (it != results.end())
+			nbMatched++;
+
+		refresh_performance_row(i);
+	}
+
+	string label = "Loaded " + path;
+	if (!testee.empty())
+		label += " (testee: " + testee + ")";
+	label += ". " + std::to_string(nbMatched) + " of our " + std::to_string(m_tests.size()) + " tests matched";
+	int nbUnknown = (int)results.size() - nbMatched;
+	if (nbUnknown > 0)
+		label += ", " + std::to_string(nbUnknown) + (nbUnknown == 1 ? " result for a test we don't have" : " results for tests we don't have");
+	label += ".";
+
+	m_pPerformanceLoadedLabel->display.setText(label.c_str());
+
+	refresh_performance_details();
+}
+
+//____ performance_change() ___________________________________________________
+/*
+	Relative change in time per run from the loaded result, positive if slower.
+	Returns false if there is nothing to compare.
+*/
+
+bool GfxDeviceTester2::performance_change(int test, double& ratio) const
+{
+	auto& entry = m_tests[test];
+	auto& r = entry.performance;
+
+	if (!r.bDone || r.bFailed || entry.loadedSecondsPerRun <= 0)
+		return false;
+
+	ratio = r.secondsPerRun / entry.loadedSecondsPerRun - 1.0;
+	return true;
+}
+
+//____ format_change() ________________________________________________________
+
+string GfxDeviceTester2::format_change(double ratio)
+{
+	// No sign on changes that round to zero.
+
+	if (std::abs(ratio) < 0.0005)
+		return "0.0 %";
+
+	char buffer[32];
+	snprintf(buffer, sizeof(buffer), "%+.1f %%", ratio * 100.0);
+	return buffer;
 }
 
 //____ format_time() __________________________________________________________
