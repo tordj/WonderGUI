@@ -231,6 +231,7 @@ typedef struct
     float4 position [[position]];
 	float4 color;
     float2 texUV;
+	float2	tileSize [[flat]];			// Size of a tiled edgemap in columns and pixels, zero when not tiled.
 	int		edgemapPitch [[flat]];
 	int		flatColorsOfs [[flat]];		// Flat segment colors in edgemap buffer.
 	int		tintTableOfs [[flat]];		// Table of segment tint block offsets in edgemap buffer, -1 for flat.
@@ -1480,10 +1481,26 @@ segmentsVertexShader(uint vertexID [[vertex_id]],
 	out.flatColorsOfs = int(extras.x);
 	out.tintTableOfs = int(extras.y);
 	out.edgemapPitch = int(extras.z);
+	out.tileSize = pExtras[eOfs + 1].xy;
     out.texUV = pVertices[vertexID].uv;
 	out.tintOfs = pVertices[vertexID].tintOfs;
 	out.color = pUniform->flatTint;
 	return out;
+}
+
+//____ wrapUV() ____________________________________________________________
+//
+// Position in the edgemap of a pixel of a tiled edgemap, which may be outside of it,
+// wrapped into it. uv.y is half a pixel back, so it is whole at pixel centers.
+
+inline float2 wrapUV(float2 uv, float2 tileSize)
+{
+	if( tileSize.x > 0.f )
+	{
+		float2 cell = float2(floor(uv.x), floor(uv.y + 0.5f));
+		uv += cell - tileSize * floor(cell / tileSize) - cell;
+	}
+	return uv;
 }
 
 //____ segColor() __________________________________________________________
@@ -1507,6 +1524,8 @@ template <int EDGES>
 inline float4 segFragShaderCore(SegmentsFragInput in,
                                     constant float4  *pEdgemap)
 {
+	in.texUV = wrapUV(in.texUV, in.tileSize);
+
     float4 acc = float4(0.f);
 
     float factor = 1.f;
@@ -1770,6 +1789,8 @@ template <int EDGES>
 inline float segFragShaderCore_A8(SegmentsFragInput in,
                                     constant float4  *pEdgemap)
 {
+	in.texUV = wrapUV(in.texUV, in.tileSize);
+
 	float totalAlpha = 0.f;
 
 	float factor = 1.f;

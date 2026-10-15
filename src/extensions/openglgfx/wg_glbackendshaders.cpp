@@ -1149,7 +1149,8 @@ WG_GL_CANVAS_BLOCK
 "layout(location = 1) in vec2 uv;					    "
 "layout(location = 3) in int extrasOfs;                 "
 "layout(location = 4) in vec2 tintmapOfs;               "
-"out vec2 texUV;										"
+"out vec2 mapUV;										"
+"flat out vec2 tileSize;								"
 "flat out int edgemapPitch;								"
 "flat out int flatColorsOfs;							"
 "flat out int tintTableOfs;								"
@@ -1168,7 +1169,8 @@ WG_GL_CANVAS_BLOCK
 "   edgemapPitch = int(extras.x);						"
 "   flatColorsOfs = int(extras.y);						"
 "   tintTableOfs = int(extras.z);						"
-"   texUV = uv;											"
+"   tileSize = texelFetch(extrasBufferId, extrasOfs + 1).xy;	"
+"   mapUV = uv;											"
 "   tintOfs = int(tintmapOfs.x);"
 "   tintPos = vec2(pos);"
 "   flatTint = texelFetch(colorBufferId, colorOfs);"
@@ -1185,13 +1187,29 @@ WG_GL_CANVAS_BLOCK
 "	return tofs < 0 ? texelFetch(edgemapId, flatColorsOfs + seg) : evalTint(edgemapId, tofs, epos);	" \
 "}																				"
 
+// Position in the edgemap of a pixel of a tiled edgemap, which may be outside of it, wrapped
+// into it. uv.y is half a pixel back, so it is whole at pixel centers. tileSize is the size
+// of the edgemap in columns and pixels, zero when not tiling.
+
+#define WG_GL_WRAP_FUNC \
+"vec2 wrapUV(vec2 uv, vec2 tileSize)											" \
+"{																				" \
+"	if (tileSize.x > 0.0)														" \
+"	{																			" \
+"		vec2 cell = vec2(floor(uv.x), floor(uv.y + 0.5));						" \
+"		uv += mod(cell, tileSize) - cell;										" \
+"	}																			" \
+"	return uv;																	" \
+"}																				"
+
 const char GlBackend::segmentsFragmentShader[] =
 
 "#version 330 core\n"
 WG_GL_OUTPUT
 "uniform samplerBuffer tintmapBufferId;			"
 "uniform samplerBuffer edgemapId;				"
-"in vec2 texUV;									"
+"in vec2 mapUV;									"
+"flat in vec2 tileSize;							"
 "flat in int edgemapPitch;						"
 "flat in int flatColorsOfs;						"
 "flat in int tintTableOfs;						"
@@ -1200,8 +1218,10 @@ WG_GL_OUTPUT
 "flat in vec4 flatTint;							"
 WG_GL_TINT_FUNC
 WG_GL_SEGCOLOR_FUNC
+WG_GL_WRAP_FUNC
 "void main()									"
 "{												"
+"	vec2 texUV = wrapUV(mapUV, tileSize);"
 "	vec4 acc = vec4(0.0);"
 "	float factor = 1.f;"
 "	vec2 epos = vec2(floor(texUV.x) + 0.5, texUV.y + 0.5);"		// Pixel center in edgemap space.
@@ -1232,7 +1252,8 @@ const char GlBackend::segmentsFragmentShader_A8[] =
 WG_GL_OUTPUT_A8
 "uniform samplerBuffer tintmapBufferId;			"
 "uniform samplerBuffer edgemapId;				"
-"in vec2 texUV;									"
+"in vec2 mapUV;									"
+"flat in vec2 tileSize;							"
 "flat in int edgemapPitch;						"
 "flat in int flatColorsOfs;						"
 "flat in int tintTableOfs;						"
@@ -1241,8 +1262,10 @@ WG_GL_OUTPUT_A8
 "flat in vec4 flatTint;							"
 WG_GL_TINT_FUNC
 WG_GL_SEGCOLOR_FUNC
+WG_GL_WRAP_FUNC
 "void main()									"
 "{												"
+"	vec2 texUV = wrapUV(mapUV, tileSize);"
 "	vec4 acc = vec4(0.0);"
 "	float factor = 1.f;"
 "	vec2 epos = vec2(floor(texUV.x) + 0.5, texUV.y + 0.5);"		// Pixel center in edgemap space.

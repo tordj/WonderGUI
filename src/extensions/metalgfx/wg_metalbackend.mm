@@ -708,6 +708,7 @@ void MetalBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, 
 	+ pInfo->nBlur * 8
 	+ pInfo->nLineCoords/2 * 4
 	+ pInfo->nRects * 4			// This is for possible subpixel fills. We have no way of knowing exactly how much is needed.
+	+ pInfo->nEdgemapDraws * 8
 	+ GpuShapes::maxSessionEntries(*pInfo) * 4;
 
 	m_extrasBufferId = [s_metalDevice newBufferWithLength:nExtrasFloats*sizeof(float) options:MTLResourceStorageModeShared];
@@ -1375,25 +1376,6 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				break;
 			}
 
-			case Command::TileEdgemap:
-			{
-				// Not supported yet. Step over the command, same parameters as DrawEdgemap.
-
-				int32_t nRects = *p++;
-				p += 6;							// flip, padding and origo.
-
-				pObjects++;
-				pRects += nRects;
-
-				static bool bReported = false;
-				if (!bReported)
-				{
-					GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, "MetalBackend doesn't support tiling of edgemaps yet, TileEdgemap ignored.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-					bReported = true;
-				}
-				break;
-			}
-
 			case Command::DrawShape:
 			{
 				auto kind = ShapeKind(p[0]);
@@ -1489,8 +1471,10 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 			}
 
 			case Command::DrawEdgemap:
+			case Command::TileEdgemap:
 			{
 				auto pEdgemap = static_cast<MetalEdgemap*>(*pObjects++);
+				bool bTile = (cmd == Command::TileEdgemap);		// Origo is for one of the copies, rects give area to fill.
 
 				int32_t nRects = *p++;
 				int32_t	flip = *p++;
@@ -1654,6 +1638,14 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				*pExtrasMTL++ = float(pEdgemap->_tintTableOfs());		// Table of segment tint block offsets in edgemap buffer.
 				*pExtrasMTL++ = float(pEdgemap->m_nbSegments - 1);	// Edgemap pitch (edges stored per column)
 				*pExtrasMTL++ = 0;			// Dummy
+
+				// Size of the edgemap when tiled, in columns and pixels, which the shader wraps
+				// positions outside of it by. Zero when not.
+
+				*pExtrasMTL++ = bTile ? float(pEdgemap->m_size.w) : 0.f;
+				*pExtrasMTL++ = bTile ? float(pEdgemap->m_size.h) : 0.f;
+				*pExtrasMTL++ = 0;
+				*pExtrasMTL++ = 0;
 
 
 

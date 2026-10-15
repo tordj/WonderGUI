@@ -811,25 +811,6 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 			break;
 		}
 
-		case Command::TileEdgemap:
-		{
-			// Not supported yet. Step over the command, same parameters as DrawEdgemap.
-
-			int32_t nRects = *p++;
-			p += 6;							// flip, padding and origo.
-
-			pObjects++;
-			pRects += nRects;
-
-			static bool bReported = false;
-			if (!bReported)
-			{
-				GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, "GlBackend doesn't support tiling of edgemaps yet, TileEdgemap ignored.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-				bReported = true;
-			}
-			break;
-		}
-
 		case Command::DrawShape:
 		{
 			auto kind = ShapeKind(p[0]);
@@ -931,8 +912,10 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 		}
 
 		case Command::DrawEdgemap:
+		case Command::TileEdgemap:
 		{
 			auto pEdgemap = static_cast<GlEdgemap*>(*pObjects++);
+			bool bTile = (cmd == Command::TileEdgemap);		// Origo is for one of the copies, rects give area to fill.
 
 			int32_t nRects = *p++;
 			int32_t	flip = *p++;
@@ -1112,6 +1095,14 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 			*pExtrasGL++ = (GLfloat) pEdgemap->_flatColorsOfs();		// Offset of flat colors in edgemap buffer.
 			*pExtrasGL++ = (GLfloat) pEdgemap->_tintTableOfs();		// Offset of table with offsets of tint blocks for segments.
 			*pExtrasGL++ = 0;										// Unused.
+
+			// Size of the edgemap when tiled, in columns and pixels, which the shader wraps
+			// positions outside of it by. Zero when not.
+
+			*pExtrasGL++ = bTile ? (GLfloat) pEdgemap->m_size.w : 0.f;
+			*pExtrasGL++ = bTile ? (GLfloat) pEdgemap->m_size.h : 0.f;
+			*pExtrasGL++ = 0;
+			*pExtrasGL++ = 0;
 
 			//
 
@@ -1841,6 +1832,7 @@ void GlBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, int
 		+ pInfo->nBlur * 8
 		+ pInfo->nLineCoords/2 * 4
 		+ pInfo->nRects * 8			// This is margin for blits (+8) and  subpixel fills (+4).
+		+ pInfo->nEdgemapDraws * 8
 		+ GpuShapes::maxSessionEntries(*pInfo) * 4;
 
 	m_pExtrasBuffer = new GLfloat[nExtrasFloats];

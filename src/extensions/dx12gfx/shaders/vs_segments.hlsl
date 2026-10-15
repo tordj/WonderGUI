@@ -27,6 +27,7 @@ struct VS_OUTPUT
     float4 color : COLOR;
     float2 texUV : TEXCOORD0;
     nointerpolation uint2 segColorsOfs : TEXCOORD1;    // Flat colors and tint table in the edgemap buffer.
+    nointerpolation float2 tileSize : TEXCOORD2;       // Size of a tiled edgemap in columns and pixels, zero when not tiled.
 };
 
 
@@ -48,6 +49,7 @@ VS_OUTPUT main(VS_INPUT input)
     // the whole edgemap.
 
     output.segColorsOfs = uint2(extras[input.extrasOfs].xy);
+    output.tileSize = extras[input.extrasOfs + 1].xy;
 
     return output;
 }

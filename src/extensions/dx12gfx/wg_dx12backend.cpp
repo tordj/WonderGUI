@@ -1518,29 +1518,11 @@ namespace wg
 				}
 
 				case Command::DrawEdgemap:
-				{
-					int32_t nRects = *p++;
-
-					_drawEdgemap(p, pRects, pObjects, nRects);
-					break;
-				}
-
 				case Command::TileEdgemap:
 				{
-					// Not supported yet. Step over the command, same parameters as DrawEdgemap.
-
 					int32_t nRects = *p++;
-					p += 6;							// flip, padding and origo.
 
-					pObjects++;
-					pRects += nRects;
-
-					static bool bReported = false;
-					if (!bReported)
-					{
-						GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, "DX12Backend doesn't support tiling of edgemaps yet, TileEdgemap ignored.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-						bReported = true;
-					}
+					_drawEdgemap(p, pRects, pObjects, nRects, cmd == Command::TileEdgemap);
 					break;
 				}
 
@@ -2620,7 +2602,7 @@ namespace wg
 	// each segment covers. The vertices carry where in the edgemap each corner
 	// sits, which is what lets the same quad be flipped or rotated.
 
-	void DX12Backend::_drawEdgemap(const uint16_t*& pCmd, const RectSPX*& pRects, Object* const*& pObjects, int nRects)
+	void DX12Backend::_drawEdgemap(const uint16_t*& pCmd, const RectSPX*& pRects, Object* const*& pObjects, int nRects, bool bTile)
 	{
 		Object * pObject = *pObjects++;
 
@@ -2726,9 +2708,13 @@ namespace wg
 		int colorOfs = _addColor(HiColor::White);
 
 		// Where the segment colors are in the edgemap's buffer: flat colors and the
-		// table of tint blocks, see DX12Edgemap.
+		// table of tint blocks, see DX12Edgemap. Then the size of the edgemap when
+		// tiled, in columns and pixels, which the shader wraps positions outside of
+		// it by. Zero when not.
 
-		int extrasOfs = _addExtras({ float(pEdgemap->_flatColorsOfs()), float(pEdgemap->_tintTableOfs()), 0.f, 0.f });
+		ExtrasDX12 tileSize = { bTile ? float(pEdgemap->m_size.w) : 0.f, bTile ? float(pEdgemap->m_size.h) : 0.f, 0.f, 0.f };
+
+		int extrasOfs = _addExtras({ float(pEdgemap->_flatColorsOfs()), float(pEdgemap->_tintTableOfs()), 0.f, 0.f }, tileSize);
 
 		if (colorOfs < 0 || extrasOfs < 0)
 		{
@@ -3220,7 +3206,7 @@ namespace wg
 
 			nColors = pInfo->nColors + pInfo->nBlit + pInfo->nBlur + pInfo->nEdgemapDraws + pInfo->nShapeDraws
 					+ (pInfo->nStateChanges + pInfo->nShapeTints) * c_tintBlockOverhead;
-			nExtras = pInfo->nRects * 2 + nLines + pInfo->nBlur * 18 + pInfo->nEdgemapDraws + GpuShapes::maxSessionEntries(*pInfo);
+			nExtras = pInfo->nRects * 2 + nLines + pInfo->nBlur * 18 + pInfo->nEdgemapDraws * 2 + GpuShapes::maxSessionEntries(*pInfo);
 		}
 		else
 		{

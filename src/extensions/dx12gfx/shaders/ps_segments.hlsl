@@ -21,7 +21,23 @@ struct PS_INPUT
     float4 color : COLOR;
     float2 texUV : TEXCOORD0;
     nointerpolation uint2 segColorsOfs : TEXCOORD1;    // Flat colors and tint table in the edgemap buffer.
+    nointerpolation float2 tileSize : TEXCOORD2;       // Size of a tiled edgemap in columns and pixels, zero when not tiled.
 };
+
+
+// Position in the edgemap of a pixel of a tiled edgemap, which may be outside of
+// it, wrapped into it. uv.y is half a pixel back, so it is whole at pixel centers.
+
+float2 wrapUV(float2 uv, float2 tileSize)
+{
+    if (tileSize.x > 0.0f)
+    {
+        float2 cell = float2(floor(uv.x), floor(uv.y + 0.5f));
+        uv += cell - tileSize * floor(cell / tileSize) - cell;
+    }
+
+    return uv;
+}
 
 
 // A segment is colored either by a flat color or by a tint placed in the
@@ -57,12 +73,14 @@ PS_OUTPUT main(PS_INPUT input)
     uint nEdges = edgemapEdges;
     uint pitch = edgemapPitch;
 
-    uint column = uint(input.texUV.x) * pitch;
+    float2 texUV = wrapUV(input.texUV, input.tileSize);
+
+    uint column = uint(texUV.x) * pitch;
 
     // Pixel center in edgemap space, which is where segment tints are placed.
     // V is half a pixel back already, see DX12Backend::_drawEdgemap().
 
-    float2 epos = float2(floor(input.texUV.x) + 0.5f, input.texUV.y + 0.5f);
+    float2 epos = float2(floor(texUV.x) + 0.5f, texUV.y + 0.5f);
 
     float4 acc = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -75,7 +93,7 @@ PS_OUTPUT main(PS_INPUT input)
 
         float4 edge = edgemap[column + i];
 
-        float x = (input.texUV.y - edge.r) * edge.g;
+        float x = (texUV.y - edge.r) * edge.g;
 
         float adder = edge.g / 2.0f;
 
