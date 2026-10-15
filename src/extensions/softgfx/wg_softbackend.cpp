@@ -1014,6 +1014,15 @@ namespace wg
 							src.x += patchOfs.x * mtx.xx + patchOfs.y * mtx.yx;
 							src.y += patchOfs.x * mtx.xy + patchOfs.y * mtx.yy;
 
+							// The tile kernels find their position in the source from where they start
+							// reading, which must then be inside it.
+
+							if (cmd == Command::Tile)
+							{
+								src.x &= m_pBlitSource->tileMaskX();
+								src.y &= m_pBlitSource->tileMaskY();
+							}
+
 							if (cmd == Command::Blit)
 								(this->*m_pStraightBlitOp)(sub, src, mtx, sub.pos(), m_pStraightBlitFirstPassOp);
 							else if (cmd == Command::Tile)
