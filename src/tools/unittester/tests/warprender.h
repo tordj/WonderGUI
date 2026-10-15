@@ -19,4 +19,5 @@ private:
 	bool clipTest(std::ostream& output);
 	bool opaqueCanvasTest(std::ostream& output);
 	bool streamTest(std::ostream& output);
+	bool cApiTest(std::ostream& output);
 };

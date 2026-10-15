@@ -12,6 +12,9 @@
 #include <wg_softwarpmapfactory.h>
 #include <wg_softkernels_default.h>
 #include <wg_circularwarp.h>
+#include <wondergfx_c.h>
+#include <wg_c_object.h>
+#include <wg_c_softgfx.h>
 #include <wg_streambackend.h>
 #include <wg_streamplayer.h>
 #include <wg_streamencoder.h>
@@ -336,6 +339,7 @@ WarpRenderTest::WarpRenderTest()
 	ADD_TEST(clipTest);
 	ADD_TEST(opaqueCanvasTest);
 	ADD_TEST(streamTest);
+	ADD_TEST(cApiTest);
 }
 
 WarpRenderTest::~WarpRenderTest()
@@ -617,4 +621,76 @@ bool WarpRenderTest::streamTest(std::ostream& output)
 	pCanvas->freePixelBuffer(buffer);
 
 	return compare(output, "Streamed warps", streamed, "streamed", direct, "direct", 0);
+}
+
+//____ cApiTest() _____________________________________________________________
+// Warpmaps, CircularWarp and warp calls through the C API draw exactly as through C++.
+
+bool WarpRenderTest::cApiTest(std::ostream& output)
+{
+	auto pRes = resourceDevice();
+	auto pEdgemap = makeEdgemap(pRes, true);
+	auto pSurface = makeSurface(pRes, true, SampleMethod::Bilinear);
+
+	// Nodes of a bent rectangle, given to both.
+
+	const SizeI warpSize = { 40, 36 };
+	const int cellSize = 6;
+	const SizeI nodes = { (warpSize.w + cellSize - 1) / cellSize + 1, (warpSize.h + cellSize - 1) / cellSize + 1 };
+
+	std::vector<CoordF> nodeData(nodes.w * nodes.h);
+	for (int r = 0; r < nodes.h; r++)
+		for (int c = 0; c < nodes.w; c++)
+		{
+			float x = std::min(c * cellSize, warpSize.w) / float(warpSize.w);
+			float y = std::min(r * cellSize, warpSize.h) / float(warpSize.h);
+			nodeData[r * nodes.w + c] = { x * 1.1f - 0.05f + 0.07f * std::sin(y * 6.f), y + 0.05f * std::sin(x * 5.f) };
+		}
+
+	auto cpp = [&](GfxDevice* pDevice)
+	{
+		auto pRing = CircularWarp::create(WGBP(CircularWarp, _.size = { 44, 44 }, _.topRadius = 21 * 64, _.bottomRadius = 10 * 64,
+											   _.startAngle = 30.f, _.sweep = 300.f), SoftWarpmapFactory::create());
+		auto pBent = SoftWarpmapFactory::create()->createWarpmap(WGBP(Warpmap, _.size = warpSize, _.cellSize = cellSize, _.uPeriod = 1.5f), nodeData.data());
+
+		pDevice->warpDrawEdgemap({ 64 * 3, 64 * 4 }, pRing->refresh(), pEdgemap, { 64 * 5, 0 });
+		pDevice->setBlitSource(pSurface);
+		pDevice->warpBlit({ 64 * 60, 64 * 4 }, pBent, { 64 * 2, 64 * 3 });
+		pDevice->warpBlit({ 64 * 110, 64 * 4 }, pBent, { 64 * 4, 64 * 2, 64 * 20, 64 * 12 }, { 0, 0 });
+	};
+
+	auto c = [&](GfxDevice* pDevice)
+	{
+		wg_obj device = (wg_obj) static_cast<Object*>(pDevice);
+		wg_obj factory = wg_createSoftWarpmapFactory();
+
+		wg_circularWarpBP ringBP = {};
+		ringBP.size = { 44, 44 };
+		ringBP.center = { 0.5f, 0.5f };
+		ringBP.topRadius = 21 * 64;
+		ringBP.bottomRadius = 10 * 64;
+		ringBP.startAngle = 30.f;
+		ringBP.sweep = 300.f;
+
+		wg_obj ring = wg_createCircularWarp(&ringBP, factory);
+
+		wg_warpmapBP bentBP = {};
+		bentBP.size = { warpSize.w, warpSize.h };
+		bentBP.cellSize = cellSize;
+		bentBP.uPeriod = 1.5f;
+
+		wg_obj bent = wg_createWarpmapFromNodes(factory, &bentBP, (const wg_coordF*) nodeData.data(), 0);
+
+		wg_warpDrawEdgemap(device, { 64 * 3, 64 * 4 }, wg_refreshCircularWarp(ring), (wg_obj) static_cast<Object*>(pEdgemap.rawPtr()), { 64 * 5, 0 });
+		pDevice->setBlitSource(pSurface);
+		wg_warpBlit(device, { 64 * 60, 64 * 4 }, bent, { 64 * 2, 64 * 3 });
+		wg_rectSPX source = { 64 * 4, 64 * 2, 64 * 20, 64 * 12 };
+		wg_warpBlitRect(device, { 64 * 110, 64 * 4 }, bent, &source, { 0, 0 });
+
+		wg_release(bent);
+		wg_release(ring);
+		wg_release(factory);
+	};
+
+	return compare(output, "C API", render(Backend::Soft, c), "C API", render(Backend::Soft, cpp), "C++", 0);
 }
