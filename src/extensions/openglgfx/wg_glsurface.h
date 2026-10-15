@@ -40,6 +40,8 @@
 
 #include <wg_surface.h>
 
+#include <vector>
+
 namespace wg
 {
 
@@ -125,6 +127,10 @@ namespace wg
 		void		_uploadPalette();
 		void		_setupGlTexture(void * pPixelsToUpload, int pitch);
 		void		_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect);
+
+		bool		_isPremultiplied() const { return m_pixelFormat == PixelFormat::ARGB_8; }		// Texture holds premultiplied colors.
+		const uint8_t* _premultiplied(const uint8_t* pPixels, int& pitch, int width, int height, std::vector<uint8_t>& buffer) const;
+		void		_convertAlpha(uint8_t* pPixels, int pitch, int width, int height, bool bPremultiply) const;
 
 		int			m_bPendingReads = false;					// Set if there are queued GL commands that will use surface as source. Active GlGfxDevice needs to be flushed before we modify.
 		bool		m_bBackingBufferStale = false;				// Set when there are modifications (in texture or queued GL commands) for this surface.

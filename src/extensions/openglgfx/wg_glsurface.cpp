@@ -29,6 +29,7 @@
 #include <wg_gfxbase.h>
 #include <assert.h>
 #include <vector>
+#include <algorithm>
 
 
 #define GL_SILENCE_DEPRECATION
@@ -44,6 +45,41 @@ namespace wg
 
     unsigned int    GlSurface::g_texturePixels = 0;
     unsigned int    GlSurface::g_backingPixels = 0;
+
+	//____ _premultiply() / _unpremultiply() ______________________________________
+	// Colors of a pixel times or divided by its alpha (1 -> 255), in linear light for sRGB pixels.
+
+	static inline void _premultiply(uint8_t& b, uint8_t& g, uint8_t& r, int a, bool bSRGB)
+	{
+		if (bSRGB)
+		{
+			b = HiColor::packSRGBTab[(HiColor::unpackSRGBTab[b] * a + 127) / 255];
+			g = HiColor::packSRGBTab[(HiColor::unpackSRGBTab[g] * a + 127) / 255];
+			r = HiColor::packSRGBTab[(HiColor::unpackSRGBTab[r] * a + 127) / 255];
+		}
+		else
+		{
+			b = uint8_t((b * a + 127) / 255);
+			g = uint8_t((g * a + 127) / 255);
+			r = uint8_t((r * a + 127) / 255);
+		}
+	}
+
+	static inline void _unpremultiply(uint8_t& b, uint8_t& g, uint8_t& r, int a, bool bSRGB)
+	{
+		if (bSRGB)
+		{
+			b = HiColor::packSRGBTab[std::min(4096, (HiColor::unpackSRGBTab[b] * 255 + a / 2) / a)];
+			g = HiColor::packSRGBTab[std::min(4096, (HiColor::unpackSRGBTab[g] * 255 + a / 2) / a)];
+			r = HiColor::packSRGBTab[std::min(4096, (HiColor::unpackSRGBTab[r] * 255 + a / 2) / a)];
+		}
+		else
+		{
+			b = uint8_t(std::min(255, (b * 255 + a / 2) / a));
+			g = uint8_t(std::min(255, (g * 255 + a / 2) / a));
+			r = uint8_t(std::min(255, (r * 255 + a / 2) / a));
+		}
+	}
 
 	//____ maxSize() _______________________________________________________________
 
@@ -329,10 +365,16 @@ namespace wg
 
 		// Push pixels
 
+		const void* pUpload = pPixelsToUpload;
+
+		std::vector<uint8_t> premultiplied;
+		if (pUpload && _isPremultiplied())
+			pUpload = _premultiplied((const uint8_t*)pUpload, pitch, m_size.w, m_size.h, premultiplied);
+
 		HANDLE_GLERROR(glGetError());
         glPixelStorei(GL_UNPACK_ROW_LENGTH, pitch/m_pixelSize);
         glPixelStorei(GL_UNPACK_SWAP_BYTES, m_bSwapBytes);
-        glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0, m_accessFormat, m_pixelDataType, pPixelsToUpload);
+        glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0, m_accessFormat, m_pixelDataType, pUpload);
         glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 		HANDLE_GLERROR(glGetError());
@@ -524,6 +566,19 @@ namespace wg
 		std::vector<Color8> palette(width*height);
 		memcpy(palette.data(), m_pPalette, m_paletteSize*sizeof(Color8));
 
+		// Entries are premultiplied, like the pixels of other surfaces with alpha, so that
+		// interpolating between them interpolates premultiplied colors.
+
+		bool bSRGB = (m_colorSpace == ColorSpace::sRGB);
+		for (int i = 0; i < m_paletteSize; i++)
+		{
+			Color8& c = palette[i];
+			if (c.a == 0)
+				c.argb = 0;
+			else if (c.a < 255)
+				_premultiply(c.b, c.g, c.r, c.a, bSRGB);
+		}
+
 		GLint oldBinding;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 		glBindTexture(GL_TEXTURE_2D, m_paletteTexture);
@@ -655,9 +710,14 @@ namespace wg
 		glBindTexture(GL_TEXTURE_2D, m_texture);
 
 		RectI texRect = { buffer.rect.pos() + bufferRect.pos(), bufferRect.size() };
-		uint8_t* pSrc = buffer.pixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
+		const uint8_t* pSrc = buffer.pixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
+		int srcPitch = buffer.pitch;
 
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.pitch/m_pixelSize);
+		std::vector<uint8_t> premultiplied;
+		if (_isPremultiplied())
+			pSrc = _premultiplied(pSrc, srcPitch, texRect.w, texRect.h, premultiplied);
+
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, srcPitch/m_pixelSize);
 		glPixelStorei(GL_UNPACK_SWAP_BYTES, m_bSwapBytes);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, texRect.x, texRect.y, texRect.w, texRect.h, m_accessFormat, m_pixelDataType, pSrc);
 
@@ -817,10 +877,17 @@ namespace wg
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		}
 
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, m_pitch/m_pixelSize);
+		const uint8_t* pPixels = (const uint8_t*) m_pBlob->data();
+		int pitch = m_pitch;
+
+		std::vector<uint8_t> premultiplied;
+		if (_isPremultiplied())
+			pPixels = _premultiplied(pPixels, pitch, m_size.w, m_size.h, premultiplied);
+
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, pitch/m_pixelSize);
 		glPixelStorei(GL_UNPACK_SWAP_BYTES, m_bSwapBytes);
 		glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
-					 m_accessFormat, m_pixelDataType, m_pBlob->data() );
+					 m_accessFormat, m_pixelDataType, pPixels );
 		glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 
@@ -891,10 +958,97 @@ namespace wg
 
 		HANDLE_GLERROR(glGetError());
 
+		if (_isPremultiplied())
+			_convertAlpha((uint8_t*)pDest, pitch, m_size.w, m_size.h, false);
+
 		m_bBackingBufferStale = false;
 	}
 
 
 
 
+
+	//____ _premultiplied() ____________________________________________________
+	/*
+		Surfaces with alpha keep their pixels premultiplied in the texture, so that blending
+		and filtering work on premultiplied colors. Returns the pixels to upload, which are the
+		pixels themselves if they are all opaque, otherwise a premultiplied copy in buffer with
+		a pitch of width pixels, set in pitch.
+	*/
+
+	const uint8_t* GlSurface::_premultiplied(const uint8_t* pPixels, int& pitch, int width, int height, std::vector<uint8_t>& buffer) const
+	{
+		int alphaByte = (m_bSwapBytes != (WG_IS_BIG_ENDIAN == 1)) ? 0 : 3;		// Alpha is the high byte of the pixel.
+
+		bool bOpaque = true;
+		for (int y = 0; y < height && bOpaque; y++)
+		{
+			const uint8_t* p = pPixels + y * pitch + alphaByte;
+			for (int x = 0; x < width; x++)
+				if (p[x * 4] != 255)
+				{
+					bOpaque = false;
+					break;
+				}
+		}
+
+		if (bOpaque)
+			return pPixels;
+
+		int rowBytes = width * m_pixelSize;
+		buffer.resize(rowBytes * height);
+
+		for (int y = 0; y < height; y++)
+			memcpy(buffer.data() + y * rowBytes, pPixels + y * pitch, rowBytes);
+
+		_convertAlpha(buffer.data(), rowBytes, width, height, true);
+
+		pitch = rowBytes;
+		return buffer.data();
+	}
+
+	//____ _convertAlpha() ____________________________________________________
+	/*
+		Premultiplies or unpremultiplies ARGB_8 pixels in place. Pixels are 32-bit words with
+		alpha in the high byte, in the byte order of the surface.
+	*/
+
+	void GlSurface::_convertAlpha(uint8_t* pPixels, int pitch, int width, int height, bool bPremultiply) const
+	{
+		bool bSRGB = (m_colorSpace == ColorSpace::sRGB);
+
+		for (int y = 0; y < height; y++)
+		{
+			uint32_t* p = (uint32_t*)(pPixels + y * pitch);
+
+			for (int x = 0; x < width; x++)
+			{
+				uint32_t v = p[x];
+				if (m_bSwapBytes)
+					v = Util::endianSwap(v);
+
+				int a = v >> 24;
+				if (a == 255)
+					continue;
+
+				if (a == 0)
+					v = 0;
+				else
+				{
+					uint8_t b = uint8_t(v), g = uint8_t(v >> 8), r = uint8_t(v >> 16);
+
+					if (bPremultiply)
+						_premultiply(b, g, r, a, bSRGB);
+					else
+						_unpremultiply(b, g, r, a, bSRGB);
+
+					v = (uint32_t(a) << 24) | (uint32_t(r) << 16) | (uint32_t(g) << 8) | b;
+				}
+
+				if (m_bSwapBytes)
+					v = Util::endianSwap(v);
+				p[x] = v;
+			}
+		}
+	}
 } // namespace wg

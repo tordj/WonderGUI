@@ -138,6 +138,7 @@ void GlBackend::setCanvas(CanvasRef ref)
 	{
 		m_pCommandQueue[m_commandQueueSize++] = (int)CommandGL::SetCanvas;
 		m_objects.push_back(nullptr);
+		_resetCommandStates();
 	}
 	else
 	{
@@ -150,6 +151,19 @@ void GlBackend::setCanvas(Surface* pSurface)
 {
 	m_pCommandQueue[m_commandQueueSize++] = (int) CommandGL::SetCanvas;
 	m_objects.push_back(pSurface);
+	_resetCommandStates();
+}
+
+//____ _resetCommandStates() __________________________________________________
+/*
+	States kept while processing commands start over with each canvas, as the device sets
+	them again for the new canvas. Tint and tint color are written into the vertices.
+*/
+
+void GlBackend::_resetCommandStates()
+{
+	m_tintOfs = -1;
+	m_tintColorOfs = -1;
 }
 
 
@@ -237,6 +251,19 @@ void GlBackend::_setCanvas(Surface* pSurface)
 			glDisable(GL_FRAMEBUFFER_SRGB);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// The default framebuffer might not have alpha.
+
+		GLint drawBuffer = GL_BACK;
+		glGetIntegerv(GL_DRAW_BUFFER, &drawBuffer);
+
+		GLint alphaBits = 8;
+		glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, (drawBuffer == GL_FRONT || drawBuffer == GL_FRONT_LEFT) ? GL_FRONT_LEFT : GL_BACK_LEFT,
+											  GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE, &alphaBits);
+		if (glGetError() != GL_NO_ERROR)
+			alphaBits = 8;
+
+		m_bActiveCanvasHasAlpha = (alphaBits > 0);
 	}
 
 	glViewport(0, 0, size.w, size.h);
@@ -250,10 +277,7 @@ void GlBackend::_setCanvas(Surface* pSurface)
 	m_canvasUBO.yOfs = pCanvas ? 0 : size.h;
 	m_canvasUBO.yMul = pCanvas ? 1 : -1;
 
-	glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-	int b = true; // bools in GLSL are represented as 4 bytes, so we store it in an integer
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CanvasUBO), &m_canvasUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	// Uploaded by _setBlendMode() below.
 
 	LOG_GLERROR(glGetError());
 
@@ -267,6 +291,14 @@ void GlBackend::_setCanvas(Surface* pSurface)
 	m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->m_bMipmapped : false;
 
 	m_bActiveCanvasIsA8 = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::Alpha_8 : false;
+
+	if (m_pActiveCanvas)
+	{
+		PixelFormat format = m_pActiveCanvas->pixelFormat();
+		m_bActiveCanvasHasAlpha = (format != PixelFormat::XRGB_8 && format != PixelFormat::RGB_565 && format != PixelFormat::BGR_565);
+	}
+
+	m_canvasUBO.blendInfo[2] = m_bActiveCanvasHasAlpha ? 0.f : 1.f;
 
 //	if (m_bActiveCanvasIsA8 != bWasAlphaOnly)
 //		_setBlendMode(m_activeBlendMode);
@@ -718,35 +750,16 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 				int extrasOfs = int(pExtrasGL - m_pExtrasBuffer) / 4;
 				int colorsOfs = int(pColorGL - m_pColorBuffer);
 
-				pVertexGL->coord = c1;
-				pVertexGL->colorsOfs = colorsOfs;
-				pVertexGL->extrasOfs = extrasOfs;
-				pVertexGL++;
-
-				pVertexGL->coord = c2;
-				pVertexGL->colorsOfs = colorsOfs;
-				pVertexGL->extrasOfs = extrasOfs;
-				pVertexGL++;
-
-				pVertexGL->coord = c3;
-				pVertexGL->colorsOfs = colorsOfs;
-				pVertexGL->extrasOfs = extrasOfs;
-				pVertexGL++;
-
-				pVertexGL->coord = c1;
-				pVertexGL->colorsOfs = colorsOfs;
-				pVertexGL->extrasOfs = extrasOfs;
-				pVertexGL++;
-
-				pVertexGL->coord = c3;
-				pVertexGL->colorsOfs = colorsOfs;
-				pVertexGL->extrasOfs = extrasOfs;
-				pVertexGL++;
-
-				pVertexGL->coord = c4;
-				pVertexGL->colorsOfs = colorsOfs;
-				pVertexGL->extrasOfs = extrasOfs;
-				pVertexGL++;
+				for (const CoordI& corner : { c1, c2, c3, c1, c3, c4 })
+				{
+					pVertexGL->coord = corner;
+					pVertexGL->uv = { 0.f, 0.f };
+					pVertexGL->colorsOfs = colorsOfs;
+					pVertexGL->extrasOfs = extrasOfs;
+					pVertexGL->tintmapOfs = { float(m_tintOfs), 0.f };
+					pVertexGL->colorstripOfs = { 0.f, 0.f };
+					pVertexGL++;
+				}
 
 				*pExtrasGL++ = s;
 				*pExtrasGL++ = w;
@@ -1001,7 +1014,7 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 
 			for (int i = 0; i < nRects; i++)
 			{
-				RectI patch = (*pRects++) / 64;
+				RectI patch = roundToPixels(*pRects++);		// Rounded like the position of the edgemap.
 
 				int		dx1 = patch.x;
 				int		dx2 = patch.x + patch.w;
@@ -1983,6 +1996,8 @@ void GlBackend::endSession()
 				else
 					glUseProgram(m_fillProg[m_bActiveCanvasIsA8]);
 
+				_setPartialCoverage(false);
+
 				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 				vertexOfs += nVertices;
 				break;
@@ -1997,6 +2012,8 @@ void GlBackend::endSession()
 				else
 					glUseProgram(m_aaFillProg[m_bActiveCanvasIsA8]);
 
+				_setPartialCoverage(true);
+
 				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 				vertexOfs += nVertices;
 				break;
@@ -2008,6 +2025,7 @@ void GlBackend::endSession()
 				int nVertices = *pCmd++;
 
 				glUseProgram(m_lineFromToProg[m_bActiveCanvasIsA8]);
+				_setPartialCoverage(true);
 
 				for (int i = 0; i < clipListLen; i++)
 				{
@@ -2044,6 +2062,7 @@ void GlBackend::endSession()
 				}
 
 				_setRgbxClip(prog, pSurf, false);
+				_setPartialCoverage(false);
 
 				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 				vertexOfs += nVertices;
@@ -2091,6 +2110,7 @@ void GlBackend::endSession()
 					_setRgbxClip(prog, pSurf, true);
 				}
 
+				_setPartialCoverage(false);
 				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 				vertexOfs += nVertices;
 
@@ -2150,6 +2170,8 @@ void GlBackend::endSession()
 				glUniform2fv(uniformLocation[1], 9, (GLfloat*)m_activeBlurInfo.offset);
 				glUniform4fv(uniformLocation[0], 9, (GLfloat*)m_activeBlurInfo.colorMtx);
 
+				_setPartialCoverage(false);
+
 				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 
 				vertexOfs += nVertices;
@@ -2168,6 +2190,7 @@ void GlBackend::endSession()
 				int nEdges = *pCmd++;
 				int nVertices = *pCmd++;
 				glUseProgram(m_segmentsProg[nEdges][m_bActiveCanvasIsA8]);
+				_setPartialCoverage(false);
 
 				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 				vertexOfs += nVertices;
@@ -2178,6 +2201,7 @@ void GlBackend::endSession()
 			{
 				int nVertices = *pCmd++;
 				glUseProgram(m_shapeProg[m_bActiveCanvasIsA8]);
+				_setPartialCoverage(true);
 
 				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 				vertexOfs += nVertices;
@@ -2216,6 +2240,19 @@ void GlBackend::endSession()
 
 
 //____ _setBlendMode() _______________________________________________________
+/*
+	Canvases with alpha hold premultiplied colors, which lets fixed-function blending follow the
+	blend rules exactly: Blend is Porter-Duff over, Morph a premultiplied cross-fade and a partly
+	covered pixel gets the average of the blend result and the canvas. The fragment shaders pass
+	what they draw to the blender as the mode needs it (see WG_GL_OUTPUT), told by blendInfo:
+
+	- Replace and Morph keep the uncovered part of the pixel by the second color of dual-source
+	  blending. Replace is only blended where pixels are partly covered, see _setPartialCoverage().
+	- Effect modes keep the alpha of the canvas. Multiply and Subtract are exact, as is Add where
+	  it doesn't saturate. Invert, Min and Max are exact on opaque pixels, Min and Max are
+	  approximated on partly covered pixels by fading the source by coverage.
+	- On Alpha_8 canvases, effect modes use the alpha of the source as the value.
+*/
 
 void GlBackend::_setBlendMode(BlendMode mode)
 {
@@ -2223,63 +2260,60 @@ void GlBackend::_setBlendMode(BlendMode mode)
 
 	bool bAlphaOnly = m_bActiveCanvasIsA8;
 
+	float output = 0.f;							// blendInfo.x, see WG_GL_OUTPUT.
+	float morph = 1.f;
+
+	glBlendEquation(GL_FUNC_ADD);
+	glEnable(GL_BLEND);
+	m_bReplaceBlending = true;
+
 	switch (mode)
 	{
 	case BlendMode::Replace:
-		glBlendEquation(GL_FUNC_ADD);
+		output = 1.f;
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC1_ALPHA);
 		glDisable(GL_BLEND);
+		m_bReplaceBlending = false;
 		break;
 
 	case BlendMode::Undefined:
-	case BlendMode::BlendFixedColor:		// Defaults to Blend for BlendFixedColor which can not be implemented easily.
+	case BlendMode::BlendFixedColor:		// Drawn as Blend, which gives the same result.
 	case BlendMode::Blend:
-		glBlendEquation(GL_FUNC_ADD);
-		glEnable(GL_BLEND);
-		if (bAlphaOnly)
-			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		else
-			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		break;
 
 	case BlendMode::Morph:
-		glBlendEquation(GL_FUNC_ADD);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
-		glBlendColor(1.f, 1.f, 1.f, m_activeMorphFactor);
+		output = 1.f;
+		morph = m_activeMorphFactor;
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC1_ALPHA);
 		break;
 
 	case BlendMode::Add:
-		glBlendEquation(GL_FUNC_ADD);
-		glEnable(GL_BLEND);
-
 		if (bAlphaOnly)
 			glBlendFunc(GL_ONE, GL_ONE);
 		else
-			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
-
+			glBlendFuncSeparate(GL_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
 		break;
 
 	case BlendMode::Subtract:
-		glEnable(GL_BLEND);
 		glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 		if (bAlphaOnly)
 			glBlendFunc(GL_ONE, GL_ONE);
 		else
-			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
+			glBlendFuncSeparate(GL_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
 		break;
 
 	case BlendMode::Multiply:
-		glBlendEquation(GL_FUNC_ADD);
-		glEnable(GL_BLEND);
 		if (bAlphaOnly)
-			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+		{
+			output = 1.f;
+			glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC1_ALPHA);
+		}
 		else
-			glBlendFuncSeparate(GL_DST_COLOR, GL_ZERO, GL_ZERO, GL_ONE);
+			glBlendFuncSeparate(GL_DST_COLOR, GL_ONE_MINUS_SRC1_ALPHA, GL_ZERO, GL_ONE);
 		break;
 
 	case BlendMode::Invert:
-		glBlendEquation(GL_FUNC_ADD);
-		glEnable(GL_BLEND);
 		if (bAlphaOnly)
 			glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
 		else
@@ -2287,7 +2321,7 @@ void GlBackend::_setBlendMode(BlendMode mode)
 		break;
 
 	case BlendMode::Min:
-		glEnable(GL_BLEND);
+		output = 2.f;
 		if (bAlphaOnly)
 		{
 			glBlendEquation(GL_MIN);
@@ -2301,7 +2335,6 @@ void GlBackend::_setBlendMode(BlendMode mode)
 		break;
 
 	case BlendMode::Max:
-		glEnable(GL_BLEND);
 		if (bAlphaOnly)
 		{
 			glBlendEquation(GL_MAX);
@@ -2315,8 +2348,6 @@ void GlBackend::_setBlendMode(BlendMode mode)
 		break;
 
 	case BlendMode::Ignore:
-		glBlendEquation(GL_FUNC_ADD);
-		glEnable(GL_BLEND);
 		glBlendFunc(GL_ZERO, GL_ONE);
 		break;
 
@@ -2325,7 +2356,40 @@ void GlBackend::_setBlendMode(BlendMode mode)
 		break;
 	}
 
+	m_canvasUBO.blendInfo[0] = output;
+	m_canvasUBO.blendInfo[1] = morph;
+	_uploadCanvasUBO();
+
 	LOG_GLERROR(glGetError());
+}
+
+//____ _setPartialCoverage() __________________________________________________
+/*
+	Replace only needs blending where pixels are partly covered, which saves reading the canvas
+	when filling or blitting whole pixels. Called before each draw with whether it can cover
+	pixels partly.
+*/
+
+void GlBackend::_setPartialCoverage(bool bPartialCoverage)
+{
+	if (m_activeBlendMode != BlendMode::Replace || bPartialCoverage == m_bReplaceBlending)
+		return;
+
+	if (bPartialCoverage)
+		glEnable(GL_BLEND);
+	else
+		glDisable(GL_BLEND);
+
+	m_bReplaceBlending = bPartialCoverage;
+}
+
+//____ _uploadCanvasUBO() _____________________________________________________
+
+void GlBackend::_uploadCanvasUBO()
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CanvasUBO), &m_canvasUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 //____ _setBlitSource() _______________________________________________________

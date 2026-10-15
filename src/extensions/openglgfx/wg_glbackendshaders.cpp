@@ -25,6 +25,93 @@
 #include <wg_glbackend.h>  
 
 
+// Uniform block shared by all shaders, see GlBackend::CanvasUBO. The vertex and fragment shaders
+// of a program declare it the same way.
+
+#define WG_GL_CANVAS_BLOCK \
+"layout(std140) uniform Canvas														" \
+"{																					" \
+"	float  canvasWidth;																" \
+"	float  canvasHeight;															" \
+"	float  canvasYOfs;																" \
+"	float  canvasYMul;																" \
+"	vec4   blendInfo;																" \
+"};																					"
+
+// Output of fragment shaders to canvases with color. Canvases with alpha hold premultiplied
+// colors. A shader works out the premultiplied color of what it draws times the part of the
+// pixel it covers (pc) and that part (cov). writeColor() passes them on as the blend mode needs
+// them (see GlBackend::_setBlendMode()), as told by blendInfo:
+//
+//   x = 0: pc, with its alpha as the second color (Blend and the effect modes but Min).
+//   x = 1: pc times y (the morph factor), with the covered part times y as the second color, which
+//          tells the blender how much of the canvas to keep (Replace and Morph). Canvases without
+//          alpha (z set) keep the color of the result, which is the result divided by its alpha.
+//          The canvas is opaque, so that alpha only depends on the source, and the result can be
+//          divided by it here. A transparent Replace writes the color of the source, which
+//          premultiplied is black.
+//   x = 2: the source faded towards white by the alpha of pc (Min).
+
+#define WG_GL_OUTPUT \
+WG_GL_CANVAS_BLOCK \
+"layout(location = 0, index = 0) out vec4 color;									" \
+"layout(location = 0, index = 1) out vec4 colorFactor;								" \
+"vec4 premul(vec4 c) { return vec4(c.rgb * c.a, c.a); }								" \
+"void writeColor(vec4 pc, float cov)												" \
+"{																					" \
+"	if (blendInfo.x > 1.5)															" \
+"	{																				" \
+"		color = vec4(vec3(1.0 - pc.a) + pc.rgb, 1.0);								" \
+"		colorFactor = vec4(0.0);													" \
+"	}																				" \
+"	else if (blendInfo.x > 0.5)														" \
+"	{																				" \
+"		float m = blendInfo.y;														" \
+"		float k = 1.0;																" \
+"		if (blendInfo.z > 0.5)														" \
+"		{																			" \
+"			float resultAlpha = 1.0 - m + (cov > 0.0 ? pc.a / cov : 0.0) * m;		" \
+"			k = resultAlpha > 0.0 ? 1.0 / resultAlpha : 0.0;						" \
+"		}																			" \
+"		color = pc * (m * k);														" \
+"		colorFactor = vec4(cov * (1.0 - (1.0 - m) * k));							" \
+"	}																				" \
+"	else																			" \
+"	{																				" \
+"		color = pc;																	" \
+"		colorFactor = vec4(pc.a);													" \
+"	}																				" \
+"}																					"
+
+// Output of fragment shaders to Alpha_8 canvases, which hold alpha in the red channel. Paint
+// modes work on alpha as on other canvases, effect modes take the alpha of the source as the
+// value, like an opaque source of that color. pa is the alpha of what is drawn times the part
+// of the pixel it covers, cov that part. blendInfo is as for WG_GL_OUTPUT, but x = 1 is also
+// used by Multiply.
+
+#define WG_GL_OUTPUT_A8 \
+WG_GL_CANVAS_BLOCK \
+"layout(location = 0, index = 0) out vec4 color;									" \
+"layout(location = 0, index = 1) out vec4 colorFactor;								" \
+"void writeAlpha(float pa, float cov)												" \
+"{																					" \
+"	if (blendInfo.x > 1.5)															" \
+"	{																				" \
+"		color = vec4(1.0 - cov + pa);												" \
+"		colorFactor = vec4(0.0);													" \
+"	}																				" \
+"	else if (blendInfo.x > 0.5)														" \
+"	{																				" \
+"		color = vec4(pa * blendInfo.y);												" \
+"		colorFactor = vec4(cov * blendInfo.y);										" \
+"	}																				" \
+"	else																			" \
+"	{																				" \
+"		color = vec4(pa);															" \
+"		colorFactor = vec4(pa);														" \
+"	}																				" \
+"}																					"
+
 // GLSL function evaluating a tint block (see TintTools::writeGpuTintBlock()) at a pixel center.
 
 #define WG_GL_TINT_FUNC \
@@ -85,12 +172,14 @@
 "	return result;																	" \
 "}																					"
 
-// GLSL function reading a blit source. A source without alpha (RGB8 texture) reads as opaque
-// also outside the source, where the transparent border of a ClipBlit should make it
-// transparent. So when told to (rgbxClip bit 0), the alpha is worked out from the position:
-// 1 inside and 0 outside with nearest sampling, and the part of the bilinear footprint that
-// lies inside with bilinear sampling (bit 1), which is what the sampler does with the colors.
-// Needs uniform texId declared first.
+// GLSL function reading a blit source as a premultiplied color, which is how textures with alpha
+// hold their colors. A source without alpha (RGB8 texture) reads as opaque also outside the
+// source, where the transparent border of a ClipBlit should make it transparent. So when told
+// to (rgbxClip bit 0), the alpha is worked out from the position: 1 inside and 0 outside with
+// nearest sampling, and the part of the bilinear footprint that lies inside with bilinear
+// sampling (bit 1), which is what the sampler does with the colors. The colors are then
+// premultiplied by that alpha, as the border outside the source is black. Needs uniform
+// texId declared first.
 
 #define WG_GL_SOURCE_SAMPLE \
 "uniform int rgbxClip;																" \
@@ -113,7 +202,7 @@
 "}																					"
 
 // GLSL function looking up the palette entry for an index read from an R8 (Index_8) or R16
-// (Index_16) index texture. The palette texture is up to 256 texels wide with as many rows as
+// (Index_16) index texture. Palette entries are premultiplied, see GlSurface::_uploadPalette(). The palette texture is up to 256 texels wide with as many rows as
 // needed for paletteCapacity() entries (see GlSurface::_uploadPalette()), so the normalized
 // index can't be used as a texture coordinate. Instead the index is turned into the coordinate
 // of its texel's center, with paletteInfo set by GlBackend::_setPaletteInfo():
@@ -143,13 +232,7 @@ const char GlBackend::fillVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer colorBufferId;					   "
 "layout(location = 0) in ivec2 pos;                        "
@@ -169,13 +252,7 @@ const char GlBackend::fillTintmapVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer colorBufferId;					   "
 "layout(location = 0) in ivec2 pos;                        "
@@ -197,50 +274,48 @@ const char GlBackend::fillTintmapVertexShader[] =
 const char GlBackend::fillFragmentShader[] =
 
 "#version 330 core\n"
-"out vec4 outColor;                     "
-"in vec4 fragColor;                         "
-"void main()                            "
-"{                                      "
-"   outColor = fragColor;                   "
-"}                                      ";
+WG_GL_OUTPUT
+"in vec4 fragColor;									"
+"void main()										"
+"{													"
+"   writeColor(premul(fragColor), 1.0);				"
+"}													";
 
 
 const char GlBackend::fillFragmentShader_A8[] =
 
 "#version 330 core\n"
-"out vec4 outColor;                     "
-"in vec4 fragColor;                         "
-"void main()                            "
-"{                                      "
-"   outColor.r = fragColor.a;                   "
-"}                                      ";
+WG_GL_OUTPUT_A8
+"in vec4 fragColor;									"
+"void main()										"
+"{													"
+"   writeAlpha(fragColor.a, 1.0);					"
+"}													";
 
 const char GlBackend::fillFragmentShaderTintmap[] =
 
 "#version 330 core\n"
-"uniform samplerBuffer tintmapBufferId;	"
-"in vec4 fragColor;                     "
+WG_GL_OUTPUT
+"uniform samplerBuffer tintmapBufferId;				"
+"in vec4 fragColor;									"
 "flat in int tintOfs;  in vec2 tintPos;  " WG_GL_TINT_FUNC
-"out vec4 outColor;                     "
-"void main()                            "
-"{                                      "
-"   outColor = evalTint(tintmapBufferId, tintOfs, tintPos)"
-"	           * fragColor;           "
-"}                                      ";
+"void main()										"
+"{													"
+"   writeColor(premul(evalTint(tintmapBufferId, tintOfs, tintPos) * fragColor), 1.0);	"
+"}													";
 
 
 const char GlBackend::fillFragmentShaderTintmap_A8[] =
 
 "#version 330 core\n"
-"uniform samplerBuffer tintmapBufferId;	"
-"in vec4 fragColor;                     "
+WG_GL_OUTPUT_A8
+"uniform samplerBuffer tintmapBufferId;				"
+"in vec4 fragColor;									"
 "flat in int tintOfs;  in vec2 tintPos;  " WG_GL_TINT_FUNC
-"out vec4 outColor;                     "
-"void main()                            "
-"{                                      "
-"   outColor.r = evalTint(tintmapBufferId, tintOfs, tintPos).a"
-"	           * fragColor.a;           "
-"}                                      ";
+"void main()										"
+"{													"
+"   writeAlpha(evalTint(tintmapBufferId, tintOfs, tintPos).a * fragColor.a, 1.0);	"
+"}													";
 
 
 
@@ -248,13 +323,7 @@ const char GlBackend::blitVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer extrasBufferId;						   "
 "uniform samplerBuffer colorBufferId;					   "
@@ -284,13 +353,7 @@ const char GlBackend::blitTintmapVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer colorBufferId;						   "
 "layout(location = 2) in int colorOfs;                     "
@@ -333,14 +396,13 @@ const char GlBackend::blitTintmapVertexShader[] =
 "struct BlurInfo { vec4 colorMtx[9]; vec2 offset[9]; };							" \
 "uniform BlurInfo blurInfo;															" \
 "uniform sampler2D texId;															" \
-"in vec2 texUV;																		" \
-"out vec4 color;																	"
+"in vec2 texUV;																		"
 
 #define WG_GL_BLUR_TAP \
 "vec4 tap(vec2 uv) { return texture(texId, uv); }									"
 
 #define WG_GL_BLUR_TAP_ALPHA \
-"vec4 tap(vec2 uv) { return vec4(1.0, 1.0, 1.0, texture(texId, uv).r); }			"
+"vec4 tap(vec2 uv) { return vec4(texture(texId, uv).r); }							"
 
 #define WG_GL_BLUR_TAP_PALETTE \
 "uniform sampler2D paletteId;														" WG_GL_PALETTE_FUNC \
@@ -355,20 +417,28 @@ const char GlBackend::blitTintmapVertexShader[] =
 "flat in int tintOfs;  in vec2 tintPos;  flat in vec4 flatTint;						" WG_GL_TINT_FUNC \
 "vec4 tintColor() { return evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint; }"
 
+// Taps are premultiplied, like the textures. The colors of the taps are blurred and alpha is
+// taken from the center tap, which gives a straight color.
+
 #define WG_GL_BLUR_SUM \
 "vec4 blurred()																		" \
 "{																					" \
 "	vec4 c = vec4(0.0);																" \
 "	for (int i = 0; i < 9; i++)														" \
-"		c += tap(texUV + blurInfo.offset[i]) * blurInfo.colorMtx[i];				" \
-"	return c;																		" \
+"	{																				" \
+"		vec4 t = tap(texUV + blurInfo.offset[i]);									" \
+"		c += vec4(t.a > 0.0 ? t.rgb / t.a : vec3(0.0), t.a) * blurInfo.colorMtx[i];	" \
+"	}																				" \
+"	return vec4(clamp(c.rgb, 0.0, 1.0), c.a);										" \
 "}																					"
 
 #define WG_GL_BLUR_OUT \
-"void main() { color = blurred() * tintColor(); }									"
+WG_GL_OUTPUT \
+"void main() { writeColor(premul(blurred() * tintColor()), 1.0); }					"
 
 #define WG_GL_BLUR_OUT_A8 \
-"void main() { color.r = blurred().a * tintColor().a; }								"
+WG_GL_OUTPUT_A8 \
+"void main() { writeAlpha(blurred().a * tintColor().a, 1.0); }						"
 
 #define WG_GL_BLUR_SHADERS(TAP) \
 	{ { WG_GL_BLUR_HEAD TAP WG_GL_BLUR_FLAT WG_GL_BLUR_SUM WG_GL_BLUR_OUT, WG_GL_BLUR_HEAD TAP WG_GL_BLUR_FLAT WG_GL_BLUR_SUM WG_GL_BLUR_OUT_A8 }, \
@@ -387,117 +457,107 @@ const char * const GlBackend::blurFragmentShaders[3][2][2] =
 const char GlBackend::blitFragmentShader[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT
 "uniform sampler2D texId;						" WG_GL_SOURCE_SAMPLE
 "in vec2 texUV;									"
 "in vec4 fragColor;								"
-"out vec4 color;								"
 "void main()									"
 "{												"
-"   color = sampleSource(texUV) * fragColor;  "
+"   writeColor(sampleSource(texUV) * premul(fragColor), 1.0);	"
 "}												";
 
 const char GlBackend::blitFragmentShader_A8[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT_A8
 "uniform sampler2D texId;						" WG_GL_SOURCE_SAMPLE
 "in vec2 texUV;									"
 "in vec4 fragColor;								"
-"out vec4 color;								"
 "void main()									"
 "{												"
-"   color.r = sampleSource(texUV).a * fragColor.a;  "
+"   writeAlpha(sampleSource(texUV).a * fragColor.a, 1.0);		"
 "}												";
 
 
 const char GlBackend::alphaBlitFragmentShader[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT
 "uniform sampler2D texId;						"
 "in vec2 texUV;									"
 "in vec4 fragColor;								"
-"out vec4 color;								"
 "void main()									"
 "{												"
-"   color = fragColor;							"
-"   color.a *= texture(texId, texUV).r;         "
+"   writeColor(premul(fragColor) * texture(texId, texUV).r, 1.0);	"
 "}												";
 
 const char GlBackend::alphaBlitFragmentShader_A8[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT_A8
 "uniform sampler2D texId;						"
 "in vec2 texUV;									"
 "in vec4 fragColor;								"
-"out vec4 color;								"
 "void main()									"
 "{												"
-"   color.r = fragColor.a * texture(texId, texUV).r;         "
+"   writeAlpha(fragColor.a * texture(texId, texUV).r, 1.0);		"
 "}												";
 
 
 const char GlBackend::blitFragmentShaderTintmap[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT
 "uniform sampler2D texId;						" WG_GL_SOURCE_SAMPLE
 "uniform samplerBuffer tintmapBufferId;			"
 "in vec2 texUV;									"
 "flat in int tintOfs;  in vec2 tintPos;  " "flat in vec4 flatTint;  " WG_GL_TINT_FUNC
-"out vec4 color;								"
 "void main()									"
 "{												"
-"   vec4 fragColor = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint); "
-"   color = sampleSource(texUV) * fragColor;  "
+"   vec4 fragColor = evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint;	"
+"   writeColor(sampleSource(texUV) * premul(fragColor), 1.0);	"
 "}												";
 
 const char GlBackend::blitFragmentShaderTintmap_A8[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT_A8
 "uniform sampler2D texId;						" WG_GL_SOURCE_SAMPLE
 "uniform samplerBuffer tintmapBufferId;			"
 "in vec2 texUV;									"
 "flat in int tintOfs;  in vec2 tintPos;  " "flat in vec4 flatTint;  " WG_GL_TINT_FUNC
-"out vec4 color;								"
 "void main()									"
 "{												"
-"   float fragA = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint).a; "
-"   color.r = sampleSource(texUV).a * fragA;  "
+"   float fragA = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint).a;	"
+"   writeAlpha(sampleSource(texUV).a * fragA, 1.0);			"
 "}												";
 
 const char GlBackend::alphaBlitFragmentShaderTintmap[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT
 "uniform sampler2D texId;						"
 "uniform samplerBuffer tintmapBufferId;			"
 "in vec2 texUV;									"
 "flat in int tintOfs;  in vec2 tintPos;  " "flat in vec4 flatTint;  " WG_GL_TINT_FUNC
-"out vec4 color;								"
 "void main()									"
 "{												"
-"   color = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint); "
-"   color.a *= texture(texId, texUV).r;         "
+"   vec4 fragColor = evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint;	"
+"   writeColor(premul(fragColor) * texture(texId, texUV).r, 1.0);	"
 "}												";
 
 const char GlBackend::alphaBlitFragmentShaderTintmap_A8[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT_A8
 "uniform sampler2D texId;						"
 "uniform samplerBuffer tintmapBufferId;			"
 "in vec2 texUV;									"
 "flat in int tintOfs;  in vec2 tintPos;  " "flat in vec4 flatTint;  " WG_GL_TINT_FUNC
-"out vec4 color;								"
 "void main()									"
 "{												"
-"   float fragA = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint).a; "
-
-"   color.r = fragA * texture(texId, texUV).r;  "
+"   float fragA = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint).a;	"
+"   writeAlpha(fragA * texture(texId, texUV).r, 1.0);			"
 "}												";
 
 
@@ -505,13 +565,7 @@ const char GlBackend::paletteBlitNearestVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer extrasBufferId;						   "
 "uniform samplerBuffer colorBufferId;					   "
@@ -541,13 +595,7 @@ const char GlBackend::paletteBlitNearestTintmapVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer colorBufferId;						   "
 "layout(location = 2) in int colorOfs;                     "
@@ -579,91 +627,78 @@ const char GlBackend::paletteBlitNearestTintmapVertexShader[] =
 const char GlBackend::paletteBlitNearestFragmentShader[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT
 "uniform sampler2D texId;						"
 "uniform int clipToSource;					"	// Set for a ClipBlit: nothing outside the source is read.
 "uniform sampler2D paletteId;					" WG_GL_PALETTE_FUNC
 "in vec2 texUV;									"
 "in vec4 fragColor;								"
-"out vec4 color;								"
 "float inside(vec2 uv)							"
 "{												"
 "   return (clipToSource != 0 && (any(lessThan(uv, vec2(0.0))) || any(greaterThanEqual(uv, vec2(1.0))))) ? 0.0 : 1.0;	"
 "}												"
-
 "void main()									"
 "{												"
-"   color = paletteLookup(texture(texId, texUV).r) * fragColor;	"
-"   color *= inside(texUV);	"
+"   writeColor(paletteLookup(texture(texId, texUV).r) * premul(fragColor) * inside(texUV), 1.0);	"
 "}												";
 
 const char GlBackend::paletteBlitNearestFragmentShader_A8[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT_A8
 "uniform sampler2D texId;						"
 "uniform int clipToSource;					"	// Set for a ClipBlit: nothing outside the source is read.
 "uniform sampler2D paletteId;						" WG_GL_PALETTE_FUNC
 "in vec2 texUV;									"
 "in vec4 fragColor;								"
-"out vec4 color;								"
 "float inside(vec2 uv)							"
 "{												"
 "   return (clipToSource != 0 && (any(lessThan(uv, vec2(0.0))) || any(greaterThanEqual(uv, vec2(1.0))))) ? 0.0 : 1.0;	"
 "}												"
-
 "void main()									"
 "{												"
-"   color.r = paletteLookup(texture(texId, texUV).r).a * fragColor.a;"
-"   color.r *= inside(texUV);	"
+"   writeAlpha(paletteLookup(texture(texId, texUV).r).a * fragColor.a * inside(texUV), 1.0);	"
 "}												";
 
 
 const char GlBackend::paletteBlitNearestFragmentShaderTintmap[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT
 "uniform sampler2D texId;						"
 "uniform samplerBuffer tintmapBufferId;			"
 "uniform int clipToSource;					"	// Set for a ClipBlit: nothing outside the source is read.
 "uniform sampler2D paletteId;					" WG_GL_PALETTE_FUNC
 "in vec2 texUV;									"
 "flat in int tintOfs;  in vec2 tintPos;  " "flat in vec4 flatTint;  " WG_GL_TINT_FUNC
-"out vec4 color;								"
 "float inside(vec2 uv)							"
 "{												"
 "   return (clipToSource != 0 && (any(lessThan(uv, vec2(0.0))) || any(greaterThanEqual(uv, vec2(1.0))))) ? 0.0 : 1.0;	"
 "}												"
-
 "void main()									"
 "{												"
-"   vec4 fragColor = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint); "
-
-"   color = paletteLookup(texture(texId, texUV).r) * fragColor;	"
-"   color *= inside(texUV);	"
+"   vec4 fragColor = evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint;	"
+"   writeColor(paletteLookup(texture(texId, texUV).r) * premul(fragColor) * inside(texUV), 1.0);	"
 "}												";
 
 const char GlBackend::paletteBlitNearestFragmentShaderTintmap_A8[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT_A8
 "uniform sampler2D texId;						"
 "uniform samplerBuffer tintmapBufferId;			"
 "uniform int clipToSource;					"	// Set for a ClipBlit: nothing outside the source is read.
 "uniform sampler2D paletteId;						" WG_GL_PALETTE_FUNC
 "in vec2 texUV;									"
 "flat in int tintOfs;  in vec2 tintPos;  " "flat in vec4 flatTint;  " WG_GL_TINT_FUNC
-"out vec4 color;								"
 "float inside(vec2 uv)							"
 "{												"
 "   return (clipToSource != 0 && (any(lessThan(uv, vec2(0.0))) || any(greaterThanEqual(uv, vec2(1.0))))) ? 0.0 : 1.0;	"
 "}												"
-
 "void main()									"
 "{												"
-"   float fragA = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint).a; "
-"   color.r = paletteLookup(texture(texId, texUV).r).a * fragA;"
-"   color.r *= inside(texUV);	"
+"   float fragA = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint).a;	"
+"   writeAlpha(paletteLookup(texture(texId, texUV).r).a * fragA * inside(texUV), 1.0);	"
 "}												";
 
 
@@ -672,13 +707,7 @@ const char GlBackend::paletteBlitInterpolateVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer extrasBufferId;						   "
 "uniform samplerBuffer colorBufferId;					   "
@@ -716,13 +745,7 @@ const char GlBackend::paletteBlitInterpolateTintmapVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer colorBufferId;						   "
 "layout(location = 2) in int colorOfs;                     "
@@ -767,18 +790,16 @@ const char GlBackend::paletteBlitInterpolateTintmapVertexShader[] =
 const char GlBackend::paletteBlitInterpolateFragmentShader[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT
 "uniform sampler2D texId;						"
 "uniform int clipToSource;					"	// Set for a ClipBlit: nothing outside the source is read.
 "uniform sampler2D paletteId;						" WG_GL_PALETTE_FUNC
 "in vec2 uvFrac;								"
 "in vec4 fragColor;								"
-"out vec4 color;								"
 "float inside(vec2 uv)							"
 "{												"
 "   return (clipToSource != 0 && (any(lessThan(uv, vec2(0.0))) || any(greaterThanEqual(uv, vec2(1.0))))) ? 0.0 : 1.0;	"
 "}												"
-
 "void main()									"
 "{												"
 "   vec2 uvBase = floor(uvFrac);	"		// Texels and weights from the same value, so they always agree.
@@ -794,27 +815,25 @@ const char GlBackend::paletteBlitInterpolateFragmentShader[] =
 "   vec4 color01 = paletteLookup(index01) * inside(vec2(texUV11.x,texUV00.y));	"
 "   vec4 color10 = paletteLookup(index10) * inside(vec2(texUV00.x,texUV11.y));	"
 "   vec4 color11 = paletteLookup(index11) * inside(texUV11);	"
-
 "   vec4 out0 = color00 * (1-uvf.x) + color01 * uvf.x;	"
 "   vec4 out1 = color10 * (1-uvf.x) + color11 * uvf.x;	"
-"   color = (out0 * (1-uvf.y) + out1 * uvf.y) * fragColor;	"
+"   vec4 sampled = out0 * (1-uvf.y) + out1 * uvf.y;	"
+"   writeColor(sampled * premul(fragColor), 1.0);	"
 "}												";
 
 const char GlBackend::paletteBlitInterpolateFragmentShader_A8[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT_A8
 "uniform sampler2D texId;						"
 "uniform int clipToSource;					"	// Set for a ClipBlit: nothing outside the source is read.
 "uniform sampler2D paletteId;						" WG_GL_PALETTE_FUNC
 "in vec2 uvFrac;								"
 "in vec4 fragColor;								"
-"out vec4 color;								"
 "float inside(vec2 uv)							"
 "{												"
 "   return (clipToSource != 0 && (any(lessThan(uv, vec2(0.0))) || any(greaterThanEqual(uv, vec2(1.0))))) ? 0.0 : 1.0;	"
 "}												"
-
 "void main()									"
 "{												"
 "   vec2 uvBase = floor(uvFrac);	"		// Texels and weights from the same value, so they always agree.
@@ -826,33 +845,31 @@ const char GlBackend::paletteBlitInterpolateFragmentShader_A8[] =
 "   float index01 = texture(texId, vec2(texUV11.x,texUV00.y) ).r;		"
 "   float index10 = texture(texId, vec2(texUV00.x,texUV11.y) ).r;		"
 "   float index11 = texture(texId, texUV11).r;		"
-"   float color00 = paletteLookup(index00).a * inside(texUV00);	"
-"   float color01 = paletteLookup(index01).a * inside(vec2(texUV11.x,texUV00.y));	"
-"   float color10 = paletteLookup(index10).a * inside(vec2(texUV00.x,texUV11.y));	"
-"   float color11 = paletteLookup(index11).a * inside(texUV11);	"
-
-"   float out0 = color00 * (1-uvf.x) + color01 * uvf.x;	"
-"   float out1 = color10 * (1-uvf.x) + color11 * uvf.x;	"
-"   color.r = (out0 * (1-uvf.y) + out1 * uvf.y) * fragColor.a;	"
+"   vec4 color00 = paletteLookup(index00) * inside(texUV00);	"
+"   vec4 color01 = paletteLookup(index01) * inside(vec2(texUV11.x,texUV00.y));	"
+"   vec4 color10 = paletteLookup(index10) * inside(vec2(texUV00.x,texUV11.y));	"
+"   vec4 color11 = paletteLookup(index11) * inside(texUV11);	"
+"   vec4 out0 = color00 * (1-uvf.x) + color01 * uvf.x;	"
+"   vec4 out1 = color10 * (1-uvf.x) + color11 * uvf.x;	"
+"   vec4 sampled = out0 * (1-uvf.y) + out1 * uvf.y;	"
+"   writeAlpha(sampled.a * fragColor.a, 1.0);	"
 "}												";
 
 
 const char GlBackend::paletteBlitInterpolateFragmentShaderTintmap[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT
 "uniform sampler2D texId;						"
 "uniform samplerBuffer tintmapBufferId;			"
 "uniform int clipToSource;					"	// Set for a ClipBlit: nothing outside the source is read.
 "uniform sampler2D paletteId;						" WG_GL_PALETTE_FUNC
 "in vec2 uvFrac;								"
 "flat in int tintOfs;  in vec2 tintPos;  " "flat in vec4 flatTint;  " WG_GL_TINT_FUNC
-"out vec4 color;								"
 "float inside(vec2 uv)							"
 "{												"
 "   return (clipToSource != 0 && (any(lessThan(uv, vec2(0.0))) || any(greaterThanEqual(uv, vec2(1.0))))) ? 0.0 : 1.0;	"
 "}												"
-
 "void main()									"
 "{												"
 "   vec2 uvBase = floor(uvFrac);	"		// Texels and weights from the same value, so they always agree.
@@ -868,31 +885,27 @@ const char GlBackend::paletteBlitInterpolateFragmentShaderTintmap[] =
 "   vec4 color01 = paletteLookup(index01) * inside(vec2(texUV11.x,texUV00.y));	"
 "   vec4 color10 = paletteLookup(index10) * inside(vec2(texUV00.x,texUV11.y));	"
 "   vec4 color11 = paletteLookup(index11) * inside(texUV11);	"
-
 "   vec4 out0 = color00 * (1-uvf.x) + color01 * uvf.x;	"
 "   vec4 out1 = color10 * (1-uvf.x) + color11 * uvf.x;	"
-
-"   vec4 fragColor = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint); "
-
-"   color = (out0 * (1-uvf.y) + out1 * uvf.y) * fragColor;	"
+"   vec4 sampled = out0 * (1-uvf.y) + out1 * uvf.y;	"
+"   vec4 fragColor = evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint;	"
+"   writeColor(sampled * premul(fragColor), 1.0);	"
 "}												";
 
 const char GlBackend::paletteBlitInterpolateFragmentShaderTintmap_A8[] =
 
 "#version 330 core\n"
-
+WG_GL_OUTPUT_A8
 "uniform sampler2D texId;						"
 "uniform samplerBuffer tintmapBufferId;			"
 "uniform int clipToSource;					"	// Set for a ClipBlit: nothing outside the source is read.
 "uniform sampler2D paletteId;						" WG_GL_PALETTE_FUNC
 "in vec2 uvFrac;								"
 "flat in int tintOfs;  in vec2 tintPos;  " "flat in vec4 flatTint;  " WG_GL_TINT_FUNC
-"out vec4 color;								"
 "float inside(vec2 uv)							"
 "{												"
 "   return (clipToSource != 0 && (any(lessThan(uv, vec2(0.0))) || any(greaterThanEqual(uv, vec2(1.0))))) ? 0.0 : 1.0;	"
 "}												"
-
 "void main()									"
 "{												"
 "   vec2 uvBase = floor(uvFrac);	"		// Texels and weights from the same value, so they always agree.
@@ -904,17 +917,15 @@ const char GlBackend::paletteBlitInterpolateFragmentShaderTintmap_A8[] =
 "   float index01 = texture(texId, vec2(texUV11.x,texUV00.y) ).r;		"
 "   float index10 = texture(texId, vec2(texUV00.x,texUV11.y) ).r;		"
 "   float index11 = texture(texId, texUV11).r;		"
-"   float color00 = paletteLookup(index00).a * inside(texUV00);	"
-"   float color01 = paletteLookup(index01).a * inside(vec2(texUV11.x,texUV00.y));	"
-"   float color10 = paletteLookup(index10).a * inside(vec2(texUV00.x,texUV11.y));	"
-"   float color11 = paletteLookup(index11).a * inside(texUV11);	"
-
-"   float out0 = color00 * (1-uvf.x) + color01 * uvf.x;	"
-"   float out1 = color10 * (1-uvf.x) + color11 * uvf.x;	"
-
-"   float fragA = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint).a; "
-
-"   color.r = (out0 * (1-uvf.y) + out1 * uvf.y) * fragA;	"
+"   vec4 color00 = paletteLookup(index00) * inside(texUV00);	"
+"   vec4 color01 = paletteLookup(index01) * inside(vec2(texUV11.x,texUV00.y));	"
+"   vec4 color10 = paletteLookup(index10) * inside(vec2(texUV00.x,texUV11.y));	"
+"   vec4 color11 = paletteLookup(index11) * inside(texUV11);	"
+"   vec4 out0 = color00 * (1-uvf.x) + color01 * uvf.x;	"
+"   vec4 out1 = color10 * (1-uvf.x) + color11 * uvf.x;	"
+"   vec4 sampled = out0 * (1-uvf.y) + out1 * uvf.y;	"
+"   float fragA = (evalTint(tintmapBufferId, tintOfs, tintPos) * flatTint).a;	"
+"   writeAlpha(sampled.a * fragA, 1.0);	"
 "}												";
 
 
@@ -922,13 +933,7 @@ const char GlBackend::lineFromToVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer colorBufferId;					"
 "uniform samplerBuffer extrasBufferId;					"
@@ -936,8 +941,11 @@ const char GlBackend::lineFromToVertexShader[] =
 "layout(location = 0) in ivec2 pos;                     "
 "layout(location = 2) in int colorOfs;                  "
 "layout(location = 3) in int extrasOfs;                 "
+"layout(location = 4) in vec2 tintmapOfs;               "
 
 "out vec4 fragColor;                                    "
+"flat out int tintOfs;									"
+"out vec2 tintPos;										"
 "flat out float s;										"
 "flat out float w;										"
 "flat out float slope;									"
@@ -957,38 +965,53 @@ const char GlBackend::lineFromToVertexShader[] =
 "   slope = canvasYMul*x.z;								"
 "   ifSteep = x.w;										"
 "   ifMild = 1.0 - ifSteep;								"
+"   tintOfs = int(tintmapOfs.x);						"
+"   tintPos = vec2(pos);								"
 "}                                                      ";
 
 
 const char GlBackend::lineFromToFragmentShader[] =
 
 "#version 330 core\n"
+WG_GL_OUTPUT
+"uniform samplerBuffer tintmapBufferId;	"
 "in vec4 fragColor;                     "
+"flat in int tintOfs;					"
+"in vec2 tintPos;						"
 "flat in float s;							"
 "flat in float w;							"
 "flat in float slope;						"
 "flat in float ifSteep;						"
 "flat in float ifMild;						"
-"out vec4 outColor;                     "
+WG_GL_TINT_FUNC
+"float coverage() { return clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); }	"
+"vec4 lineColor() { return tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, tintPos) * fragColor : fragColor; }	"
 "void main()                            "
 "{										"
-"   outColor.rgb = fragColor.rgb;		"
-"   outColor.a = fragColor.a * clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); "
+"   float cov = coverage();				"
+"   writeColor(premul(lineColor()) * cov, cov);	"
 "}                                      ";
 
 const char GlBackend::lineFromToFragmentShader_A8[] =
 
 "#version 330 core\n"
+WG_GL_OUTPUT_A8
+"uniform samplerBuffer tintmapBufferId;	"
 "in vec4 fragColor;                     "
+"flat in int tintOfs;					"
+"in vec2 tintPos;						"
 "flat in float s;							"
 "flat in float w;							"
 "flat in float slope;						"
 "flat in float ifSteep;						"
 "flat in float ifMild;						"
-"out vec4 outColor;                     "
+WG_GL_TINT_FUNC
+"float coverage() { return clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); }	"
+"vec4 lineColor() { return tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, tintPos) * fragColor : fragColor; }	"
 "void main()                            "
 "{										"
-"   outColor.r = fragColor.a * clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); "
+"   float cov = coverage();				"
+"   writeAlpha(lineColor().a * cov, cov);	"
 "}                                      ";
 
 
@@ -997,13 +1020,7 @@ const char GlBackend::aaFillVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer colorBufferId;					    "
 "uniform samplerBuffer extrasBufferId;						"
@@ -1029,13 +1046,7 @@ const char GlBackend::aaFillTintmapVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer colorBufferId;					    "
 "uniform samplerBuffer extrasBufferId;						"
@@ -1066,64 +1077,62 @@ const char GlBackend::aaFillTintmapVertexShader[] =
 const char GlBackend::aaFillFragmentShader[] =
 
 "#version 330 core\n"
+WG_GL_OUTPUT
 "in vec4 fragColor;						"
 "flat in vec4 rect;						"
-"out vec4 outColor;                     "
 "void main()                            "
 "{										"
-"   outColor.rgb = fragColor.rgb;             "
 "	vec2 middleofs = abs(gl_FragCoord.xy - rect.xy);   "
-"	vec2 alphas = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
-"	outColor.a = fragColor.a * alphas.x * alphas.y;  "
+"	vec2 coverage = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
+"	float cov = coverage.x * coverage.y;	"
+"	writeColor(premul(fragColor) * cov, cov);	"
 "}                                      ";
 
 const char GlBackend::aaFillFragmentShader_A8[] =
 
 "#version 330 core\n"
+WG_GL_OUTPUT_A8
 "in vec4 fragColor;						"
 "flat in vec4 rect;						"
-"out vec4 outColor;                     "
 "void main()                            "
 "{										"
 "	vec2 middleofs = abs(gl_FragCoord.xy - rect.xy);   "
-"	vec2 alphas = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
-"	outColor.r = fragColor.a * alphas.x * alphas.y;  "
+"	vec2 coverage = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
+"	float cov = coverage.x * coverage.y;	"
+"	writeAlpha(fragColor.a * cov, cov);	"
 "}                                      ";
 
 
 const char GlBackend::aaFillFragmentShaderTintmap[] =
 
 "#version 330 core\n"
+WG_GL_OUTPUT
 "uniform samplerBuffer tintmapBufferId;	"
 "in vec4 fragColor;						"
 "flat in int tintOfs;  in vec2 tintPos;  " WG_GL_TINT_FUNC
 "flat in vec4 rect;						"
-"out vec4 outColor;                     "
 "void main()                            "
 "{										"
-"   vec4 inColor = evalTint(tintmapBufferId, tintOfs, tintPos)"
-"	           * fragColor;           "
-"   outColor.rgb = inColor.rgb;             "
 "	vec2 middleofs = abs(gl_FragCoord.xy - rect.xy);   "
-"	vec2 alphas = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
-"	outColor.a = inColor.a * alphas.x * alphas.y;  "
+"	vec2 coverage = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
+"	float cov = coverage.x * coverage.y;	"
+"	writeColor(premul(evalTint(tintmapBufferId, tintOfs, tintPos) * fragColor) * cov, cov);	"
 "}                                      ";
 
 const char GlBackend::aaFillFragmentShaderTintmap_A8[] =
 
 "#version 330 core\n"
+WG_GL_OUTPUT_A8
 "uniform samplerBuffer tintmapBufferId;	"
 "in vec4 fragColor;						"
 "flat in int tintOfs;  in vec2 tintPos;  " WG_GL_TINT_FUNC
 "flat in vec4 rect;						"
-"out vec4 outColor;                     "
 "void main()                            "
 "{										"
-"   float inAlpha = evalTint(tintmapBufferId, tintOfs, tintPos).a"
-"	           * fragColor.a;           "
 "	vec2 middleofs = abs(gl_FragCoord.xy - rect.xy);   "
-"	vec2 alphas = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
-"	outColor.r = inAlpha * alphas.x * alphas.y;  "
+"	vec2 coverage = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
+"	float cov = coverage.x * coverage.y;	"
+"	writeAlpha(evalTint(tintmapBufferId, tintOfs, tintPos).a * fragColor.a * cov, cov);	"
 "}                                      ";
 
 
@@ -1131,13 +1140,7 @@ const char GlBackend::segmentsVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer extrasBufferId;					"
 "uniform samplerBuffer colorBufferId;					"
@@ -1171,7 +1174,8 @@ const char GlBackend::segmentsVertexShader[] =
 "   flatTint = texelFetch(colorBufferId, colorOfs);"
 "}                                                      ";
 
-// Segment colors are either flat or a tint in edgemap space. The edgemap buffer holds a
+// Segment colors are either flat or a tint in edgemap space. The segments together cover the
+// whole pixel, each by the part of it between its edges. The edgemap buffer holds a
 // table with the offset of each segment's tint block, -1 for flat colored segments.
 
 #define WG_GL_SEGCOLOR_FUNC \
@@ -1184,6 +1188,7 @@ const char GlBackend::segmentsVertexShader[] =
 const char GlBackend::segmentsFragmentShader[] =
 
 "#version 330 core\n"
+WG_GL_OUTPUT
 "uniform samplerBuffer tintmapBufferId;			"
 "uniform samplerBuffer edgemapId;				"
 "in vec2 texUV;									"
@@ -1195,24 +1200,15 @@ const char GlBackend::segmentsFragmentShader[] =
 "flat in vec4 flatTint;							"
 WG_GL_TINT_FUNC
 WG_GL_SEGCOLOR_FUNC
-
-"out vec4 color;								"
 "void main()									"
 "{												"
-"	float totalAlpha = 0.f;"
-"	vec3	rgbAcc = vec3(0,0,0);"
-
+"	vec4 acc = vec4(0.0);"
 "	float factor = 1.f;"
-
 "	vec2 epos = vec2(floor(texUV.x) + 0.5, texUV.y + 0.5);"		// Pixel center in edgemap space.
-
 "	for( int i = 0 ; i < $EDGES ; i++ )"
 "	{"
-
 "		vec4 col = segColor(i, flatColorsOfs, tintTableOfs, epos);"
-
 "		vec4 edge = texelFetch(edgemapId, int(texUV.x)*edgemapPitch+i );"
-
 "		float x = (texUV.y - edge.r) * edge.g;"
 "		float adder = edge.g / 2.f;"
 "		if (x < 0.f)"
@@ -1220,31 +1216,21 @@ WG_GL_SEGCOLOR_FUNC
 "		else if (x + edge.g > 1.f)"
 "			adder = edge.a;"
 "		float factor2 = clamp(x + adder, 0.f, 1.f);"
-
-"		float useFactor = (factor - factor2)*col.a;"
-"		totalAlpha += useFactor;"
-"		rgbAcc += col.rgb * useFactor;"
-
+"		acc += vec4(col.rgb * col.a, col.a) * (factor - factor2);"
 "		factor = factor2;"
 "	}"
-
 "	vec4 col = segColor($EDGES, flatColorsOfs, tintTableOfs, epos);"
-
-"	float useFactor = factor*col.a;"
-"	totalAlpha += useFactor;"
-"	rgbAcc += col.rgb * useFactor;"
-
-"   col.a = totalAlpha; "
-"   col.rgb = totalAlpha > 0.0 ? rgbAcc/totalAlpha : vec3(0.0);"
-
-"   color = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, tintPos) * col : col) * flatTint;"
+"	acc += vec4(col.rgb * col.a, col.a) * factor;"
+"	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, tintPos) : vec4(1.0)) * flatTint;"
+"	writeColor(acc * premul(tint), 1.0);"
 "}";
 
 
 const char GlBackend::segmentsFragmentShader_A8[] =
 
 "#version 330 core\n"
-"uniform samplerBuffer tintmapBufferId;	"
+WG_GL_OUTPUT_A8
+"uniform samplerBuffer tintmapBufferId;			"
 "uniform samplerBuffer edgemapId;				"
 "in vec2 texUV;									"
 "flat in int edgemapPitch;						"
@@ -1255,23 +1241,15 @@ const char GlBackend::segmentsFragmentShader_A8[] =
 "flat in vec4 flatTint;							"
 WG_GL_TINT_FUNC
 WG_GL_SEGCOLOR_FUNC
-
-"out vec4 color;								"
 "void main()									"
 "{												"
-"	float totalAlpha = 0.f;"
-
+"	vec4 acc = vec4(0.0);"
 "	float factor = 1.f;"
-
-"	vec2 epos = vec2(floor(texUV.x) + 0.5, texUV.y + 0.5);"
-
+"	vec2 epos = vec2(floor(texUV.x) + 0.5, texUV.y + 0.5);"		// Pixel center in edgemap space.
 "	for( int i = 0 ; i < $EDGES ; i++ )"
 "	{"
-
 "		vec4 col = segColor(i, flatColorsOfs, tintTableOfs, epos);"
-
 "		vec4 edge = texelFetch(edgemapId, int(texUV.x)*edgemapPitch+i );"
-
 "		float x = (texUV.y - edge.r) * edge.g;"
 "		float adder = edge.g / 2.f;"
 "		if (x < 0.f)"
@@ -1279,37 +1257,27 @@ WG_GL_SEGCOLOR_FUNC
 "		else if (x + edge.g > 1.f)"
 "			adder = edge.a;"
 "		float factor2 = clamp(x + adder, 0.f, 1.f);"
-
-"		float useFactor = (factor - factor2)*col.a;"
-"		totalAlpha += useFactor;"
-
+"		acc += vec4(col.rgb * col.a, col.a) * (factor - factor2);"
 "		factor = factor2;"
 "	}"
-
 "	vec4 col = segColor($EDGES, flatColorsOfs, tintTableOfs, epos);"
-"	float useFactor = factor*col.a;"
-"	totalAlpha += useFactor;"
-
-"   color.r = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, tintPos).a : 1.0) * totalAlpha * flatTint.a;"
+"	acc += vec4(col.rgb * col.a, col.a) * factor;"
+"	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, tintPos) : vec4(1.0)) * flatTint;"
+"	writeAlpha(acc.a * tint.a, 1.0);"
 "}";
 
 
 // Shapes (Command::DrawShape), see GpuShapes for the entries read from the extras buffer. The
-// coverage of each pixel by each segment is worked out from the geometry. Partly covered
-// pixels get the colors of the drawn segments covering them mixed, weighted by coverage and
-// alpha, like edgemaps. Pixels not covered by any drawn segment are left alone.
+// coverage of each pixel by each segment is worked out from the geometry. The premultiplied
+// colors of the drawn segments are summed by the part of the pixel they cover, and drawn as
+// covering the part of the pixel they cover together. Pixels not covered by any drawn segment
+// are left alone.
 
 const char GlBackend::shapeVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	float  canvasWidth;"
-"	float  canvasHeight;"
-"	float  canvasYOfs;"
-"	float  canvasYMul;"
-"};"
+WG_GL_CANVAS_BLOCK
 
 "uniform samplerBuffer colorBufferId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -1565,6 +1533,7 @@ const char GlBackend::shapeVertexShader[] =
 const char GlBackend::shapeFragmentShader[] =
 
 "#version 330 core\n"
+WG_GL_OUTPUT
 "uniform samplerBuffer extrasBufferId;			"
 "uniform samplerBuffer colorBufferId;			"
 "uniform samplerBuffer tintmapBufferId;			"
@@ -1574,20 +1543,20 @@ const char GlBackend::shapeFragmentShader[] =
 "flat in vec4 flatTint;							"
 WG_GL_TINT_FUNC
 WG_GL_SHAPE_FUNCS
-
-"out vec4 color;								"
 "void main()									"
 "{												"
 "	vec4 acc;									"
-"	if (shapeCoverage(shapeOfs, canvasPos, acc) < 1.0 / 256.0)	"
+"	float covered = shapeCoverage(shapeOfs, canvasPos, acc);	"
+"	if (covered < 1.0 / 256.0)					"
 "		discard;								"
-"	vec4 col = vec4(acc.a > 0.0 ? acc.rgb / acc.a : vec3(0.0), acc.a);	"
-"	color = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) * col : col) * flatTint;	"
+"	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) : vec4(1.0)) * flatTint;	"
+"	writeColor(acc * premul(tint), covered);	"
 "}";
 
 const char GlBackend::shapeFragmentShader_A8[] =
 
 "#version 330 core\n"
+WG_GL_OUTPUT_A8
 "uniform samplerBuffer extrasBufferId;			"
 "uniform samplerBuffer colorBufferId;			"
 "uniform samplerBuffer tintmapBufferId;			"
@@ -1597,14 +1566,14 @@ const char GlBackend::shapeFragmentShader_A8[] =
 "flat in vec4 flatTint;							"
 WG_GL_TINT_FUNC
 WG_GL_SHAPE_FUNCS
-
-"out vec4 color;								"
 "void main()									"
 "{												"
 "	vec4 acc;									"
-"	if (shapeCoverage(shapeOfs, canvasPos, acc) < 1.0 / 256.0)	"
+"	float covered = shapeCoverage(shapeOfs, canvasPos, acc);	"
+"	if (covered < 1.0 / 256.0)					"
 "		discard;								"
-"	color.r = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos).a : 1.0) * acc.a * flatTint.a;	"
+"	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) : vec4(1.0)) * flatTint;	"
+"	writeAlpha(acc.a * tint.a, covered);	"
 "}";
 
 
