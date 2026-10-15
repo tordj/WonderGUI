@@ -37,7 +37,7 @@ Think of a transparent canvas as a perfect, non-reflective sheet of glass that w
 
 **Paint modes** put paint on the glass. Where paint is semi-transparent, more paint makes the glass more opaque. Blend is the normal way of painting, Replace scrapes off what was there and paints anew.
 
-**Effect modes** don't add any paint. They change the paint that is already on the glass, like shining a light on it (Add), filtering it (Multiply) or inverting it (Invert). Transparent parts of the glass just let the light through, opaque paint catches it fully and semi-transparent paint changes its hue just like opaque paint does, but stays as transparent as it was. The alpha of the canvas is never changed by an effect mode.
+**Effect modes** don't add any paint. They change the light that comes from the paint already on the glass, like shining a light on it (Add), filtering it (Multiply) or inverting it (Invert). Light that passes through the glass from behind isn't affected. Modes that take light away (Subtract, Multiply and Min) leave the glass as transparent as it was. Modes that add light (Add, Invert and Max) make the glass glow where its paint can't hold the light they add, which makes it more opaque.
 
 In both groups, the alpha of the source always means **how much**: a fully transparent source has no effect at all.
 
@@ -66,28 +66,36 @@ In both groups, the alpha of the source always means **how much**: a fully trans
 
 ## Effect modes
 
-The alpha of the source is the strength of the effect. It fades the source towards the color that has no effect: black for Add, Subtract, Invert and Max, white for Multiply and Min.
+Effect modes work on the light that a pixel of the canvas gives, which is its premultiplied color **P = Cb · αb**. On an opaque canvas that is simply its color.
 
-| BlendMode | out.rgb | Meaning |
-|---|---|---|
-| **Add** | Cb + αs · Cs | Light shining on the paint. |
-| **Subtract** | Cb − αs · Cs | Light taken away. |
-| **Multiply** | Cb · mix(1, Cs, αs) | A filter. A transparent source is a clear filter. |
-| **Invert** | Cb + αs · Cs · (1 − 2 · Cb) | Inverts the canvas, each channel by the amount given by Cs. |
-| **Min** | min(Cb, mix(1, Cs, αs)) | Limits the canvas to at most Cs. |
-| **Max** | max(Cb, αs · Cs) | Raises the canvas to at least Cs. |
+The alpha of the source is the strength of the effect. It fades the source towards the color that has no effect: black for Add, Subtract, Invert and Max, white for Multiply and Min. So the source is applied as the light it gives, **s = αs · Cs**, or for Multiply and Min as **t = mix(1, Cs, αs)**. **m** is the strongest channel of s.
 
-out.α is always αb.
+| BlendMode | out.rgb · out.α | out.α | Meaning |
+|---|---|---|---|
+| **Add** | P + s | αb + m | Light shining on the paint. |
+| **Subtract** | P − s | αb | Light taken away. |
+| **Multiply** | P · t | αb | A filter. A transparent source is a clear filter. |
+| **Invert** | P + s · (1 − 2 · P) | αb + m · (1 − αb) | Inverts the canvas, each channel by the amount given by Cs. |
+| **Min** | min(P, t) | αb | Limits the canvas to at most Cs. |
+| **Max** | max(P, s) | max(αb, m) | Raises the canvas to at least Cs. |
+
+out.rgb is the first column divided by out.α. On an opaque canvas these are the familiar operations on its color, like `Cb + αs · Cs` for Add and `max(Cb, αs · Cs)` for Max.
+
+Add, Invert and Max can give more light than the paint on the glass can hold. They then raise its alpha by the strongest channel of s: Add adds it, Max takes the larger of the two and Invert puts it over the alpha of the canvas. Unlike the other effect modes they therefore light up transparent parts of the canvas. Add with white at half strength onto a transparent pixel makes it white at half opacity.
+
+Subtract, Multiply and Min only take light away and keep the alpha of the canvas. They have no effect on transparent parts of it, and they affect semi-transparent paint only as far as it gives light: Min with mid grey doesn't darken a pixel that is red at 50% alpha, since its light already is no brighter than mid grey.
 
 An alpha-only surface with a soft round shape, blitted with Add and a tint color, works as a point light shining on the canvas. Blitted with Min and a dark tint color it caps the brightness like a shadow, with Max and a light tint color it raises the brightness like a fill light.
 
-Since the canvas alpha is kept, an effect mode has no visible effect on fully transparent parts of the canvas. To light up an empty layer, draw the light onto it with Blend and let the layer be blended onto the canvas below with Add (see Layers below).
+These definitions are what GPUs can do with fixed-function blending of premultiplied colors in a single pass, see Exactness below.
 
 
 
 ## Anti-aliasing
 
-Edges of fills, lines, edgemaps and shapes are anti-aliased by the exact area of each pixel that is covered. **A partially covered pixel is drawn as if the canvas had a much higher resolution, the shape was drawn there without anti-aliasing and the subpixels were then averaged.** That is the average of what the blend mode gives the covered part and the original pixel for the rest, weighted by their areas:
+Edges of fills, lines, edgemaps and shapes are anti-aliased by the exact area of each pixel that is covered.
+
+With a paint mode, **a partially covered pixel is drawn as if the canvas had a much higher resolution, the shape was drawn there without anti-aliasing and the subpixels were then averaged.** That is the average of what the blend mode gives the covered part and the original pixel for the rest, weighted by their areas:
 
 ```
 out = average( op(source, canvas) weighted by coverage,  canvas weighted by (1 − coverage) )
@@ -99,7 +107,17 @@ Averages of colors are taken as **premultiplied colors**: each color counts by i
 
 For example: a quarter of an opaque red pixel is covered by a Replace with black at 50% alpha. Three quarters of the pixel stay opaque red and one quarter becomes half transparent black, which averages to alpha 0.875 and a color of 86% red.
 
-For Blend, Multiply and Invert, and for Add and Subtract as long as they don't saturate, this is the same as multiplying the alpha of the source by the coverage. For them, coverage and source alpha behave the same.
+For Blend this is the same as multiplying the alpha of the source by the coverage.
+
+With an effect mode, **a partially covered pixel gets the effect with a strength scaled by the area covered**, just like the alpha of the source scales it:
+
+```
+out = op(source with its alpha times coverage,  canvas)
+```
+
+Where several segments of an edgemap or a shape share a pixel, they are combined into one source first: their premultiplied average weighted by the area each covers, with the alpha of them all together. Parts of the pixel not covered by any segment count as transparent, which has no effect.
+
+For Multiply and Invert, and for Add and Subtract as long as they don't saturate, this is the same as averaging subpixels. For Min and Max, and where Add and Subtract saturate, it means that partial coverage gives a partial effect: a half covered pixel of a Max with white is raised to at least mid grey, rather than half of it to white.
 
 
 
@@ -128,7 +146,7 @@ An Alpha_8 canvas is the one exception to the glass model. It has no color, so i
 - **Paint modes** work on alpha as on any other canvas.
 - **Effect modes** would do nothing if they kept alpha. Instead they work on alpha with the alpha of the source as the value: Add grows the mask, Subtract cuts holes in it, Multiply and Min intersect and Max unites.
 
-Anti-aliasing works as on any other canvas, by averaging the result and the original value by area.
+Anti-aliasing works as on any other canvas: paint modes average the result and the original value by area, effect modes scale the value of the source by the area covered. For Multiply and Min, whose value with no effect is 1, the parts of the pixel not covered count as 1.
 
 | BlendMode | out.α |
 |---|---|
@@ -144,15 +162,15 @@ Anti-aliasing works as on any other canvas, by averaging the result and the orig
 
 Since Blend is Porter-Duff over, content drawn with paint modes onto a transparent layer (a CanvasLayers layer or a surface of your own) and then blended onto the canvas looks exactly as if it was drawn directly onto the canvas.
 
-That can't hold for effect modes, by their nature: an effect changes what is below it, and on a transparent layer nothing is below. If the content of a layer should work as an effect on what is below the layer, draw it onto the layer with Blend and blend the layer with the effect mode, using `blendFunc` in CanvasLayers::LayerBP.
+Add, Invert and Max leave their light on a transparent layer, so a single one of them drawn onto a transparent layer, with the layer then blended onto the canvas with the same mode, gives the same result as drawing directly onto the canvas. Subtract, Multiply and Min only change light that is already there, and on a transparent layer there is none. If the content of a layer should work as one of them on what is below the layer, draw it onto the layer with Blend and blend the layer with the effect mode, using `blendFunc` in CanvasLayers::LayerBP.
 
 
 
 ## Relation to other standards
 
-*Porter-Duff compositing* (1984) defines how the coverage of two images combines. Blend is its *over* operator. The effect modes resemble its *atop* operator, which keeps the alpha of the destination, but change the destination instead of placing the source on it.
+*Porter-Duff compositing* (1984) defines how the coverage of two images combines. Blend is its *over* operator. Subtract, Multiply and Min resemble its *atop* operator, which keeps the alpha of the destination, but change the destination instead of placing the source on it.
 
-*W3C Compositing and Blending* (used by CSS, SVG, PDF and HTML canvas) treats blend modes as paint: the blended color is composited with *over*, so a blend mode paints normally onto transparent parts of the canvas and makes the canvas more opaque. Multiply, Min, Max and Invert correspond to W3C's multiply, darken, lighten and exclusion, applied as effects instead of paint. Add corresponds most closely to the compositing operator plus-lighter, which also adds alpha.
+*W3C Compositing and Blending* (used by CSS, SVG, PDF and HTML canvas) treats blend modes as paint: the blended color is composited with *over*, so a blend mode paints normally onto transparent parts of the canvas and makes the canvas more opaque. Multiply, Min, Max and Invert correspond to W3C's multiply, darken, lighten and exclusion, applied as effects instead of paint. Add corresponds most closely to the compositing operator plus-lighter, which also adds alpha, but by the alpha of the source instead of by its strongest channel. Invert on premultiplied colors is the same as exclusion, apart from alpha.
 
 Neither standard has a mode that takes away alpha by the alpha of the source, like Porter-Duff *destination-in* does. That could be added as a separate paint mode if it is needed for masking.
 
@@ -162,11 +180,7 @@ Neither standard has a mode that takes away alpha by the alpha of the source, li
 
 ReferenceBackend and the software backends can follow these definitions exactly everywhere.
 
-GPU backends can follow them exactly with fixed-function blending, provided that canvases with alpha store premultiplied colors and dual-source blending is used (available in OpenGL 3.3, Metal and DirectX 12). Invert, Min and Max also need the alpha of the canvas to scale the source by, which their blend operations can't do, so onto canvases with alpha they are drawn in two passes that together give the exact result. The exceptions are approximated:
-
-- An Add that saturates, on semi-transparent pixels of canvases with alpha.
-- Anti-aliased edges of Min and Max, since blending by min/max can't be weighted by coverage. Fills and blits on whole pixels are exact.
-- Anti-aliased edges of an Add or Subtract that saturates, by a level or two.
+GPU backends can follow them exactly with fixed-function blending in a single pass, provided that canvases with alpha store premultiplied colors and dual-source blending is used (available in OpenGL 3.3, Metal and DirectX 12). The effect modes, and how coverage scales them, are defined to be what such blending can do: none of them needs the alpha of the canvas as a blend factor, which Invert, Min and Max can't use. Dual-source blending is only needed for the paint modes.
 
 The area of a pixel covered by a shape is exact in ReferenceBackend. The software backends are exact along straight edges and follow circles within 1/64 pixel. GPU backends estimate it from the distance between the pixel center and the edges.
 
@@ -178,15 +192,16 @@ The area of a pixel covered by a shape is exact in ReferenceBackend. The softwar
 |---|---|---|---|
 | Blend as Porter-Duff over | Yes | Yes | Yes |
 | Source alpha as strength of effect modes | All | All | All |
-| Anti-aliasing as average of subpixels | All modes | All modes, see below | All modes, see below |
+| Effect modes on the light of the canvas | Yes | Yes | OpenGL, DirectX 12 |
+| Paint modes: anti-aliasing as average of subpixels | Yes | Yes | Yes |
+| Effect modes: anti-aliasing as strength scaled by coverage | Yes | Yes | OpenGL, DirectX 12 |
 | Subpixels averaged as premultiplied colors | Yes | Yes | Yes |
 | Morph as premultiplied cross-fade | Yes | Yes | Yes |
 | Premultiplied bilinear sampling | Yes | Yes | Yes |
 | Transparent outside of ClipBlit has no effect | Yes | Yes | Yes |
-| Alpha_8: anti-aliasing as average of subpixels | Yes | Yes | Yes, but Min and Max |
 
-Where segments of a shape share a pixel, the software backends approximate the average for Add, Subtract, Min and Max closely. They draw BlendFixedColor onto the fixed color, as described under Paint modes.
+The software backends draw BlendFixedColor onto the fixed color, as described under Paint modes.
 
-The GPU backends keep canvases and other surfaces with alpha premultiplied and use dual-source blending, as described under Exactness, with the exceptions listed there. Colors of nearly transparent pixels therefore lose some precision when read back from them.
+The GPU backends keep canvases and other surfaces with alpha premultiplied and use dual-source blending, as described under Exactness. Colors of nearly transparent pixels therefore lose some precision when read back from them. MetalBackend still follows the previous definition of the effect modes, which kept the alpha of the canvas and averaged subpixels.
 
 GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests.

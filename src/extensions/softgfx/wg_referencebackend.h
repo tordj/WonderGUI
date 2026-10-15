@@ -184,7 +184,11 @@ namespace wg
 		void	_setCanvasPixel(int x, int y, const Color& color);
 		void	_plotPixel(int x, int y, const Color& color, double coverage);
 
+		bool	_isEffectMode() const;
+		Color	_effectSource(int nColors, const Color* pColors, const double* pCoverage) const;
+
 		Color	_blend(const Color& src, const Color& dst) const;
+		Color	_blendEffect(const Color& src, const Color& dst) const;
 		double	_blendAlphaOnly(double src, double dst) const;
 
 		static Color	_over(const Color& src, const Color& dst);

@@ -5,11 +5,13 @@
 // Tests of the rules for blending and transparency, as defined in the guide under
 // "Blending and transparency":
 //
-// - Effect modes (Add, Subtract, Multiply, Invert, Min, Max) keep the alpha of the canvas and
-//   use the alpha of the source as the strength of the effect.
+// - Effect modes (Add, Subtract, Multiply, Invert, Min, Max) work on the light of the canvas, its
+//   premultiplied color, and use the alpha of the source as the strength of the effect. Subtract,
+//   Multiply and Min keep the alpha of the canvas, Add, Invert and Max raise it to hold their light.
 // - Morph cross-fades premultiplied colors, so a transparent side just fades out.
-// - A partially covered pixel is drawn as if the canvas had a much higher resolution, the shape
-//   was drawn there without anti-aliasing and the subpixels were then averaged.
+// - With a paint mode, a partially covered pixel is drawn as if the canvas had a much higher
+//   resolution, the shape was drawn there without anti-aliasing and the subpixels were then
+//   averaged. With an effect mode, the coverage scales the strength of the effect.
 // - Outside the source of a ClipBlit is transparent, which has no effect in any effect mode.
 // - An Alpha_8 canvas is a one-channel image, on which effect modes do arithmetic with the
 //   alpha of the source as the value.
@@ -106,8 +108,10 @@ public:
 	}
 
 	// A transparent layer with paint of increasing alpha in each row, lit by a soft spot of
-	// light in each of the effect modes. Effects change the color of the paint but not its
-	// alpha, so transparent parts stay transparent. The layer is shown on a checkerboard.
+	// light in each of the effect modes. Effects change the light of the paint. Subtract,
+	// Multiply and Min keep its alpha, so transparent parts stay transparent, while Add,
+	// Invert and Max make the glass glow where its paint can't hold their light. The layer
+	// is shown on a checkerboard.
 
 	bool effectsOnGlass(GfxDevice * pDevice, const RectSPX& canvas)
 	{

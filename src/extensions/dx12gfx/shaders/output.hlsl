@@ -9,8 +9,8 @@
 // of dual-source blending, see DX12Backend::_createPipeline(). It is only output by
 // pipelines that blend with it, which compile the shaders with WG_DUAL_SOURCE.
 //
-//   outputMode 0: pc, with its alpha as the second color (Blend and the effect
-//                 modes but Min).
+//   outputMode 0: pc, with its alpha as the second color (Blend, Subtract and
+//                 Multiply).
 //   outputMode 1: pc times morphFactor (1 but for Morph), with the covered part
 //                 times morphFactor as the second color, which tells the blender
 //                 how much of the canvas to keep (Replace and Morph). Canvases
@@ -20,6 +20,8 @@
 //                 A transparent Replace writes the color of the source, which
 //                 premultiplied is black.
 //   outputMode 2: the source faded towards white by the alpha of pc (Min).
+//   outputMode 3: pc with its strongest channel as alpha, by which Add, Invert and
+//                 Max raise the alpha of the canvas.
 //
 // Alpha only canvases (A8_UNORM) keep their value in alpha. Paint modes work on it
 // as on other canvases, effect modes take the alpha of the source as the value,
@@ -73,6 +75,11 @@ PS_OUTPUT writeOutput(float4 pc, float cov)
             color = pa;
             factor = pa;
         }
+    }
+    else if (outputMode == 3u)
+    {
+        color = float4(pc.rgb, max(pc.r, max(pc.g, pc.b)));
+        factor = 0.0f;
     }
     else if (outputMode == 2u)
     {

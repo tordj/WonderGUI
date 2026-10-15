@@ -43,7 +43,7 @@
 // pixel it covers (pc) and that part (cov). writeColor() passes them on as the blend mode needs
 // them (see GlBackend::_setBlendMode()), as told by blendInfo:
 //
-//   x = 0: pc, with its alpha as the second color (Blend and the effect modes but Min).
+//   x = 0: pc, with its alpha as the second color (Blend, Subtract and Multiply).
 //   x = 1: pc times y (the morph factor), with the covered part times y as the second color, which
 //          tells the blender how much of the canvas to keep (Replace and Morph). Canvases without
 //          alpha (z set) keep the color of the result, which is the result divided by its alpha.
@@ -51,6 +51,8 @@
 //          divided by it here. A transparent Replace writes the color of the source, which
 //          premultiplied is black.
 //   x = 2: the source faded towards white by the alpha of pc (Min).
+//   x = 3: pc with its strongest channel as alpha, by which Add, Invert and Max raise the alpha
+//          of the canvas.
 
 #define WG_GL_OUTPUT \
 WG_GL_CANVAS_BLOCK \
@@ -59,7 +61,12 @@ WG_GL_CANVAS_BLOCK \
 "vec4 premul(vec4 c) { return vec4(c.rgb * c.a, c.a); }								" \
 "void writeColor(vec4 pc, float cov)												" \
 "{																					" \
-"	if (blendInfo.x > 1.5)															" \
+"	if (blendInfo.x > 2.5)															" \
+"	{																				" \
+"		color = vec4(pc.rgb, max(pc.r, max(pc.g, pc.b)));							" \
+"		colorFactor = vec4(0.0);													" \
+"	}																				" \
+"	else if (blendInfo.x > 1.5)														" \
 "	{																				" \
 "		color = vec4(vec3(1.0 - pc.a) + pc.rgb, 1.0);								" \
 "		colorFactor = vec4(0.0);													" \

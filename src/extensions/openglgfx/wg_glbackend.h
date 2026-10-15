@@ -121,8 +121,6 @@ namespace wg
 		void	_setBlendMode(BlendMode mode);
 		void	_setBlitSource(GlSurface* pSurf);
 		void	_setPartialCoverage(bool bPartialCoverage);
-		void	_setEffectPass(int pass);
-		void	_drawTriangles(int first, int count);
 		void	_resetCommandStates();
 		void	_uploadCanvasUBO();
 
@@ -198,7 +196,6 @@ namespace wg
 		bool			m_bActiveCanvasIsA8 = false;
 		bool			m_bActiveCanvasHasAlpha = true;									// False for canvases that don't store alpha, like XRGB_8.
 		bool			m_bReplaceBlending = false;										// Blending enabled for Replace, see _setPartialCoverage().
-		bool			m_bTwoPassBlending = false;										// Effect mode drawn in two passes, see _setEffectPass().
 		GlSurface_p		m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
 		SizeI			m_activeCanvasSize;                                             // Currently active canvas size in OpenGL, " -
 		bool			m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
@@ -241,7 +238,7 @@ namespace wg
 		//
 
 		const static int c_nbPrograms = 40 + (c_maxSegments-1) * 2;
-		const static int c_versionNb = 115;		// 104: Tints replaced Tintmaps. 105: Tint color applied together with tint. 106: Palette ClipBlit clipping. 107: Palette read by index, capacity wide. 108: Blur for Alpha_8 sources and canvases. 109: Alpha of sources without alpha in ClipBlits. 110: Bilinear palette taps and weights from the same value. 111: Palette sampled with texture(), not texelFetch(). 112: Shape programs. 113: Premultiplied canvases, output by blend mode, tinted lines. 114: Tiled edgemaps. 115: Edgemap segments where edges cross and on canvases without alpha.
+		const static int c_versionNb = 116;		// 104: Tints replaced Tintmaps. 105: Tint color applied together with tint. 106: Palette ClipBlit clipping. 107: Palette read by index, capacity wide. 108: Blur for Alpha_8 sources and canvases. 109: Alpha of sources without alpha in ClipBlits. 110: Bilinear palette taps and weights from the same value. 111: Palette sampled with texture(), not texelFetch(). 112: Shape programs. 113: Premultiplied canvases, output by blend mode, tinted lines. 114: Tiled edgemaps. 115: Edgemap segments where edges cross and on canvases without alpha. 116: Effect modes on premultiplied colors in one pass.
 
 		struct ProgramBlobEntry
 		{

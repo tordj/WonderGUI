@@ -494,13 +494,12 @@ namespace wg
 
 						RectI pixelPatch = patch / 64;
 
-						// A partly covered pixel gets the average of what the blend mode gives the covered part
-						// and the original pixel for the rest. Fading the source by the coverage gives the same
-						// for most blend modes and is what we do. For the others the coverage kernel averages.
+						// Partly covered pixels are drawn by fading the source by the coverage where that gives
+						// what the blend mode should, see _fadeByCoverage(). Otherwise the coverage kernel draws them.
 
 						CoverageOp_p pCoverageOp = nullptr;
 
-						if (!_fadeSameAsAverage(blendMode, col.a == 4096 && m_colTrans.bTintOpaque))
+						if (!_fadeByCoverage(blendMode, col.a == 4096 && m_colTrans.bTintOpaque))
 							pCoverageOp = pKernels->pCoverageKernels[(int)blendMode];
 
 						if (pCoverageOp)
@@ -2934,26 +2933,26 @@ namespace wg
 		}
 	}
 
-	//____ _fadeSameAsAverage() _______________________________________________
-	// Tells if fading the source by the coverage of a partly covered pixel gives the average of
-	// what the blend mode gives the covered part and the original pixel for the rest, as it does
-	// for blend modes that are linear in the alpha of the source: Blend, Invert, Multiply (except
-	// on alpha-only canvases, where alpha is the value) and Replace with an opaque color, which
-	// then is Blend. Add and Subtract are too, but not where they saturate.
+	//____ _fadeByCoverage() _____________________________________________________
+	// Tells if a partly covered pixel can be drawn by fading the source by its coverage, which
+	// the fill kernels can do. Otherwise the coverage kernel draws it.
+	//
+	// Paint modes give the pixel the average of what they give the covered part and the original
+	// pixel for the rest. That is the same as fading the source for Blend and for Replace with an
+	// opaque color, which then is Blend. Effect modes are applied with a strength scaled by the
+	// coverage, which is fading the source, except on alpha-only canvases where Multiply and Min
+	// fade it towards 1 instead, as the alpha of the source is the value.
 
-	bool SoftBackend::_fadeSameAsAverage(BlendMode mode, bool bOpaqueSource) const
+	bool SoftBackend::_fadeByCoverage(BlendMode mode, bool bOpaqueSource) const
 	{
 		switch (mode)
 		{
 			case BlendMode::Replace:
 				return bOpaqueSource || !SoftFormatInfo::hasAlpha(m_canvasSoftFormat);	// Result is opaque on canvases without alpha.
 			case BlendMode::Multiply:
-				return m_canvasSoftFormat != SoftFormat::Alpha_8;
-			case BlendMode::Add:
-			case BlendMode::Subtract:
-			case BlendMode::Morph:
 			case BlendMode::Min:
-			case BlendMode::Max:
+				return m_canvasSoftFormat != SoftFormat::Alpha_8;
+			case BlendMode::Morph:
 				return false;
 			default:
 				return true;

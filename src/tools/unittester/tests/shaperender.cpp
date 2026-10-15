@@ -273,7 +273,7 @@ ShapeRenderTest::~ShapeRenderTest()
 }
 
 //____ blendModesTest() _______________________________________________________
-// Single segment box in all blend modes, partly covered pixels blended against background.
+// Single segment box in all blend modes, partly covered pixels blended against an opaque background.
 
 bool ShapeRenderTest::blendModesTest(std::ostream& output)
 {
@@ -325,10 +325,20 @@ bool ShapeRenderTest::blendModesTest(std::ostream& output)
 
 		std::string what = std::string("BlendMode::") + toString(mode);
 
+		// Paint modes average the covered and uncovered parts of a pixel, effect modes are applied
+		// with a strength scaled by coverage, which fades the alpha of the source.
+
+		bool bEffect = (mode == BlendMode::Add || mode == BlendMode::Subtract || mode == BlendMode::Multiply ||
+						mode == BlendMode::Invert || mode == BlendMode::Min || mode == BlendMode::Max);
+
 		bool bOk = compare(output, what.c_str(), after, 3, [&](int x, int y)
 		{
 			C12 dst = { unpack(before, x, y, 0), unpack(before, x, y, 1), unpack(before, x, y, 2), unpack(before, x, y, 3) };
 			int c = cov.fill[y * c_canvasSize.w + x];
+
+			if (bEffect)
+				return blendFull(mode, { src.b, src.g, src.r, src.a * c / 4096 }, dst, morph, fixed);
+
 			C12 full = blendFull(mode, src, dst, morph, fixed);
 			return mode == BlendMode::BlendFixedColor ? mixStraight(dst, full, c) : mix(dst, full, c);
 		});

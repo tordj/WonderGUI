@@ -3,6 +3,7 @@
 #include <wg_gfxutil.h>
 #include <wg_gfxbase.h>
 
+#include <algorithm>
 #include <cstring>
 #include <type_traits>
 
@@ -21,6 +22,15 @@ using namespace wg::Util;
 #define WG_UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else
 #define WG_UNLIKELY(x) (x)
+#endif
+
+// Macro for functions that only handle rare cases, which would crowd the kernels if inlined.
+#if defined(__GNUC__) || defined(__clang__)
+#define WG_NOINLINE __attribute__((noinline))
+#elif defined(_MSC_VER)
+#define WG_NOINLINE __declspec(noinline)
+#else
+#define WG_NOINLINE
 #endif
 
 //____ Pixel layout helpers _______________________________________________________
@@ -306,6 +316,187 @@ static inline BlendedPixel _blend_over(int srcB, int srcG, int srcR, int srcA, i
 			 int16_t(outA) };
 }
 
+//____ _is_effect_mode() ______________________________________________________
+
+template<BlendMode mode>
+constexpr bool _is_effect_mode()
+{
+	return mode == BlendMode::Add || mode == BlendMode::Subtract || mode == BlendMode::Multiply ||
+		   mode == BlendMode::Invert || mode == BlendMode::Min || mode == BlendMode::Max;
+}
+
+//____ _blend_effect_on_glass() / _blend_effect() _____________________________
+// Effect modes in 12 bits, see ReferenceBackend::_blendEffect() for their definitions. The source
+// is given as the light it adds, its color times its alpha (s), and its alpha, which is the
+// strength of the effect. Multiply and Min use the source faded towards white by it (t).
+//
+// On an opaque pixel the effect works on its color. On a pixel that isn't opaque it works on its
+// premultiplied color, and Add, Invert and Max raise its alpha by the strongest channel of s, so
+// it can hold the light they give. Multiply gives the same either way. On alpha-only canvases
+// the alpha of the source is the value of the effect.
+//
+// _blend_effect_on_glass() takes the pixels that aren't opaque. Unlike _blend_over() for Blend it
+// isn't inlined, which would slow down the common case of an opaque canvas.
+
+template<BlendMode mode>
+static WG_NOINLINE BlendedPixel _blend_effect_on_glass(int sB, int sG, int sR, int sA, int backB, int backG, int backR, int backA)
+{
+	int pB = (backB * backA + 2048) >> 12;
+	int pG = (backG * backA + 2048) >> 12;
+	int pR = (backR * backA + 2048) >> 12;
+
+	int strongest = std::max(sB, std::max(sG, sR));
+	int outA = backA;
+	int b, g, r;
+
+	if constexpr (mode == BlendMode::Add)
+	{
+		b = pB + sB;
+		g = pG + sG;
+		r = pR + sR;
+		outA = backA + strongest;
+	}
+	else if constexpr (mode == BlendMode::Subtract)
+	{
+		b = pB - sB;
+		g = pG - sG;
+		r = pR - sR;
+	}
+	else if constexpr (mode == BlendMode::Invert)
+	{
+		b = pB + ((sB * (4096 - 2 * pB) + 2048) >> 12);
+		g = pG + ((sG * (4096 - 2 * pG) + 2048) >> 12);
+		r = pR + ((sR * (4096 - 2 * pR) + 2048) >> 12);
+		outA = backA + ((strongest * (4096 - backA) + 2048) >> 12);
+	}
+	else if constexpr (mode == BlendMode::Min)
+	{
+		int white = 4096 - sA;
+
+		b = std::min(pB, white + sB);
+		g = std::min(pG, white + sG);
+		r = std::min(pR, white + sR);
+	}
+	else if constexpr (mode == BlendMode::Max)
+	{
+		b = std::max(pB, sB);
+		g = std::max(pG, sG);
+		r = std::max(pR, sR);
+		outA = std::max(backA, strongest);
+	}
+	else
+	{
+		int white = 4096 - sA;
+
+		b = (pB * (white + sB) + 2048) >> 12;
+		g = (pG * (white + sG) + 2048) >> 12;
+		r = (pR * (white + sR) + 2048) >> 12;
+	}
+
+	outA = std::min(outA, 4096);
+
+	if (outA == 0)
+		return { int16_t(backB), int16_t(backG), int16_t(backR), 0 };		// Still transparent, the color doesn't matter.
+
+	uint32_t reciprocal = SoftBackend::s_reciprocalTab[outA];
+	uint32_t half = outA / 2;
+
+	auto unpremultiply = [&](int value) { return _divide(std::clamp(value, 0, outA) * 4096, half, reciprocal); };
+
+	return { unpremultiply(b), unpremultiply(g), unpremultiply(r), int16_t(outA) };
+}
+
+template<BlendMode mode, SoftFormat destFormat>
+static inline void _blend_effect(int sB, int sG, int sR, int sA, int16_t backB, int16_t backG, int16_t backR, int16_t backA,
+								 int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+{
+	if constexpr (destFormat == SoftFormat::Alpha_8)
+	{
+		if constexpr (mode == BlendMode::Add)
+			outA = SoftBackend::s_limit4096Tab[4097 + backA + sA];
+		else if constexpr (mode == BlendMode::Subtract)
+			outA = SoftBackend::s_limit4096Tab[4097 + backA - sA];
+		else if constexpr (mode == BlendMode::Multiply)
+			outA = (backA * sA) >> 12;
+		else if constexpr (mode == BlendMode::Invert)
+			outA = (sA * (4096 - backA) + backA * (4096 - sA)) >> 12;
+		else if constexpr (mode == BlendMode::Min)
+			outA = std::min(int(backA), sA);
+		else if constexpr (mode == BlendMode::Max)
+			outA = std::max(int(backA), sA);
+	}
+	else if (mode != BlendMode::Multiply && SoftFormatInfo::hasAlpha(destFormat) && WG_UNLIKELY(backA != 4096))
+	{
+		BlendedPixel out = _blend_effect_on_glass<mode>(sB, sG, sR, sA, backB, backG, backR, backA);
+		outB = out.b;
+		outG = out.g;
+		outR = out.r;
+		outA = out.a;
+	}
+	else
+	{
+		if constexpr (mode == BlendMode::Add)
+		{
+			outB = SoftBackend::s_limit4096Tab[4097 + backB + sB];
+			outG = SoftBackend::s_limit4096Tab[4097 + backG + sG];
+			outR = SoftBackend::s_limit4096Tab[4097 + backR + sR];
+		}
+		else if constexpr (mode == BlendMode::Subtract)
+		{
+			outB = SoftBackend::s_limit4096Tab[4097 + backB - sB];
+			outG = SoftBackend::s_limit4096Tab[4097 + backG - sG];
+			outR = SoftBackend::s_limit4096Tab[4097 + backR - sR];
+		}
+		else if constexpr (mode == BlendMode::Multiply)
+		{
+			int white = 4096 - sA;
+
+			outB = (backB * (white + sB)) >> 12;
+			outG = (backG * (white + sG)) >> 12;
+			outR = (backR * (white + sR)) >> 12;
+		}
+		else if constexpr (mode == BlendMode::Invert)
+		{
+			outB = (sB * (4096 - backB) + backB * (4096 - sB)) >> 12;
+			outG = (sG * (4096 - backG) + backG * (4096 - sG)) >> 12;
+			outR = (sR * (4096 - backR) + backR * (4096 - sR)) >> 12;
+		}
+		else if constexpr (mode == BlendMode::Min)
+		{
+			int white = 4096 - sA;
+
+			outB = std::min(int(backB), white + sB);
+			outG = std::min(int(backG), white + sG);
+			outR = std::min(int(backR), white + sR);
+		}
+		else if constexpr (mode == BlendMode::Max)
+		{
+			outB = std::max(int(backB), sB);
+			outG = std::max(int(backG), sG);
+			outR = std::max(int(backR), sR);
+		}
+
+		outA = backA;
+	}
+}
+
+//____ _blend_effect_on_glass_fast8() _________________________________________
+// _blend_effect_on_glass() for 8-bit channels, which are converted to 12 bits for it.
+
+template<BlendMode mode>
+static WG_NOINLINE BlendedPixel _blend_effect_on_glass_fast8(int srcB, int srcG, int srcR, int srcA, int backB, int backG, int backR, int backA)
+{
+	auto to12 = [](int value) { return SoftBackend::s_mulTab[value] >> 4; };
+	auto to8 = [](int value) { return int16_t((value * 255 + 2048) >> 12); };
+
+	int alpha = to12(srcA);
+
+	BlendedPixel out = _blend_effect_on_glass<mode>((to12(srcB) * alpha) >> 12, (to12(srcG) * alpha) >> 12, (to12(srcR) * alpha) >> 12, alpha,
+													to12(backB), to12(backG), to12(backR), to12(backA));
+
+	return { to8(out.b), to8(out.g), to8(out.r), to8(out.a) };
+}
+
 //____ _blend_pixels_fast8() ____________________________________________________
 template<BlendMode mode, SoftFormat destFormat>
 static inline void _blend_pixels_fast8(int morphFactor,
@@ -441,6 +632,27 @@ static inline void _blend_pixels_fast8(int morphFactor,
 			outG = (fixedG * invAlpha + srcG * alpha + 0x8000) >> 16;
 			outR = (fixedR * invAlpha + srcR * alpha + 0x8000) >> 16;
 			outA = (fixedA * invAlpha + 255 * alpha + 0x8000) >> 16;
+		}
+		else if constexpr(_is_effect_mode<mode>() && mode != BlendMode::Multiply && SoftFormatInfo::hasAlpha(destFormat))
+		{
+			// Effect modes onto a pixel that isn't opaque work on its premultiplied color, see
+			// _blend_effect(). Multiply gives the same either way.
+
+			if (WG_UNLIKELY(backA != 255))
+			{
+				BlendedPixel out = _blend_effect_on_glass_fast8<mode>(srcB, srcG, srcR, srcA, backB, backG, backR, backA);
+				outB = out.b;
+				outG = out.g;
+				outR = out.r;
+				outA = out.a;
+			}
+			else
+			{
+				// Opaque, as on a canvas without alpha.
+
+				_blend_pixels_fast8<mode, SoftFormat::XRGB_8_linear>(morphFactor, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+																	 outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
+			}
 		}
 		else if constexpr(mode == BlendMode::Add)
 		{
@@ -652,68 +864,12 @@ static inline void	_blend_pixels(int morphFactor,
 			outR = (fixedR * invAlpha + srcR * alpha) >> 12;
 			outA = (fixedA * invAlpha + 4096 * alpha) >> 12;
 		}
-		else if constexpr(mode == BlendMode::Add)
+		else if constexpr(_is_effect_mode<mode>())
 		{
-			int alpha = srcA;
+			// The source faded towards black by its alpha, which is the strength of the effect.
 
-			outB = SoftBackend::s_limit4096Tab[4097 + backB + (srcB * alpha >> 12)];
-			outG = SoftBackend::s_limit4096Tab[4097 + backG + (srcG * alpha >> 12)];
-			outR = SoftBackend::s_limit4096Tab[4097 + backR + (srcR * alpha >> 12)];
-			outA = backA;
-		}
-		else if constexpr(mode == BlendMode::Subtract)
-		{
-			int alpha = srcA;
-
-			outB = SoftBackend::s_limit4096Tab[4097 + backB - (srcB * alpha >> 12)];
-			outG = SoftBackend::s_limit4096Tab[4097 + backG - (srcG * alpha >> 12)];
-			outR = SoftBackend::s_limit4096Tab[4097 + backR - (srcR * alpha >> 12)];
-			outA = backA;
-		}
-		else if constexpr(mode == BlendMode::Multiply)
-		{
-			// The alpha of the source is the strength of the effect: it fades the source
-			// towards white, which has no effect.
-
-			int white = 4096 - srcA;
-
-			outB = (backB * (white + ((srcB * srcA) >> 12))) >> 12;
-			outG = (backG * (white + ((srcG * srcA) >> 12))) >> 12;
-			outR = (backR * (white + ((srcR * srcA) >> 12))) >> 12;
-			outA = backA;
-		}
-		else if constexpr(mode == BlendMode::Min)
-		{
-			// Source faded towards white by its alpha.
-
-			int white = 4096 - srcA;
-
-			outB = std::min(int(backB), white + ((srcB * srcA) >> 12));
-			outG = std::min(int(backG), white + ((srcG * srcA) >> 12));
-			outR = std::min(int(backR), white + ((srcR * srcA) >> 12));
-			outA = backA;
-		}
-		else if constexpr(mode == BlendMode::Max)
-		{
-			// Source faded towards black by its alpha.
-
-			outB = std::max(int(backB), (srcB * srcA) >> 12);
-			outG = std::max(int(backG), (srcG * srcA) >> 12);
-			outR = std::max(int(backR), (srcR * srcA) >> 12);
-			outA = backA;
-		}
-		else if constexpr(mode == BlendMode::Invert)
-		{
-			// Source faded towards black by its alpha.
-
-			int srcB2 = (srcB * srcA) >> 12;
-			int srcG2 = (srcG * srcA) >> 12;
-			int srcR2 = (srcR * srcA) >> 12;
-
-			outB = (srcB2 * (4096 - backB) + backB * (4096 - srcB2)) >> 12;
-			outG = (srcG2 * (4096 - backG) + backG * (4096 - srcG2)) >> 12;
-			outR = (srcR2 * (4096 - backR) + backR * (4096 - srcR2)) >> 12;
-			outA = backA;
+			_blend_effect<mode, destFormat>((srcB * srcA) >> 12, (srcG * srcA) >> 12, (srcR * srcA) >> 12, srcA,
+											backB, backG, backR, backA, outB, outG, outR, outA);
 		}
 	}
 }
@@ -969,14 +1125,17 @@ inline void _texel_tint_pixel(int bits, int16_t& pixelB, int16_t& pixelG, int16_
 
 //____ _blend_line_edge() ____________________________________________________
 //
-// Blends a pixel of a line that is partly covered, coverage 0 -> 65536. It gets the average of
-// what the blend mode gives the covered part and the original pixel for the rest, see "Blending
-// and transparency" in the guide:
+// Blends a pixel of a line that is partly covered, coverage 0 -> 65536, see "Blending and
+// transparency" in the guide. Paint modes give it the average of what they give the covered part
+// and the original pixel for the rest:
 //
 // - Blend and BlendFixedColor fade the source by the coverage, which is the same.
 // - Replace and Morph cross-fade by the coverage, times the morph factor for Morph.
-// - Effect modes are applied in full and then mixed with the original pixel by the coverage.
-//   So are Replace and Morph on canvases without alpha, where their result is opaque.
+// - Replace and Morph on canvases without alpha, where their result is opaque, are applied in full
+//   and then mixed with the original pixel by the coverage.
+//
+// Effect modes fade the source by the coverage, as its alpha does. On alpha-only canvases, where
+// the alpha of the source is the value, Multiply and Min fade it towards 1, which has no effect.
 
 template<BlendMode BLEND, SoftFormat DSTFORMAT, bool bFast8>
 static inline void _blend_line_edge(uint8_t* WG_RESTRICT pDst, int coverage, int morphFactor,
@@ -1006,7 +1165,12 @@ static inline void _blend_line_edge(uint8_t* WG_RESTRICT pDst, int coverage, int
 		int morph = BLEND == BlendMode::Replace ? coverage >> 4 : (morphFactor * coverage) >> 16;
 		blend(std::integral_constant<BlendMode, BlendMode::Morph>(), morph, srcA);
 	}
-	else if constexpr (BLEND == BlendMode::Blend || BLEND == BlendMode::BlendFixedColor)
+	else if constexpr (DSTFORMAT == SoftFormat::Alpha_8 && (BLEND == BlendMode::Multiply || BLEND == BlendMode::Min))
+	{
+		constexpr int full = bFast8 ? 255 : 4096;
+		blend(std::integral_constant<BlendMode, BLEND>(), morphFactor, full - (((full - srcA) * coverage) >> 16));
+	}
+	else if constexpr (BLEND == BlendMode::Blend || BLEND == BlendMode::BlendFixedColor || _is_effect_mode<BLEND>())
 	{
 		blend(std::integral_constant<BlendMode, BLEND>(), morphFactor, (srcA * coverage) >> 16);
 	}
@@ -2179,36 +2343,6 @@ static inline void _add_segment_color(int blendFraction, int offset, const int16
 	}
 }
 
-//____ _segment_color() ______________________________________________________
-// The color of a segment at offset along the strip, straight alpha, 12 bits.
-
-template<SoftBackend::StripSource SOURCE>
-static inline void _segment_color(int offset, const int16_t* WG_RESTRICT pSegmentColor, const HiColor* WG_RESTRICT pSegmentTintmap,
-								  int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
-{
-	if constexpr(SOURCE == SoftBackend::StripSource::Colors)
-	{
-		outB = pSegmentColor[0];
-		outG = pSegmentColor[1];
-		outR = pSegmentColor[2];
-		outA = pSegmentColor[3];
-	}
-	else if constexpr(SOURCE == SoftBackend::StripSource::Tintmaps)
-	{
-		outB = pSegmentTintmap[offset].b;
-		outG = pSegmentTintmap[offset].g;
-		outR = pSegmentTintmap[offset].r;
-		outA = pSegmentTintmap[offset].a;
-	}
-	else if constexpr(SOURCE == SoftBackend::StripSource::ColorsAndTintmaps)
-	{
-		outB = (pSegmentTintmap[offset].b * pSegmentColor[0]) >> 12;
-		outG = (pSegmentTintmap[offset].g * pSegmentColor[1]) >> 12;
-		outR = (pSegmentTintmap[offset].r * pSegmentColor[2]) >> 12;
-		outA = (pSegmentTintmap[offset].a * pSegmentColor[3]) >> 12;
-	}
-}
-
 //____ _draw_segment_strip() _______________________________________________
 template<SoftBackend::StripSource SOURCE, BlendMode BLEND, SoftFormat DSTFORMAT>
 void _draw_segment_strip(int colBeg, int colEnd, uint8_t* WG_RESTRICT pStripStart, int pixelPitch, int nEdges, SoftBackend::SegmentEdge* WG_RESTRICT pEdges, const int16_t* WG_RESTRICT pSegmentColors, const HiColor* WG_RESTRICT pSegmentTintmap, int segmentTintmapPitch, const bool* WG_RESTRICT pTransparentSegments, const bool* WG_RESTRICT pOpaqueSegments, const SoftBackend::ColTrans& tint)
@@ -2551,35 +2685,30 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* WG_RESTRICT pStripStar
 					outR = (accR >> 12) + ((fixedR * backFraction) >> 16);
 					outA = (accA >> 12) + ((fixedA * backFraction) >> 16);	// This should be correct...
 				}
-				else if constexpr(BLEND == BlendMode::Add || BLEND == BlendMode::Subtract || BLEND == BlendMode::Multiply ||
-								  BLEND == BlendMode::Invert || BLEND == BlendMode::Min || BLEND == BlendMode::Max)
+				else if constexpr(_is_effect_mode<BLEND>())
 				{
-					// Effect modes: each segment is applied in full to its part of the pixel and the results
-					// are averaged by coverage. They keep the alpha of the canvas, or on alpha-only canvases
-					// work on it as the value, so the average is the same as for premultiplied colors.
-
-					int sumB = 0, sumG = 0, sumR = 0, sumA = 0;
+					// Effect modes apply the segments together, as one source that is their premultiplied
+					// average weighted by coverage, with the alpha of them all together. The segments cover
+					// the whole pixel, so on alpha-only canvases no part of it is left for Multiply and Min
+					// to fade towards 1.
 
 					for (int i = 0; i <= edge; i++)
 					{
-						int16_t segB, segG, segR, segA;
-						_segment_color<SOURCE>(offset >> 8, &pSegmentColors[i * 4], pSegmentTintmap + i * segmentTintmapPitch, segB, segG, segR, segA);
+						int alpha;
 
-						int16_t resB, resG, resR, resA;
-						_blend_pixels<BLEND, DSTFORMAT>(tint.morphFactor, segB, segG, segR, segA, backB, backG, backR, backA,
-														resB, resG, resR, resA, fixedB, fixedG, fixedR, fixedA);
+						if constexpr(SOURCE == SoftBackend::StripSource::Colors)
+							alpha = pSegmentColors[i * 4 + 3];
+						if constexpr( SOURCE == SoftBackend::StripSource::Tintmaps )
+							alpha = (pSegmentTintmap + i * segmentTintmapPitch)[offset >> 8].a;
+						if constexpr( SOURCE == SoftBackend::StripSource::ColorsAndTintmaps )
+							alpha = pSegmentColors[i * 4 + 3] * (pSegmentTintmap + i * segmentTintmapPitch)[offset >> 8].a / 4096;
 
-						int frac = segmentFractions[i];
-						sumB += frac * resB;
-						sumG += frac * resG;
-						sumR += frac * resR;
-						sumA += frac * resA;
+						int blendFraction = ((segmentFractions[i] * alpha) / 4096);
+						_add_segment_color<SOURCE>(blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentTintmap + i * segmentTintmapPitch, accB, accG, accR, accA);
 					}
 
-					outB = (sumB + 32768) >> 16;
-					outG = (sumG + 32768) >> 16;
-					outR = (sumR + 32768) >> 16;
-					outA = (sumA + 32768) >> 16;
+					_blend_effect<BLEND, DSTFORMAT>(accB >> 12, accG >> 12, accR >> 12, accA >> 12, backB, backG, backR, backA,
+													outB, outG, outR, outA);
 				}
 				else if constexpr(BLEND == BlendMode::Morph)
 				{
@@ -2654,13 +2783,13 @@ static inline int _limit4096(int value)
 // a column, see SoftBackend::CoveragePixel. Colors are premultiplied: weighted by both
 // coverage and alpha.
 //
-// A pixel gets the average of what the blend mode gives the covered part and the original
-// pixel for the rest, weighted by their areas and averaged as premultiplied colors, see
-// "Blending and transparency" in the guide.
+// With a paint mode a pixel gets the average of what the blend mode gives the covered part and
+// the original pixel for the rest, weighted by their areas and averaged as premultiplied colors.
+// Effect modes are applied with a strength scaled by the coverage. See "Blending and transparency"
+// in the guide.
 //
-// Pixels can be shared by several segments, so the source is a sum over them. That is exact
-// for all blend modes except those that saturate or select (Add, Subtract, Min, Max), which
-// are exact for pixels covered by a single segment and a close approximation otherwise.
+// Pixels can be shared by several segments, so the source is a sum over them. For effect modes
+// that makes them one source, applied once, as they should be.
 //
 // Alpha-only destinations treat alpha as the color, like the fill kernels.
 
@@ -2762,85 +2891,24 @@ void _draw_coverage_span(uint8_t* WG_RESTRICT pDst, int pixelPitch, int length, 
 				outR = ((backR * inv + fixedR * fixed + 2048) >> 12) + px.r;
 				outA = ((backA * inv + fixedA * fixed + 2048) >> 12) + px.a;
 			}
-			else if constexpr (BLEND == BlendMode::Add)
+			else if constexpr (_is_effect_mode<BLEND>())
 			{
-				// dst + coverage * min(1 - dst, src), so the covered part saturates as it would if fully covered.
+				// The source is applied with a strength scaled by coverage, as which it already is premultiplied.
+				// On alpha-only canvases its alpha is the value, which for Multiply and Min is faded towards 1
+				// where the pixel isn't covered.
 
-				if constexpr (bAlphaOnly)
-					outA = backA + std::min(int(px.a), (cov * (4096 - backA) + 2048) >> 12);
-				else
-				{
-					outB = backB + std::min(int(px.b), (cov * (4096 - backB) + 2048) >> 12);
-					outG = backG + std::min(int(px.g), (cov * (4096 - backG) + 2048) >> 12);
-					outR = backR + std::min(int(px.r), (cov * (4096 - backR) + 2048) >> 12);
-				}
-			}
-			else if constexpr (BLEND == BlendMode::Subtract)
-			{
-				// dst - coverage * min(dst, src)
+				int value = px.a;
 
-				if constexpr (bAlphaOnly)
-					outA = backA - std::min(int(px.a), (cov * backA + 2048) >> 12);
-				else
-				{
-					outB = backB - std::min(int(px.b), (cov * backB + 2048) >> 12);
-					outG = backG - std::min(int(px.g), (cov * backG + 2048) >> 12);
-					outR = backR - std::min(int(px.r), (cov * backR + 2048) >> 12);
-				}
-			}
-			else if constexpr (BLEND == BlendMode::Multiply)
-			{
-				// What isn't covered, or covered by transparency, multiplies with white.
+				if constexpr (bAlphaOnly && (BLEND == BlendMode::Multiply || BLEND == BlendMode::Min))
+					value += 4096 - cov;
 
-				if constexpr (bAlphaOnly)
-					outA = (backA * (4096 - cov + px.a) + 2048) >> 12;
-				else
-				{
-					int white = 4096 - px.a;
+				int16_t effB, effG, effR, effA;
+				_blend_effect<BLEND, DSTFORMAT>(px.b, px.g, px.r, value, backB, backG, backR, backA, effB, effG, effR, effA);
 
-					outB = (backB * (white + px.b) + 2048) >> 12;
-					outG = (backG * (white + px.g) + 2048) >> 12;
-					outR = (backR * (white + px.r) + 2048) >> 12;
-				}
-			}
-			else if constexpr (BLEND == BlendMode::Invert)
-			{
-				if constexpr (bAlphaOnly)
-					outA = (px.a * (4096 - backA) + backA * (4096 - px.a) + 2048) >> 12;
-				else
-				{
-					outB = (px.b * (4096 - backB) + backB * (4096 - px.b) + 2048) >> 12;
-					outG = (px.g * (4096 - backG) + backG * (4096 - px.g) + 2048) >> 12;
-					outR = (px.r * (4096 - backR) + backR * (4096 - px.r) + 2048) >> 12;
-				}
-			}
-			else if constexpr (BLEND == BlendMode::Min)
-			{
-				// dst - coverage * max(0, dst - src), with the source faded towards white by its alpha.
-
-				if constexpr (bAlphaOnly)
-					outA = backA - std::max(0, ((backA * cov + 2048) >> 12) - px.a);
-				else
-				{
-					int white = cov - px.a;
-
-					outB = backB - std::max(0, ((backB * cov + 2048) >> 12) - (white + px.b));
-					outG = backG - std::max(0, ((backG * cov + 2048) >> 12) - (white + px.g));
-					outR = backR - std::max(0, ((backR * cov + 2048) >> 12) - (white + px.r));
-				}
-			}
-			else if constexpr (BLEND == BlendMode::Max)
-			{
-				// dst + coverage * max(0, src - dst), with the source faded towards black by its alpha.
-
-				if constexpr (bAlphaOnly)
-					outA = backA + std::max(0, px.a - ((backA * cov + 2048) >> 12));
-				else
-				{
-					outB = backB + std::max(0, px.b - ((backB * cov + 2048) >> 12));
-					outG = backG + std::max(0, px.g - ((backG * cov + 2048) >> 12));
-					outR = backR + std::max(0, px.r - ((backR * cov + 2048) >> 12));
-				}
+				outB = effB;
+				outG = effG;
+				outR = effR;
+				outA = effA;
 			}
 			else if constexpr (BLEND == BlendMode::Morph && !bAlpha)
 			{

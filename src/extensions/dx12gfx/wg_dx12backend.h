@@ -228,12 +228,10 @@ namespace wg
 		bool _createPipelineResources();
 		bool _createRootSignature();
 		bool _createSamplers();
-		bool _createPipeline(BlendMode blendMode, PipelineKind kind, DXGI_FORMAT rtvFormat, int pass, Microsoft::WRL::ComPtr<ID3D12PipelineState>& pPipeline);
+		bool _createPipeline(BlendMode blendMode, PipelineKind kind, DXGI_FORMAT rtvFormat, Microsoft::WRL::ComPtr<ID3D12PipelineState>& pPipeline);
 
 		BlendMode _normalizeBlendMode(BlendMode blendMode);
-		ID3D12PipelineState* _pipeline(BlendMode blendMode, PipelineKind kind, int pass = 0);
-		bool _isTwoPassBlending() const;		// Blend mode is drawn in two passes onto the canvas, see _createPipeline().
-		void _drawTriangles(PipelineKind kind, int nVertices, int firstVertex);		// With the pipeline set for kind, in two passes if needed.
+		ID3D12PipelineState* _pipeline(BlendMode blendMode, PipelineKind kind);
 		void _updatePixelInfo();				// Blend mode, morph factor or canvas has changed.
 
 		float _scaleThickness(float thickness, float slope);

@@ -347,7 +347,7 @@ namespace wg
 		void	_shapeSegmentColors(int segment, int x, int y, int length, HiColor* pOutput);
 		HiColor* _shapeBuffer(int index, int length);
 
-		bool	_fadeSameAsAverage(BlendMode mode, bool bOpaqueSource) const;
+		bool	_fadeByCoverage(BlendMode mode, bool bOpaqueSource) const;
 		static CoveragePixel _coveragePixel(const HiColor& color, int coverage);
 		void	_drawCoverageEdge(CoverageOp_p pOp, const RectI& rect, int coverage, HiColor color, uint8_t* pOrigin, int pitch);
 		void	_drawTintedLine(CoverageOp_p pOp, bool bHorizontal, int majorBeg, int length, int width, int pos, int slope,

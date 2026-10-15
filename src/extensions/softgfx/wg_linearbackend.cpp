@@ -417,14 +417,13 @@ namespace wg
 						int aaBottomLeft = aaBottom * aaLeft / 4096;
 						int aaBottomRight = aaBottom * aaRight / 4096;
 
-						// A partly covered pixel gets the average of what the blend mode gives the covered part
-						// and the original pixel for the rest. Fading the source by the coverage gives the same
-						// for most blend modes and is what we do. For the others the coverage kernel averages,
-						// as in SoftBackend.
+						// Partly covered pixels are drawn by fading the source by the coverage where that gives
+						// what the blend mode should, see SoftBackend::_fadeByCoverage(). Otherwise the coverage
+						// kernel draws them, as in SoftBackend.
 
 						CoverageOp_p pCoverageOp = nullptr;
 
-						if (!_fadeSameAsAverage(blendMode, col.a == 4096 && m_colTrans.bTintOpaque))
+						if (!_fadeByCoverage(blendMode, col.a == 4096 && m_colTrans.bTintOpaque))
 							pCoverageOp = pKernels->pCoverageKernels[(int)blendMode];
 
 						if (pCoverageOp)

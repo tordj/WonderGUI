@@ -710,13 +710,24 @@ namespace wg
 			return;
 
 		Color dst = _canvasPixel(canvasPixel.x, canvasPixel.y);
+		Color colors[Edgemap::maxSegments];
+
+		for (int seg = 0; seg < nSegments; seg++)
+			colors[seg] = _segmentColor(pEdgemap, seg, column, row) * _deviceTint(canvasPixel.x, canvasPixel.y);
+
+		// Effect modes apply the segments together, see _effectSource(). Paint modes average what each
+		// segment gives its part of the pixel.
+
+		if (_isEffectMode())
+		{
+			_setCanvasPixel(canvasPixel.x, canvasPixel.y, _blend(_effectSource(nSegments, colors, coverage), dst));
+			return;
+		}
+
 		Color results[Edgemap::maxSegments];
 
 		for (int seg = 0; seg < nSegments; seg++)
-		{
-			Color color = _segmentColor(pEdgemap, seg, column, row) * _deviceTint(canvasPixel.x, canvasPixel.y);
-			results[seg] = _blend(color, dst);
-		}
+			results[seg] = _blend(colors[seg], dst);
 
 		_setCanvasPixel(canvasPixel.x, canvasPixel.y, _averageColors(nSegments, results, coverage, true));
 	}
@@ -853,10 +864,12 @@ namespace wg
 	/*
 		Blends color into a pixel of the canvas, where it covers coverage (0.0 -> 1.0) of the pixel.
 
-		A partially covered pixel is drawn as if the canvas had a much higher resolution, the shape
-		was drawn there without anti-aliasing and the subpixels were then averaged. That is the
+		Paint modes draw a partially covered pixel as if the canvas had a much higher resolution, the
+		shape was drawn there without anti-aliasing and the subpixels were then averaged. That is the
 		average of the blended color for the covered part and the original color for the rest,
 		weighted by their areas and averaged as premultiplied colors.
+
+		Effect modes are applied with a strength scaled by the coverage, see _effectSource().
 	*/
 
 	void ReferenceBackend::_plotPixel(int x, int y, const Color& color, double coverage)
@@ -865,6 +878,13 @@ namespace wg
 			return;
 
 		Color dst = _canvasPixel(x, y);
+
+		if (coverage < 1.0 && _isEffectMode())
+		{
+			_setCanvasPixel(x, y, _blend(_effectSource(1, &color, &coverage), dst));
+			return;
+		}
+
 		Color result = _blend(color, dst);
 
 		if (coverage < 1.0)
@@ -876,6 +896,52 @@ namespace wg
 		}
 
 		_setCanvasPixel(x, y, result);
+	}
+
+	//____ _isEffectMode() ________________________________________________________
+
+	bool ReferenceBackend::_isEffectMode() const
+	{
+		switch (m_blendMode)
+		{
+			case BlendMode::Add:
+			case BlendMode::Subtract:
+			case BlendMode::Multiply:
+			case BlendMode::Invert:
+			case BlendMode::Min:
+			case BlendMode::Max:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	//____ _effectSource() ________________________________________________________
+	/*
+		Effect modes don't average what the covered and uncovered parts of a pixel get. Coverage
+		scales the strength of the effect instead, just like the alpha of the source does. Colors that
+		cover parts of the pixel, like the segments of an edgemap, are first combined into one source:
+		their premultiplied average weighted by coverage, which has the alpha of them all together.
+		Where nothing covers the pixel the source is transparent, which has no effect.
+
+		On an alpha-only canvas the alpha of the source is the value, so the parts not covered get the
+		value that has no effect instead, which is 1.0 for Multiply and Min.
+	*/
+
+	ReferenceBackend::Color ReferenceBackend::_effectSource(int nColors, const Color* pColors, const double* pCoverage) const
+	{
+		Color src = _averageColors(nColors, pColors, pCoverage, true);
+
+		if (m_bAlphaOnlyCanvas && (m_blendMode == BlendMode::Multiply || m_blendMode == BlendMode::Min))
+		{
+			double covered = 0.0;
+			for (int i = 0; i < nColors; i++)
+				covered += pCoverage[i];
+
+			src.a += std::max(1.0 - covered, 0.0);
+		}
+
+		return src;
 	}
 
 	//____ _averageColors() _______________________________________________________
@@ -923,25 +989,14 @@ namespace wg
 		BlendFixedColor is Blend, made faster where the canvas is known to be the fixed blend
 		color, so we draw it as Blend.
 
-		Effect modes (Add, Subtract, Multiply, Invert, Min and Max) change the colors already on the
-		canvas and keep its alpha. The alpha of the source is the strength of the effect: it fades the
-		source towards the color that has no effect, which is black for Add, Subtract, Invert and Max
-		and white for Multiply and Min.
+		Effect modes (Add, Subtract, Multiply, Invert, Min and Max) change the light that is already
+		on the canvas, see _blendEffect().
 	*/
 
 	ReferenceBackend::Color ReferenceBackend::_blend(const Color& src, const Color& dst) const
 	{
 		if (m_bAlphaOnlyCanvas)
 			return { 1.0, 1.0, 1.0, _blendAlphaOnly(src.a, dst.a) };
-
-		double s = src.a;					// Strength of effect modes.
-
-		// Applies an effect to each color channel of the canvas, keeping its alpha.
-
-		auto effect = [&](auto func) -> Color
-		{
-			return { _clamp01(func(dst.r, src.r)), _clamp01(func(dst.g, src.g)), _clamp01(func(dst.b, src.b)), dst.a };
-		};
 
 		Color result;
 
@@ -973,27 +1028,12 @@ namespace wg
 			}
 
 			case BlendMode::Add:
-				result = effect([s](double b, double c) { return b + s * c; });
-				break;
-
 			case BlendMode::Subtract:
-				result = effect([s](double b, double c) { return b - s * c; });
-				break;
-
 			case BlendMode::Multiply:
-				result = effect([s](double b, double c) { return b * _mix(1.0, c, s); });
-				break;
-
-			case BlendMode::Invert:						// Each channel inverted by the amount given by the source.
-				result = effect([s](double b, double c) { return b + s * c * (1.0 - 2.0 * b); });
-				break;
-
+			case BlendMode::Invert:
 			case BlendMode::Min:
-				result = effect([s](double b, double c) { return std::min(b, _mix(1.0, c, s)); });
-				break;
-
 			case BlendMode::Max:
-				result = effect([s](double b, double c) { return std::max(b, s * c); });
+				result = _blendEffect(src, dst);
 				break;
 
 			default:
@@ -1008,6 +1048,72 @@ namespace wg
 			result.a = 1.0;
 
 		return result;
+	}
+
+	//____ _blendEffect() _________________________________________________________
+	/*
+		Effect modes change the light that a pixel of the canvas gives, which is its premultiplied
+		color P (its color times its alpha). Think of the canvas as glass with paint on it: an effect
+		is applied to the light that comes from the paint, not to the light that passes through the
+		glass from behind.
+
+		The alpha of the source is the strength of the effect. The source is applied as its color
+		times its alpha (s), which fades it towards black, the color that has no effect for Add,
+		Subtract, Invert and Max. Multiply and Min have no effect with white, so they apply the source
+		faded towards white by its alpha (t).
+
+		Add, Invert and Max can give more light than the paint on the glass can hold. They raise the
+		alpha of the canvas by the strongest channel of s (m), Add by adding it, Max by taking the
+		larger of the two and Invert by putting it over the alpha of the canvas. That way they can
+		light up transparent parts of the canvas. The other effect modes keep the alpha.
+
+		These are the operations that GPUs can do with fixed-function blending of premultiplied
+		colors in a single pass. On an opaque canvas they are the familiar ones, applied to the color.
+	*/
+
+	ReferenceBackend::Color ReferenceBackend::_blendEffect(const Color& src, const Color& dst) const
+	{
+		double back[3] = { dst.r * dst.a, dst.g * dst.a, dst.b * dst.a };
+		double light[3] = { src.r * src.a, src.g * src.a, src.b * src.a };
+		double source[3] = { src.r, src.g, src.b };
+		double strongest = std::max({ light[0], light[1], light[2] });
+
+		double result[3];
+
+		for (int i = 0; i < 3; i++)
+		{
+			double P = back[i];
+			double s = light[i];
+			double t = _mix(1.0, source[i], src.a);
+
+			switch (m_blendMode)
+			{
+				case BlendMode::Add:		result[i] = P + s;						break;
+				case BlendMode::Subtract:	result[i] = P - s;						break;
+				case BlendMode::Multiply:	result[i] = P * t;						break;
+				case BlendMode::Invert:		result[i] = P + s * (1.0 - 2.0 * P);	break;
+				case BlendMode::Min:		result[i] = std::min(P, t);				break;
+				case BlendMode::Max:		result[i] = std::max(P, s);				break;
+				default:					result[i] = P;							break;
+			}
+		}
+
+		double alpha = dst.a;
+
+		if (m_blendMode == BlendMode::Add)
+			alpha = dst.a + strongest;
+		else if (m_blendMode == BlendMode::Invert)
+			alpha = dst.a + strongest * (1.0 - dst.a);
+		else if (m_blendMode == BlendMode::Max)
+			alpha = std::max(dst.a, strongest);
+
+		alpha = _clamp01(alpha);
+
+		if (alpha <= 0.0)
+			return { dst.r, dst.g, dst.b, 0.0 };			// Still transparent, the color doesn't matter.
+
+		return { std::min(_clamp01(result[0]) / alpha, 1.0), std::min(_clamp01(result[1]) / alpha, 1.0),
+				 std::min(_clamp01(result[2]) / alpha, 1.0), alpha };
 	}
 
 	//____ _over() ________________________________________________________________
@@ -2071,9 +2177,10 @@ namespace wg
 
 	//____ _drawShapePixel() ______________________________________________________
 	/*
-		Draws a pixel of a shape. The pixel gets the average of what each segment gives the part of
-		the pixel it covers and the original pixel for the part not covered by any drawn segment,
-		weighted by their areas and averaged as premultiplied colors.
+		Draws a pixel of a shape. With a paint mode the pixel gets the average of what each segment
+		gives the part of the pixel it covers and the original pixel for the part not covered by any
+		drawn segment, weighted by their areas and averaged as premultiplied colors. Effect modes
+		apply the drawn segments together, see _effectSource().
 	*/
 
 	void ReferenceBackend::_drawShapePixel(const Shape& shape, int x, int y)
@@ -2086,8 +2193,8 @@ namespace wg
 
 		Color dst = _canvasPixel(x, y);
 
-		std::vector<Color> colors = { dst };
-		std::vector<double> areas = { 1.0 };
+		std::vector<Color> sources;
+		std::vector<double> sourceAreas;
 
 		for (int seg = 0; seg < (int) shape.segments.size(); seg++)
 		{
@@ -2100,13 +2207,28 @@ namespace wg
 			if (segment.tint.nLayers > 0)
 				color = color * _tintColorAt(segment.tint, x + 0.5, y + 0.5);
 
-			colors.push_back(_blend(color * _deviceTint(x, y), dst));
-			areas.push_back(coverage[seg]);
-			areas[0] -= coverage[seg];
+			sources.push_back(color * _deviceTint(x, y));
+			sourceAreas.push_back(coverage[seg]);
 		}
 
-		if (colors.size() == 1)
+		if (sources.empty())
 			return;													// Not covered by any drawn segment.
+
+		if (_isEffectMode())
+		{
+			_setCanvasPixel(x, y, _blend(_effectSource(int(sources.size()), sources.data(), sourceAreas.data()), dst));
+			return;
+		}
+
+		std::vector<Color> colors = { dst };
+		std::vector<double> areas = { 1.0 };
+
+		for (size_t i = 0; i < sources.size(); i++)
+		{
+			colors.push_back(_blend(sources[i], dst));
+			areas.push_back(sourceAreas[i]);
+			areas[0] -= sourceAreas[i];
+		}
 
 		// A pixel fully covered by one segment gets what it gives, as in _plotPixel().
 
