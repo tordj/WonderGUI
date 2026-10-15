@@ -162,9 +162,9 @@ Neither standard has a mode that takes away alpha by the alpha of the source, li
 
 ReferenceBackend and the software backends can follow these definitions exactly everywhere.
 
-GPU backends can follow them exactly with fixed-function blending, provided that canvases with alpha store premultiplied colors and dual-source blending is used (available in OpenGL 3.3, Metal and DirectX 12). The exceptions are approximated:
+GPU backends can follow them exactly with fixed-function blending, provided that canvases with alpha store premultiplied colors and dual-source blending is used (available in OpenGL 3.3, Metal and DirectX 12). Invert, Min and Max also need the alpha of the canvas to scale the source by, which their blend operations can't do, so onto canvases with alpha they are drawn in two passes that together give the exact result. The exceptions are approximated:
 
-- Invert, Min, Max and an Add that saturates, on semi-transparent pixels of canvases with alpha.
+- An Add that saturates, on semi-transparent pixels of canvases with alpha.
 - Anti-aliased edges of Min and Max, since blending by min/max can't be weighted by coverage. Fills and blits on whole pixels are exact.
 - Anti-aliased edges of an Add or Subtract that saturates, by a level or two.
 

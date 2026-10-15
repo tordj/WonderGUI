@@ -1669,7 +1669,7 @@ namespace wg
 		if (!_setPipeline(_pipeline(m_activeBlendMode, kind)))
 			return;
 
-		m_commandList->DrawInstanced(nRects * 6, 1, firstVertex, 0);
+		_drawTriangles(kind, nRects * 6, firstVertex);
 	}
 
 	//____ _drawLines() ________________________________________________________
@@ -1840,7 +1840,16 @@ namespace wg
 				scissorRect.bottom = (clip.y + clip.h) >> 6;
 
 				m_commandList->RSSetScissorRects(1, &scissorRect);
-				m_commandList->DrawInstanced(nLinesDrawn * 6, 1, firstVertex, 0);
+
+				// Lines may cross, so ones drawn in two passes are drawn one at a time.
+
+				if (_isTwoPassBlending())
+				{
+					for (int line = 0; line < nLinesDrawn; line++)
+						_drawTriangles(PipelineKind::Line, 6, firstVertex + line * 6);
+				}
+				else
+					_drawTriangles(PipelineKind::Line, nLinesDrawn * 6, firstVertex);
 			}
 
 			// Back to the whole canvas, which is what everything else expects.
@@ -2592,7 +2601,7 @@ namespace wg
 		}
 
 		if (nRectsDrawn > 0)
-			m_commandList->DrawInstanced(nRectsDrawn * 6, 1, firstVertex, 0);
+			_drawTriangles(kind, nRectsDrawn * 6, firstVertex);
 	}
 
 	//____ _drawEdgemap() ______________________________________________________
@@ -2806,7 +2815,7 @@ namespace wg
 		uint32_t edgeCounts[2] = { uint32_t(nSegments - 1), uint32_t(pEdgemap->m_nbSegments - 1) };
 		m_commandList->SetGraphicsRoot32BitConstants(0, 2, edgeCounts, 6);
 
-		m_commandList->DrawInstanced(nRects * 6, 1, firstVertex, 0);
+		_drawTriangles(PipelineKind::Segments, nRects * 6, firstVertex);
 	}
 
 	//____ _drawShape() ________________________________________________________
@@ -2935,7 +2944,7 @@ namespace wg
 		if (!_setPipeline(pPipeline) || !m_bCommandListOpen)
 			return;
 
-		m_commandList->DrawInstanced(nRects * 6, 1, firstVertex, 0);
+		_drawTriangles(PipelineKind::Shape, nRects * 6, firstVertex);
 	}
 
 	//____ _setPipeline() ______________________________________________________
@@ -2981,7 +2990,7 @@ namespace wg
 	// rendering into. Created the first time a combination shows up, since the
 	// canvas formats in use are not known until canvases are set.
 
-	ID3D12PipelineState* DX12Backend::_pipeline(BlendMode blendMode, PipelineKind kind)
+	ID3D12PipelineState* DX12Backend::_pipeline(BlendMode blendMode, PipelineKind kind, int pass)
 	{
 		if (blendMode == BlendMode::Ignore)
 			return nullptr;							// Nothing should be drawn.
@@ -2991,7 +3000,8 @@ namespace wg
 
 		BlendMode mode = _normalizeBlendMode(blendMode);
 
-		uint64_t key = (uint64_t(m_activeCanvasFormat) << 16) |
+		uint64_t key = (uint64_t(pass) << 40) |
+					   (uint64_t(m_activeCanvasFormat) << 16) |
 					   (uint64_t(kind) << 8) |
 					   uint64_t(mode);
 
@@ -3001,12 +3011,44 @@ namespace wg
 
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> pPipeline;
 
-		if (!_createPipeline(mode, kind, m_activeCanvasFormat, pPipeline))
+		if (!_createPipeline(mode, kind, m_activeCanvasFormat, pass, pPipeline))
 			pPipeline = nullptr;					// Remembered as a failure, so we don't try again every draw.
 
 		m_pipelines[key] = pPipeline;
 
 		return pPipeline.Get();
+	}
+
+	//____ _isTwoPassBlending() ________________________________________________
+
+	bool DX12Backend::_isTwoPassBlending() const
+	{
+		BlendMode mode = m_activeBlendMode;
+
+		return (mode == BlendMode::Invert || mode == BlendMode::Min || mode == BlendMode::Max) && _canvasKind(m_activeCanvasFormat) == 0;
+	}
+
+	//____ _drawTriangles() ____________________________________________________
+	//
+	// Draws triangles from the vertex buffer with the pipeline set for kind, twice for a
+	// blend mode drawn in two passes, see _createPipeline(). The second pass of Min is the
+	// same as the first.
+
+	void DX12Backend::_drawTriangles(PipelineKind kind, int nVertices, int firstVertex)
+	{
+		m_commandList->DrawInstanced(nVertices, 1, firstVertex, 0);
+
+		if (!_isTwoPassBlending())
+			return;
+
+		ID3D12PipelineState* pFirstPass = m_pActivePipeline;
+
+		if (m_activeBlendMode != BlendMode::Min && !_setPipeline(_pipeline(m_activeBlendMode, kind, 1)))
+			return;
+
+		m_commandList->DrawInstanced(nVertices, 1, firstVertex, 0);
+
+		_setPipeline(pFirstPass);
 	}
 
 	//____ setDefaultCanvas() ___________________________________________
@@ -3631,9 +3673,9 @@ namespace wg
 	//   dual-source blending. Replace only blends in pipelines that can cover pixels
 	//   partly, the rest just write.
 	// - Effect modes keep the alpha of the canvas. Multiply and Subtract are exact, as
-	//   is Add where it doesn't saturate. Invert, Min and Max are exact on opaque
-	//   pixels, Min and Max are approximated on partly covered pixels by fading the
-	//   source by coverage.
+	//   is Add where it doesn't saturate. Invert, Min and Max are drawn in two passes
+	//   onto canvases with alpha, see below, which makes them exact too. Min and Max
+	//   are approximated on partly covered pixels by fading the source by coverage.
 	// - An alpha only canvas keeps its value in the alpha channel. Effect modes use
 	//   the alpha of the source as the value there.
 	// - A canvas without alpha is opaque, and has no alpha channel to write to.
@@ -3642,7 +3684,7 @@ namespace wg
 	// since the debug layer warns about output nothing reads. Those are compiled
 	// when first needed.
 
-	bool DX12Backend::_createPipeline(BlendMode blendMode, PipelineKind kind, DXGI_FORMAT rtvFormat, Microsoft::WRL::ComPtr<ID3D12PipelineState>& pPipeline)
+	bool DX12Backend::_createPipeline(BlendMode blendMode, PipelineKind kind, DXGI_FORMAT rtvFormat, int pass, Microsoft::WRL::ComPtr<ID3D12PipelineState>& pPipeline)
 	{
 		bool bAlphaOnly = (_canvasKind(rtvFormat) == 2);
 		bool bNoAlpha = (_canvasKind(rtvFormat) == 1);
@@ -3726,6 +3768,36 @@ namespace wg
 				srcBlend = D3D12_BLEND_ONE;
 				destBlend = D3D12_BLEND_INV_SRC_ALPHA;
 				break;
+			}
+		}
+
+		// Invert, Min and Max need the alpha of the canvas to scale the source by, which their
+		// blend operations can't do. On canvases with alpha they are drawn twice, with blend
+		// states that together give the exact result, since the canvas clamps what is blended
+		// to 0.0-1.0, see _drawTriangles(). Pd is the premultiplied canvas color, ad its alpha
+		// (kept by both passes) and s what the pixel shader outputs:
+		//
+		// - Invert: Pd + s - 2*Pd*s, then minus s*(1 - ad), which is Pd*(1 - 2*s) + ad*s.
+		// - Min: ad*s - Pd clamped to 0.0 twice, which is min(Pd, ad*s). Both passes are the same.
+		// - Max: Pd - ad*s clamped to 0.0, then plus ad*s, which is max(Pd, ad*s).
+
+		if (!bAlphaOnly && !bNoAlpha)
+		{
+			if (blendMode == BlendMode::Invert && pass == 1)
+			{
+				op = D3D12_BLEND_OP_REV_SUBTRACT;
+				srcBlend = D3D12_BLEND_INV_DEST_ALPHA;
+				destBlend = D3D12_BLEND_ONE;
+			}
+			else if (blendMode == BlendMode::Min || blendMode == BlendMode::Max)
+			{
+				if (blendMode == BlendMode::Min)
+					op = D3D12_BLEND_OP_SUBTRACT;
+				else
+					op = (pass == 0) ? D3D12_BLEND_OP_REV_SUBTRACT : D3D12_BLEND_OP_ADD;
+
+				srcBlend = D3D12_BLEND_DEST_ALPHA;
+				destBlend = D3D12_BLEND_ONE;
 			}
 		}
 

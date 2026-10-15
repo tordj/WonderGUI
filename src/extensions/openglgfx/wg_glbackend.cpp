@@ -1990,7 +1990,7 @@ void GlBackend::endSession()
 
 				_setPartialCoverage(false);
 
-				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+				_drawTriangles(vertexOfs, nVertices);
 				vertexOfs += nVertices;
 				break;
 			}
@@ -2006,7 +2006,7 @@ void GlBackend::endSession()
 
 				_setPartialCoverage(true);
 
-				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+				_drawTriangles(vertexOfs, nVertices);
 				vertexOfs += nVertices;
 				break;
 			}
@@ -2027,7 +2027,16 @@ void GlBackend::endSession()
 					int h = *pCmd++;
 
 					glScissor(x, y, w, h);
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+
+					// Lines may cross, so effect modes in two passes take one line at a time.
+
+					if (m_bTwoPassBlending)
+					{
+						for (int ofs = 0; ofs < nVertices; ofs += 6)
+							_drawTriangles(vertexOfs + ofs, 6);
+					}
+					else
+						_drawTriangles(vertexOfs, nVertices);
 				}
 
 				glScissor(0, 0, m_activeCanvasSize.w, m_activeCanvasSize.h);
@@ -2056,7 +2065,7 @@ void GlBackend::endSession()
 				_setRgbxClip(prog, pSurf, false);
 				_setPartialCoverage(false);
 
-				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+				_drawTriangles(vertexOfs, nVertices);
 				vertexOfs += nVertices;
 
 				break;
@@ -2103,7 +2112,7 @@ void GlBackend::endSession()
 				}
 
 				_setPartialCoverage(false);
-				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+				_drawTriangles(vertexOfs, nVertices);
 				vertexOfs += nVertices;
 
 				if (bClip && !bIndexed)
@@ -2164,7 +2173,7 @@ void GlBackend::endSession()
 
 				_setPartialCoverage(false);
 
-				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+				_drawTriangles(vertexOfs, nVertices);
 
 				vertexOfs += nVertices;
 				break;
@@ -2184,7 +2193,7 @@ void GlBackend::endSession()
 				glUseProgram(m_segmentsProg[nEdges][m_bActiveCanvasIsA8]);
 				_setPartialCoverage(false);
 
-				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+				_drawTriangles(vertexOfs, nVertices);
 				vertexOfs += nVertices;
 				break;
 			}
@@ -2195,7 +2204,7 @@ void GlBackend::endSession()
 				glUseProgram(m_shapeProg[m_bActiveCanvasIsA8]);
 				_setPartialCoverage(true);
 
-				glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+				_drawTriangles(vertexOfs, nVertices);
 				vertexOfs += nVertices;
 				break;
 			}
@@ -2241,8 +2250,9 @@ void GlBackend::endSession()
 	- Replace and Morph keep the uncovered part of the pixel by the second color of dual-source
 	  blending. Replace is only blended where pixels are partly covered, see _setPartialCoverage().
 	- Effect modes keep the alpha of the canvas. Multiply and Subtract are exact, as is Add where
-	  it doesn't saturate. Invert, Min and Max are exact on opaque pixels, Min and Max are
-	  approximated on partly covered pixels by fading the source by coverage.
+	  it doesn't saturate. Invert, Min and Max are drawn in two passes onto canvases with alpha,
+	  see _setEffectPass(), which makes them exact too. Min and Max are approximated on partly
+	  covered pixels by fading the source by coverage.
 	- On Alpha_8 canvases, effect modes use the alpha of the source as the value.
 */
 
@@ -2258,6 +2268,9 @@ void GlBackend::_setBlendMode(BlendMode mode)
 	glBlendEquation(GL_FUNC_ADD);
 	glEnable(GL_BLEND);
 	m_bReplaceBlending = true;
+
+	m_bTwoPassBlending = m_bActiveCanvasHasAlpha && !bAlphaOnly &&
+						 (mode == BlendMode::Invert || mode == BlendMode::Min || mode == BlendMode::Max);
 
 	switch (mode)
 	{
@@ -2308,6 +2321,8 @@ void GlBackend::_setBlendMode(BlendMode mode)
 	case BlendMode::Invert:
 		if (bAlphaOnly)
 			glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
+		else if (m_bTwoPassBlending)
+			_setEffectPass(0);
 		else
 			glBlendFuncSeparate(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE);
 		break;
@@ -2319,6 +2334,8 @@ void GlBackend::_setBlendMode(BlendMode mode)
 			glBlendEquation(GL_MIN);
 			glBlendFunc(GL_ONE, GL_ONE);
 		}
+		else if (m_bTwoPassBlending)
+			_setEffectPass(0);
 		else
 		{
 			glBlendEquationSeparate(GL_MIN, GL_FUNC_ADD);
@@ -2332,6 +2349,8 @@ void GlBackend::_setBlendMode(BlendMode mode)
 			glBlendEquation(GL_MAX);
 			glBlendFunc(GL_ONE, GL_ONE);
 		}
+		else if (m_bTwoPassBlending)
+			_setEffectPass(0);
 		else
 		{
 			glBlendEquationSeparate(GL_MAX, GL_FUNC_ADD);
@@ -2373,6 +2392,69 @@ void GlBackend::_setPartialCoverage(bool bPartialCoverage)
 		glDisable(GL_BLEND);
 
 	m_bReplaceBlending = bPartialCoverage;
+}
+
+//____ _setEffectPass() ______________________________________________________
+/*
+	Invert, Min and Max need the alpha of the canvas to scale the source by, which their
+	blend equations can't do. On canvases with alpha they are drawn twice, with blend states
+	that together give the exact result, since the canvas clamps what is blended to 0.0-1.0.
+	Pd is the premultiplied canvas color, ad its alpha (kept by both passes) and s what the
+	shader outputs:
+
+	- Invert: Pd + s - 2*Pd*s, then minus s*(1 - ad), which is Pd*(1 - 2*s) + ad*s.
+	- Min: ad*s - Pd clamped to 0.0 twice, which is min(Pd, ad*s). Both passes are the same.
+	- Max: Pd - ad*s clamped to 0.0, then plus ad*s, which is max(Pd, ad*s).
+*/
+
+void GlBackend::_setEffectPass(int pass)
+{
+	switch (m_activeBlendMode)
+	{
+		case BlendMode::Invert:
+			if (pass == 0)
+			{
+				glBlendEquation(GL_FUNC_ADD);
+				glBlendFuncSeparate(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE);
+			}
+			else
+			{
+				glBlendEquationSeparate(GL_FUNC_REVERSE_SUBTRACT, GL_FUNC_ADD);
+				glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
+			}
+			break;
+
+		case BlendMode::Min:
+			glBlendEquationSeparate(GL_FUNC_SUBTRACT, GL_FUNC_ADD);
+			glBlendFuncSeparate(GL_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
+			break;
+
+		case BlendMode::Max:
+			glBlendEquationSeparate(pass == 0 ? GL_FUNC_REVERSE_SUBTRACT : GL_FUNC_ADD, GL_FUNC_ADD);
+			glBlendFuncSeparate(GL_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
+			break;
+
+		default:
+			break;
+	}
+}
+
+//____ _drawTriangles() _______________________________________________________
+/*
+	Draws triangles from the vertex buffer, twice for an effect mode that needs two passes,
+	see _setEffectPass().
+*/
+
+void GlBackend::_drawTriangles(int first, int count)
+{
+	glDrawArrays(GL_TRIANGLES, first, count);
+
+	if (m_bTwoPassBlending)
+	{
+		_setEffectPass(1);
+		glDrawArrays(GL_TRIANGLES, first, count);
+		_setEffectPass(0);
+	}
 }
 
 //____ _uploadCanvasUBO() _____________________________________________________

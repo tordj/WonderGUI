@@ -121,6 +121,8 @@ namespace wg
 		void	_setBlendMode(BlendMode mode);
 		void	_setBlitSource(GlSurface* pSurf);
 		void	_setPartialCoverage(bool bPartialCoverage);
+		void	_setEffectPass(int pass);
+		void	_drawTriangles(int first, int count);
 		void	_resetCommandStates();
 		void	_uploadCanvasUBO();
 
@@ -196,6 +198,7 @@ namespace wg
 		bool			m_bActiveCanvasIsA8 = false;
 		bool			m_bActiveCanvasHasAlpha = true;									// False for canvases that don't store alpha, like XRGB_8.
 		bool			m_bReplaceBlending = false;										// Blending enabled for Replace, see _setPartialCoverage().
+		bool			m_bTwoPassBlending = false;										// Effect mode drawn in two passes, see _setEffectPass().
 		GlSurface_p		m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
 		SizeI			m_activeCanvasSize;                                             // Currently active canvas size in OpenGL, " -
 		bool			m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
