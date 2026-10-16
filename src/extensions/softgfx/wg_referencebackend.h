@@ -174,6 +174,7 @@ namespace wg
 
 		void	_fill(const RectSPX& rect, const Color& color);
 		void	_drawLine(CoordSPX begin, CoordSPX end, spx thickness, const Color& color, int nClipRects, const RectSPX* pClipRects);
+		void	_drawCappedLine(CoordSPX begin, CoordSPX end, spx thickness, LineCaps caps, const Color& color, int nClipRects, const RectSPX* pClipRects);
 		void	_blit(Command cmd, CoordI source, CoordSPX dest, const Transform& transform, bool bCustomTransform, const RectSPX& rect);
 		void	_drawEdgemap(SoftEdgemap* pEdgemap, bool bTile, GfxFlip flip, CoordSPX origo, const RectSPX& rect);
 
@@ -234,6 +235,7 @@ namespace wg
 		class Shape;
 		class RoundedBoxShape;
 		class RingShape;
+		class LineShape;
 
 		void			_drawShape(ShapeKind kind, const uint16_t* pPayload, int nRects);
 		void			_drawShapePixel(const Shape& shape, int x, int y);

@@ -298,9 +298,12 @@ namespace wg
 						end.y = _read32(p);
 
 						spx thickness = *p++;
-						p++;									// padding
+						uint16_t caps = *p++;
 
-						_drawLine(begin, end, thickness, color, nClipRects, pClipRects);
+						if (caps == 0)
+							_drawLine(begin, end, thickness, color, nClipRects, pClipRects);
+						else
+							_drawCappedLine(begin, end, thickness, decodeLineCaps(caps), color, nClipRects, pClipRects);
 					}
 					break;
 				}
@@ -471,7 +474,8 @@ namespace wg
 
 	//____ _drawLine() ____________________________________________________________
 	/*
-		Draws a straight line with flat ends, as defined by the GfxBackend contract:
+		Draws a straight line without caps (LineCap::Default at both ends), as defined by the
+		GfxBackend contract:
 
 		Begin and end are rounded to whole pixels. A line that mainly runs along the x-axis is
 		drawn as a column of color for every pixel from begin.x up to (but not including) end.x.
@@ -2464,6 +2468,221 @@ namespace wg
 			return c_back;
 		}
 	};
+
+	//____ LineShape ______________________________________________________________
+	/*
+		A line with caps, see LineCap. Its endpoints are exact positions on the canvas, like the
+		corners of a rectangle given to fill(), not rounded to whole pixels as for lines without caps.
+
+		The line is the band of points within half the thickness of the infinite line through begin
+		and end, cut by a region for each end. Seen from an end, with 'along' measured from the end
+		towards the other end and 'across' at right angle to the line:
+
+		  Flat        along >= 0.
+		  Square      along >= -thickness/2.
+		  Round       along >= 0, or within thickness/2 of the end.
+		  Vertical    On the side of the other end of the vertical line through the end. Empty if
+		              the line has no horizontal extent.
+		  Horizontal  The same with a horizontal line. Empty if the line has no vertical extent.
+		  Spear       along >= 0 and |across| <= thickness/2 * along / length, or along >= length,
+		              where length is the spear length.
+		  Default     Vertical if the line runs mostly along x (more along x than y), otherwise
+		              Horizontal.
+
+		A line of zero length runs along x.
+	*/
+
+	class ReferenceBackend::LineShape : public ReferenceBackend::Shape
+	{
+	public:
+
+		struct End
+		{
+			LineCapShape	shape;
+			double			x, y;				// The endpoint.
+			double			dirX, dirY;			// Towards the other end, of length 1.
+			double			spearLength;		// Pixels.
+
+			bool contains(double px, double py, double along, double across, double r) const
+			{
+				switch (shape)
+				{
+					case LineCapShape::Flat:		return along >= 0.0;
+					case LineCapShape::Square:		return along >= -r;
+					case LineCapShape::Round:		return along >= 0.0 || std::hypot(px - x, py - y) <= r;
+					case LineCapShape::Vertical:	return dirX != 0.0 && (px - x) * dirX >= 0.0;
+					case LineCapShape::Horizontal:	return dirY != 0.0 && (py - y) * dirY >= 0.0;
+					case LineCapShape::Spear:		return along >= spearLength || (along >= 0.0 && std::abs(across) * spearLength <= r * along);
+					default:						return false;
+				}
+			}
+
+			bool isEmpty() const
+			{
+				return (shape == LineCapShape::Vertical && dirX == 0.0) || (shape == LineCapShape::Horizontal && dirY == 0.0);
+			}
+
+			// How far the region reaches beyond the end along the line, within the band.
+
+			double reach(double r) const
+			{
+				switch (shape)
+				{
+					case LineCapShape::Square:
+					case LineCapShape::Round:		return r;
+					case LineCapShape::Vertical:	return r * std::abs(dirY) / std::abs(dirX);
+					case LineCapShape::Horizontal:	return r * std::abs(dirX) / std::abs(dirY);
+					default:						return 0.0;
+				}
+			}
+
+			void addEdges(std::vector<ShapeEdge>& edges, double normalX, double normalY, double r) const
+			{
+				switch (shape)
+				{
+					case LineCapShape::Flat:
+						edges.push_back(ShapeEdge::line(x, y, normalX, normalY));
+						break;
+					case LineCapShape::Square:
+						edges.push_back(ShapeEdge::line(x - dirX * r, y - dirY * r, normalX, normalY));
+						break;
+					case LineCapShape::Round:
+						edges.push_back(ShapeEdge::line(x, y, normalX, normalY));
+						edges.push_back(ShapeEdge::circle(x, y, r));
+						break;
+					case LineCapShape::Vertical:
+						edges.push_back(ShapeEdge::line(x, y, 0, 1));
+						break;
+					case LineCapShape::Horizontal:
+						edges.push_back(ShapeEdge::line(x, y, 1, 0));
+						break;
+					case LineCapShape::Spear:
+						edges.push_back(ShapeEdge::line(x, y, dirX * spearLength + normalX * r, dirY * spearLength + normalY * r));
+						edges.push_back(ShapeEdge::line(x, y, dirX * spearLength - normalX * r, dirY * spearLength - normalY * r));
+						edges.push_back(ShapeEdge::line(x + dirX * spearLength, y + dirY * spearLength, normalX, normalY));
+						break;
+					default:
+						break;
+				}
+			}
+		};
+
+		End		begin, end;
+		double	dirX, dirY;						// From begin to end, of length 1.
+		double	normalX, normalY;
+		double	length;
+		double	r;								// Half the thickness.
+
+		LineShape(CoordSPX _begin, CoordSPX _end, spx thickness, LineCaps caps, const Color& color)
+		{
+			double dx = (_end.x - _begin.x) / 64.0;
+			double dy = (_end.y - _begin.y) / 64.0;
+
+			length = std::sqrt(dx * dx + dy * dy);
+			dirX = length > 0.0 ? dx / length : 1.0;
+			dirY = length > 0.0 ? dy / length : 0.0;
+			normalX = -dirY;
+			normalY = dirX;
+			r = thickness / 128.0;
+
+			bool bAlongX = length == 0.0 || std::abs(_end.x - _begin.x) > std::abs(_end.y - _begin.y);
+
+			auto setupEnd = [&](End& e, LineCap cap, CoordSPX pos, double towardsX, double towardsY)
+			{
+				e.shape = cap.shape == LineCapShape::Default ? (bAlongX ? LineCapShape::Vertical : LineCapShape::Horizontal) : cap.shape;
+				e.x = pos.x / 64.0;
+				e.y = pos.y / 64.0;
+				e.dirX = towardsX;
+				e.dirY = towardsY;
+				e.spearLength = cap.spearLength / 100.0 * thickness / 64.0;
+			};
+
+			setupEnd(begin, caps.begin, _begin, dirX, dirY);
+			setupEnd(end, caps.end, _end, -dirX, -dirY);
+
+			segments.resize(1);
+			segments[0].bDrawn = true;
+			segments[0].color = color;
+
+			edges.push_back(ShapeEdge::line(begin.x + normalX * r, begin.y + normalY * r, dirX, dirY));
+			edges.push_back(ShapeEdge::line(begin.x - normalX * r, begin.y - normalY * r, dirX, dirY));
+			begin.addEdges(edges, normalX, normalY, r);
+			end.addEdges(edges, normalX, normalY, r);
+		}
+
+		bool isEmpty() const
+		{
+			return r <= 0.0 || begin.isEmpty() || end.isEmpty();
+		}
+
+		// Pixels that might be touched, clipped to clip.
+
+		RectI bounds(const RectI& clip) const
+		{
+			double left = DBL_MAX, top = DBL_MAX, right = -DBL_MAX, bottom = -DBL_MAX;
+
+			for (const End* pEnd : { &begin, &end })
+			{
+				double reach = std::min(pEnd->reach(r), 1e6);
+				for (double side : { -r, r })
+				{
+					double x = pEnd->x - pEnd->dirX * reach + normalX * side;
+					double y = pEnd->y - pEnd->dirY * reach + normalY * side;
+
+					left = std::min(left, x);
+					top = std::min(top, y);
+					right = std::max(right, x);
+					bottom = std::max(bottom, y);
+				}
+			}
+
+			int x1 = std::max(clip.x, int(std::floor(std::max(left, double(clip.x)))));
+			int y1 = std::max(clip.y, int(std::floor(std::max(top, double(clip.y)))));
+			int x2 = std::min(clip.x + clip.w, int(std::ceil(std::min(right, double(clip.x + clip.w)))));
+			int y2 = std::min(clip.y + clip.h, int(std::ceil(std::min(bottom, double(clip.y + clip.h)))));
+
+			return RectI(x1, y1, std::max(0, x2 - x1), std::max(0, y2 - y1));
+		}
+
+		int segmentAt(double x, double y) const override
+		{
+			double along = (x - begin.x) * dirX + (y - begin.y) * dirY;
+			double across = (x - begin.x) * normalX + (y - begin.y) * normalY;
+
+			if (std::abs(across) > r)
+				return -1;
+
+			if (begin.contains(x, y, along, across, r) && end.contains(x, y, length - along, across, r))
+				return 0;
+
+			return -1;
+		}
+	};
+
+	//____ _drawCappedLine() ______________________________________________________
+	/*
+		Draws a line with caps, see LineShape, within the clip rectangles.
+	*/
+
+	void ReferenceBackend::_drawCappedLine(CoordSPX begin, CoordSPX end, spx thickness, LineCaps caps, const Color& color, int nClipRects, const RectSPX* pClipRects)
+	{
+		if (m_blendMode == BlendMode::Ignore)
+			return;
+
+		LineShape shape(begin, end, thickness, caps, color);
+
+		if (shape.isEmpty())
+			return;
+
+		for (int i = 0; i < nClipRects; i++)
+		{
+			RectI pixels = shape.bounds(_pixelRect(pClipRects[i]));
+
+			for (int y = pixels.y; y < pixels.y + pixels.h; y++)
+				for (int x = pixels.x; x < pixels.x + pixels.w; x++)
+					_drawShapePixel(shape, x, y);
+		}
+	}
 
 	//____ _drawShape() ___________________________________________________________
 	/*
