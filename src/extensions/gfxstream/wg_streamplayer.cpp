@@ -339,8 +339,23 @@ namespace wg
 				decoder >> nShapeDraws;
 				decoder >> nShapeTints;
 				decoder >> nShapeSegments;
-				decoder.skip(header.size - 48);
 			}
+
+			// Warp count, since 3.4.
+
+			uint16_t	nWarpDraws = 0;
+
+			if( header.size >= 52 )
+			{
+				uint16_t	filler;
+				decoder >> nWarpDraws;
+				decoder >> filler;
+			}
+
+			if( header.size > 52 )
+				decoder.skip(header.size - 52);
+			else if( header.size > 48 && header.size < 52 )
+				decoder.skip(header.size - 48);
 
 			if( canvasId > 0 && ( canvasId >= m_vObjects.size() || m_vObjects[canvasId] == nullptr ))
 			{
@@ -364,6 +379,7 @@ namespace wg
 			m_sessionInfo.nShapeDraws = nShapeDraws;
 			m_sessionInfo.nShapeTints = nShapeTints;
 			m_sessionInfo.nShapeSegments = nShapeSegments;
+			m_sessionInfo.nWarpDraws = nWarpDraws;
 
 			m_baseCanvasRef = canvasRef;
 			m_baseCanvasSurface = canvasId > 0 ? static_cast<Surface*>(m_vObjects[canvasId].rawPtr()) : nullptr;
@@ -1100,6 +1116,115 @@ namespace wg
 			if( objectId >= m_vObjects.size() || m_vObjects[objectId] == nullptr || !m_vObjects[objectId]->isInstanceOf(Edgemap::TYPEINFO) )
 			{
 				GfxBase::throwError(ErrorLevel::Warning, ErrorCode::InvalidParam, "DeleteEdgemap with invalid objectId", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				break;
+			}
+
+			m_vObjects[objectId] = nullptr;
+			break;
+		}
+
+		case GfxStream::ChunkId::CreateWarpmap:
+		{
+			uint16_t	objectId;
+			SizeI		size;
+			uint16_t	cellSize;
+			float		uPeriod;
+			float		vPeriod;
+
+			decoder >> objectId;
+			decoder >> size;
+			decoder >> cellSize;
+			decoder >> uPeriod;
+			decoder >> vPeriod;
+
+			if (objectId >= m_vObjects.size() )
+				m_vObjects.resize(objectId + 16, nullptr);
+			else if( m_vObjects[objectId] != nullptr )
+			{
+				GfxBase::throwError(ErrorLevel::Warning, ErrorCode::InvalidParam, "CreateWarpmap with objectId that already is in use. The old object will be replaced.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			}
+
+			auto pFactory = m_pBackend->warpmapFactory();
+
+			if( !pFactory )
+			{
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "CreateWarpmap, but backend has no WarpmapFactory.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				m_vObjects[objectId] = nullptr;
+				break;
+			}
+
+			Warpmap::Blueprint	bp;
+
+			bp.size = size;
+			bp.cellSize = cellSize;
+			bp.uPeriod = uPeriod;
+			bp.vPeriod = vPeriod;
+
+			m_vObjects[objectId] = pFactory->createWarpmap(bp);
+			break;
+		}
+
+		case GfxStream::ChunkId::WarpmapNodes:
+		{
+			uint16_t	objectId;
+			uint16_t	column;
+			uint16_t	row;
+			uint16_t	nNodes;
+
+			decoder >> objectId;
+			decoder >> column;
+			decoder >> row;
+			decoder >> nNodes;
+
+			if( objectId >= m_vObjects.size() || m_vObjects[objectId] == nullptr || !m_vObjects[objectId]->isInstanceOf(Warpmap::TYPEINFO) ||
+				header.size != 8 + nNodes * 8 )
+			{
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "WarpmapNodes with invalid objectId or size", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				m_pDecoder->skip(header.size - 8);
+				break;
+			}
+
+			int memAllocated = sizeof(CoordF) * nNodes;
+			auto * pNodes = (CoordF*) GfxBase::memStackAlloc(memAllocated);
+
+			for( int i = 0 ; i < nNodes ; i++ )
+				decoder >> pNodes[i];
+
+			static_cast<Warpmap*>(m_vObjects[objectId].rawPtr())->importNodes({ column, row, nNodes, 1 }, pNodes);
+
+			GfxBase::memStackFree(memAllocated);
+			break;
+		}
+
+		case GfxStream::ChunkId::SetWarpmapPeriods:
+		{
+			uint16_t	objectId;
+			float		uPeriod;
+			float		vPeriod;
+
+			decoder >> objectId;
+			decoder >> uPeriod;
+			decoder >> vPeriod;
+
+			if( objectId >= m_vObjects.size() || m_vObjects[objectId] == nullptr || !m_vObjects[objectId]->isInstanceOf(Warpmap::TYPEINFO) )
+			{
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "SetWarpmapPeriods with invalid objectId", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				break;
+			}
+
+			static_cast<Warpmap*>(m_vObjects[objectId].rawPtr())->setPeriods(uPeriod, vPeriod);
+			break;
+		}
+
+		case GfxStream::ChunkId::DeleteWarpmap:
+		{
+			uint16_t	objectId;
+
+			decoder >> objectId;
+
+			if( objectId >= m_vObjects.size() || m_vObjects[objectId] == nullptr || !m_vObjects[objectId]->isInstanceOf(Warpmap::TYPEINFO) )
+			{
+				GfxBase::throwError(ErrorLevel::Warning, ErrorCode::InvalidParam, "DeleteWarpmap with invalid objectId", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				break;
 			}
 

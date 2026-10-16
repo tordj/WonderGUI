@@ -91,6 +91,7 @@ namespace wg
 
 		SurfaceFactory_p	surfaceFactory() override;
 		EdgemapFactory_p	edgemapFactory() override;
+		WarpmapFactory_p	warpmapFactory() override;
 
 		int		maxEdges() const override;
 
@@ -121,7 +122,9 @@ namespace wg
 			BlurUniform = 2,
 			Edgemap = 3,
 			ClipToSource = 4,		// Palette blits: set for a ClipBlit, see insideSource() in the shaders.
+			SourceKind = 4,			// Warp blits: how to read the source, see warpSample() in the shaders.
 			MorphFactor = 5,		// For writeColor() and writeAlpha() in the shaders.
+			Warpmap = 6,			// Cells of the Warpmap of a warp, see MetalWarpmap.
 		};
 
 
@@ -146,6 +149,13 @@ namespace wg
 			Palette = 1,
 			A8Source = 2,
 			RGBXSource = 3
+		};
+
+		enum class WarpFragShader
+		{
+			Edgemap = 0,
+			Blit = 1,
+			PaletteBlit = 2
 		};
 
 		enum class DestFormat
@@ -177,6 +187,7 @@ namespace wg
 		id<MTLRenderPipelineState> _compileBlitPipeline( BlitFragShader shader, bool bTintmap, BlendMode blendMode, DestFormat canvasFormat );
 		id<MTLRenderPipelineState> _compileSegmentsPipeline( int shaderIndex, bool bTintmap, BlendMode blendMode, DestFormat canvasFormat );
 		id<MTLRenderPipelineState> _compileShapePipeline( bool bTintmap, BlendMode blendMode, DestFormat canvasFormat );
+		id<MTLRenderPipelineState> _compileWarpPipeline( WarpFragShader shader, BlendMode blendMode, DestFormat canvasFormat );
 
 
 		id<MTLRenderPipelineState> _compileRenderPipeline( NSString* label, NSString* vertexShader,
@@ -190,6 +201,7 @@ namespace wg
 
 		SurfaceFactory_p    m_pSurfaceFactory = nullptr;
 		EdgemapFactory_p   m_pEdgemapFactory = nullptr;
+		WarpmapFactory_p	m_pWarpmapFactory;
 
 		Object* const * m_pObjectsBeg = nullptr;
 		Object* const * m_pObjectsEnd = nullptr;
@@ -329,6 +341,8 @@ namespace wg
 		id<MTLRenderPipelineState>  m_segmentsPipelines[c_maxSegments][2][BlendMode_size][5] = {};  // [nbEdges][bTintmap][BlendMode][DestFormat]
 
 		id<MTLRenderPipelineState>  m_shapePipelines[2][BlendMode_size][5] = {};					// [bTintmap][BlendMode][DestFormat]
+
+		id<MTLRenderPipelineState>  m_warpPipelines[3][BlendMode_size][5] = {};					// [WarpFragShader][BlendMode][DestFormat]
 
 		id<MTLSamplerState>         m_samplers[2][2][3] = {};                        					// [bMipMap][bInterpolate][SamplerEdge]
 

@@ -66,6 +66,8 @@ bool backend_specific_init()
 	auto pEdgemapFactory = SoftEdgemapFactory::create();
 	Base::setDefaultEdgemapFactory(pEdgemapFactory);
 
+	Base::setDefaultWarpmapFactory(pBackend->warpmapFactory());
+
 	return true;
 }
 

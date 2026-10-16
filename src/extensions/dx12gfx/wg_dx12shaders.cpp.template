@@ -127,5 +127,34 @@ const char DX12Backend::g_shapePS[] =
 @INSERTLINEQUOTED <shaders/ps_shape.hlsl>
 ;
 
+const char DX12Backend::g_warpVS[] =
+
+@INSERTLINEQUOTED <shaders/vs_warp.hlsl>
+;
+
+const char DX12Backend::g_warpEdgemapPS[] =
+
+@INSERTLINEQUOTED <shaders/output.hlsl>
+@INSERTLINEQUOTED <shaders/tint.hlsl>
+@INSERTLINEQUOTED <shaders/warp.hlsl>
+@INSERTLINEQUOTED <shaders/ps_warp_edgemap.hlsl>
+;
+
+const char DX12Backend::g_warpBlitPS[] =
+
+@INSERTLINEQUOTED <shaders/output.hlsl>
+@INSERTLINEQUOTED <shaders/tint.hlsl>
+@INSERTLINEQUOTED <shaders/warp.hlsl>
+@INSERTLINEQUOTED <shaders/ps_warp_blit.hlsl>
+;
+
+const char DX12Backend::g_warpPaletteBlitPS[] =
+
+@INSERTLINEQUOTED <shaders/output.hlsl>
+@INSERTLINEQUOTED <shaders/tint.hlsl>
+@INSERTLINEQUOTED <shaders/warp.hlsl>
+@INSERTLINEQUOTED <shaders/ps_warp_blit_palette.hlsl>
+;
+
 
 }

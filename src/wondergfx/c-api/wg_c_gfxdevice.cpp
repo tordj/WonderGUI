@@ -96,6 +96,11 @@ wg_obj wg_edgemapFactory(wg_obj device)
 	return getPtr(device)->edgemapFactory().rawPtr();
 }
 
+wg_obj wg_warpmapFactory(wg_obj device)
+{
+	return getPtr(device)->warpmapFactory().rawPtr();
+}
+
 
 int	wg_maxSegments()
 {
@@ -512,6 +517,21 @@ void wg_drawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap)
 void wg_flipDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap, wg_gfxFlip flip)
 {
 	getPtr(device)->flipDrawEdgemap({ dest.x, dest.y }, getEdgemapPtr(edgemap), (GfxFlip) flip );
+}
+
+void wg_warpBlit(wg_obj device, wg_coordSPX dest, wg_obj warpmap, wg_coordSPX sourceOffset)
+{
+	getPtr(device)->warpBlit({ dest.x, dest.y }, static_cast<Warpmap*>(reinterpret_cast<Object*>(warpmap)), { sourceOffset.x, sourceOffset.y });
+}
+
+void wg_warpBlitRect(wg_obj device, wg_coordSPX dest, wg_obj warpmap, const wg_rectSPX* source, wg_coordSPX sourceOffset)
+{
+	getPtr(device)->warpBlit({ dest.x, dest.y }, static_cast<Warpmap*>(reinterpret_cast<Object*>(warpmap)), *(const RectSPX*)source, { sourceOffset.x, sourceOffset.y });
+}
+
+void wg_warpDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj warpmap, wg_obj edgemap, wg_coordSPX sourceOffset)
+{
+	getPtr(device)->warpDrawEdgemap({ dest.x, dest.y }, static_cast<Warpmap*>(reinterpret_cast<Object*>(warpmap)), getEdgemapPtr(edgemap), { sourceOffset.x, sourceOffset.y });
 }
 
 void wg_tileEdgemap(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_coordSPX shift)

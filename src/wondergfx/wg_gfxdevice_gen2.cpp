@@ -158,6 +158,13 @@ EdgemapFactory_p GfxDeviceGen2::edgemapFactory()
 	return m_pBackend ? m_pBackend->edgemapFactory() : nullptr;
 }
 
+//____ warpmapFactory() _______________________________________________________
+
+WarpmapFactory_p GfxDeviceGen2::warpmapFactory()
+{
+	return m_pBackend ? m_pBackend->warpmapFactory() : nullptr;
+}
+
 //____ canvasSize() _______________________________________________________
 
 SizeSPX GfxDeviceGen2::canvasSize() const
@@ -3046,6 +3053,122 @@ void GfxDeviceGen2::_encodeEdgemapDraw(const RectSPX& area, CoordSPX origo, Edge
 		m_pActiveCanvas->sessionInfo.nEdgemapDraws++;
 		m_pActiveCanvas->sessionInfo.nObjects++;
 	}
+}
+
+//____ warpBlit() ____________________________________________________________
+
+void GfxDeviceGen2::warpBlit(CoordSPX dest, Warpmap* pWarpmap, CoordSPX sourceOffset)
+{
+	if (m_renderState.blitSource == nullptr)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "No blit source set.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	warpBlit(dest, pWarpmap, RectSPX(0, 0, m_renderState.blitSource->pixelSize() * 64), sourceOffset);
+}
+
+void GfxDeviceGen2::warpBlit(CoordSPX dest, Warpmap* pWarpmap, const RectSPX& source, CoordSPX sourceOffset)
+{
+	if (m_renderState.blitSource == nullptr)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "No blit source set.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	if (source.w <= 0 || source.h <= 0)
+		return;
+
+	_encodeWarp(dest, pWarpmap, nullptr, &source, sourceOffset);
+}
+
+//____ warpDrawEdgemap() _____________________________________________________
+
+void GfxDeviceGen2::warpDrawEdgemap(CoordSPX dest, Warpmap* pWarpmap, Edgemap* pEdgemap, CoordSPX sourceOffset)
+{
+	if (!pEdgemap)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Null edgemap pointer passed to warpDrawEdgemap.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	_encodeWarp(dest, pWarpmap, pEdgemap, nullptr, sourceOffset);
+}
+
+//____ _encodeWarp() __________________________________________________________
+/*
+	Encodes a WarpBlit (pSource set) or WarpDrawEdgemap (pEdgemap set) command for the parts of
+	the rectangle of the Warpmap that are within the clip rectangles. The Warpmap is placed on
+	whole pixels.
+*/
+
+void GfxDeviceGen2::_encodeWarp(CoordSPX dest, Warpmap* pWarpmap, Edgemap* pEdgemap, const RectSPX* pSource, CoordSPX sourceOffset)
+{
+	if (!pWarpmap)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Null warpmap pointer passed to warp method.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	if (!m_pActiveCanvas)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "No active canvas to draw to.",
+			this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	RectSPX area = { Util::roundToPixels(dest) * 64, pWarpmap->pixelSize() * 64 };
+
+	int nRects = 0;
+	auto& rects = m_pActiveLayer->rects;
+
+	for (int i = 0; i < m_pActiveClipList->nRects; i++)
+	{
+		RectSPX clipped = RectSPX::overlap(m_pActiveClipList->pRects[i], area);
+
+		if (!clipped.isEmpty())
+		{
+			rects.emplace_back(clipped);
+			nRects++;
+		}
+	}
+
+	if (nRects == 0)
+		return;
+
+	if (m_stateChanges != 0)
+		_encodeStateChanges();
+
+	Command cmd = pEdgemap ? Command::WarpDrawEdgemap : Command::WarpBlit;
+
+	m_pActiveLayer->latestCommand = cmd;
+
+	m_pActiveLayer->commands.secureSpace(20);
+
+	m_pActiveLayer->commands.pushUnchecked(uint16_t(cmd));
+	m_pActiveLayer->commands.pushUnchecked(uint16_t(nRects));
+	m_pActiveLayer->commands.pushUnchecked(dest);
+	m_pActiveLayer->commands.pushUnchecked(sourceOffset);
+
+	if (pSource)
+		m_pActiveLayer->commands.pushUnchecked(*pSource);
+
+	m_pActiveLayer->objects.push_back(pWarpmap);
+	pWarpmap->retain();
+	m_pActiveCanvas->sessionInfo.nObjects++;
+
+	if (pEdgemap)
+	{
+		m_pActiveLayer->objects.push_back(pEdgemap);
+		pEdgemap->retain();
+		m_pActiveCanvas->sessionInfo.nObjects++;
+	}
+
+	m_pActiveCanvas->sessionInfo.nWarpDraws++;
 }
 
 //____ drawWave() ____________________________________________________________

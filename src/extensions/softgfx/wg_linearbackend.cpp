@@ -22,6 +22,7 @@
 #include <cmath>
 #include <wg_linearbackend.h>
 #include <wg_softedgemap.h>
+#include <wg_softwarpmap.h>
 #include <wg_gfxbase.h>
 #include <cstring>
 
@@ -719,6 +720,44 @@ namespace wg
 				break;
 			}
 
+
+			case Command::WarpBlit:
+			case Command::WarpDrawEdgemap:
+			{
+				WarpParams params;
+				p = decodeWarp(cmd, p, params);
+
+				auto pWarpmap = static_cast<SoftWarpmap*>(*pObjects++);
+				auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<SoftEdgemap*>(*pObjects++) : nullptr;
+
+				const RectSPX* pMyRects = pRects;
+				pRects += params.nRects;
+
+				if (_beginWarp(params, pWarpmap, pEdgemap))
+				{
+					for (int i = 0; i < params.nRects; i++)
+					{
+						RectI patch = pMyRects[i] / 64;
+
+						if (patch.isEmpty())
+							continue;
+
+						while (patch.x < pSegment->rect.x || patch.x >= pSegment->rect.x + pSegment->rect.w ||
+							   patch.y < pSegment->rect.y || patch.y >= pSegment->rect.y + pSegment->rect.h)
+						{
+							pSegment++;
+							if (pSegment == pSegEnd)
+								pSegment = pSegBeg;
+						}
+
+						Segment& seg = *pSegment;
+
+						uint8_t* pOrigin = seg.pBuffer - seg.rect.y * seg.pitch - seg.rect.x * m_canvasPixelBytes;
+						_drawWarp(patch, pOrigin, seg.pitch);
+					}
+				}
+				break;
+			}
 
 			case Command::DrawEdgemap:
 			case Command::TileEdgemap:

@@ -43,6 +43,10 @@ set( SOURCES
 	wg_streamedgemap.h
 	wg_streamedgemapfactory.cpp
 	wg_streamedgemapfactory.h
+	wg_streamwarpmap.cpp
+	wg_streamwarpmap.h
+	wg_streamwarpmapfactory.cpp
+	wg_streamwarpmapfactory.h
 	wg_streamwrapper.cpp
 	wg_streamwrapper.h
 	wg_streamwriter.cpp

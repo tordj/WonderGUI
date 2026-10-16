@@ -103,6 +103,7 @@ extern "C" {
 
 	WG_EXPORT wg_obj		wg_surfaceFactory(wg_obj device);
 	WG_EXPORT wg_obj		wg_edgemapFactory(wg_obj device);
+	WG_EXPORT wg_obj		wg_warpmapFactory(wg_obj device);
 
 
 	WG_EXPORT int			wg_maxSegments(void);
@@ -221,6 +222,12 @@ extern "C" {
 	WG_EXPORT void			wg_flipDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap, wg_gfxFlip flip);
 	WG_EXPORT void			wg_tileEdgemap(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_coordSPX shift);
 	WG_EXPORT void			wg_flipTileEdgemap(wg_obj device, const wg_rectSPX* dest, wg_obj edgemap, wg_gfxFlip flip, wg_coordSPX shift);
+
+	// Warp methods, see Warpmap. Source offset is in spx of the source.
+
+	WG_EXPORT void			wg_warpBlit(wg_obj device, wg_coordSPX dest, wg_obj warpmap, wg_coordSPX sourceOffset);
+	WG_EXPORT void			wg_warpBlitRect(wg_obj device, wg_coordSPX dest, wg_obj warpmap, const wg_rectSPX* source, wg_coordSPX sourceOffset);
+	WG_EXPORT void			wg_warpDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj warpmap, wg_obj edgemap, wg_coordSPX sourceOffset);
 
 	// Special draw/blit methods
 

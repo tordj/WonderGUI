@@ -71,6 +71,8 @@ bool backend_specific_init()
 	auto pEdgemapFactory = MetalEdgemapFactory::create();
 	Base::setDefaultEdgemapFactory(pEdgemapFactory);
 
+	Base::setDefaultWarpmapFactory(pBackend->warpmapFactory());
+
 
 	return true;
 }

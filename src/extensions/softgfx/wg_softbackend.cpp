@@ -24,6 +24,8 @@
 #include <wg_softsurfacefactory.h>
 #include <wg_softedgemapfactory.h>
 #include <wg_softedgemap.h>
+#include <wg_softwarpmapfactory.h>
+#include <wg_softwarpmap.h>
 #include <algorithm>
 #include <wg_gfxbase.h>
 #include <cstring>
@@ -763,6 +765,26 @@ namespace wg
 			}
 
 
+			case Command::WarpBlit:
+			case Command::WarpDrawEdgemap:
+			{
+				WarpParams params;
+				p = decodeWarp(cmd, p, params);
+
+				auto pWarpmap = static_cast<SoftWarpmap*>(*pObjects++);
+				auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<SoftEdgemap*>(*pObjects++) : nullptr;
+
+				const RectSPX* pMyRects = pRects;
+				pRects += params.nRects;
+
+				if (_beginWarp(params, pWarpmap, pEdgemap))
+				{
+					for (int i = 0; i < params.nRects; i++)
+						_drawWarp(pMyRects[i] / 64, m_pCanvasPixels, m_canvasPitch);
+				}
+				break;
+			}
+
 			case Command::DrawEdgemap:
 			case Command::TileEdgemap:
 			{
@@ -1150,6 +1172,16 @@ namespace wg
 			m_pEdgemapFactory = SoftEdgemapFactory::create();
 
 		return m_pEdgemapFactory;
+	}
+
+	//____ warpmapFactory() ___________________________________________________
+
+	WarpmapFactory_p SoftBackend::warpmapFactory()
+	{
+		if (!m_pWarpmapFactory)
+			m_pWarpmapFactory = SoftWarpmapFactory::create();
+
+		return m_pWarpmapFactory;
 	}
 
 

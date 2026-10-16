@@ -45,6 +45,7 @@ namespace wg
 
 	class SoftBackend;
 	class SoftEdgemap;
+	class SoftWarpmap;
 	typedef	StrongPtr<SoftBackend>	SoftBackend_p;
 	typedef	WeakPtr<SoftBackend>	SoftBackend_wp;
 
@@ -109,6 +110,7 @@ namespace wg
 
 		SurfaceFactory_p	surfaceFactory() override;
 		EdgemapFactory_p	edgemapFactory() override;
+		WarpmapFactory_p	warpmapFactory() override;
 
 
 		int		maxEdges() const override;
@@ -355,6 +357,77 @@ namespace wg
 
 		int		_scaleLineThickness(float thickness, int slope);
 
+		// Warps (Command::WarpBlit and WarpDrawEdgemap), shared with LinearBackend. _beginWarp()
+		// prepares a command, _drawWarp() draws it within one clip rectangle onto pixels where
+		// pixel (x,y) is at pOrigin + y * pitch + x * m_canvasPixelBytes. See wg_softbackend_warp.cpp.
+
+		static const int c_warpOutside = -2;	// WarpCell::kind: Nothing of the source in the cell.
+		static const int c_warpMixed = -1;		// WarpCell::kind: Coverage or segment varies over the cell.
+
+		struct WarpCell
+		{
+			int			x;				// First pixel column of the cell, relative to the Warpmap.
+			int			w;				// Width of cell in pixels.
+			int			kind;			// c_warpOutside, c_warpMixed or segment (0 for WarpBlit) fully covering the cell.
+
+			// Positions in the source in pixels with 16 binals, source offset applied. Top-left
+			// corner is wrapped into the period on periodic axes, the others follow it.
+
+			int64_t		tl[2];			// Top-left corner.
+			int64_t		right[2];		// Top-right corner - top-left corner.
+			int64_t		down[2];		// Bottom-left corner - top-left corner.
+			int64_t		twist[2];		// Bottom-right - bottom-left - top-right + top-left.
+		};
+
+		struct WarpSetup
+		{
+			SoftWarpmap*	pWarpmap;
+			SoftEdgemap*	pEdgemap;			// nullptr for WarpBlit.
+			CoordI			dest;				// Top-left pixel of the Warpmap.
+
+			// Per axis (x, y), in pixels of the source with 16 binals.
+
+			int64_t			size[2];			// Size of source.
+			int64_t			period[2];			// 0 if not periodic.
+			int64_t			inside[2];			// Part of each period inside the source.
+			int64_t			colorLow[2];		// Colors are read at positions wrapped into colorLow -> colorLow + period,
+												// which puts a center in the gap between copies in the nearest one.
+			bool			bAlwaysInside[2];	// Periodic with period <= size, always inside.
+			int64_t			offset[2];			// Source offset, wrapped into period.
+
+			// WarpDrawEdgemap
+
+			int				nSegments;
+			bool			bTinted[c_maxSegments];		// Colors from segment tint, otherwise mix.
+			bool			bSkip[c_maxSegments];		// Transparent segment that can be skipped.
+			int16_t			mix[c_maxSegments][4];		// Flat color as b, g, r, a weighted by alpha. Device tint included if flat.
+			HiColor			flat[c_maxSegments];		// Flat color of segment, without device tint.
+
+			bool			bOpaquePaint;		// Replace or Morph onto canvas without alpha, see _beginWarp().
+			int				opaqueMorph;		// Morph factor for bOpaquePaint, 4096 for Replace.
+
+			// WarpBlit
+
+			int64_t			sourcePos[2];		// Source rectangle position in surface.
+			int64_t			readMin[2];			// Range of positions read from a non-tiling surface, which stays within the
+			int64_t			readMax[2];			// source rectangle, in kernel positions (relative to pixel centers if bilinear).
+			bool			bBilinear;
+			bool			bTileRead;			// Surface is tiling, read with ReadOp::Tile.
+			TransformBlitOp_p	pReadOp;		// Reads into a HiColor buffer.
+		};
+
+		bool	_beginWarp(const WarpParams& params, SoftWarpmap* pWarpmap, SoftEdgemap* pEdgemap);
+		void	_drawWarp(const RectI& clip, uint8_t* pOrigin, int pitch);
+		void	_setupWarpCells(int row, int firstColumn, int nColumns);
+		int		_warpSolidSegment(const int64_t lo[2], const int64_t hi[2], const int64_t copy[2]) const;
+		void	_drawWarpRow(int y, int xBeg, int xEnd, int cellRowY, int cellRowH, uint8_t* pOrigin, int pitch, int prefetchRow);
+		int		_warpAxisCoverage(int axis, int64_t s, int64_t gx, int64_t gy) const;
+		int		_warpEdgemapCoverage(int64_t sx, int64_t sy, int64_t ax, int64_t bx, int64_t ay, int64_t by, int* pCoverage, int& solidSegment) const;
+		void	_warpTintSpan(const SoftTint& tint, int64_t x, int64_t y, int64_t dx, int64_t dy, int length, HiColor* pOutput);
+		void	_warpReadSpan(int64_t x, int64_t y, int64_t dx, int64_t dy, int length, HiColor* pOutput, const int* pCoverage);
+		int		_warpOpaqueAlpha(int a) const;
+		HiColor* _warpBuffer(int index, int length);
+
 
 
 
@@ -362,6 +435,7 @@ namespace wg
 
 		SurfaceFactory_p	m_pSurfaceFactory;
 		EdgemapFactory_p	m_pEdgemapFactory;
+		WarpmapFactory_p	m_pWarpmapFactory;
 
 		Object * const *	m_pObjectsBeg = nullptr;
 		Object * const *	m_pObjectsEnd = nullptr;
@@ -420,6 +494,15 @@ namespace wg
 		std::vector<CoveragePixel>	m_coverageColumn;
 		std::vector<CoveragePixel>	m_coverageEdge;					// Edge of a fill or span of a tinted line, see _drawCoverageEdge().
 		CoverageOp_p				m_pShapeCoverageOp = nullptr;
+
+		// Warps
+
+		WarpSetup					m_warp;
+		std::vector<WarpCell>		m_warpCells;
+		std::vector<SoftShapes::Run>	m_warpRuns;
+		std::vector<CoveragePixel>	m_warpPixels;
+		std::vector<int>			m_warpCoverage;
+		std::vector<HiColor>		m_warpBuffers[c_maxSegments + 2];	// Colors of segments, then source or device tint.
 
 
 //		PixelBuffer		m_canvasPixelBuffer;

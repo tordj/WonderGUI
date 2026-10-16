@@ -117,4 +117,31 @@ uint16_t GfxBackend::RingPayload::sliceFlags(int slice) const
 	return pSlices[slice * c_ringSliceWords + 2];
 }
 
+//____ decodeWarp() _______________________________________________________
+
+const uint16_t* GfxBackend::decodeWarp(Command cmd, const uint16_t* p, WarpParams& params)
+{
+	params.nRects = *p++;
+
+	spx values[4];
+
+	std::memcpy(values, p, 16);
+	p += 8;
+
+	params.dest = { values[0], values[1] };
+	params.sourceOffset = { values[2], values[3] };
+
+	if (cmd == Command::WarpBlit)
+	{
+		std::memcpy(values, p, 16);
+		p += 8;
+
+		params.source = { values[0], values[1], values[2], values[3] };
+	}
+	else
+		params.source = { 0,0,0,0 };
+
+	return p;
+}
+
 } // namespace wg

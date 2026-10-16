@@ -32,6 +32,9 @@
 #include <wg_c_color.h>
 #include <wg_c_edgemap.h>
 #include <wg_c_edgemapfactory.h>
+#include <wg_c_warpmap.h>
+#include <wg_c_warpmapfactory.h>
+#include <wg_c_circularwarp.h>
 #include <wg_c_font.h>
 #include <wg_c_geo.h>
 #include <wg_c_gfxbackend.h>

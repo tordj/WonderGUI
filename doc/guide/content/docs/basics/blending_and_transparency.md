@@ -93,7 +93,7 @@ These definitions are what GPUs can do with fixed-function blending of premultip
 
 ## Anti-aliasing
 
-Edges of fills, lines, edgemaps and shapes are anti-aliased by the exact area of each pixel that is covered.
+Edges of fills, lines, edgemaps, shapes and warps are anti-aliased by the exact area of each pixel that is covered.
 
 With a paint mode, **a partially covered pixel is drawn as if the canvas had a much higher resolution, the shape was drawn there without anti-aliasing and the subpixels were then averaged.** That is the average of what the blend mode gives the covered part and the original pixel for the rest, weighted by their areas:
 
@@ -101,7 +101,7 @@ With a paint mode, **a partially covered pixel is drawn as if the canvas had a m
 out = average( op(source, canvas) weighted by coverage,  canvas weighted by (1 − coverage) )
 ```
 
-A pixel crossed by several segments of an edgemap or a shape gets the average of what each segment gives its part of the pixel. The segments of a shape (fill and outline of a rounded box; back, outline, hub and slices of a ring) are drawn together, so the canvas doesn't show through where they meet.
+A pixel crossed by several segments of an edgemap (also when warped) or a shape gets the average of what each segment gives its part of the pixel. The segments of a shape (fill and outline of a rounded box; back, outline, hub and slices of a ring) are drawn together, so the canvas doesn't show through where they meet.
 
 Averages of colors are taken as **premultiplied colors**: each color counts by its alpha as well as by its area, so that a transparent part only makes the pixel more transparent and doesn't darken it.
 
@@ -184,6 +184,8 @@ GPU backends can follow them exactly with fixed-function blending in a single pa
 
 The area of a pixel covered by a shape is exact in ReferenceBackend. The software backends are exact along straight edges and follow circles within 1/64 pixel. GPU backends estimate it from the distance between the pixel center and the edges.
 
+The area of a pixel covered by a warp (warpBlit() and warpDrawEdgemap()) is measured by ReferenceBackend at thousands of points in the pixel. The other backends estimate it from the position at the center of the pixel and how fast it changes, taking each border of the source and each edge of an edgemap as straight over the pixel, which is off by a few percent where an edge bends sharply within a pixel.
+
 
 
 ## Implementation status
@@ -199,9 +201,10 @@ The area of a pixel covered by a shape is exact in ReferenceBackend. The softwar
 | Morph as premultiplied cross-fade | Yes | Yes | Yes |
 | Premultiplied bilinear sampling | Yes | Yes | Yes |
 | Transparent outside of ClipBlit has no effect | Yes | Yes | Yes |
+| Warps (warpBlit, warpDrawEdgemap) | Yes | Yes | Yes |
 
 The software backends draw BlendFixedColor onto the fixed color, as described under Paint modes.
 
 The GPU backends keep canvases and other surfaces with alpha premultiplied and use dual-source blending, as described under Exactness. Colors of nearly transparent pixels therefore lose some precision when read back from them.
 
-GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests.
+GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests, and for warps in WarpTests.

@@ -27,6 +27,7 @@
 #include <wg_tinttools.h>
 #include <wg_softsurface.h>
 #include <wg_softedgemap.h>
+#include <wg_softwarpmap.h>
 
 #include <vector>
 
@@ -122,6 +123,7 @@ namespace wg
 
 		SurfaceFactory_p	surfaceFactory() override;
 		EdgemapFactory_p	edgemapFactory() override;
+		WarpmapFactory_p	warpmapFactory() override;
 
 		int		maxEdges() const override;
 
@@ -176,6 +178,10 @@ namespace wg
 		void	_drawEdgemap(SoftEdgemap* pEdgemap, bool bTile, GfxFlip flip, CoordSPX origo, const RectSPX& rect);
 
 		void	_drawEdgemapPixel(SoftEdgemap* pEdgemap, int column, int row, CoordI canvasPixel);
+		void	_decodeSegmentTints(SoftEdgemap* pEdgemap);
+
+		void	_warp(const WarpParams& params, SoftWarpmap* pWarpmap, SoftEdgemap* pEdgemap, const RectSPX& rect);
+		int		_edgemapSegmentAt(SoftEdgemap* pEdgemap, double x, double y) const;
 
 		// Pixels of the canvas
 
@@ -239,6 +245,7 @@ namespace wg
 
 		SurfaceFactory_p	m_pSurfaceFactory;
 		EdgemapFactory_p	m_pEdgemapFactory;
+		WarpmapFactory_p	m_pWarpmapFactory;
 
 		Object * const *	m_pObjectsPtr = nullptr;
 		const RectSPX *		m_pRectsPtr = nullptr;

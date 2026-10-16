@@ -20,9 +20,14 @@
 
 =========================================================================*/
 #include <wg_c_gfxbackend.h>
+#include <cstddef>
 #include <wg_gfxbackend.h>
 
 using namespace wg;
+
+static_assert(sizeof(wg_sessionInfo) == sizeof(GfxBackend::SessionInfo), "wg_sessionInfo differs in size from GfxBackend::SessionInfo!");
+static_assert(offsetof(wg_sessionInfo, nWarpDraws) == offsetof(GfxBackend::SessionInfo, nWarpDraws), "wg_sessionInfo isn't binary equivalent to GfxBackend::SessionInfo!");
+static_assert(offsetof(wg_sessionInfo, nShapeTints) == offsetof(GfxBackend::SessionInfo, nShapeTints), "wg_sessionInfo isn't binary equivalent to GfxBackend::SessionInfo!");
 
 inline GfxBackend* getPtr(wg_obj obj) {
 	return static_cast<GfxBackend*>(reinterpret_cast<Object*>(obj));
@@ -98,6 +103,11 @@ wg_obj wg_backendSurfaceFactory(wg_obj backend)
 wg_obj wg_backendEdgemapFactory(wg_obj backend)
 {
 	return getPtr(backend)->edgemapFactory().rawPtr();
+}
+
+wg_obj wg_backendWarpmapFactory(wg_obj backend)
+{
+	return getPtr(backend)->warpmapFactory().rawPtr();
 }
 
 int wg_backendMaxEdges(wg_obj backend)

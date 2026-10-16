@@ -39,6 +39,8 @@
 #include <wg_c_surfacefactory.h>
 #include <wg_c_edgemap.h>
 #include <wg_c_edgemapfactory.h>
+#include <wg_c_warpmap.h>
+#include <wg_c_warpmapfactory.h>
 #include <wg_c_plugincapsule.h>
 
 #include <wg_c_tint.h>
@@ -89,6 +91,8 @@ struct wg_c_calls_body
 	wg_statictintmap_calls		staticTintmap;		// Retired, all stubs.
 
 	wg_tint_calls				tint;
+	wg_warpmap_calls			warpmap;
+	wg_warpmapfactory_calls		warpmapFactory;
 };
 
 static wg_c_calls_body	body;
@@ -273,6 +277,10 @@ static void populateBody(wg_c_calls_body * pBody)
 
 	pBody->gfxDevice.drawRoundedBox			= LOCKED(wg_drawRoundedBox);
 	pBody->gfxDevice.drawRing				= LOCKED(wg_drawRing);
+	pBody->gfxDevice.warpmapFactory			= LOCKED(wg_warpmapFactory);
+	pBody->gfxDevice.warpBlit				= LOCKED(wg_warpBlit);
+	pBody->gfxDevice.warpBlitRect			= LOCKED(wg_warpBlitRect);
+	pBody->gfxDevice.warpDrawEdgemap		= LOCKED(wg_warpDrawEdgemap);
 
 /*
 	pBody->streamBuffer.structSize				= sizeof(wg_streambuffer_calls);
@@ -407,6 +415,19 @@ static void populateBody(wg_c_calls_body * pBody)
 	pBody->edgemapFactory.createEdgemapFromFloats = LOCKED(wg_createEdgemapFromFloats);
 	pBody->edgemapFactory.createEdgemapFromSpx = LOCKED(wg_createEdgemapFromSpx);
 
+	pBody->warpmap.structSize				= sizeof(wg_warpmap_calls);
+	pBody->warpmap.warpmapPixelSize			= LOCKED(wg_warpmapPixelSize);
+	pBody->warpmap.warpmapCellSize			= LOCKED(wg_warpmapCellSize);
+	pBody->warpmap.setWarpmapPeriods		= LOCKED(wg_setWarpmapPeriods);
+	pBody->warpmap.warpmapUPeriod			= LOCKED(wg_warpmapUPeriod);
+	pBody->warpmap.warpmapVPeriod			= LOCKED(wg_warpmapVPeriod);
+	pBody->warpmap.importWarpmapNodes		= LOCKED(wg_importWarpmapNodes);
+	pBody->warpmap.exportWarpmapNodes		= LOCKED(wg_exportWarpmapNodes);
+
+	pBody->warpmapFactory.structSize		= sizeof(wg_warpmapfactory_calls);
+	pBody->warpmapFactory.createWarpmap		= LOCKED(wg_createWarpmap);
+	pBody->warpmapFactory.createWarpmapFromNodes = LOCKED(wg_createWarpmapFromNodes);
+
 	pBody->hostBridge.structSize			= sizeof(wg_hostbridge_calls);
 	pBody->hostBridge.hidePointer			= LOCKED(wg_hidePointer);
 	pBody->hostBridge.showPointer			= LOCKED(wg_showPointer);
@@ -491,6 +512,8 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pHeader->pSurfaceFactory	= &pBody->surfaceFactory;
 	pHeader->pEdgemap			= &pBody->edgemap;
 	pHeader->pEdgemapFactory	= &pBody->edgemapFactory;
+	pHeader->pWarpmap			= &pBody->warpmap;
+	pHeader->pWarpmapFactory	= &pBody->warpmapFactory;
 	pHeader->pHostBridge		= &pBody->hostBridge;
 	pHeader->pPluginCapsule		= &pBody->pluginCapsule;
 	pHeader->pBlurbrush			= &pBody->blurbrush;

@@ -22,6 +22,7 @@ set(SOURCES
 	wg_softtint.h
 	wg_softbackend.cpp
 	wg_softbackend.h
+	wg_softbackend_warp.cpp
 	wg_softkernels_default.cpp
 	wg_softkernels_default.h
 
@@ -55,6 +56,10 @@ set(SOURCES
 	wg_softedgemap.h
 	wg_softedgemapfactory.cpp
 	wg_softedgemapfactory.h
+	wg_softwarpmap.cpp
+	wg_softwarpmap.h
+	wg_softwarpmapfactory.cpp
+	wg_softwarpmapfactory.h
 	wg_softshapes.cpp
 	wg_softshapes.h
 )

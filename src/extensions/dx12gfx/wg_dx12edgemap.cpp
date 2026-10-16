@@ -102,7 +102,7 @@ namespace wg
 
 	DX12Edgemap::DX12Edgemap(const Blueprint& bp) : Edgemap(bp)
 	{
-		m_samplesSize = bp.size.w * (bp.segments - 1);
+		m_samplesSize = bp.size.w * (bp.segments - 1) * 2;			// Edge strips and raw samples.
 
 		if( !s_pDevice )
 		{
@@ -149,6 +149,25 @@ namespace wg
 
 		const spx * pEdges = m_pSamples + edgeStripPitch * columnBegin;
 		int outColumnSkip = ((m_nbSegments - 1) - (edgeEnd - edgeBegin)) * 4;
+
+		// Raw samples for warps, the left and right side of each column in pixels.
+
+		float * pRaw = m_pBuffer + (_rawSamplesOfs() + columnBegin * edgeStripPitch + edgeBegin) * 4;
+
+		for (int i = 0; i < nPixelColumns; i++)
+		{
+			for (int j = edgeBegin; j < edgeEnd; j++)
+			{
+				*pRaw++ = pEdges[i * edgeStripPitch + j] / 64.f;
+				*pRaw++ = pEdges[(i + 1) * edgeStripPitch + j] / 64.f;
+				*pRaw++ = 0.f;
+				*pRaw++ = 0.f;
+			}
+
+			pRaw += outColumnSkip;
+		}
+
+		// Edge strips
 
 		float * pOut = m_pBuffer + columnBegin * edgeStripPitch * 4 + edgeBegin * 4;
 

@@ -63,3 +63,13 @@ void convertEdgemapBlueprint(Edgemap::Blueprint* pDest, const wg_edgemapBP* pSou
 	else
 		pDest->tints		= nullptr;
 }
+
+void convertWarpmapBlueprint(Warpmap::Blueprint* pDest, const wg_warpmapBP* pSource)
+{
+	if( pSource->cellSize > 0 )
+		pDest->cellSize	= pSource->cellSize;
+
+	pDest->size			= { pSource->size.w, pSource->size.h };
+	pDest->uPeriod		= pSource->uPeriod;
+	pDest->vPeriod		= pSource->vPeriod;
+}

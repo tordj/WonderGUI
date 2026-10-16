@@ -57,6 +57,7 @@ The following table lists the classes that are considered resources with a short
 | :------------------- | ------------ | :----------------------------------------------------------- |
 | Blob                 | Content only | A blob is for storing arbitrary binary data as a WonderGUI object with smart pointers and referrence counting. |
 | Caret                | No           | A text cursor. Basic implementation of a blinking straight line cursor, but can be subclassed to custom designs. |
+| CircularWarp         | Yes          | Generator of a Warpmap that bends the source around a circle, such as a gauge or progress ring from a straight bar. See [Warpmaps](warpmaps). |
 | Dataset              | Content only | Template class for wrapping any class into a WonderGUI object with smart pointers and reference counting. |
 | Edgemap              | Content only | Custom class storing graphics as a number of edges between fields of different colors. Used to store simple shapes such as graphs, charts, circles etc in a generic format for rendering. Edgemap is a base class which is subclassed depending on rendering output such as Software, OpenGL, Metal and Streaming. |
 | EdgemapFactory       | No           | A simple factory class for creating edgemaps. Subclassed into factories for various rendering outputs. |
@@ -73,4 +74,6 @@ The following table lists the classes that are considered resources with a short
 | TextStyle            | No           | TextStyle objects specify the font, size, color and decorations to use for some text or parts thereof. |
 | Transition           | No           | Specifies a transition from one color, position size or such to another. Subclassed into classes for dealing specifically with colors and arrays of values. |
 | Waveform             | Content only | Class for storing a "waveform", a set of samples that represents the curve of a graph, oscilloscope or similar. Waveforms are turned into edgemaps for rendering. |
+| Warpmap              | Content only | Bends a surface or an edgemap into another shape when drawn, by a grid of positions in the source. Subclassed depending on rendering output, like Edgemap. See [Warpmaps](warpmaps). |
+| WarpmapFactory       | No           | A simple factory class for creating warpmaps. Subclassed into factories for various rendering outputs. |
 

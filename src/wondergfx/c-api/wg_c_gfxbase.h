@@ -43,6 +43,9 @@ WG_EXPORT wg_obj	wg_defaultSurfaceFactory();
 WG_EXPORT void	wg_setDefaultEdgemapFactory( wg_obj factory );
 WG_EXPORT wg_obj	wg_defaultEdgemapFactory();
 
+WG_EXPORT void	wg_setDefaultWarpmapFactory( wg_obj factory );
+WG_EXPORT wg_obj	wg_defaultWarpmapFactory();
+
 WG_EXPORT void	wg_setDefaultGfxDevice( wg_obj device );
 WG_EXPORT wg_obj	wg_defaultGfxDevice();
 

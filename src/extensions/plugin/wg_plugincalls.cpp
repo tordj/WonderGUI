@@ -43,6 +43,8 @@ namespace wg
 	wg_plugincapsule_calls*		PluginCalls::pluginCapsule	= nullptr;
 	wg_blurbrush_calls*			PluginCalls::blurbrush		= nullptr;
 	wg_tint_calls*				PluginCalls::tint			= nullptr;
+	wg_warpmap_calls*			PluginCalls::warpmap		= nullptr;
+	wg_warpmapfactory_calls*	PluginCalls::warpmapFactory	= nullptr;
 
 
 	//___ _init() ______________________________________________________________
@@ -109,6 +111,12 @@ namespace wg
 		if (pCallsCollection->pTint->structSize < sizeof(wg_tint_calls))
 			goto	error_too_old_abi;
 
+		if (pCallsCollection->pWarpmap->structSize < sizeof(wg_warpmap_calls))
+			goto	error_too_old_abi;
+
+		if (pCallsCollection->pWarpmapFactory->structSize < sizeof(wg_warpmapfactory_calls))
+			goto	error_too_old_abi;
+
 
 		bitmapCache		= pCallsCollection->pBitmapCache;
 		bitmapFont		= pCallsCollection->pBitmapFont;
@@ -127,6 +135,8 @@ namespace wg
 		pluginCapsule	= pCallsCollection->pPluginCapsule;
 		blurbrush		= pCallsCollection->pBlurbrush;
 		tint			= pCallsCollection->pTint;
+		warpmap			= pCallsCollection->pWarpmap;
+		warpmapFactory	= pCallsCollection->pWarpmapFactory;
 
 		return true;
 

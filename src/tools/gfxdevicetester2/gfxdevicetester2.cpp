@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <ctime>
 #include <fstream>
 #include <limits>
@@ -44,6 +45,7 @@
 #include "testsuites/blendruletests.h"
 #include "testsuites/roundedboxtests.h"
 #include "testsuites/ringtests.h"
+#include "testsuites/warptests.h"
 
 
 using namespace wg;
@@ -75,6 +77,28 @@ bool GfxDeviceTester2::init(wapp::API* pAPI)
 
 	select_view(View::Display);
 
+	// "--accuracy [--dump] [suite ...]" runs the accuracy tests of the given suites (all if none are
+	// given) at the first update, prints the results and quits, for runs without anyone at the window.
+	// With --dump, testee and reference images of tests that aren't OK are saved as PPM files.
+
+	auto arguments = pAPI->programArguments();
+	for (size_t i = 0; i < arguments.size(); i++)
+	{
+		if (arguments[i] == "--accuracy")
+		{
+			m_bBatchAccuracy = true;
+
+			for (size_t j = i + 1; j < arguments.size(); j++)
+			{
+				if (arguments[j] == "--dump")
+					m_bBatchDump = true;
+				else
+					m_batchSuites.push_back(arguments[j]);
+			}
+			break;
+		}
+	}
+
 	// Start out showing the first test we can run.
 
 	for (int i = 0; i < (int)m_tests.size(); i++)
@@ -93,6 +117,12 @@ bool GfxDeviceTester2::init(wapp::API* pAPI)
 
 bool GfxDeviceTester2::update()
 {
+	if (m_bBatchAccuracy)
+	{
+		run_batch_accuracy();
+		return false;
+	}
+
 	if (m_bAccuracyRunning)
 		continue_accuracy_run();
 
@@ -209,6 +239,7 @@ void GfxDeviceTester2::setup_tests()
 	add([]() { return new BlendRuleTests(); });
 	add([]() { return new RoundedBoxTests(); });
 	add([]() { return new RingTests(); });
+	add([]() { return new WarpTests(); });
 }
 
 //____ add_testsuite() ________________________________________________________
@@ -1232,6 +1263,89 @@ void GfxDeviceTester2::run_accuracy_test(int test)
 	}
 
 	compare(pixels[TESTEE], pixels[REFERENCE], result);
+}
+
+//____ run_batch_accuracy() ___________________________________________________
+/*
+	Runs the accuracy tests of the suites asked for on the command line and prints a line per
+	test, with the verdict as in the accuracy table.
+*/
+
+void GfxDeviceTester2::run_batch_accuracy()
+{
+	int nbRun = 0, nbDiffering = 0, nbFailed = 0;
+
+	for (int i = 0; i < (int)m_tests.size(); i++)
+	{
+		auto& test = m_tests[i];
+		auto& suite = m_suites[test.suite];
+
+		if (!m_batchSuites.empty() && std::find(m_batchSuites.begin(), m_batchSuites.end(), suite.name) == m_batchSuites.end())
+			continue;
+
+		const char* pVerdict;
+		auto& result = test.accuracy;
+
+		if (!suite.bWorking)
+		{
+			pVerdict = "NOT WORKING";
+			nbFailed++;
+		}
+		else
+		{
+			run_accuracy_test(i);
+			nbRun++;
+
+			if (result.bFailed)
+			{
+				pVerdict = "FAILED";
+				nbFailed++;
+			}
+			else if (result.nbOverThreshold == 0)
+				pVerdict = "OK";
+			else if (result.nbOverThreshold <= c_maxSpecks)
+				pVerdict = "SPECKS";
+			else
+			{
+				pVerdict = "DIFFERS";
+				nbDiffering++;
+			}
+		}
+
+		printf("%-24s %-36s %-11s max %3d  mean %.3f  over %6d  worst %d,%d\n", suite.name.c_str(), test.name.c_str(), pVerdict,
+			   result.maxDiff, result.meanDiff, result.nbOverThreshold, result.worst.x, result.worst.y);
+
+		if (m_bBatchDump && suite.bWorking && result.nbOverThreshold > 0)
+		{
+			for (int side = 0; side < 2; side++)
+			{
+				vector<uint8_t> pixels;
+				if (!render_test(Side(side), i, Background::Black) || !read_canvas(Side(side), pixels))
+					continue;
+
+				string filename = suite.name + "_" + test.name + (side == TESTEE ? "_testee.ppm" : "_reference.ppm");
+				std::replace(filename.begin(), filename.end(), ' ', '_');
+
+				FILE* pFile = fopen(filename.c_str(), "wb");
+				if (!pFile)
+					continue;
+
+				const int r = WG_IS_BIG_ENDIAN ? 1 : 2, g = WG_IS_BIG_ENDIAN ? 2 : 1, b = WG_IS_BIG_ENDIAN ? 3 : 0;
+
+				fprintf(pFile, "P6 %d %d 255\n", m_canvasSize.w, m_canvasSize.h);
+				for (size_t p = 0; p + 3 < pixels.size(); p += 4)
+				{
+					fputc(pixels[p + r], pFile);
+					fputc(pixels[p + g], pFile);
+					fputc(pixels[p + b], pFile);
+				}
+				fclose(pFile);
+			}
+		}
+	}
+
+	printf("%d tests run, %d differ, %d failed or not working.\n", nbRun, nbDiffering, nbFailed);
+	fflush(stdout);
 }
 
 //____ refresh_accuracy_table() _______________________________________________

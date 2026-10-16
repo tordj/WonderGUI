@@ -85,6 +85,12 @@ set( SOURCES
 	wg_transitions.h
 	wg_waveform.cpp
 	wg_waveform.h
+	wg_warpmap.cpp
+	wg_warpmap.h
+	wg_warpmapfactory.cpp
+	wg_warpmapfactory.h
+	wg_circularwarp.cpp
+	wg_circularwarp.h
 	wondergfx.h
 
 	c-api/wg_c_bitmapcache.cpp
@@ -101,6 +107,12 @@ set( SOURCES
 	c-api/wg_c_edgemap.h
 	c-api/wg_c_edgemapfactory.cpp
 	c-api/wg_c_edgemapfactory.h
+	c-api/wg_c_warpmap.cpp
+	c-api/wg_c_warpmap.h
+	c-api/wg_c_warpmapfactory.cpp
+	c-api/wg_c_warpmapfactory.h
+	c-api/wg_c_circularwarp.cpp
+	c-api/wg_c_circularwarp.h
 	c-api/wg_c_font.cpp
 	c-api/wg_c_font.h	
 	c-api/wg_c_geo.cpp

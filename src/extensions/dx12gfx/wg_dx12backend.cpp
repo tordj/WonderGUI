@@ -27,6 +27,8 @@
 #include <wg_dx12surfacefactory.h>
 #include <wg_dx12edgemap.h>
 #include <wg_dx12edgemapfactory.h>
+#include <wg_dx12warpmap.h>
+#include <wg_dx12warpmapfactory.h>
 #include <d3dcompiler.h>
 
 #include <cstdio>
@@ -1517,6 +1519,17 @@ namespace wg
 					break;
 				}
 
+				case Command::WarpBlit:
+				case Command::WarpDrawEdgemap:
+				{
+					WarpParams params;
+					p = decodeWarp(cmd, p, params);
+
+					_drawWarp(cmd, params, pRects, pObjects);
+					pRects += params.nRects;
+					break;
+				}
+
 				case Command::DrawEdgemap:
 				case Command::TileEdgemap:
 				{
@@ -2946,6 +2959,173 @@ namespace wg
 		m_commandList->DrawInstanced(nRects * 6, 1, firstVertex, 0);
 	}
 
+	//____ _drawWarp() _________________________________________________________
+	//
+	// A WarpBlit or WarpDrawEdgemap, drawn as a quad per clip rectangle by the warp
+	// shaders, which do the work per pixel, see warp.hlsl. Four extras entries tell
+	// them where the Warpmap is and what it maps onto, its cells are in its own
+	// buffer. pRects are the clip rectangles, which the caller steps past.
+
+	void DX12Backend::_drawWarp(Command cmd, const WarpParams& params, const RectSPX* pRects, Object* const*& pObjects)
+	{
+		bool bEdgemap = (cmd == Command::WarpDrawEdgemap);
+
+		Object * pWarpObject = *pObjects++;
+		Object * pEdgemapObject = bEdgemap ? *pObjects++ : nullptr;
+
+		DX12Warpmap * pWarpmap = (pWarpObject && _isOfType(pWarpObject->typeInfo(), DX12Warpmap::TYPEINFO)) ?
+								 static_cast<DX12Warpmap*>(pWarpObject) : nullptr;
+
+		DX12Edgemap * pEdgemap = (pEdgemapObject && _isOfType(pEdgemapObject->typeInfo(), DX12Edgemap::TYPEINFO)) ?
+								 static_cast<DX12Edgemap*>(pEdgemapObject) : nullptr;
+
+		if (!pWarpmap || pWarpmap->_gpuAddress() == 0 || (bEdgemap && (!pEdgemap || pEdgemap->_gpuAddress() == 0)))
+		{
+			static bool bReported = false;
+			if (!bReported)
+			{
+				const char * pReason = !pWarpmap ? "the warpmap is not a DX12Warpmap" :
+									   pWarpmap->_gpuAddress() == 0 ? "the warpmap has no buffer" :
+									   !pEdgemap ? "the edgemap is not a DX12Edgemap" : "the edgemap has no buffer";
+
+				char buffer[256];
+				sprintf_s(buffer, "Can't draw warp, %s.", pReason);
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, buffer, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				bReported = true;
+			}
+
+			return;
+		}
+
+		if (!m_pVertexPtr || !m_pExtrasPtr)
+			return;
+
+		// A blit reads around the source rather than clipping to it, the shaders take
+		// care of its borders. A palette based source has a shader of its own.
+
+		PipelineKind kind = PipelineKind::WarpEdgemap;
+
+		if (!bEdgemap)
+		{
+			m_bBlitClip = false;
+
+			if (!_bindBlitSource())
+				return;
+
+			if (m_bBoundBlitClip != m_bBlitClip)
+				_bindBlitSamplerAndFlags();
+
+			kind = m_bBlitSourceIndexed ? PipelineKind::WarpPaletteBlit : PipelineKind::WarpBlit;
+		}
+
+		ID3D12PipelineState* pPipeline = _pipeline(m_activeBlendMode, kind);
+
+		if (!pPipeline)
+			return;
+
+		auto bufferFull = [this](const char* pBuffer)
+		{
+			static bool bReported = false;
+			if (!bReported && _blameSessionInfo())
+			{
+				char buffer[256];
+				sprintf_s(buffer, "%s buffer full, warps dropped. SessionInfo underestimated what the session needs.", pBuffer);
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::ResourceExhausted, buffer, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				bReported = true;
+			}
+		};
+
+		if (m_pExtrasEnd - m_pExtrasPtr < 4)
+			return bufferFull("Extras");
+
+		if (m_pVertexEnd - m_pVertexPtr < params.nRects * 6)
+			return bufferFull("Vertex");
+
+		// _addColor() multiplies by the tint color, so white is what gets it applied
+		// exactly once.
+
+		int colorOfs = _addColor(HiColor::White);
+		if (colorOfs < 0)
+			return;
+
+		// Extras, see warp.hlsl.
+
+		CoordI dest = Util::roundToPixels(params.dest);
+		SizeI warpSize = pWarpmap->pixelSize();
+
+		float srcW = pEdgemap ? float(pEdgemap->m_size.w) : params.source.w / 64.f;
+		float srcH = pEdgemap ? float(pEdgemap->m_size.h) : params.source.h / 64.f;
+
+		int extrasOfs = int(m_pExtrasPtr - m_pExtrasBeg);
+
+		*m_pExtrasPtr++ = { float(dest.x), float(dest.y), float(pWarpmap->cellSize()), pEdgemap ? float(pEdgemap->m_nbRenderSegments - 1) : 0.f };
+		*m_pExtrasPtr++ = { float(warpSize.w), float(warpSize.h), srcW, srcH };
+		*m_pExtrasPtr++ = { params.sourceOffset.x / 64.f, params.sourceOffset.y / 64.f, pWarpmap->uPeriod() * srcW, pWarpmap->vPeriod() * srcH };
+
+		if (pEdgemap)
+			*m_pExtrasPtr++ = { float(pEdgemap->m_nbSegments - 1), float(pEdgemap->_flatColorsOfs()), float(pEdgemap->_tintTableOfs()), float(pEdgemap->_rawSamplesOfs()) };
+		else
+		{
+			// A surface that isn't tiling is read as if the edge pixels of the source rectangle
+			// continued outside it, see warpBlitCoverage() in warp.hlsl.
+
+			float clampInset = m_pBlitSource->isTiling() ? 0.f : m_pBlitSource->sampleMethod() == SampleMethod::Bilinear ? 0.5f : 1.f / 256;
+
+			*m_pExtrasPtr++ = { params.source.x / 64.f, params.source.y / 64.f, clampInset, 0.f };
+		}
+
+		// A quad for the part of each clip rectangle covered by the Warpmap.
+
+		int firstVertex = int(m_pVertexPtr - m_pVertexBeg);
+		int nVertices = 0;
+
+		for (int i = 0; i < params.nRects; i++)
+		{
+			RectI patch = RectI::overlap(Util::roundToPixels(pRects[i]), RectI(dest, warpSize));
+
+			if (patch.w <= 0 || patch.h <= 0)
+				continue;
+
+			const float coords[4][2] = { { float(patch.x), float(patch.y) }, { float(patch.x + patch.w), float(patch.y) },
+										 { float(patch.x + patch.w), float(patch.y + patch.h) }, { float(patch.x), float(patch.y + patch.h) } };
+
+			const int corners[6] = { 0, 1, 2, 0, 2, 3 };
+
+			for (int vertex = 0; vertex < 6; vertex++)
+			{
+				int corner = corners[vertex];
+
+				m_pVertexPtr->x = coords[corner][0];
+				m_pVertexPtr->y = coords[corner][1];
+				m_pVertexPtr->colorOfs = (uint32_t) colorOfs;
+				m_pVertexPtr->extrasOfs = (uint32_t) extrasOfs;
+				m_pVertexPtr->u = 0.f;
+				m_pVertexPtr->v = 0.f;
+
+				m_pVertexPtr++;
+			}
+
+			nVertices += 6;
+		}
+
+		if (nVertices == 0 || !_setPipeline(pPipeline) || !m_bCommandListOpen)
+			return;
+
+		// The command list keeps no references to the buffers, see _drawEdgemap().
+
+		_holdUntilDone(pWarpmap->m_buffer.Get());
+		m_commandList->SetGraphicsRootShaderResourceView(7, pWarpmap->_gpuAddress());
+
+		if (pEdgemap)
+		{
+			_holdUntilDone(pEdgemap->m_buffer.Get());
+			m_commandList->SetGraphicsRootShaderResourceView(5, pEdgemap->_gpuAddress());
+			m_bBlitSourceBound = false;			// A palette based blit source keeps its palette there too.
+		}
+
+		m_commandList->DrawInstanced(nVertices, 1, firstVertex, 0);
+	}
+
 	//____ _setPipeline() ______________________________________________________
 
 	bool DX12Backend::_setPipeline(ID3D12PipelineState* pPipeline)
@@ -3092,6 +3272,16 @@ namespace wg
 		return m_pEdgemapFactory;
 	}
 
+	//____ warpmapFactory() _____________________________________________________
+
+	WarpmapFactory_p DX12Backend::warpmapFactory()
+	{
+		if (!m_pWarpmapFactory)
+			m_pWarpmapFactory = DX12WarpmapFactory::create();
+
+		return m_pWarpmapFactory;
+	}
+
 	//____ maxEdges() ___________________________________________________________
 
 	int DX12Backend::maxEdges() const
@@ -3212,9 +3402,9 @@ namespace wg
 			const int c_maxTintStops = Tint::c_maxMixComponents * Tint::c_maxStops;
 			const int c_tintBlockOverhead = TintTools::gpuTintBlockMaxSize(Tint::c_maxMixComponents, c_maxTintStops) - c_maxTintStops;
 
-			nColors = pInfo->nColors + pInfo->nBlit + pInfo->nBlur + pInfo->nEdgemapDraws + pInfo->nShapeDraws
+			nColors = pInfo->nColors + pInfo->nBlit + pInfo->nBlur + pInfo->nEdgemapDraws + pInfo->nShapeDraws + pInfo->nWarpDraws
 					+ (pInfo->nStateChanges + pInfo->nShapeTints) * c_tintBlockOverhead;
-			nExtras = pInfo->nRects * 2 + nLines + pInfo->nBlur * 18 + pInfo->nEdgemapDraws * 2 + GpuShapes::maxSessionEntries(*pInfo);
+			nExtras = pInfo->nRects * 2 + nLines + pInfo->nBlur * 18 + pInfo->nEdgemapDraws * 2 + pInfo->nWarpDraws * 4 + GpuShapes::maxSessionEntries(*pInfo);
 		}
 		else
 		{
@@ -3390,6 +3580,9 @@ namespace wg
 			{ PipelineKind::Line,	g_lineVS },
 			{ PipelineKind::Segments, g_segmentsVS },
 			{ PipelineKind::Shape,	g_shapeVS },
+			{ PipelineKind::WarpEdgemap, g_warpVS },
+			{ PipelineKind::WarpBlit, g_warpVS },
+			{ PipelineKind::WarpPaletteBlit, g_warpVS },
 		};
 
 		// Compiled by the first backend, reused by the rest. Opening a window
@@ -3464,7 +3657,7 @@ namespace wg
 		samplerRange.RegisterSpace = 0;
 		samplerRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-		D3D12_ROOT_PARAMETER rootParameter[7] = {};
+		D3D12_ROOT_PARAMETER rootParameter[8] = {};
 
 		rootParameter[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 		rootParameter[0].Constants.ShaderRegister = 0;			// b0.
@@ -3510,10 +3703,17 @@ namespace wg
 		rootParameter[6].Constants.Num32BitValues = sizeof(PixelInfo) / 4;
 		rootParameter[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+		// The cells of the Warpmap of a warp, see DX12Warpmap.
+
+		rootParameter[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+		rootParameter[7].Descriptor.ShaderRegister = 4;			// t4.
+		rootParameter[7].Descriptor.RegisterSpace = 0;
+		rootParameter[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
 		D3D12_VERSIONED_ROOT_SIGNATURE_DESC rsDesc = { };
 		rsDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1_0;
 		rsDesc.Desc_1_0.pParameters = rootParameter;
-		rsDesc.Desc_1_0.NumParameters = 7;
+		rsDesc.Desc_1_0.NumParameters = 8;
 		rsDesc.Desc_1_0.NumStaticSamplers = 0;
 		rsDesc.Desc_1_0.pStaticSamplers = 0;
 		rsDesc.Desc_1_0.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
@@ -3607,6 +3807,9 @@ namespace wg
 			case PipelineKind::Line:		return g_linePS;
 			case PipelineKind::Segments:	return g_segmentsPS;
 			case PipelineKind::Shape:		return g_shapePS;
+			case PipelineKind::WarpEdgemap:	return g_warpEdgemapPS;
+			case PipelineKind::WarpBlit:	return g_warpBlitPS;
+			case PipelineKind::WarpPaletteBlit:	return g_warpPaletteBlitPS;
 			default:						return nullptr;
 		}
 	}
@@ -3655,7 +3858,8 @@ namespace wg
 	{
 		bool bAlphaOnly = (_canvasKind(rtvFormat) == 2);
 		bool bNoAlpha = (_canvasKind(rtvFormat) == 1);
-		bool bPartialCoverage = (kind == PipelineKind::FillAA || kind == PipelineKind::Line || kind == PipelineKind::Shape);
+		bool bPartialCoverage = (kind == PipelineKind::FillAA || kind == PipelineKind::Line || kind == PipelineKind::Shape ||
+								 kind == PipelineKind::WarpEdgemap || kind == PipelineKind::WarpBlit || kind == PipelineKind::WarpPaletteBlit);
 
 		// Blend state. Factors are for colors and alpha alike, unless the alpha of the
 		// canvas is kept or inverted. On an alpha only canvas only alpha is written, so the colors

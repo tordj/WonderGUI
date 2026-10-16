@@ -7,6 +7,10 @@ set(SOURCES
 	wg_dx12edgemap.h
 	wg_dx12edgemapfactory.cpp
 	wg_dx12edgemapfactory.h
+	wg_dx12warpmap.cpp
+	wg_dx12warpmap.h
+	wg_dx12warpmapfactory.cpp
+	wg_dx12warpmapfactory.h
 	wg_dx12shaders.cpp
 	wg_dx12shaders.cpp.template
 	wg_dx12surface.cpp
@@ -34,6 +38,11 @@ set(SHADERS
 	shaders/ps_segments.hlsl
 	shaders/vs_shape.hlsl
 	shaders/ps_shape.hlsl
+	shaders/vs_warp.hlsl
+	shaders/warp.hlsl
+	shaders/ps_warp_edgemap.hlsl
+	shaders/ps_warp_blit.hlsl
+	shaders/ps_warp_blit_palette.hlsl
 )
 
 

@@ -89,12 +89,17 @@ namespace wg
 			SurfaceUpdate2 = 27,
 			Fence = 28,
 			SetEdgemapTint = 29,
-			SurfacePalette = 30			// Palette of surface just created, split over chunks like SurfacePixels.
+			SurfacePalette = 30,		// Palette of surface just created, split over chunks like SurfacePixels.
+
+			CreateWarpmap = 31,			// Since 3.4.
+			WarpmapNodes = 32,			// Nodes of part of a row of a Warpmap.
+			SetWarpmapPeriods = 33,
+			DeleteWarpmap = 34
 		};
 
 		const static ChunkId      ChunkId_min      = ChunkId::OutOfData;
-		const static ChunkId      ChunkId_max      = ChunkId::SurfacePalette;
-		const static int          ChunkId_size     = (int)ChunkId::SurfacePalette + 1;
+		const static ChunkId      ChunkId_max      = ChunkId::DeleteWarpmap;
+		const static int          ChunkId_size     = (int)ChunkId::DeleteWarpmap + 1;
 
 		struct SPX
 		{

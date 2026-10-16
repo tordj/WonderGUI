@@ -36,9 +36,13 @@
 
 #include <wg_tint.h>
 
+#include <wg_warpmap.h>
+#include <wg_c_warpmap.h>
+
 
 WG_NO_EXPORT void convertSurfaceBlueprint(wg::Surface::Blueprint* pDest, const wg_surfaceBP* pSource);
 WG_NO_EXPORT void convertEdgemapBlueprint(wg::Edgemap::Blueprint* pDest, const wg_edgemapBP* pSource, wg::Tint_p * pSpaceForTints );	// pSpaceForTints needs room for bp.segments pointers.
+WG_NO_EXPORT void convertWarpmapBlueprint(wg::Warpmap::Blueprint* pDest, const wg_warpmapBP* pSource);
 
 
 #endif	//__cplusplus

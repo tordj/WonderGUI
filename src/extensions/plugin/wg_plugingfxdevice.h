@@ -29,6 +29,7 @@
 #include <wg_c_gfxdevice.h>
 #include <wg_pluginsurfacefactory.h>
 #include <wg_pluginedgemapfactory.h>
+#include <wg_pluginwarpmapfactory.h>
 
 #include <vector>
 
@@ -63,6 +64,7 @@ namespace wg
 
 		SurfaceFactory_p surfaceFactory() override;
         EdgemapFactory_p edgemapFactory() override;
+        WarpmapFactory_p warpmapFactory() override;
 
 		//.____ Geometry _________________________________________________
 
@@ -186,6 +188,10 @@ namespace wg
         void	tileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, CoordSPX shift = { 0,0 }) override;
         void	flipTileEdgemap(const RectSPX& dest, Edgemap* pEdgemap, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
+        void	warpBlit(CoordSPX dest, Warpmap* pWarpmap, CoordSPX sourceOffset = { 0,0 }) override;
+        void	warpBlit(CoordSPX dest, Warpmap* pWarpmap, const RectSPX& source, CoordSPX sourceOffset = { 0,0 }) override;
+        void	warpDrawEdgemap(CoordSPX dest, Warpmap* pWarpmap, Edgemap* pEdgemap, CoordSPX sourceOffset = { 0,0 }) override;
+
         // Special draw/blit methods
 
         void    blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale) override;
@@ -210,6 +216,7 @@ namespace wg
 		wg_obj	m_hostBlurbrush = nullptr;
 		PluginSurfaceFactory_p	m_pSurfaceFactory;
         PluginEdgemapFactory_p	m_pEdgemapFactory;
+        PluginWarpmapFactory_p	m_pWarpmapFactory;
 
 		// Plugin side copies of state that can't be retrieved from the host.
 

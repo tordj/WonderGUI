@@ -71,9 +71,12 @@ namespace wg
 		void	_samplesUpdated(int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd) override;
 		void	_colorsUpdated(int beginSegment, int endSegment) override;
 
-		// Buffer layout, in float4 entries: samples, flat colors (one per segment),
-		// tint table (x is offset of tint block for segment, -1 if flat) and tint blocks.
+		// Buffer layout, in float4 entries: samples prepared for drawing (one entry per column
+		// and edge), raw samples (left and right side of each column and edge, in pixels, for
+		// warps), flat colors (one per segment), tint table (x is offset of tint block for
+		// segment, -1 if flat) and tint blocks.
 
+		int		_rawSamplesOfs() const { return m_size.w * (m_nbSegments - 1); }
 		int		_flatColorsOfs() const { return m_paletteOfs / 16; }
 		int		_tintTableOfs() const { return m_paletteOfs / 16 + m_nbSegments; }
 

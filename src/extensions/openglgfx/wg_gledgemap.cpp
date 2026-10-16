@@ -78,9 +78,11 @@ namespace wg
 	{
 		// Create OpenGL buffer
 
+		// Samples prepared for drawing straight and as they are, for warps.
+
 		int samplesSize = bp.size.w * (bp.segments - 1) * 4 * sizeof(GLfloat);
 
-		m_paletteOfs = samplesSize;
+		m_paletteOfs = samplesSize * 2;
 
 		glGenBuffers(1, &m_bufferId);
 		glBindBuffer(GL_TEXTURE_BUFFER, m_bufferId);
@@ -176,6 +178,26 @@ namespace wg
 
 		glBindBuffer(GL_TEXTURE_BUFFER, m_bufferId);
 		glBufferSubData(GL_TEXTURE_BUFFER, ofs, outBytes, pBuffer);
+
+		// Samples as they are, at the left and right side of each column, in pixels.
+
+		pEdges = m_pSamples + edgeStripPitch * columnBegin;
+		pOut = pBuffer;
+
+		for (int i = 0; i < nPixelColumns; i++)
+		{
+			for (int j = 0; j < m_nbSegments - 1; j++)
+			{
+				*pOut++ = pEdges[j] / 64.f;
+				*pOut++ = pEdges[edgeStripPitch + j] / 64.f;
+				*pOut++ = 0.f;
+				*pOut++ = 0.f;
+			}
+
+			pEdges += edgeStripPitch;
+		}
+
+		glBufferSubData(GL_TEXTURE_BUFFER, _rawSamplesOfs() * 4 * sizeof(GLfloat) + ofs, outBytes, pBuffer);
 		glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 		// Release temp buffer

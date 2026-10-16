@@ -75,6 +75,7 @@ namespace wg
 		// one buffer, in float4 entries, which is how the shader indexes it:
 		//
 		//   Edge strips, one per pixel column.
+		//   Raw samples, the left and right side of each column and edge in pixels, for warps.
 		//   Flat colors, one per segment.
 		//   Tint table, one per segment. X is the offset of the segment's tint
 		//   block, -1 for a flat colored segment.
@@ -83,6 +84,7 @@ namespace wg
 
 		D3D12_GPU_VIRTUAL_ADDRESS	_gpuAddress() const { return m_buffer ? m_buffer->GetGPUVirtualAddress() : 0; }
 
+		int		_rawSamplesOfs() const { return m_samplesSize / 2; }
 		int		_flatColorsOfs() const { return m_samplesSize; }
 		int		_tintTableOfs() const { return m_samplesSize + m_nbSegments; }
 		int		_tintSlotOfs(int segment) const { return m_samplesSize + m_nbSegments * 2 + segment * c_tintSlotSize; }
@@ -95,7 +97,7 @@ namespace wg
 		Microsoft::WRL::ComPtr<ID3D12Resource>	m_buffer;
 		float *	m_pBuffer = nullptr;			// Permanently mapped content of m_buffer.
 
-		int		m_samplesSize = 0;				// Size of the edge strips, in float4 entries.
+		int		m_samplesSize = 0;				// Size of the edge strips and raw samples, in float4 entries.
 		bool	m_bHasTintSlots = false;
 
 		static ID3D12Device *	s_pDevice;

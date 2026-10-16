@@ -53,6 +53,8 @@ namespace wg
 		static wg_plugincapsule_calls*	pluginCapsule;
 		static wg_blurbrush_calls*		blurbrush;
 		static wg_tint_calls*			tint;
+		static wg_warpmap_calls*		warpmap;
+		static wg_warpmapfactory_calls*	warpmapFactory;
 
 		static bool _init(wg_plugin_interface* pCallsCollection);
 

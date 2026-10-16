@@ -92,6 +92,7 @@ namespace wg
 
 		SurfaceFactory_p	surfaceFactory() override;
 		EdgemapFactory_p	edgemapFactory() override;
+		WarpmapFactory_p	warpmapFactory() override;
 
 		int		maxEdges() const override;
 
@@ -143,7 +144,9 @@ namespace wg
 			ClipBlit,		// A Blit that leaves everything outside the source alone.
 			Blur,
 			Edgemap,
-			Shape
+			Shape,
+			WarpEdgemap,
+			WarpBlit
 		};
 
 		enum BlurSource			// Kind of blit source, selects the blur shader.
@@ -156,6 +159,7 @@ namespace wg
 
 		SurfaceFactory_p	m_pSurfaceFactory = nullptr;
 		EdgemapFactory_p	m_pEdgemapFactory = nullptr;
+		WarpmapFactory_p	m_pWarpmapFactory;
 
 		Object* const * m_pObjectsBeg = nullptr;
 		Object* const * m_pObjectsEnd = nullptr;
@@ -232,13 +236,15 @@ namespace wg
 		GLuint	m_segmentsProg[c_maxSegments][2];			// [nb segments][RGB/A_8 dest]
 
 		GLuint	m_shapeProg[2];									// [RGB/A_8 dest]
+		GLuint	m_warpEdgemapProg[2];							// [RGB/A_8 dest]
+		GLuint	m_warpBlitProg[2];								// [RGB/A_8 dest]
 
 		GLuint	m_blitProgMatrix[PixelFormat_size][2][2][2];	// [source format][interpolation][tintgradient][RGB/A_8 dest]
 
 		//
 
-		const static int c_nbPrograms = 40 + (c_maxSegments-1) * 2;
-		const static int c_versionNb = 116;		// 104: Tints replaced Tintmaps. 105: Tint color applied together with tint. 106: Palette ClipBlit clipping. 107: Palette read by index, capacity wide. 108: Blur for Alpha_8 sources and canvases. 109: Alpha of sources without alpha in ClipBlits. 110: Bilinear palette taps and weights from the same value. 111: Palette sampled with texture(), not texelFetch(). 112: Shape programs. 113: Premultiplied canvases, output by blend mode, tinted lines. 114: Tiled edgemaps. 115: Edgemap segments where edges cross and on canvases without alpha. 116: Effect modes on premultiplied colors in one pass.
+		const static int c_nbPrograms = 44 + (c_maxSegments-1) * 2;
+		const static int c_versionNb = 117;		// 104: Tints replaced Tintmaps. 105: Tint color applied together with tint. 106: Palette ClipBlit clipping. 107: Palette read by index, capacity wide. 108: Blur for Alpha_8 sources and canvases. 109: Alpha of sources without alpha in ClipBlits. 110: Bilinear palette taps and weights from the same value. 111: Palette sampled with texture(), not texelFetch(). 112: Shape programs. 113: Premultiplied canvases, output by blend mode, tinted lines. 114: Tiled edgemaps. 115: Edgemap segments where edges cross and on canvases without alpha. 116: Effect modes on premultiplied colors in one pass. 117: Warps.
 
 		struct ProgramBlobEntry
 		{
@@ -375,6 +381,11 @@ namespace wg
 		static const char shapeVertexShader[];
 		static const char shapeFragmentShader[];
 		static const char shapeFragmentShader_A8[];
+		static const char warpVertexShader[];
+		static const char warpEdgemapFragmentShader[];
+		static const char warpEdgemapFragmentShader_A8[];
+		static const char warpBlitFragmentShader[];
+		static const char warpBlitFragmentShader_A8[];
 
 		static const char alphaBlitFragmentShader[];
 		static const char alphaBlitFragmentShader_A8[];

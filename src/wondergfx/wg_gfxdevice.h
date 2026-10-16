@@ -37,6 +37,8 @@
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
 #include <wg_edgemapfactory.h>
+#include <wg_warpmap.h>
+#include <wg_warpmapfactory.h>
 #include <wg_canvaslayers.h>
 
 #include <vector>
@@ -194,6 +196,7 @@ namespace wg
 
 		virtual SurfaceFactory_p	surfaceFactory() = 0;
 		virtual EdgemapFactory_p	edgemapFactory() = 0;
+		virtual WarpmapFactory_p	warpmapFactory() = 0;
 
 		static constexpr int		maxSegments() { return c_maxSegments; }
 		static constexpr int		maxRingSlices() { return c_maxRingSlices; }
@@ -324,6 +327,13 @@ namespace wg
 
 		virtual void	tileEdgemap(const RectSPX& dest, Edgemap * pEdgemap, CoordSPX shift = { 0,0 }) = 0;
 		virtual void	flipTileEdgemap(const RectSPX& dest, Edgemap * pEdgemap, GfxFlip flip, CoordSPX shift = { 0,0 }) = 0;
+
+		// Warp methods. See Warpmap for how a Warpmap is drawn. sourceOffset is in spx of the
+		// source (edgemap or blit source) and is added to the position in the source.
+
+		virtual void	warpBlit(CoordSPX dest, Warpmap * pWarpmap, CoordSPX sourceOffset = { 0,0 }) = 0;
+		virtual void	warpBlit(CoordSPX dest, Warpmap * pWarpmap, const RectSPX& source, CoordSPX sourceOffset = { 0,0 }) = 0;
+		virtual void	warpDrawEdgemap(CoordSPX dest, Warpmap * pWarpmap, Edgemap * pEdgemap, CoordSPX sourceOffset = { 0,0 }) = 0;
 
 				
 

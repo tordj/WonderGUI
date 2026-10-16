@@ -14,6 +14,10 @@ set(SOURCES
 	wg_gledgemap.h
 	wg_gledgemapfactory.cpp
 	wg_gledgemapfactory.h
+	wg_glwarpmap.cpp
+	wg_glwarpmap.h
+	wg_glwarpmapfactory.cpp
+	wg_glwarpmapfactory.h
 )
 
 set(INCDIRS
