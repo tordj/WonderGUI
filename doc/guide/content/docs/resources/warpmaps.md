@@ -23,7 +23,7 @@ Warpmaps are *semi-mutable*: size and cell size are set when created, nodes and 
 	pDevice->warpBlit( dest, pWarpmap, sourceRect );			// A rectangle of it.
 ```
 
-The Warpmap is placed with its top-left corner at *dest*, rounded to whole pixels, and nothing is drawn outside its rectangle. Blend mode, tint color and tint apply as for any other drawing, the tint in canvas space. Surfaces are read with their sample method and, if they are tiling, wrap around. There is no supersampling when a Warpmap shrinks a surface, use a mipmapped surface for that.
+The Warpmap is placed with its top-left corner at *dest*, rounded to whole pixels, and nothing is drawn outside its rectangle. Blend mode, tint color and tint apply as for any other drawing, the tint in canvas space. Surfaces are read with their sample method. Nothing outside the source rectangle is read, as with stretchBlit(): along its borders the surface is read as if the edge pixels of the rectangle continued outside it. A tiling surface wraps around instead. There is no supersampling when a Warpmap shrinks a surface, use a mipmapped surface for that.
 
 All methods take a *source offset* (in spx of the source) that is added to the position before reading, so a ring can be turned or a pattern scrolled without changing the Warpmap.
 

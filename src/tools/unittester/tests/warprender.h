@@ -21,4 +21,5 @@ private:
 	bool streamTest(std::ostream& output);
 	bool cApiTest(std::ostream& output);
 	bool seamColorTest(std::ostream& output);
+	bool sourceRectTest(std::ostream& output);
 };

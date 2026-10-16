@@ -341,6 +341,7 @@ WarpRenderTest::WarpRenderTest()
 	ADD_TEST(streamTest);
 	ADD_TEST(cApiTest);
 	ADD_TEST(seamColorTest);
+	ADD_TEST(sourceRectTest);
 }
 
 WarpRenderTest::~WarpRenderTest()
@@ -742,4 +743,80 @@ bool WarpRenderTest::seamColorTest(std::ostream& output)
 	};
 
 	return compare(output, "Seams", render(Backend::Soft, scene), "SoftBackend", render(Backend::Reference, scene), "ReferenceBackend", 6, 4, 12);
+}
+
+//____ sourceRectTest() _______________________________________________________
+/*
+	A surface that isn't tiling is read as if the edge pixels of the source rectangle continued
+	outside it, so nothing outside the rectangle shows, also where bilinear sampling and partly
+	covered pixels at the borders reach past it. Blitting a rectangle out of a surface with other
+	colors around it draws exactly as blitting a surface that is just that rectangle.
+*/
+
+bool WarpRenderTest::sourceRectTest(std::ostream& output)
+{
+	auto pRes = resourceDevice();
+
+	const int w = 32, h = 16, border = 8;
+
+	std::vector<uint8_t> inner(w * h * 4);
+	std::vector<uint8_t> outer((w + border * 2) * (h + border * 2) * 4);
+
+	for (int y = 0; y < h + border * 2; y++)
+	{
+		for (int x = 0; x < w + border * 2; x++)
+		{
+			uint8_t* p = outer.data() + (y * (w + border * 2) + x) * 4;
+			p[0] = 255; p[1] = 0; p[2] = 255; p[3] = 255;			// Magenta around the rectangle.
+		}
+	}
+
+	for (int y = 0; y < h; y++)
+	{
+		for (int x = 0; x < w; x++)
+		{
+			uint8_t* p = inner.data() + (y * w + x) * 4;
+			bool bChecker = ((x / 4) + (y / 4)) & 1;
+			p[0] = bChecker ? 40 : 230;
+			p[1] = uint8_t(x * 8);
+			p[2] = uint8_t(255 - y * 14);
+			p[3] = uint8_t(255 - ((x * 7 + y * 3) % 5) * 30);
+
+			std::memcpy(outer.data() + ((y + border) * (w + border * 2) + x + border) * 4, p, 4);
+		}
+	}
+
+	auto pArc = makeRing(pRes, 44, 270.f, -135.f);
+	auto pWave = makeWave(pRes, 44);
+
+	for (SampleMethod method : { SampleMethod::Bilinear, SampleMethod::Nearest })
+	{
+		auto pInner = pRes->surfaceFactory()->createSurface(WGBP(Surface, _.format = PixelFormat::ARGB_8, _.sampleMethod = method, _.size = { w, h }),
+															inner.data(), PixelFormat::ARGB_8);
+		auto pOuter = pRes->surfaceFactory()->createSurface(WGBP(Surface, _.format = PixelFormat::ARGB_8, _.sampleMethod = method, _.size = { w + border * 2, h + border * 2 }),
+															outer.data(), PixelFormat::ARGB_8);
+
+		auto scene = [&](bool bRect)
+		{
+			return [=](GfxDevice* pDevice)
+			{
+				pDevice->setBlitSource(bRect ? pOuter : pInner);
+				RectSPX source = bRect ? RectSPX(border * 64, border * 64, w * 64, h * 64) : RectSPX(0, 0, w * 64, h * 64);
+
+				pDevice->warpBlit({ 2 * 64, 2 * 64 }, pArc, source);
+				pDevice->warpBlit({ 50 * 64, 2 * 64 }, pWave, source);
+				pDevice->warpBlit({ 98 * 64, 2 * 64 }, pArc, source, { 5 * 64, 3 * 64 });
+			};
+		};
+
+		const char* pWhat = method == SampleMethod::Bilinear ? "Bilinear source rectangle" : "Nearest source rectangle";
+
+		for (Backend backend : { Backend::Soft, Backend::Linear, Backend::Reference })
+		{
+			if (!compare(output, pWhat, render(backend, scene(true)), "rectangle", render(backend, scene(false)), "cropped surface", 0))
+				return false;
+		}
+	}
+
+	return true;
 }

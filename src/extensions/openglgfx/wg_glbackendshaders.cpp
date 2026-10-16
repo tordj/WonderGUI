@@ -1875,8 +1875,11 @@ WG_GL_WARP_SEGMENTS("{ acc += segColor(e, flatColorsOfs, tintTableOfs, sc).a * p
 "	writeAlpha(acc * tint.a, covered);			"
 "}";
 
-// The blit source is sampled at the position of the center of the pixel, with its sample method,
-// wrapped or clamped to the texture as it is set up. sourceKind tells how to read it: 0 colors,
+// The blit source is sampled at the position of the center of the pixel, with its sample method.
+// A tiling surface wraps around as its texture is set up. Any other is read as if the edge pixels
+// of the source rectangle continued outside it, which warpKeepInside() does by keeping positions
+// clampInset (half a texel if bilinear, a hair if nearest) inside its edges, 0 for a tiling
+// surface. sourceKind tells how to read it: 0 colors,
 // 1 alpha only (Alpha_8 as white with alpha), 2 palette with nearest sampling and 3 palette with
 // bilinear sampling, which looks up the four texels around the position. Gradients are given
 // for mipmapped surfaces, which the derivatives of positions that wrap would get wrong.
@@ -1885,6 +1888,14 @@ WG_GL_WARP_SEGMENTS("{ acc += segColor(e, flatColorsOfs, tintTableOfs, sc).a * p
 "uniform sampler2D texId;															" \
 "uniform sampler2D paletteId;														" WG_GL_PALETTE_FUNC \
 "uniform int sourceKind;															" \
+"uniform float clampInset;															" \
+"vec2 warpKeepInside(vec2 p, vec2 begin, vec2 size)									" \
+"{																					" \
+"	vec2 center = begin + 0.5 * size;												" \
+"	vec2 lo = min(begin + clampInset, center);										" \
+"	vec2 hi = max(begin + size - clampInset, center);								" \
+"	return clamp(p, lo, hi);														" \
+"}																					" \
 "vec4 warpSample(vec2 p, vec2 gx, vec2 gy)											" \
 "{																					" \
 "	vec2 texSize = vec2(textureSize(texId, 0));										" \
@@ -1918,7 +1929,10 @@ WG_GL_WARP_SEGMENTS("{ acc += segColor(e, flatColorsOfs, tintTableOfs, sc).a * p
 "		cov *= warpAxisCoverage(s.y, vec2(dx.y, dy.y), e1.w, e2.w);					" \
 "	if (cov < 1.0 / 256.0)															" \
 "		discard;																	" \
-"	vec4 c = warpSample(e3.xy + warpNearestCopy(s, e1.zw, e2.zw), dx, dy);			" \
+"	vec2 sp = e3.xy + warpNearestCopy(s, e1.zw, e2.zw);								" \
+"	if (clampInset > 0.0)															" \
+"		sp = warpKeepInside(sp, e3.xy, e1.zw);										" \
+"	vec4 c = warpSample(sp, dx, dy);												" \
 "	vec4 tint = (tintOfs >= 0 ? evalTint(tintmapBufferId, tintOfs, canvasPos) : vec4(1.0)) * flatTint;	"
 
 const char GlBackend::warpBlitFragmentShader[] =

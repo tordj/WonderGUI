@@ -409,7 +409,8 @@ namespace wg
 			// WarpBlit
 
 			int64_t			sourcePos[2];		// Source rectangle position in surface.
-			int				surfaceSize[2];		// In pixels.
+			int64_t			readMin[2];			// Range of positions read from a non-tiling surface, which stays within the
+			int64_t			readMax[2];			// source rectangle, in kernel positions (relative to pixel centers if bilinear).
 			bool			bBilinear;
 			bool			bTileRead;			// Surface is tiling, read with ReadOp::Tile.
 			TransformBlitOp_p	pReadOp;		// Reads into a HiColor buffer.

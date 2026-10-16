@@ -2358,6 +2358,12 @@ void GlBackend::endSession()
 						sourceKind = 1;
 
 					glUniform1i(glGetUniformLocation(prog, "sourceKind"), sourceKind);
+
+					// A surface that isn't tiling is read as if the edge pixels of the source rectangle
+					// continued outside it, see WG_GL_WARP_SAMPLE.
+
+					float clampInset = pSurf->isTiling() ? 0.f : pSurf->sampleMethod() == SampleMethod::Bilinear ? 0.5f : 1.f / 256;
+					glUniform1f(glGetUniformLocation(prog, "clampInset"), clampInset);
 				}
 
 				glActiveTexture(GL_TEXTURE0);

@@ -359,10 +359,30 @@ namespace wg
 			if (srcFormat == SoftFormat::Undefined)
 				return false;
 
-			w.surfaceSize[0] = pSource->pixelSize().w;
-			w.surfaceSize[1] = pSource->pixelSize().h;
 			w.bBilinear = (pSource->sampleMethod() == SampleMethod::Bilinear);
 			w.bTileRead = pSource->isTiling();
+
+			// A non-tiling surface is read as if the edge pixels of the source rectangle continued
+			// outside it, so positions are kept within the rectangle (and the surface): between the
+			// centers of its edge pixels when bilinear, inside it when nearest. The kernels take
+			// bilinear positions relative to pixel centers, which puts that range at lo -> hi - 1.
+
+			int64_t surfaceSize[2] = { int64_t(pSource->pixelSize().w) << 16, int64_t(pSource->pixelSize().h) << 16 };
+
+			for (int a = 0; a < 2; a++)
+			{
+				int64_t lo = std::max(w.sourcePos[a], int64_t(0));
+				int64_t hi = std::min(w.sourcePos[a] + w.size[a], surfaceSize[a]);
+
+				w.readMin[a] = lo;
+				w.readMax[a] = w.bBilinear ? hi - c_one : hi - 1;
+
+				if (w.readMax[a] < w.readMin[a])				// Less than a pixel wide.
+				{
+					w.readMin[a] = w.bBilinear ? (lo + hi) / 2 - c_one / 2 : lo;
+					w.readMax[a] = w.readMin[a];
+				}
+			}
 
 			SampleMethod sampleMethod = w.bBilinear ? SampleMethod::Bilinear : SampleMethod::Nearest;
 			ReadOp readOp = w.bTileRead ? ReadOp::Tile : ReadOp::Normal;
@@ -1133,9 +1153,9 @@ namespace wg
 	/*
 		Reads the blit source for positions (x,y), (x+dx, y+dy) ... in pixels of the source rectangle,
 		wrapped into the periods with a center in the gap between copies in the nearest one (see
-		WarpSetup::colorLow). A non-tiling surface is read as if its edge pixels continued outside
-		it, which the kernels can't do, so positions outside are clamped and read one by one. If
-		pCoverage is set, pixels without coverage are not read.
+		WarpSetup::colorLow). A non-tiling surface is read as if the edge pixels of the source
+		rectangle continued outside it, which the kernels can't do, so positions outside are clamped
+		and read one by one. If pCoverage is set, pixels without coverage are not read.
 	*/
 
 	void SoftBackend::_warpReadSpan(int64_t x, int64_t y, int64_t dx, int64_t dy, int length, HiColor* pOutput, const int* pCoverage)
@@ -1169,15 +1189,15 @@ namespace wg
 				return;
 			}
 
-			// Positions the kernel can read: within the surface, the last pixel included for bilinear
-			// (whose neighbor isn't read when exactly on it).
+			// Positions the kernel can read as they are, see WarpSetup::readMin. A bilinear kernel
+			// doesn't read the neighbor of a pixel it is exactly on.
 
-			const int64_t maxX = w.bBilinear ? (int64_t(w.surfaceSize[0] - 1) << 16) : (int64_t(w.surfaceSize[0]) << 16) - 1;
-			const int64_t maxY = w.bBilinear ? (int64_t(w.surfaceSize[1] - 1) << 16) : (int64_t(w.surfaceSize[1]) << 16) - 1;
+			const int64_t minX = w.readMin[0], maxX = w.readMax[0];
+			const int64_t minY = w.readMin[1], maxY = w.readMax[1];
 
 			int begX, endX, begY, endY;
-			linearRange(sx, dx, 0, maxX, n, begX, endX);
-			linearRange(sy, dy, 0, maxY, n, begY, endY);
+			linearRange(sx, dx, minX, maxX, n, begX, endX);
+			linearRange(sy, dy, minY, maxY, n, begY, endY);
 
 			int innerBeg = std::max(begX, begY);
 			int innerEnd = std::min(endX, endY);
@@ -1198,7 +1218,7 @@ namespace wg
 				if (pCoverage && pCoverage[begin + i] == 0)
 					continue;
 
-				read(i, 1, std::clamp(sx + dx * i, int64_t(0), maxX), std::clamp(sy + dy * i, int64_t(0), maxY));
+				read(i, 1, std::clamp(sx + dx * i, minX, maxX), std::clamp(sy + dy * i, minY, maxY));
 			}
 		});
 	}

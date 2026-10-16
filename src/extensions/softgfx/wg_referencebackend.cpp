@@ -876,9 +876,9 @@ namespace wg
 		points, and again at c_warpSamples if not all in the same segment or all outside.
 
 		Colors are taken at the center of the pixel: the blit source is sampled there by its sample
-		method, reading pixels around the source rectangle (or wrapping around the surface if it is
-		tiling), and the tints of edgemap segments are evaluated there. A center in the gap between
-		copies on a periodic axis is taken in the nearest copy.
+		method, as if the edge pixels of the source rectangle continued outside it (or wrapping around
+		the surface if it is tiling), and the tints of edgemap segments are evaluated there. A center
+		in the gap between copies on a periodic axis is taken in the nearest copy.
 	*/
 
 	static const int c_warpQuickSamples = 233;			// Fibonacci numbers, lattice steps are the ones before them.
@@ -1052,7 +1052,28 @@ namespace wg
 
 				if (!pEdgemap)
 				{
-					Color texel = _sampleSource(srcX + centerX, srcY + centerY, edgeMode);
+					// A non-tiling surface is read as if the edge pixels of the source rectangle
+					// continued outside it: positions are kept between the centers of its edge pixels
+					// when bilinear, inside it when nearest.
+
+					double readX = srcX + centerX;
+					double readY = srcY + centerY;
+
+					if (edgeMode == EdgeMode::Clamp)
+					{
+						auto keepInside = [&](double pos, double begin, double size)
+						{
+							double inset = m_pBlitSource->sampleMethod() == SampleMethod::Bilinear ? 0.5 : 1.0 / 65536;
+							double lo = begin + inset;
+							double hi = begin + size - inset;
+							return lo > hi ? begin + size / 2 : std::clamp(pos, lo, hi);
+						};
+
+						readX = keepInside(readX, srcX, srcW);
+						readY = keepInside(readY, srcY, srcH);
+					}
+
+					Color texel = _sampleSource(readX, readY, edgeMode);
 					_plotPixel(x, y, texel * tint, covered);
 					continue;
 				}
