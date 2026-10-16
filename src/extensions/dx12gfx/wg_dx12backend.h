@@ -199,6 +199,9 @@ namespace wg
 			Line,
 			Segments,		// Edgemaps.
 			Shape,			// Shapes, coverage worked out per pixel, see GpuShapes.
+			WarpEdgemap,	// Warps, coverage worked out per pixel, see warp.hlsl.
+			WarpBlit,
+			WarpPaletteBlit,
 
 			Size
 		};
@@ -258,6 +261,7 @@ namespace wg
 		void _drawLines(const uint16_t*& pCmd, const RectSPX*& pRects, const HiColor*& pColors, int nClipRects, int nLines);
 		void _drawEdgemap(const uint16_t*& pCmd, const RectSPX*& pRects, Object* const*& pObjects, int nRects, bool bTile);
 		void _drawShape(ShapeKind kind, const uint16_t* pPayload, const RectSPX* pRects, int nRects, const HiColor* pColors);
+		void _drawWarp(Command cmd, const WarpParams& params, const RectSPX* pRects, Object* const*& pObjects);
 
 		bool _isDX12Surface(const Object* pObject) const;
 		static bool _isDX12SurfaceType(const TypeInfo& type);
@@ -536,6 +540,10 @@ namespace wg
 		static const char g_segmentsPS[];
 		static const char g_shapeVS[];
 		static const char g_shapePS[];
+		static const char g_warpVS[];
+		static const char g_warpEdgemapPS[];
+		static const char g_warpBlitPS[];
+		static const char g_warpPaletteBlitPS[];
 
 	};
 
