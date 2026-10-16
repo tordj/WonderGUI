@@ -206,7 +206,7 @@ namespace wg
 			CoordSPX	begin;
 			CoordSPX	end;
 			spx			thickness = 64;
-			LineCaps	caps;						// Not both LineCap::Default, see LineCap.
+			LineCaps	caps;						// Not both LineCap::None, see LineCap.
 		};
 
 		/**

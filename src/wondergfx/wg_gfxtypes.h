@@ -447,7 +447,7 @@ namespace wg
 
 	enum class LineCapShape : uint8_t	//. autoExtras
 	{
-		Default,			// Legacy end: whole-pixel endpoint, cut along the minor axis.
+		None,				// No cap: whole-pixel endpoint, cut along the minor axis, see LineCap.
 		Flat,				// Cut square to the line at the endpoint.
 		Square,				// Cut square to the line, half a thickness beyond the endpoint.
 		Round,				// Half disc around the endpoint.

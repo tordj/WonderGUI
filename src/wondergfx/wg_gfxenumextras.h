@@ -55,7 +55,7 @@ namespace wg
 	const static CanvasRef       CanvasRef_min       = CanvasRef::None;
 	const static SampleOrigo     SampleOrigo_min     = SampleOrigo::Top;
 	const static Compression     Compression_min     = Compression::None;
-	const static LineCapShape    LineCapShape_min    = LineCapShape::Default;
+	const static LineCapShape    LineCapShape_min    = LineCapShape::None;
 
 	const static TintMode        TintMode_max        = TintMode::GradientXY;
 	const static TintShape       TintShape_max       = TintShape::Radial;

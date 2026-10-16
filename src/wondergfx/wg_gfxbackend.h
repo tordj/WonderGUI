@@ -117,7 +117,7 @@ namespace wg
 			    int32	begin x, y		spx.
 			    int32	end x, y		spx.
 			    uint16	thickness		spx.
-			    uint16	caps			See decodeLineCaps(). 0 for LineCap::Default at both ends.
+			    uint16	caps			See decodeLineCaps(). 0 for LineCap::None at both ends.
 
 			Lines with caps 0 are drawn the legacy way, see LineCap. Backends that don't support
 			caps draw all lines that way.

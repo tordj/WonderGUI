@@ -1372,7 +1372,7 @@ void GfxDeviceGen2::fill(const RectSPX& rect, HiColor color)
 
 void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness, LineCaps caps)
 {
-	if (!caps.isDefault())
+	if (!caps.isNone())
 	{
 		CoordSPX end = begin;
 

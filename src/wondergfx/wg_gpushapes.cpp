@@ -325,7 +325,7 @@ namespace wg
 			{
 				LineCapShape shape = ends[i].shape;
 
-				if (shape == LineCapShape::Default)
+				if (shape == LineCapShape::None)
 					shape = bAlongX ? LineCapShape::Vertical : LineCapShape::Horizontal;
 
 				if ((shape == LineCapShape::Vertical && ux == 0.0) || (shape == LineCapShape::Horizontal && uy == 0.0))

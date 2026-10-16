@@ -244,7 +244,7 @@ namespace
 
 	//____ Scenes _____________________________________________________________
 
-	const LineCap c_caps[] = { LineCap::Default, LineCap::Flat, LineCap::Square, LineCap::Round, LineCap::Vertical,
+	const LineCap c_caps[] = { LineCap::None, LineCap::Flat, LineCap::Square, LineCap::Round, LineCap::Vertical,
 							   LineCap::Horizontal, LineCap::Spear(50), LineCap::Spear(300) };
 	const int c_nCaps = 8;
 
@@ -302,7 +302,7 @@ LineRenderTest::~LineRenderTest()
 bool LineRenderTest::capsCodecTest(std::ostream& output)
 {
 	TEST_ASSERT(GfxBackend::encodeLineCaps(LineCaps()) == 0);
-	TEST_ASSERT(GfxBackend::encodeLineCaps(LineCaps(LineCap::Default, LineCap::Default)) == 0);
+	TEST_ASSERT(GfxBackend::encodeLineCaps(LineCaps(LineCap::None, LineCap::None)) == 0);
 
 	// Every shape at both ends.
 
@@ -340,9 +340,9 @@ bool LineRenderTest::capsCodecTest(std::ostream& output)
 		TEST_ASSERT(decoded.begin.shape == LineCapShape::Flat);
 	}
 
-	// Unused shape values decode as Default.
+	// Unused shape values decode as None.
 
-	TEST_ASSERT(GfxBackend::decodeLineCaps(0x0707).isDefault());
+	TEST_ASSERT(GfxBackend::decodeLineCaps(0x0707).isNone());
 	TEST_ASSERT(GfxBackend::encodeLineCaps(LineCaps(LineCap(LineCapShape(7)))) == 0);
 
 	return true;

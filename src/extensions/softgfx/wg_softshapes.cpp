@@ -2834,7 +2834,7 @@ namespace wg
 
 		for (LineCap& cap : caps)
 		{
-			if (cap.shape == LineCapShape::Default)
+			if (cap.shape == LineCapShape::None)
 				cap.shape = bAlongX ? LineCapShape::Vertical : LineCapShape::Horizontal;
 
 			if ((cap.shape == LineCapShape::Vertical && dirX == 0) || (cap.shape == LineCapShape::Horizontal && dirY == 0))

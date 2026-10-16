@@ -481,7 +481,7 @@ namespace wg
 
     void PluginGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness, LineCaps caps)
     {
-        if( caps.isDefault() )
+        if( caps.isNone() )
             PluginCalls::gfxDevice->drawLine(m_cDevice, { begin.x, begin.y }, { end.x, end.y }, *(wg_color*)&color, thickness);
         else
             PluginCalls::gfxDevice->drawLineWithCaps(m_cDevice, { begin.x, begin.y }, { end.x, end.y }, *(wg_color*)&color, thickness, toCLineCap(caps.begin), toCLineCap(caps.end));
@@ -489,7 +489,7 @@ namespace wg
 
     void PluginGfxDevice::drawLine(CoordSPX begin, Direction dir, int length, HiColor color, spx thickness, LineCaps caps)
     {
-        if( caps.isDefault() )
+        if( caps.isNone() )
             PluginCalls::gfxDevice->drawStraightLine(m_cDevice, { begin.x, begin.y }, (wg_direction) dir, length, * (wg_color*)&color, thickness);
         else
             PluginCalls::gfxDevice->drawStraightLineWithCaps(m_cDevice, { begin.x, begin.y }, (wg_direction) dir, length, * (wg_color*)&color, thickness, toCLineCap(caps.begin), toCLineCap(caps.end));

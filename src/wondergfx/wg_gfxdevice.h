@@ -153,7 +153,7 @@ namespace wg
 	/**
 	 * The shape of one end of a line drawn by GfxDevice::drawLine().
 	 *
-	 * A line with LineCap::Default at both ends is drawn as it always has been: its
+	 * A line with LineCap::None at both ends is drawn as it always has been: its
 	 * endpoints are rounded to whole pixels and it is cut along its minor axis there
 	 * (vertically if it runs mostly along x, otherwise horizontally).
 	 *
@@ -167,7 +167,7 @@ namespace wg
 	 *   Horizontal  Cut along a horizontal line through the endpoint.
 	 *   Spear       Pointed, with the tip on the endpoint. The line widens to its full
 	 *               thickness spearLength percent of the thickness back from the tip.
-	 *   Default     Cut along the minor axis through the endpoint.
+	 *   None        Cut along the minor axis through the endpoint.
 	 *
 	 * A Vertical or Horizontal end makes the line reach further past the endpoint the
 	 * more the line runs along the cut. A Vertical end on a line with no horizontal
@@ -188,14 +188,14 @@ namespace wg
 
 		static constexpr LineCap Spear( uint16_t lengthPercent = 200 ) { return LineCap( LineCapShape::Spear, lengthPercent ); }
 
-		static const LineCap Default;
+		static const LineCap None;
 		static const LineCap Flat;
 		static const LineCap Square;
 		static const LineCap Round;
 		static const LineCap Vertical;
 		static const LineCap Horizontal;
 
-		LineCapShape	shape = LineCapShape::Default;
+		LineCapShape	shape = LineCapShape::None;
 		uint16_t		spearLength = 200;			// Percent of thickness from tip to full width, Spear only.
 	};
 
@@ -206,7 +206,7 @@ namespace wg
 		constexpr LineCaps( LineCap both = LineCap() ) : begin(both), end(both) {}
 		constexpr LineCaps( LineCap _begin, LineCap _end ) : begin(_begin), end(_end) {}
 
-		constexpr bool	isDefault() const { return begin.shape == LineCapShape::Default && end.shape == LineCapShape::Default; }
+		constexpr bool	isNone() const { return begin.shape == LineCapShape::None && end.shape == LineCapShape::None; }
 
 		LineCap		begin;
 		LineCap		end;

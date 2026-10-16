@@ -157,7 +157,7 @@ public:
 
 	bool straightLines(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		const LineCap caps[4] = { LineCap::Default, LineCap::Flat, LineCap::Round, LineCap::Spear(150) };
+		const LineCap caps[4] = { LineCap::None, LineCap::Flat, LineCap::Round, LineCap::Spear(150) };
 		const Direction dirs[4] = { Direction::Right, Direction::Down, Direction::Left, Direction::Up };
 
 		for (int c = 0; c < 4; c++)
@@ -209,7 +209,7 @@ private:
 
 	void capGrid(GfxDevice * pDevice, const RectSPX& canvas, double thickness, double length, bool bMixed)
 	{
-		const LineCap caps[8] = { LineCap::Default, LineCap::Flat, LineCap::Square, LineCap::Round, LineCap::Vertical,
+		const LineCap caps[8] = { LineCap::None, LineCap::Flat, LineCap::Square, LineCap::Round, LineCap::Vertical,
 								  LineCap::Horizontal, LineCap::Spear(50), LineCap::Spear(300) };
 		const double angles[8] = { 0, 17, 45, 70, 90, 128, 200, 333 };
 

@@ -22,7 +22,7 @@ Positions, lengths and thickness are in spx, see *Understanding screen geometry*
 
 ## Lines without caps
 
-Without caps (LineCap::Default at both ends) a line is drawn as it always has been. Its ends are rounded to whole pixels and it runs through the middle of the pixels at begin and end. It is drawn one column of pixels at a time, from begin up to but not including end, along the axis the line mainly follows. The ends are cut along the other axis: vertically if the line runs mostly along x, horizontally otherwise. A line from a pixel to itself draws nothing.
+Without caps (LineCap::None at both ends) a line is drawn as it always has been. Its ends are rounded to whole pixels and it runs through the middle of the pixels at begin and end. It is drawn one column of pixels at a time, from begin up to but not including end, along the axis the line mainly follows. The ends are cut along the other axis: vertically if the line runs mostly along x, horizontally otherwise. A line from a pixel to itself draws nothing.
 
 This is the fastest way to draw a line. A line drawn from a position in a direction without caps is the exception: it is a fill of the rectangle it covers, placed exactly.
 
@@ -44,7 +44,7 @@ As soon as one end has another cap, the line is drawn as an exact shape:
 | `Vertical`       | Cut along a vertical line through the end.                                              |
 | `Horizontal`     | Cut along a horizontal line through the end.                                            |
 | `Spear(length)`  | Pointed, with the tip on the end, reaching full thickness *length* percent of the thickness from the tip. |
-| `Default`        | When the other end has a cap: cut along the axis the line doesn't mainly follow, through the end. |
+| `None`           | When the other end has a cap: cut along the axis the line doesn't mainly follow, through the end. |
 
 The length of a spear is 25 to 800 percent of the thickness and rounded to the nearest 25. LineCap::Spear() without a length is 200 percent. Spears of a line shorter than they are meet and cut each other short.
 

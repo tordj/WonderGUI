@@ -68,7 +68,7 @@ namespace wg
 	 *   1		begin x, y, end x, y
 	 *   2		direction x, y (of length 1), length, half the thickness
 	 *
-	 * Caps are LineCapShape, never Default, plus 8 times the length of a spear in quarters of
+	 * Caps are LineCapShape, never None, plus 8 times the length of a spear in quarters of
 	 * the thickness. A line of no length runs along x.
 	 */
 

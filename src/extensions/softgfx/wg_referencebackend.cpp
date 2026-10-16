@@ -474,7 +474,7 @@ namespace wg
 
 	//____ _drawLine() ____________________________________________________________
 	/*
-		Draws a straight line without caps (LineCap::Default at both ends), as defined by the
+		Draws a straight line without caps (LineCap::None at both ends), as defined by the
 		GfxBackend contract:
 
 		Begin and end are rounded to whole pixels. A line that mainly runs along the x-axis is
@@ -2486,7 +2486,7 @@ namespace wg
 		  Horizontal  The same with a horizontal line. Empty if the line has no vertical extent.
 		  Spear       along >= 0 and |across| <= thickness/2 * along / length, or along >= length,
 		              where length is the spear length.
-		  Default     Vertical if the line runs mostly along x (more along x than y), otherwise
+		  None        Vertical if the line runs mostly along x (more along x than y), otherwise
 		              Horizontal.
 
 		A line of zero length runs along x.
@@ -2589,7 +2589,7 @@ namespace wg
 
 			auto setupEnd = [&](End& e, LineCap cap, CoordSPX pos, double towardsX, double towardsY)
 			{
-				e.shape = cap.shape == LineCapShape::Default ? (bAlongX ? LineCapShape::Vertical : LineCapShape::Horizontal) : cap.shape;
+				e.shape = cap.shape == LineCapShape::None ? (bAlongX ? LineCapShape::Vertical : LineCapShape::Horizontal) : cap.shape;
 				e.x = pos.x / 64.0;
 				e.y = pos.y / 64.0;
 				e.dirX = towardsX;

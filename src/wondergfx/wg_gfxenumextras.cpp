@@ -296,7 +296,7 @@ namespace wg
 	const char * toString(LineCapShape i)
 	{
 		static const char * names[] = { 
-			"Default",
+			"None",
 			"Flat",
 			"Square",
 			"Round",

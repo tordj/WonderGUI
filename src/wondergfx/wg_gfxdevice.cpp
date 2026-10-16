@@ -36,7 +36,7 @@ namespace wg
 
 	const TypeInfo GfxDevice::TYPEINFO = { "GfxDevice", &Object::TYPEINFO };
 
-	const LineCap LineCap::Default		= LineCap( LineCapShape::Default );
+	const LineCap LineCap::None		= LineCap( LineCapShape::None );
 	const LineCap LineCap::Flat			= LineCap( LineCapShape::Flat );
 	const LineCap LineCap::Square		= LineCap( LineCapShape::Square );
 	const LineCap LineCap::Round		= LineCap( LineCapShape::Round );
