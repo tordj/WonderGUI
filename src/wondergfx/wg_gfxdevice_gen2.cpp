@@ -962,7 +962,6 @@ void GfxDeviceGen2::_resetCanvas()
 
 	for (size_t i = 0; i < canvasEntry.layers.size(); i++)
 	{
-		auto& info = canvasEntry.pLayerInfo->m_layers[i - 1];
 		auto& layer = canvasEntry.layers[i];
 
 		layer.objects.clear();
