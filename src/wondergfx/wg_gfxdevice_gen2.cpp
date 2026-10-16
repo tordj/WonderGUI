@@ -1376,6 +1376,9 @@ void GfxDeviceGen2::fill(const RectSPX& rect, HiColor color)
 
 void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness, LineCaps caps)
 {
+	if (dir == Direction::Undefined)
+		return;
+
 	if (!caps.isNone())
 	{
 		CoordSPX end = begin;
@@ -1386,6 +1389,7 @@ void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor 
 		case Direction::Down:	end.y += length; break;
 		case Direction::Left:	end.x -= length; break;
 		case Direction::Right:	end.x += length; break;
+		case Direction::Undefined: break;
 		}
 
 		drawLine(begin, end, color, thickness, caps);
@@ -1421,7 +1425,7 @@ void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor 
 		rect.h = thickness;
 		break;
 	case Direction::Undefined:
-		return;
+		break;
 	}
 
 	fill(rect, color);
