@@ -207,6 +207,4 @@ The software backends draw BlendFixedColor onto the fixed color, as described un
 
 The GPU backends keep canvases and other surfaces with alpha premultiplied and use dual-source blending, as described under Exactness. Colors of nearly transparent pixels therefore lose some precision when read back from them.
 
-Warps on Metal and DirectX 12 have so far only been verified by running their shaders on the CPU against SoftBackend, not on the GPU.
-
 GfxDeviceTester2 has tests for these rules in BlendRuleTests and LayerRoundTripTests, and for warps in WarpTests.
