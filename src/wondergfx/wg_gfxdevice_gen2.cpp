@@ -3180,7 +3180,7 @@ void GfxDeviceGen2::_encodeWarp(CoordSPX dest, Warpmap* pWarpmap, Edgemap* pEdge
 
 	m_pActiveLayer->latestCommand = cmd;
 
-	m_pActiveLayer->commands.secureSpace(20);
+	m_pActiveLayer->commands.secureSpace(pSource ? 36 : 20);
 
 	m_pActiveLayer->commands.pushUnchecked(uint16_t(cmd));
 	m_pActiveLayer->commands.pushUnchecked(uint16_t(nRects));
