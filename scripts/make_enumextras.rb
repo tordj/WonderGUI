@@ -13,9 +13,9 @@
 
 def replaceAutoSection( path, newContent )
 
-  lines = IO.readlines(path)
+  lines = IO.readlines(path, encoding: "UTF-8")
 
-  f = File.new( path, "w")
+  f = File.new( path, "w:UTF-8")
 
   i = 0
   until ( lines[i] =~ /^\s*\/\/\./ and lines[i] =~ /startAutoSection/ )
@@ -47,7 +47,7 @@ end
 
 def processInputFile( path, header, source )
 
-	lines = IO.readlines(path)
+	lines = IO.readlines(path, encoding: "UTF-8")
 
 	enumName = nil
 	enumBlock = ""
