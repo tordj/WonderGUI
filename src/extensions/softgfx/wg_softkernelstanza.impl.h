@@ -1694,6 +1694,17 @@ void _straight_blit(const uint8_t* WG_RESTRICT pSrc, uint8_t* WG_RESTRICT pDst, 
 	constexpr bool bFastTransparent = SRCFORMAT == SoftFormat::Undefined &&
 										READOP == SoftBackend::ReadOp::Normal && transparentOp != TransparentOp::Process;
 
+	// Fast track for opaque and transparent pixels blended onto a canvas of the same format.
+	// 8-bit channels come back unchanged when unpacked and packed again, so an opaque pixel
+	// blends into a copy of itself and a transparent one leaves the canvas as it is. Copying
+	// and skipping them saves the conversions, which matters for blits of cached content.
+
+	constexpr bool bCopyOpaque = BLEND == BlendMode::Blend && TINT == TintMode::None && READOP == SoftBackend::ReadOp::Normal &&
+								 SoftFormatInfo::pixelFormat(SRCFORMAT) == PixelFormat::ARGB_8 &&
+								 (SoftFormatInfo::pixelFormat(DSTFORMAT) == PixelFormat::ARGB_8 || SoftFormatInfo::pixelFormat(DSTFORMAT) == PixelFormat::XRGB_8) &&
+								 SoftFormatInfo::isLinear(SRCFORMAT) == SoftFormatInfo::isLinear(DSTFORMAT) &&
+								 SoftFormatInfo::isBigEndian(SRCFORMAT) == SoftFormatInfo::isBigEndian(DSTFORMAT);
+
 	// Preapare tiling and blurring
 
 	int srcX, srcY;
@@ -1783,6 +1794,55 @@ void _straight_blit(const uint8_t* WG_RESTRICT pSrc, uint8_t* WG_RESTRICT pDst, 
 				srcX &= maskX;
 				srcY &= maskY;
 				pSrc = pSrcSurf->pixels() + srcY * yPitch + srcX * xPitch;
+			}
+
+			if constexpr(bCopyOpaque)
+			{
+				uint8_t alpha = pSrc[_ofsA<SRCFORMAT>()];
+
+				if (alpha == 255 || alpha == 0)
+				{
+					if (alpha == 255)
+					{
+						if constexpr(SoftFormatInfo::pixelFormat(DSTFORMAT) == PixelFormat::ARGB_8)
+						{
+							// Copy all opaque pixels in a row at once, unless flipped.
+
+							if (pitches.srcX == 4 && pitches.dstX == 4)
+							{
+								int run = 1;
+								while (x + run < lineLength && pSrc[run * 4 + _ofsA<SRCFORMAT>()] == 255)
+									run++;
+
+								std::memcpy(pDst, pSrc, run * 4);
+
+								pSrc += run * 4;
+								pDst += run * 4;
+								x += run - 1;
+								continue;
+							}
+
+							std::memcpy(pDst, pSrc, 4);
+						}
+						else
+						{
+							pDst[_ofsB<DSTFORMAT>()] = pSrc[_ofsB<SRCFORMAT>()];
+							pDst[_ofsG<DSTFORMAT>()] = pSrc[_ofsG<SRCFORMAT>()];
+							pDst[_ofsR<DSTFORMAT>()] = pSrc[_ofsR<SRCFORMAT>()];
+						}
+					}
+					else if constexpr(SoftFormatInfo::pixelFormat(DSTFORMAT) == PixelFormat::ARGB_8)
+					{
+						// Blending onto a fully transparent pixel clears it.
+
+						if (pDst[_ofsA<DSTFORMAT>()] == 0)
+							std::memset(pDst, 0, 4);
+					}
+
+					pSrc += pitches.srcX;
+					pDst += pitches.dstX;
+					continue;
+				}
 			}
 
 			int16_t srcB, srcG, srcR, srcA;
