@@ -46,6 +46,7 @@
 #include "testsuites/roundedboxtests.h"
 #include "testsuites/ringtests.h"
 #include "testsuites/warptests.h"
+#include "testsuites/flattenlayerstests.h"
 
 
 using namespace wg;
@@ -240,6 +241,7 @@ void GfxDeviceTester2::setup_tests()
 	add([]() { return new RoundedBoxTests(); });
 	add([]() { return new RingTests(); });
 	add([]() { return new WarpTests(); });
+	add([]() { return new FlattenLayersTests(); });
 }
 
 //____ add_testsuite() ________________________________________________________

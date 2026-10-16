@@ -24,6 +24,7 @@ set( SOURCES
 	testsuites/ringtests.h
 	testsuites/edgemaptoolstests.h
 	testsuites/filltests.h
+	testsuites/flattenlayerstests.h
 	testsuites/layerroundtriptests.h
 	testsuites/blendruletests.h
 	testsuites/linetests.h
