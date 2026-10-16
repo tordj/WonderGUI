@@ -340,6 +340,7 @@ WarpRenderTest::WarpRenderTest()
 	ADD_TEST(opaqueCanvasTest);
 	ADD_TEST(streamTest);
 	ADD_TEST(cApiTest);
+	ADD_TEST(seamColorTest);
 }
 
 WarpRenderTest::~WarpRenderTest()
@@ -693,4 +694,52 @@ bool WarpRenderTest::cApiTest(std::ostream& output)
 	};
 
 	return compare(output, "C API", render(Backend::Soft, c), "C API", render(Backend::Soft, cpp), "C++", 0);
+}
+
+//____ seamColorTest() ________________________________________________________
+/*
+	A pixel center in the gap between the copies of the source on a periodic axis takes its colors
+	from the nearest copy, so they don't jump where the copies meet. The start of a 270 degree arc
+	of a 44 pixel ring runs exactly through pixel centers, along the diagonal down to the left of
+	the center. Rounding puts them on either side of the seam, at the start of the source or just
+	before the end of the gap, which used to read colors from wherever the position wrapped to in
+	the gap. Now both sides give colors from around the start of the source, and SoftBackend and
+	ReferenceBackend agree there.
+*/
+
+bool WarpRenderTest::seamColorTest(std::ostream& output)
+{
+	auto pRes = resourceDevice();
+
+	auto pArc = makeRing(pRes, 44, 270.f, -135.f);
+	auto pTiling = makeSurface(pRes, true, SampleMethod::Bilinear);
+	auto pClamped = makeSurface(pRes, false, SampleMethod::Bilinear);
+
+	// An edgemap without edges, its one segment a gradient across it.
+
+	HiColor color = HiColor::White;
+	Tint_p pGradient = Tint::create(HiColor(4096, 0, 0, 4096), HiColor(0, 4096, 1000, 4096), { 0.f, 0.f }, { 1.f, 0.f });
+
+	Edgemap::Blueprint bp;
+	bp.size = { 48, 24 };
+	bp.segments = 1;
+	bp.colors = &color;
+	bp.tints = &pGradient;
+
+	auto pEdgemap = pRes->edgemapFactory()->createEdgemap(bp);
+
+	auto scene = [&](GfxDevice* pDevice)
+	{
+		pDevice->setBlitSource(pTiling);
+		pDevice->warpBlit({ 2 * 64, 2 * 64 }, pArc);
+		pDevice->warpBlit({ 50 * 64, 2 * 64 }, pArc, { 8 * 64, 0, 16 * 64, 16 * 64 });
+
+		pDevice->setBlitSource(pClamped);
+		pDevice->warpBlit({ 98 * 64, 2 * 64 }, pArc);
+
+		pDevice->warpDrawEdgemap({ 2 * 64, 50 * 64 }, pArc, pEdgemap);
+		pDevice->warpDrawEdgemap({ 50 * 64, 50 * 64 }, pArc, pEdgemap, { 7 * 64, 0 });
+	};
+
+	return compare(output, "Seams", render(Backend::Soft, scene), "SoftBackend", render(Backend::Reference, scene), "ReferenceBackend", 6, 4, 12);
 }
