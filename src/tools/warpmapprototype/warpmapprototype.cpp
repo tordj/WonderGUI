@@ -20,6 +20,8 @@
 //
 // Everything is float for clarity. A library version would use fixed point in the inner loops.
 
+#define _USE_MATH_DEFINES		// For M_PI in MSVC.
+
 #include <algorithm>
 #include <chrono>
 #include <cmath>

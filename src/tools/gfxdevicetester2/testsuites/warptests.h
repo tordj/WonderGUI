@@ -46,7 +46,7 @@ public:
 
 			for (int i = 0; i <= w; i++)
 			{
-				double a = 2 * M_PI * i / w;
+				double a = 2 * 3.14159265358979323846 * i / w;
 				samples[i] = spx(std::lround(h * 0.12 * 64));
 				samples[(w + 1) + i] = spx(std::lround(h * (0.5 + 0.12 * std::sin(a * 5)) * 64));
 				samples[2 * (w + 1) + i] = spx(std::lround(h * (0.82 + 0.04 * std::sin(a * 12)) * 64));

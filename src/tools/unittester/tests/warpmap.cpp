@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES		// For M_PI in MSVC.
+
 #include "warpmap.h"
 
 #include <wondergui.h>

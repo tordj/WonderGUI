@@ -21,6 +21,8 @@
 =========================================================================*/
 
 
+#define NOMINMAX
+
 #include <wg_dx12surface.h>
 #include <wg_dx12backend.h>
 
