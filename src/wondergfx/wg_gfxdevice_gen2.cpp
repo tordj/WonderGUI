@@ -976,6 +976,11 @@ void GfxDeviceGen2::_resetCanvas()
 
 		layer.finalCommandsOfs = -1;
 	}
+
+	// Our render state is kept, so set all state-change flags to have it
+	// encoded again into the cleared layers on next command.
+
+	m_stateChanges = 0xFF;
 }
 
 
