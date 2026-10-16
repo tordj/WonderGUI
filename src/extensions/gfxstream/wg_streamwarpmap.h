@@ -62,7 +62,7 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		static const int	c_maxNodesPerChunk = 128;
+		static constexpr int	c_maxNodesPerChunk = 128;
 
 	protected:
 		StreamWarpmap( StreamEncoder * pEncoder, const Blueprint& bp );
