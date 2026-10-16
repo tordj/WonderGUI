@@ -48,7 +48,9 @@ As soon as one end has another cap, the line is drawn as an exact shape:
 
 The length of a spear is 25 to 800 percent of the thickness and rounded to the nearest 25. LineCap::Spear() without a length is 200 percent. Spears of a line shorter than they are meet and cut each other short.
 
-Vertical and horizontal cuts let the ends of lines meet without gaps or overlaps whatever their directions, which suits line charts: draw the segments of the chart with `LineCap::Vertical` and each starts where the one before ended. The more a line runs along such a cut, the further its end reaches beyond the endpoint. A vertical cut on a line that has no horizontal extent, or a horizontal cut on one with no vertical extent, leaves nothing to draw.
+Vertical and horizontal cuts let the ends of lines meet without gaps or overlaps whatever their directions, which suits line charts: draw the segments of the chart with `LineCap::Vertical` and each starts where the one before ended. The more a line runs along such a cut, the further its end reaches beyond the endpoint: a line 5 degrees off a horizontal cut reaches about 6 thicknesses beyond it, as a long point. A vertical cut on a line that has no horizontal extent, or a horizontal cut on one with no vertical extent, leaves nothing to draw.
+
+Where two lines meet inside a pixel rather than on its border, each covers part of the pixel and they are blended one after the other. That leaves a faint seam, more visible the more transparent the lines are. Let lines meet on whole pixels to avoid it, as the segments of a chart can by joining at whole pixels along x.
 
 A line with no length runs along x, so round caps make a dot and square caps a square.
 

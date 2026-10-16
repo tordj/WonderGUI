@@ -6,6 +6,9 @@
 
 // Lines with caps, see LineCap. Lines are semi-transparent where it matters, so that pixels drawn
 // twice, where parts of a line or lines meeting at a cap overlap, would show as darker spots.
+//
+// Vertical and horizontal cuts reach far beyond the end of a line that nearly follows them, so in
+// the grids of caps each line is clipped to its cell.
 
 class LineCapTests : public TestSuite
 {
@@ -126,25 +129,25 @@ public:
 		return true;
 	}
 
-	// Polylines of a chart, segments meeting at vertical caps without overlapping or leaving
-	// gaps, a semi-transparent one on top of an opaque one.
+	// Polylines of a chart, segments meeting at vertical caps on whole pixels, where they neither
+	// overlap nor leave gaps, with flat ends. Semi-transparent, so overlaps would show.
 
 	bool chartJoins(GfxDevice * pDevice, const RectSPX& canvas)
 	{
+		const int nSegments = 40;
+
 		for (int chart = 0; chart < 4; chart++)
 		{
 			double base = 70 + chart * 120;
 			double thickness = 1.5 + chart * 3.0;
 			HiColor color = chart % 2 ? HiColor(4096, 2500, 500, 2800) : HiColor(800, 3000, 4096, 2800);
 
-			double prevX = 10.3, prevY = base;
-			for (int i = 1; i <= 40; i++)
+			auto valueAt = [&](int i) { return base - 45 * std::sin(i * 0.37 + chart) * std::cos(i * 0.11); };
+
+			for (int i = 0; i < nSegments; i++)
 			{
-				double x = 10.3 + i * 12.4;
-				double y = base - 45 * std::sin(i * 0.37 + chart) * std::cos(i * 0.11);
-				lineFrom(pDevice, prevX, prevY, x, y, thickness, LineCap::Vertical, color);
-				prevX = x;
-				prevY = y;
+				LineCaps caps = { i == 0 ? LineCap::Flat : LineCap::Vertical, i == nSegments - 1 ? LineCap::Flat : LineCap::Vertical };
+				lineFrom(pDevice, 10 + i * 12, valueAt(i), 10 + (i + 1) * 12, valueAt(i + 1), thickness, caps, color);
 			}
 		}
 		return true;
@@ -221,7 +224,11 @@ private:
 				double dy = std::sin(angle) * length / 2;
 
 				LineCaps lineCaps = bMixed ? LineCaps(caps[c], caps[r]) : LineCaps(caps[c]);
+
+				RectSPX cell = { c * 64 * 64, r * 64 * 64, 64 * 64, 64 * 64 };
+				pDevice->pushClipList(1, &cell);
 				lineFrom(pDevice, cx - dx, cy - dy, cx + dx, cy + dy, thickness, lineCaps, HiColor(4096, 3000, 1200, 3000));
+				pDevice->popClipList();
 			}
 		}
 	}
