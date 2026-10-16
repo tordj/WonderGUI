@@ -1987,6 +1987,218 @@ void _straight_blit(const uint8_t* WG_RESTRICT pSrc, uint8_t* WG_RESTRICT pDst, 
 	}
 }
 
+//____ _bilinear_mix() ____________________________________________________
+//
+// Interpolates a 2x2 square of samples into one color. Weights of the samples are in
+// 12 bits, together exactly 4096. Shared by _transform_blit() and _scale_blit_bilinear(),
+// which must give the same result.
+
+struct Texel
+{
+	int16_t b, g, r, a;
+};
+
+template<bool bOpaqueSamples, bool bFast8>
+static inline void _bilinear_mix(int fracX, int fracY, const Texel& s11, const Texel& s12, const Texel& s21, const Texel& s22,
+								 int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+{
+	int mul22 = (fracX * fracY) >> 12;
+	int mul12 = fracX - mul22;
+	int mul21 = fracY - mul22;
+	int mul11 = 4096 - fracX - fracY + mul22;
+
+	if constexpr (bOpaqueSamples)
+	{
+		// All samples are opaque.
+
+		outB = (s11.b * mul11 + s12.b * mul12 + s21.b * mul21 + s22.b * mul22 + 2048) >> 12;
+		outG = (s11.g * mul11 + s12.g * mul12 + s21.g * mul21 + s22.g * mul22 + 2048) >> 12;
+		outR = (s11.r * mul11 + s12.r * mul12 + s21.r * mul21 + s22.r * mul22 + 2048) >> 12;
+		outA = s11.a;
+	}
+	else
+	{
+		// Colors are interpolated as premultiplied colors, so that transparent samples, like
+		// those outside a ClipBlit, don't bleed their color into their neighbours. Their
+		// weights are also in 12 bits, together at most 4096, for the table of reciprocals.
+
+		int alpha11 = mul11 * s11.a;
+		int alpha12 = mul12 * s12.a;
+		int alpha21 = mul21 * s21.a;
+		int alpha22 = mul22 * s22.a;
+
+		outA = (alpha11 + alpha12 + alpha21 + alpha22 + 2048) >> 12;
+
+		constexpr int alphaBits = bFast8 ? 8 : 12;
+
+		int w11 = alpha11 >> alphaBits;
+		int w12 = alpha12 >> alphaBits;
+		int w21 = alpha21 >> alphaBits;
+		int w22 = alpha22 >> alphaBits;
+		int weight = w11 + w12 + w21 + w22;
+
+		uint32_t reciprocal = SoftBackend::s_reciprocalTab[weight];		// 0 if weight is, making all 0.
+		uint32_t half = weight / 2;
+
+		outB = _divide(s11.b * w11 + s12.b * w12 + s21.b * w21 + s22.b * w22, half, reciprocal);
+		outG = _divide(s11.g * w11 + s12.g * w12 + s21.g * w21 + s22.g * w22, half, reciprocal);
+		outR = _divide(s11.r * w11 + s12.r * w12 + s21.r * w21 + s22.r * w22, half, reciprocal);
+	}
+}
+
+//____ _scale_blit_bilinear() _____________________________________________
+//
+// Fast track of _transform_blit() for bilinear scaling without rotation and flipping
+// that doesn't shrink horizontally, as when stretching an image to a larger size. The
+// sampled rows of the source are unpacked once into a buffer, instead of each pixel
+// unpacking its four samples, and pixels are written without reading the canvas when
+// blending can't change the result. Gives exactly the same result as _transform_blit().
+
+template<SoftFormat SRCFORMAT, BlendMode BLEND, SoftFormat DSTFORMAT, bool bFast8>
+void _scale_blit_bilinear(const SoftSurface* WG_RESTRICT pSrcSurf, BinalCoord pos, binalInt pixelIncX, binalInt lineIncY,
+						  uint8_t* WG_RESTRICT pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftBackend::ColTrans& tint,
+						  int16_t fixedB, int16_t fixedG, int16_t fixedR, int16_t fixedA)
+{
+	if (nLines <= 0 || lineLength <= 0)
+		return;
+
+	int srcPixelBytes = pSrcSurf->pixelBits() / 8;
+	int srcPitch = pSrcSurf->pitch();
+
+	const Color8* WG_RESTRICT pPalette = pSrcSurf->palette();
+	const HiColor* WG_RESTRICT pPalette4096 = pSrcSurf->palette4096();
+
+	// Columns of the source that are sampled, same as by _transform_blit(): the right
+	// neighbour of a sample is only read when it has a weight.
+
+	binalInt lastX = pos.x + pixelIncX * (lineLength - 1);
+	int firstColumn = int(pos.x >> BINAL_SHIFT);
+	int nColumns = int(lastX >> BINAL_SHIFT) + ((lastX & BINAL_MASK) != 0 ? 1 : 0) - firstColumn + 1;
+
+	// Buffer for two unpacked rows, which are kept as long as they are sampled.
+
+	int bufferBytes = nColumns * 4 * int(sizeof(int16_t)) * 2;
+	int16_t* pBuffer = (int16_t*)GfxBase::memStackAlloc(bufferBytes);
+
+	int16_t* pRows[2] = { pBuffer, pBuffer + nColumns * 4 };
+	int rowIndex[2] = { -1, -1 };
+
+	auto unpackRow = [&](int row, int keepRow) -> const int16_t*
+	{
+		if (rowIndex[0] == row)
+			return pRows[0];
+		if (rowIndex[1] == row)
+			return pRows[1];
+
+		int slot = rowIndex[0] == keepRow ? 1 : 0;
+
+		int16_t* p = pRows[slot];
+		const uint8_t* pPixel = pSrcSurf->pixels() + row * srcPitch + firstColumn * srcPixelBytes;
+
+		for (int i = 0; i < nColumns; i++)
+		{
+			if constexpr (bFast8)
+				_read_pixel_fast8<SRCFORMAT>(pPixel, pPalette, pPalette4096, p[0], p[1], p[2], p[3]);
+			else
+				_read_pixel<SRCFORMAT>(pPixel, pPalette, pPalette4096, p[0], p[1], p[2], p[3]);
+
+			pPixel += srcPixelBytes;
+			p += 4;
+		}
+
+		rowIndex[slot] = row;
+		return pRows[slot];
+	};
+
+	constexpr bool bOpaqueSamples = !SoftFormatInfo::hasAlpha(SRCFORMAT);
+	constexpr int16_t fullAlpha = bFast8 ? 255 : 4096;
+
+	for (int y = 0; y < nLines; y++)
+	{
+		binalInt ofsY = pos.y + lineIncY * y;
+
+		int row = int(ofsY >> BINAL_SHIFT);
+		int nextRow = (ofsY & BINAL_MASK) == 0 ? row : row + 1;
+		int fracY = int((ofsY & BINAL_MASK) >> (BINAL_SHIFT - 12));
+
+		const int16_t* pRow1 = unpackRow(row, nextRow);
+		const int16_t* pRow2 = nextRow == row ? pRow1 : unpackRow(nextRow, row);
+
+		binalInt ofsX = pos.x;
+
+		for (int x = 0; x < lineLength; x++)
+		{
+			int column = int(ofsX >> BINAL_SHIFT) - firstColumn;
+			int next = (ofsX & BINAL_MASK) == 0 ? 0 : 4;
+			int fracX = int((ofsX & BINAL_MASK) >> (BINAL_SHIFT - 12));
+
+			const int16_t* p1 = pRow1 + column * 4;
+			const int16_t* p2 = pRow2 + column * 4;
+
+			int16_t srcB, srcG, srcR, srcA;
+
+			// Opaque samples in 12 bits weigh as much as samples of an opaque source, which saves
+			// weighting them by alpha. (In 8 bits the weights are rounded, so they still need to.)
+
+			if (!bOpaqueSamples && !bFast8 && (p1[3] & p1[next + 3] & p2[3] & p2[next + 3]) == 4096)
+			{
+				int mul22 = (fracX * fracY) >> 12;
+				int mul12 = fracX - mul22;
+				int mul21 = fracY - mul22;
+				int mul11 = 4096 - fracX - fracY + mul22;
+
+				constexpr uint32_t reciprocal = 0xFFFFFFFFu / 4096;		// Total weight is 4096, as in _bilinear_mix().
+
+				srcB = _divide(p1[0] * mul11 + p1[next] * mul12 + p2[0] * mul21 + p2[next] * mul22, 2048, reciprocal);
+				srcG = _divide(p1[1] * mul11 + p1[next + 1] * mul12 + p2[1] * mul21 + p2[next + 1] * mul22, 2048, reciprocal);
+				srcR = _divide(p1[2] * mul11 + p1[next + 2] * mul12 + p2[2] * mul21 + p2[next + 2] * mul22, 2048, reciprocal);
+				srcA = 4096;
+			}
+			else
+				_bilinear_mix<bOpaqueSamples, bFast8>(fracX, fracY,
+					{ p1[0], p1[1], p1[2], p1[3] }, { p1[next], p1[next + 1], p1[next + 2], p1[next + 3] },
+					{ p2[0], p2[1], p2[2], p2[3] }, { p2[next], p2[next + 1], p2[next + 2], p2[next + 3] },
+					srcB, srcG, srcR, srcA);
+
+			// Replacing, or blending an opaque color, gives the color whatever the canvas holds.
+
+			if (BLEND == BlendMode::Replace || (BLEND == BlendMode::Blend && srcA == fullAlpha))
+			{
+				if constexpr (bFast8)
+					_write_pixel_fast8<DSTFORMAT>(pDst, srcB, srcG, srcR, srcA);
+				else
+					_write_pixel<DSTFORMAT>(pDst, srcB, srcG, srcR, srcA);
+			}
+			else
+			{
+				int16_t backB, backG, backR, backA;
+				int16_t outB, outG, outR, outA;
+
+				if constexpr (bFast8)
+				{
+					_read_pixel_fast8<DSTFORMAT>(pDst, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels_fast8<BLEND, DSTFORMAT>(tint.morphFactor, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+														  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
+					_write_pixel_fast8<DSTFORMAT>(pDst, outB, outG, outR, outA);
+				}
+				else
+				{
+					_read_pixel<DSTFORMAT>(pDst, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels<BLEND, DSTFORMAT>(tint.morphFactor, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+													outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
+					_write_pixel<DSTFORMAT>(pDst, outB, outG, outR, outA);
+				}
+			}
+
+			ofsX += pixelIncX;
+			pDst += dstPitchX;
+		}
+		pDst += dstPitchY;
+	}
+
+	GfxBase::memStackFree(bufferBytes);
+}
+
 //____ _transform_blit __________________________________________
 
 template<SoftFormat SRCFORMAT, SampleMethod SAMPLEMETHOD, TintMode TINT, BlendMode BLEND, SoftFormat DSTFORMAT, SoftBackend::ReadOp READOP>
@@ -2044,7 +2256,20 @@ void _transform_blit(const SoftSurface* WG_RESTRICT pSrcSurf, BinalCoord pos, co
 		fixedR = tint.fixedBlendColor.r;
 		fixedA = tint.fixedBlendColor.a;
 	}
-	
+
+	// Bilinear scaling without rotation and flipping that doesn't shrink horizontally
+	// has a fast track.
+
+	if constexpr(SAMPLEMETHOD == SampleMethod::Bilinear && READOP == SoftBackend::ReadOp::Normal && SRCFORMAT != SoftFormat::Undefined)
+	{
+		if (pixelIncY == 0 && lineIncX == 0 && pixelIncX > 0 && pixelIncX <= BINAL_MUL)
+		{
+			_scale_blit_bilinear<SRCFORMAT, BLEND, DSTFORMAT, bFast8>(pSrcSurf, pos, pixelIncX, lineIncY, pDst, dstPitchX, dstPitchY,
+																	  nLines, lineLength, tint, fixedB, fixedG, fixedR, fixedA);
+			return;
+		}
+	}
+
 	for (int y = 0; y < nLines; y++)
 	{
 		binalInt ofsX = (binalInt)(pos.x + lineIncX * y);
@@ -2190,55 +2415,17 @@ void _transform_blit(const SoftSurface* WG_RESTRICT pSrcSurf, BinalCoord pos, co
 					}
 				}
 
-				// Interpolate our 2x2 source colors into one source color, srcX. Weights of the
-				// samples are in 12 bits, together exactly 4096.
+				// Interpolate our 2x2 source colors into one source color, srcX.
 
 				int fracX = int((ofsX & BINAL_MASK) >> (BINAL_SHIFT - 12));
 				int fracY = int((ofsY & BINAL_MASK) >> (BINAL_SHIFT - 12));
 
-				int mul22 = (fracX * fracY) >> 12;
-				int mul12 = fracX - mul22;
-				int mul21 = fracY - mul22;
-				int mul11 = 4096 - fracX - fracY + mul22;
+				constexpr bool bOpaqueSamples = !SoftFormatInfo::hasAlpha(SRCFORMAT) && READOP != SoftBackend::ReadOp::Clip;
 
-				if constexpr (!SoftFormatInfo::hasAlpha(SRCFORMAT) && READOP != SoftBackend::ReadOp::Clip)
-				{
-					// All samples are opaque.
-
-					srcB = (src11_b * mul11 + src12_b * mul12 + src21_b * mul21 + src22_b * mul22 + 2048) >> 12;
-					srcG = (src11_g * mul11 + src12_g * mul12 + src21_g * mul21 + src22_g * mul22 + 2048) >> 12;
-					srcR = (src11_r * mul11 + src12_r * mul12 + src21_r * mul21 + src22_r * mul22 + 2048) >> 12;
-					srcA = src11_a;
-				}
-				else
-				{
-					// Colors are interpolated as premultiplied colors, so that transparent samples, like
-					// those outside a ClipBlit, don't bleed their color into their neighbours. Their
-					// weights are also in 12 bits, together at most 4096, for the table of reciprocals.
-
-					int alpha11 = mul11 * src11_a;
-					int alpha12 = mul12 * src12_a;
-					int alpha21 = mul21 * src21_a;
-					int alpha22 = mul22 * src22_a;
-
-					srcA = (alpha11 + alpha12 + alpha21 + alpha22 + 2048) >> 12;
-
-					constexpr int alphaBits = bFast8 ? 8 : 12;
-
-					int w11 = alpha11 >> alphaBits;
-					int w12 = alpha12 >> alphaBits;
-					int w21 = alpha21 >> alphaBits;
-					int w22 = alpha22 >> alphaBits;
-					int weight = w11 + w12 + w21 + w22;
-
-					uint32_t reciprocal = SoftBackend::s_reciprocalTab[weight];		// 0 if weight is, making all 0.
-					uint32_t half = weight / 2;
-
-					srcB = _divide(src11_b * w11 + src12_b * w12 + src21_b * w21 + src22_b * w22, half, reciprocal);
-					srcG = _divide(src11_g * w11 + src12_g * w12 + src21_g * w21 + src22_g * w22, half, reciprocal);
-					srcR = _divide(src11_r * w11 + src12_r * w12 + src21_r * w21 + src22_r * w22, half, reciprocal);
-				}
-
+				_bilinear_mix<bOpaqueSamples, bFast8>(fracX, fracY,
+					{ src11_b, src11_g, src11_r, src11_a }, { src12_b, src12_g, src12_r, src12_a },
+					{ src21_b, src21_g, src21_r, src21_a }, { src22_b, src22_g, src22_r, src22_a },
+					srcB, srcG, srcR, srcA);
 			}
 			else
 			{
