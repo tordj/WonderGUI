@@ -2504,7 +2504,8 @@ fragment FragOutput shapeTintmapFragmentShader_A8(ShapeFragInput in [[stage_in]]
 //   1: size of Warpmap, size of source in pixels.
 //   2: source offset in pixels of the source, periods in pixels of the source (0 if none).
 //   3: edgemaps: edges per column, offsets of flat colors, tint table and raw samples in the
-//      edgemap buffer. Blits: position of source rectangle in the surface.
+//      edgemap buffer. Blits: position of source rectangle in the surface, how far inside its
+//      edges positions are kept (0 for a tiling surface, see warpBlitCoverage()).
 //
 // The cells of the Warpmap are in its buffer, see MetalWarpmap.
 
@@ -2805,9 +2806,11 @@ fragment FragOutput warpEdgemapFragmentShader_A8(WarpFragInput in [[stage_in]],
 
 //____ Warped blits _________________________________________________________
 //
-// The source is sampled at the position of the center of the pixel, with its sample method,
-// wrapped or clamped to the texture as the sampler is set up. Gradients are given for mipmapped
-// surfaces, which the derivatives of positions that wrap would get wrong.
+// The source is sampled at the position of the center of the pixel, with its sample method.
+// A tiling surface wraps around as the sampler is set up. Any other is read as if the edge pixels
+// of the source rectangle continued outside it, by keeping positions half a texel (bilinear) or a
+// hair (nearest) inside its edges. Gradients are given for mipmapped surfaces, which the
+// derivatives of positions that wrap would get wrong.
 
 // Part of the pixel covered by the source, the position in the surface to read in s.
 
@@ -2824,6 +2827,13 @@ inline float warpBlitCoverage(constant float4 * pExtras, int ofs, constant float
 		cov *= warpAxisCoverage(s.y, float2(dx.y, dy.y), e1.w, e2.w);
 
 	s = e3.xy + warpNearestCopy(s, e1.zw, e2.zw);
+
+	if( e3.z > 0.f )
+	{
+		float2 center = e3.xy + 0.5f * e1.zw;
+		s = clamp(s, min(e3.xy + e3.z, center), max(e3.xy + e1.zw - e3.z, center));
+	}
+
 	return cov;
 }
 

@@ -10,7 +10,8 @@ cbuffer CanvasInfo : register(b0)
 // file.
 //
 // The source is sampled at the position of the center of the pixel, with its sample
-// method, wrapped or clamped to the texture by the sampler (never a clip sampler,
+// method. A tiling surface is wrapped around by the sampler, any other is kept within
+// the source rectangle by warpBlitCoverage() (and never read through a clip sampler,
 // coverage takes care of the borders of the source). Gradients are given for
 // mipmapped surfaces, which the derivatives of positions that wrap would get wrong.
 // Textures with alpha hold premultiplied colors, one without alpha (B8G8R8X8) reads

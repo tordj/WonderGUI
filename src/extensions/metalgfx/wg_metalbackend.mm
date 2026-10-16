@@ -1584,9 +1584,15 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				}
 				else
 				{
+					// A surface that isn't tiling is read as if the edge pixels of the source rectangle
+					// continued outside it, see warpBlitCoverage() in the shaders.
+
+					MetalSurface* pSurf = m_pActiveBlitSource;
+					float clampInset = pSurf->isTiling() ? 0.f : pSurf->sampleMethod() == SampleMethod::Bilinear ? 0.5f : 1.f / 256;
+
 					*pExtrasMTL++ = params.source.x / 64.f;
 					*pExtrasMTL++ = params.source.y / 64.f;
-					*pExtrasMTL++ = 0.f;
+					*pExtrasMTL++ = clampInset;
 					*pExtrasMTL++ = 0.f;
 				}
 
@@ -1635,7 +1641,8 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				else
 				{
 					// The source is read at the position of each pixel center, so it only needs to
-					// be wrapped or clamped there. Coverage takes care of its borders.
+					// be wrapped or clamped there, and the shaders keep it within the source rectangle
+					// if not tiling. Coverage takes care of its borders.
 
 					MetalSurface* pSurf = m_pActiveBlitSource;
 

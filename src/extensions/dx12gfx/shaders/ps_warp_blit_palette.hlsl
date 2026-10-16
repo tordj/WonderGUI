@@ -11,7 +11,8 @@ cbuffer CanvasInfo : register(b0)
 //
 // The texels around the position of the center of the pixel are looked up in the
 // palette before they are filtered, wrapped or clamped as the sampler would have,
-// see ps_blit_palette.hlsl. Coverage takes care of the borders of the source.
+// see ps_blit_palette.hlsl. A surface that isn't tiling is kept within the source
+// rectangle by warpBlitCoverage(). Coverage takes care of the borders of the source.
 
 
 Texture2D<uint> blitSource : register(t2);

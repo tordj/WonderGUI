@@ -11,7 +11,8 @@
 //   1: size of Warpmap, size of source in pixels.
 //   2: source offset in pixels of the source, periods in pixels of the source (0 if none).
 //   3: edgemaps: edges per column, offsets of flat colors, tint table and raw samples in
-//      the edgemap buffer. Blits: position of source rectangle in the surface.
+//      the edgemap buffer. Blits: position of source rectangle in the surface, how far inside
+//      its edges positions are kept (0 for a tiling surface, see warpBlitCoverage()).
 //
 // The cells of the Warpmap are in its buffer, see DX12Warpmap.
 //
@@ -157,7 +158,9 @@ float2 warpPosition(uint ofs, float2 p, out float2 dx, out float2 dy)
 
 
 // Part of the pixel covered by the source of a blit, the position in the surface to
-// read in s and its derivatives in dx and dy.
+// read in s and its derivatives in dx and dy. A surface that isn't tiling is read as if
+// the edge pixels of the source rectangle continued outside it, by keeping positions half
+// a texel (bilinear) or a hair (nearest) inside its edges.
 
 float warpBlitCoverage(uint ofs, float2 p, out float2 s, out float2 dx, out float2 dy)
 {
@@ -173,6 +176,12 @@ float warpBlitCoverage(uint ofs, float2 p, out float2 s, out float2 dx, out floa
         cov *= warpAxisCoverage(pos.y, float2(dx.y, dy.y), e1.w, e2.w);
 
     s = e3.xy + warpNearestCopy(pos, e1.zw, e2.zw);
+
+    if (e3.z > 0.0f)
+    {
+        float2 center = e3.xy + 0.5f * e1.zw;
+        s = clamp(s, min(e3.xy + e3.z, center), max(e3.xy + e1.zw - e3.z, center));
+    }
 
     return cov;
 }

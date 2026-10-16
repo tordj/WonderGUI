@@ -3065,7 +3065,14 @@ namespace wg
 		if (pEdgemap)
 			*m_pExtrasPtr++ = { float(pEdgemap->m_nbSegments - 1), float(pEdgemap->_flatColorsOfs()), float(pEdgemap->_tintTableOfs()), float(pEdgemap->_rawSamplesOfs()) };
 		else
-			*m_pExtrasPtr++ = { params.source.x / 64.f, params.source.y / 64.f, 0.f, 0.f };
+		{
+			// A surface that isn't tiling is read as if the edge pixels of the source rectangle
+			// continued outside it, see warpBlitCoverage() in warp.hlsl.
+
+			float clampInset = m_pBlitSource->isTiling() ? 0.f : m_pBlitSource->sampleMethod() == SampleMethod::Bilinear ? 0.5f : 1.f / 256;
+
+			*m_pExtrasPtr++ = { params.source.x / 64.f, params.source.y / 64.f, clampInset, 0.f };
+		}
 
 		// A quad for the part of each clip rectangle covered by the Warpmap.
 
