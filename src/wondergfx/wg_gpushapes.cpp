@@ -24,6 +24,7 @@
 #include <wg_tinttools.h>
 
 #include <algorithm>
+#include <cmath>
 #include <vector>
 
 namespace wg
@@ -295,5 +296,96 @@ namespace wg
 
 			return 0;
 		}
-	}
+	
+		//____ writeLine() ____________________________________________________
+
+		int writeLine(CoordSPX begin, CoordSPX end, spx thickness, LineCaps caps, float* pEntries, CoordF* pQuad)
+		{
+			if (thickness <= 0)
+				return 0;
+
+			const double dx = (end.x - double(begin.x)) / 64;
+			const double dy = (end.y - double(begin.y)) / 64;
+			const double length = std::sqrt(dx * dx + dy * dy);
+
+			const bool bAlongX = length == 0.0 || std::abs(dx) > std::abs(dy);
+			const double ux = length > 0.0 ? dx / length : 1.0;
+			const double uy = length > 0.0 ? dy / length : 0.0;
+			const double r = thickness / 128.0;
+
+			// How far each end reaches beyond its endpoint, with caps resolved.
+
+			const double c_maxReach = 65536.0;
+			double reach[2];
+			float codes[2];
+
+			LineCap ends[2] = { caps.begin, caps.end };
+
+			for (int i = 0; i < 2; i++)
+			{
+				LineCapShape shape = ends[i].shape;
+
+				if (shape == LineCapShape::Default)
+					shape = bAlongX ? LineCapShape::Vertical : LineCapShape::Horizontal;
+
+				if ((shape == LineCapShape::Vertical && ux == 0.0) || (shape == LineCapShape::Horizontal && uy == 0.0))
+					return 0;
+
+				switch (shape)
+				{
+					case LineCapShape::Square:
+					case LineCapShape::Round:
+						reach[i] = r;
+						break;
+					case LineCapShape::Vertical:
+						reach[i] = std::min(r * std::abs(uy / ux), c_maxReach);
+						break;
+					case LineCapShape::Horizontal:
+						reach[i] = std::min(r * std::abs(ux / uy), c_maxReach);
+						break;
+					default:
+						reach[i] = 0.0;
+						break;
+				}
+
+				int spear = shape == LineCapShape::Spear ? std::min(std::max((ends[i].spearLength + 12) / 25, 1), 32) : 0;
+				codes[i] = float(int(shape) + 8 * spear);
+			}
+
+			pEntries[0] = float(c_lineKind);
+			pEntries[1] = codes[0];
+			pEntries[2] = codes[1];
+			pEntries[3] = 0.f;
+
+			pEntries[4] = float(begin.x / 64.0);
+			pEntries[5] = float(begin.y / 64.0);
+			pEntries[6] = float(end.x / 64.0);
+			pEntries[7] = float(end.y / 64.0);
+
+			pEntries[8] = float(ux);
+			pEntries[9] = float(uy);
+			pEntries[10] = float(length);
+			pEntries[11] = float(r);
+
+			// Quad around the band from reach before begin to reach after end, a pixel and a half
+			// wider all around, so that it holds all pixels touched even with its corners rounded.
+
+			const double margin = 1.5;
+			const double a0 = -reach[0] - margin;
+			const double a1 = length + reach[1] + margin;
+			const double w = r + margin;
+
+			const double bx = begin.x / 64.0;
+			const double by = begin.y / 64.0;
+
+			auto corner = [&](double a, double across) { return CoordF(float(bx + a * ux - across * uy), float(by + a * uy + across * ux)); };
+
+			pQuad[0] = corner(a0, -w);
+			pQuad[1] = corner(a1, -w);
+			pQuad[2] = corner(a1, w);
+			pQuad[3] = corner(a0, w);
+
+			return c_lineEntries;
+		}
+}
 }

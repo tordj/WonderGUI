@@ -1579,6 +1579,131 @@ WG_GL_CANVAS_BLOCK
 "	if (band > 0.0)																	" \
 "		ringElements(ofs, int(head.z), ofs + int(head.w), band, p, v, d, acc, covered);	" \
 "}																					" \
+"float polygonCoverage(vec3 planes[6], int count)									" \
+"{																					" \
+"	bool bInside = true;															" \
+"	for (int i = 0; i < count; i++)													" \
+"	{																				" \
+"		if (planes[i].z <= -0.7072)													" \
+"			return 0.0;																" \
+"		if (planes[i].z < 0.7072)													" \
+"			bInside = false;														" \
+"	}																				" \
+"	if (bInside)																	" \
+"		return 1.0;																	" \
+"	vec2 v[10];																		" \
+"	vec2 o[10];																		" \
+"	int nv = 4;																		" \
+"	v[0] = vec2(-0.5, -0.5);														" \
+"	v[1] = vec2(0.5, -0.5);															" \
+"	v[2] = vec2(0.5, 0.5);															" \
+"	v[3] = vec2(-0.5, 0.5);															" \
+"	for (int i = 0; i < count; i++)													" \
+"	{																				" \
+"		vec3 pl = planes[i];														" \
+"		if (pl.z >= 0.7072)															" \
+"			continue;																" \
+"		int no = 0;																	" \
+"		for (int k = 0; k < nv; k++)												" \
+"		{																			" \
+"			vec2 a = v[k];															" \
+"			vec2 b = v[k + 1 < nv ? k + 1 : 0];										" \
+"			float fa = pl.z + dot(a, pl.xy);										" \
+"			float fb = pl.z + dot(b, pl.xy);										" \
+"			if (fa >= 0.0)															" \
+"				o[no++] = a;														" \
+"			if ((fa >= 0.0) != (fb >= 0.0))											" \
+"				o[no++] = a + (b - a) * (fa / (fa - fb));							" \
+"		}																			" \
+"		nv = no;																	" \
+"		if (nv < 3)																	" \
+"			return 0.0;																" \
+"		for (int k = 0; k < nv; k++)												" \
+"			v[k] = o[k];															" \
+"	}																				" \
+"	float area = 0.0;																" \
+"	for (int k = 0; k < nv; k++)													" \
+"	{																				" \
+"		vec2 a = v[k];																" \
+"		vec2 b = v[k + 1 < nv ? k + 1 : 0];											" \
+"		area += a.x * b.y - a.y * b.x;												" \
+"	}																				" \
+"	return clamp(abs(area) * 0.5, 0.0, 1.0);										" \
+"}																					" \
+"void addCapPlanes(int cap, vec2 end, vec2 u, vec2 n, float r, vec2 p, inout vec3 planes[6], inout int count)	" \
+"{																					" \
+"	vec2 d = p - end;																" \
+"	float a = dot(d, u);															" \
+"	int shape = cap & 7;															" \
+"	if (shape == 1 || shape == 3)													" \
+"		planes[count++] = vec3(u, a);												" \
+"	else if (shape == 2)															" \
+"		planes[count++] = vec3(u, a + r);											" \
+"	else if (shape == 4)															" \
+"	{																				" \
+"		float sx = u.x > 0.0 ? 1.0 : -1.0;											" \
+"		planes[count++] = vec3(sx, 0.0, d.x * sx);									" \
+"	}																				" \
+"	else if (shape == 5)															" \
+"	{																				" \
+"		float sy = u.y > 0.0 ? 1.0 : -1.0;											" \
+"		planes[count++] = vec3(0.0, sy, d.y * sy);									" \
+"	}																				" \
+"	else																			" \
+"	{																				" \
+"		float spear = float(cap >> 3) * 0.5 * r;									" \
+"		float w = dot(d, n);														" \
+"		vec2 g1 = r * u - spear * n;												" \
+"		vec2 g2 = r * u + spear * n;												" \
+"		float k = length(g1);														" \
+"		planes[count++] = vec3(g1 / k, (r * a - spear * w) / k);					" \
+"		planes[count++] = vec3(g2 / k, (r * a + spear * w) / k);					" \
+"	}																				" \
+"}																					" \
+"void lineCoverage(int ofs, vec2 p, inout vec4 acc, inout float covered)			" \
+"{																					" \
+"	vec4 head = shapeEntry(ofs);													" \
+"	vec4 ends = shapeEntry(ofs + 1);												" \
+"	vec4 dir = shapeEntry(ofs + 2);													" \
+"	vec2 u = dir.xy;																" \
+"	vec2 n = vec2(-u.y, u.x);														" \
+"	float r = dir.w;																" \
+"	int capB = int(head.y);															" \
+"	int capE = int(head.z);															" \
+"	float w = dot(p - ends.xy, n);													" \
+"	vec3 planes[6];																	" \
+"	planes[0] = vec3(-n, r - w);													" \
+"	planes[1] = vec3(n, r + w);														" \
+"	int count = 2;																	" \
+"	addCapPlanes(capB, ends.xy, u, n, r, p, planes, count);							" \
+"	int countB = count;																" \
+"	addCapPlanes(capE, ends.zw, -u, -n, r, p, planes, count);						" \
+"	float c = polygonCoverage(planes, count);										" \
+"	bool bRoundB = (capB & 7) == 3;													" \
+"	bool bRoundE = (capE & 7) == 3;													" \
+"	if (bRoundB || bRoundE)															" \
+"	{																				" \
+"		vec2 dB = p - ends.xy;														" \
+"		vec2 dE = p - ends.zw;														" \
+"		float discB = bRoundB ? circleCoverage(r, dB, length(dB)) : 0.0;			" \
+"		float discE = bRoundE ? circleCoverage(r, dE, length(dE)) : 0.0;			" \
+"		vec3 sub[6];																" \
+"		int ns = 0;																	" \
+"		for (int i = 2; i < countB; i++)											" \
+"			sub[ns++] = planes[i];													" \
+"		float regionB = max(polygonCoverage(sub, ns), discB);						" \
+"		ns = 0;																		" \
+"		for (int i = countB; i < count; i++)										" \
+"			sub[ns++] = planes[i];													" \
+"		float regionE = max(polygonCoverage(sub, ns), discE);						" \
+"		c = max(c, max(min(discB, regionE), min(discE, regionB)));					" \
+"	}																				" \
+"	if (c <= 0.0)																	" \
+"		return;																		" \
+"	vec4 col = texelFetch(colorBufferId, int(head.w));								" \
+"	acc += vec4(col.rgb * col.a, col.a) * c;										" \
+"	covered += c;																	" \
+"}																					" \
 "float shapeCoverage(int ofs, vec2 p, out vec4 acc)									" \
 "{																					" \
 "	acc = vec4(0.0);																" \
@@ -1588,6 +1713,8 @@ WG_GL_CANVAS_BLOCK
 "		boxCoverage(ofs, p, acc, covered);											" \
 "	else if (kind == 2)																" \
 "		ringCoverage(ofs, p, acc, covered);											" \
+"	else if (kind == 3)																" \
+"		lineCoverage(ofs, p, acc, covered);											" \
 "	return covered;																	" \
 "}																					"
 
