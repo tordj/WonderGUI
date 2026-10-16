@@ -302,6 +302,9 @@ typedef struct wg_gfxdevice_calls_struct
 	void				(*warpBlitRect)(wg_obj device, wg_coordSPX dest, wg_obj warpmap, const wg_rectSPX* source, wg_coordSPX sourceOffset);
 	void				(*warpDrawEdgemap)(wg_obj device, wg_coordSPX dest, wg_obj warpmap, wg_obj edgemap, wg_coordSPX sourceOffset);
 
+	void				(*drawLineWithCaps)(wg_obj device, wg_coordSPX begin, wg_coordSPX end, wg_color color, wg_spx thickness, wg_lineCap beginCap, wg_lineCap endCap);
+	void				(*drawStraightLineWithCaps)(wg_obj device, wg_coordSPX begin, wg_direction dir, wg_spx length, wg_color color, wg_spx thickness, wg_lineCap beginCap, wg_lineCap endCap);
+
 } wg_gfxdevice_calls;
 
 /*

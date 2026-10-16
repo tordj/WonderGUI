@@ -26,6 +26,8 @@ set( SOURCES
 	tests/warpmap.h
 	tests/warprender.cpp
 	tests/warprender.h
+	tests/linerender.cpp
+	tests/linerender.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})

@@ -160,8 +160,8 @@ namespace wg
 		void	fill(HiColor color) override;
 		void	fill(const RectSPX& rect, HiColor color) override;
 		
-		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64) override;
-		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness = 64) override;
+		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64, LineCaps caps = LineCaps()) override;
+		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness = 64, LineCaps caps = LineCaps()) override;
 
 		// Shapes
 

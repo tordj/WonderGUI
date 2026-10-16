@@ -112,6 +112,19 @@ typedef enum
 	WG_DIR_LEFT
 } wg_direction;
 
+//____ wg_lineCapShape ________________________________________________________
+
+typedef enum
+{
+	WG_LINECAP_DEFAULT,
+	WG_LINECAP_FLAT,
+	WG_LINECAP_SQUARE,
+	WG_LINECAP_ROUND,
+	WG_LINECAP_VERTICAL,
+	WG_LINECAP_HORIZONTAL,
+	WG_LINECAP_SPEAR
+} wg_lineCapShape;
+
 //____ wg_sampleMethod ____________________________________________________________
 
 typedef enum

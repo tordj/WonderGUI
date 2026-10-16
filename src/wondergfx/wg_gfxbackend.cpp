@@ -22,6 +22,7 @@
 #include <wg_gfxbackend.h>
 
 #include <cstring>
+#include <algorithm>
 
 namespace wg
 {
@@ -142,6 +143,45 @@ const uint16_t* GfxBackend::decodeWarp(Command cmd, const uint16_t* p, WarpParam
 		params.source = { 0,0,0,0 };
 
 	return p;
+}
+
+//____ encodeLineCaps() ___________________________________________________
+
+uint16_t GfxBackend::encodeLineCaps(LineCaps caps)
+{
+	auto encodeCap = [](LineCap cap) -> uint16_t
+	{
+		if (cap.shape > LineCapShape::Spear)
+			return 0;
+
+		uint16_t word = uint16_t(cap.shape);
+
+		if (cap.shape == LineCapShape::Spear)
+		{
+			int steps = std::min(std::max((cap.spearLength + 12) / 25, 1), 32);
+			word |= uint16_t(steps - 1) << 3;
+		}
+		return word;
+	};
+
+	return encodeCap(caps.begin) | (encodeCap(caps.end) << 8);
+}
+
+//____ decodeLineCaps() ___________________________________________________
+
+LineCaps GfxBackend::decodeLineCaps(uint16_t word)
+{
+	auto decodeCap = [](uint16_t bits) -> LineCap
+	{
+		auto shape = LineCapShape(bits & 0x7);
+		if (shape > LineCapShape::Spear)
+			return LineCap();
+
+		uint16_t spearLength = shape == LineCapShape::Spear ? uint16_t(((bits >> 3) + 1) * 25) : 200;
+		return LineCap(shape, spearLength);
+	};
+
+	return LineCaps(decodeCap(word & 0xFF), decodeCap(word >> 8));
 }
 
 } // namespace wg

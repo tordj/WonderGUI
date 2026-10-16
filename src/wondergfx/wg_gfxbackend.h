@@ -107,6 +107,23 @@ namespace wg
 		};
 
 		/*
+			Line draws lines in one color each. Layout, in 16-bit words:
+
+			  uint16	Command::Line
+			  uint16	nClipRects		Clip rectangles in rect buffer, shared by all lines.
+			  uint16	nLines			Lines that follow, each with a color in color buffer.
+			  uint16	padding
+			  per line:
+			    int32	begin x, y		spx.
+			    int32	end x, y		spx.
+			    uint16	thickness		spx.
+			    uint16	caps			See decodeLineCaps(). 0 for LineCap::Default at both ends.
+
+			Lines with caps 0 are drawn the legacy way, see LineCap. Backends that don't support
+			caps draw all lines that way.
+		*/
+
+		/*
 			WarpBlit and WarpDrawEdgemap draw the blit source or an edgemap through a Warpmap, see
 			Warpmap for how. Layout, in 16-bit words:
 
@@ -256,6 +273,13 @@ namespace wg
 		// the returned pointer at the word after its parameters.
 
 		static const uint16_t*		decodeWarp(Command cmd, const uint16_t* p, WarpParams& params);
+
+		// The caps word of a line. Bits 0-2 hold the LineCapShape of the begin and bits 8-10 that
+		// of the end. Bits 3-7 and 11-15 hold the spear lengths of the begin and end in steps of
+		// 25 percent, minus one (0 is 25%, 31 is 800%), and are 0 for other shapes.
+
+		static uint16_t				encodeLineCaps(LineCaps caps);
+		static LineCaps				decodeLineCaps(uint16_t caps);
 
 		enum class StateChange : uint8_t
 		{

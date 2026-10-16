@@ -1370,8 +1370,24 @@ void GfxDeviceGen2::fill(const RectSPX& rect, HiColor color)
 
 //____ drawLine() (start/direction) __________________________________________
 
-void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness)
+void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness, LineCaps caps)
 {
+	if (!caps.isDefault())
+	{
+		CoordSPX end = begin;
+
+		switch (dir)
+		{
+		case Direction::Up:		end.y -= length; break;
+		case Direction::Down:	end.y += length; break;
+		case Direction::Left:	end.x -= length; break;
+		case Direction::Right:	end.x += length; break;
+		}
+
+		drawLine(begin, end, color, thickness, caps);
+		return;
+	}
+
 	RectSPX rect;
 
 	switch (dir)
@@ -1408,7 +1424,7 @@ void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor 
 
 //____ drawLine() (from/to) __________________________________________
 
-void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thickness)
+void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thickness, LineCaps caps)
 {
 	if (!m_pActiveCanvas)
 	{
@@ -1455,7 +1471,7 @@ void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thic
 	commands.pushUnchecked(beg);
 	commands.pushUnchecked(end);
 	commands.pushUnchecked(uint16_t(thickness));
-	commands.pushUnchecked(uint16_t(0));						// padding
+	commands.pushUnchecked(GfxBackend::encodeLineCaps(caps));
 
 	m_pActiveLayer->colors.push_back(color);
 

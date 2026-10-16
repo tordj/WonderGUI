@@ -87,6 +87,15 @@ extern "C" {
 		wg_obj				backTint;
 	} wg_ringSpec;
 
+	//____ wg_lineCap ____________________________________________________________
+	// See LineCap.
+
+	typedef struct wg_lineCap_struct
+	{
+		wg_lineCapShape		shape;
+		int					spearLength;	// Percent of thickness from tip to full width, WG_LINECAP_SPEAR only. 25 to 800.
+	} wg_lineCap;
+
 	//____ Creation ___________________________________________________
 
 	WG_EXPORT wg_obj		wg_createGfxDevice( wg_obj backend );
@@ -175,6 +184,8 @@ extern "C" {
 
 	WG_EXPORT void			wg_drawLine(wg_obj device, wg_coordSPX begin, wg_coordSPX end, wg_color color, wg_spx thickness);
 	WG_EXPORT void			wg_drawStraightLine(wg_obj device, wg_coordSPX begin, wg_direction dir, wg_spx length, wg_color color, wg_spx thickness);
+	WG_EXPORT void			wg_drawLineWithCaps(wg_obj device, wg_coordSPX begin, wg_coordSPX end, wg_color color, wg_spx thickness, wg_lineCap beginCap, wg_lineCap endCap);
+	WG_EXPORT void			wg_drawStraightLineWithCaps(wg_obj device, wg_coordSPX begin, wg_direction dir, wg_spx length, wg_color color, wg_spx thickness, wg_lineCap beginCap, wg_lineCap endCap);
 
 	// Blit methods
 
