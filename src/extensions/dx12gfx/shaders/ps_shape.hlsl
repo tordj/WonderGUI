@@ -349,10 +349,15 @@ void ringCoverage(uint ofs, float2 p, inout float4 acc, inout float covered)
 
 float polygonCoverage(float3 planes[6], int first, int last)
 {
+    // Loop variables are declared once, as FXC lets them live on after their loops (X3078).
+
+    int i;
+    int k;
+
     bool bOutside = false;
     bool bInside = true;
 
-    for (int i = first; i < last; i++)
+    for (i = first; i < last; i++)
     {
         if (planes[i].z <= -0.7072f)
             bOutside = true;
@@ -375,7 +380,7 @@ float polygonCoverage(float3 planes[6], int first, int last)
         v[3] = float2(-0.5f, 0.5f);
 
         [loop]
-        for (int i = first; i < last && nv >= 3; i++)
+        for (i = first; i < last && nv >= 3; i++)
         {
             float3 pl = planes[i];
 
@@ -384,7 +389,7 @@ float polygonCoverage(float3 planes[6], int first, int last)
                 int no = 0;
 
                 [loop]
-                for (int k = 0; k < nv; k++)
+                for (k = 0; k < nv; k++)
                 {
                     float2 a = v[k];
                     float2 b = v[k + 1 < nv ? k + 1 : 0];
@@ -407,7 +412,7 @@ float polygonCoverage(float3 planes[6], int first, int last)
                 nv = no;
 
                 [loop]
-                for (int k = 0; k < nv; k++)
+                for (k = 0; k < nv; k++)
                     v[k] = o[k];
             }
         }
@@ -415,7 +420,7 @@ float polygonCoverage(float3 planes[6], int first, int last)
         float area = 0.0f;
 
         [loop]
-        for (int k = 0; k < nv && nv >= 3; k++)
+        for (k = 0; k < nv && nv >= 3; k++)
         {
             float2 a = v[k];
             float2 b = v[k + 1 < nv ? k + 1 : 0];
