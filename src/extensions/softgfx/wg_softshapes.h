@@ -25,6 +25,7 @@
 
 #include <wg_geo.h>
 #include <wg_gfxtypes.h>
+#include <wg_gfxdevice.h>
 
 #include <cstdint>
 #include <memory>
@@ -198,6 +199,58 @@ namespace wg
 
 		void	rasterizeRing(const Ring& ring, const RectI& clip, RowSink* pSink);
 
+		//____ Line ___________________________________________________________
+
+		struct Line
+		{
+			CoordSPX	begin;
+			CoordSPX	end;
+			spx			thickness = 64;
+			LineCaps	caps;						// Not both LineCap::None, see LineCap.
+		};
+
+		/**
+		 * How a line with caps is drawn, see prepareLine().
+		 *
+		 * Between its ends a line covers whole columns (rows if the line runs mostly along y)
+		 * across its band, which can be drawn by the line kernels. Each column from bodyBeg up
+		 * to bodyEnd is covered from pos to pos + bodyWidth across the line, in 16.16 pixels,
+		 * where pos is bodyPos at the middle of column bodyBeg and changes by bodySlope from
+		 * one column to the next (bodySlope24 with 24 binals, for placing columns further on).
+		 *
+		 * The rest, the parts around the ends or the whole line if it has no body, are drawn
+		 * by rasterizeLinePart(), each within its columns from partBeg to partEnd.
+		 */
+
+		struct LineParts
+		{
+			bool		bAlongX = true;				// Columns are pixel columns, otherwise pixel rows.
+			int			bodyBeg = 0;
+			int			bodyEnd = 0;				// bodyBeg if no body.
+			int64_t		bodyPos = 0;
+			int			bodySlope = 0;
+			int64_t		bodySlope24 = 0;
+			int			bodyWidth = 0;
+			int			nParts = 0;
+			int			partBeg[2] = { 0, 0 };
+			int			partEnd[2] = { 0, 0 };
+		};
+
+		/**
+		 * Prepares a line with caps for drawing by line kernels and rasterizeLinePart().
+		 * The geometry is as by ReferenceBackend, cap regions reaching more than 65536 pixels
+		 * beyond the ends are cut there. Returns false if there is nothing to draw.
+		 */
+
+		bool	prepareLine(const Line& line, LineParts& parts);
+
+		/**
+		 * Rasterizes a part of the line from prepareLine(), into rows within clip (pixels)
+		 * and the columns of the part. One segment, 0.
+		 */
+
+		void	rasterizeLinePart(int part, const RectI& clip, RowSink* pSink);
+
 		//.____ Buffers ___________________________________________________________
 
 		/**
@@ -277,6 +330,7 @@ namespace wg
 		class EdgeShape;
 		class RingShape;
 		class BoxShape;
+		class PolygonShape;
 
 		template<class Shape>
 		void	_rasterize(Shape& shape, int nSegments, int rowBeg, int rowEnd, int clipBeg, int clipEnd, RowSink* pSink);
@@ -339,6 +393,34 @@ namespace wg
 			int			segment;			// Segment right of the ray along a row.
 			bool		bLeft;				// Left of the center.
 		};
+
+		// Line
+
+		static constexpr int		c_lineUnitShift = 4;	// Lines are worked out in 1/16 spx.
+		static constexpr int64_t	c_maxCapReach = int64_t(1) << 26;	// 65536 pixels in 1/16 spx.
+
+		struct ProfilePoint
+		{
+			int64_t		w;					// Across the line.
+			int64_t		a;					// Along the line, where the line begins at w.
+		};
+
+		struct LinePart
+		{
+			int						columnBeg, columnEnd;			// Columns (rows if not along x) to draw.
+			int64_t					top, bottom, left, right;		// Bounds, spx.
+			std::vector<int64_t>	leftY, leftX;					// Left and right edge from top to bottom.
+			std::vector<int64_t>	rightY, rightX;
+		};
+
+		void	_capProfile(LineCap cap, int64_t r, int64_t dirX, int64_t dirY, std::vector<ProfilePoint>& profile);
+		bool	_setLinePart(LinePart& part, std::vector<int64_t>& vx, std::vector<int64_t>& vy);
+
+		std::vector<ProfilePoint>	m_profiles[2];
+		std::vector<int64_t>		m_vertexX;
+		std::vector<int64_t>		m_vertexY;
+		LinePart					m_lineParts[2];
+		bool						m_bLineAlongX = true;
 
 		void	_setupRingAngles(const Ring& ring);
 		int		_elementAt(int64_t x, int64_t y) const;

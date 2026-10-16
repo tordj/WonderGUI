@@ -2423,6 +2423,151 @@ inline void ringCoverage(constant float4 * pShape, constant float4 * pColor, int
 		ringElements(pShape, pColor, ofs, int(head.z), ofs + int(head.w), band, p, v, d, acc, covered);
 }
 
+// Lines with caps, see GpuShapes::writeLine(). Their straight edges are half-planes, each as its
+// inward normal and how far inside it the pixel center is. The part of the pixel inside them all
+// is worked out exactly, by clipping the pixel to each in turn. Round ends add their circle.
+
+inline float polygonCoverage(thread const float3 * planes, int count)
+{
+	bool bInside = true;
+	for( int i = 0 ; i < count ; i++ )
+	{
+		if( planes[i].z <= -0.7072f )
+			return 0.f;
+		if( planes[i].z < 0.7072f )
+			bInside = false;
+	}
+	if( bInside )
+		return 1.f;
+
+	float2 v[10];
+	float2 o[10];
+	int nv = 4;
+	v[0] = float2(-0.5f, -0.5f);
+	v[1] = float2(0.5f, -0.5f);
+	v[2] = float2(0.5f, 0.5f);
+	v[3] = float2(-0.5f, 0.5f);
+
+	for( int i = 0 ; i < count ; i++ )
+	{
+		float3 pl = planes[i];
+		if( pl.z >= 0.7072f )
+			continue;
+
+		int no = 0;
+		for( int k = 0 ; k < nv ; k++ )
+		{
+			float2 a = v[k];
+			float2 b = v[k + 1 < nv ? k + 1 : 0];
+			float fa = pl.z + dot(a, pl.xy);
+			float fb = pl.z + dot(b, pl.xy);
+			if( fa >= 0.f )
+				o[no++] = a;
+			if( (fa >= 0.f) != (fb >= 0.f) )
+				o[no++] = a + (b - a) * (fa / (fa - fb));
+		}
+
+		nv = no;
+		if( nv < 3 )
+			return 0.f;
+		for( int k = 0 ; k < nv ; k++ )
+			v[k] = o[k];
+	}
+
+	float area = 0.f;
+	for( int k = 0 ; k < nv ; k++ )
+	{
+		float2 a = v[k];
+		float2 b = v[k + 1 < nv ? k + 1 : 0];
+		area += a.x * b.y - a.y * b.x;
+	}
+	return clamp(abs(area) * 0.5f, 0.f, 1.f);
+}
+
+// Adds the half-planes of a cap, at end with u pointing along the line and n across it. Round
+// caps add the straight cut through the end, their circle is added by lineCoverage().
+
+inline void addCapPlanes(int cap, float2 end, float2 u, float2 n, float r, float2 p, thread float3 * planes, thread int& count)
+{
+	float2 d = p - end;
+	float a = dot(d, u);
+	int shape = cap & 7;
+
+	if( shape == 1 || shape == 3 )
+		planes[count++] = float3(u, a);
+	else if( shape == 2 )
+		planes[count++] = float3(u, a + r);
+	else if( shape == 4 )
+	{
+		float sx = u.x > 0.f ? 1.f : -1.f;
+		planes[count++] = float3(sx, 0.f, d.x * sx);
+	}
+	else if( shape == 5 )
+	{
+		float sy = u.y > 0.f ? 1.f : -1.f;
+		planes[count++] = float3(0.f, sy, d.y * sy);
+	}
+	else
+	{
+		float spear = float(cap >> 3) * 0.5f * r;
+		float w = dot(d, n);
+		float2 g1 = r * u - spear * n;
+		float2 g2 = r * u + spear * n;
+		float k = length(g1);
+		planes[count++] = float3(g1 / k, (r * a - spear * w) / k);
+		planes[count++] = float3(g2 / k, (r * a + spear * w) / k);
+	}
+}
+
+inline void lineCoverage(constant float4 * pShape, constant float4 * pColor, int ofs, float2 p, thread float4& acc, thread float& covered)
+{
+	float4 head = pShape[ofs];
+	float4 ends = pShape[ofs + 1];
+	float4 dir = pShape[ofs + 2];
+
+	float2 u = dir.xy;
+	float2 n = float2(-u.y, u.x);
+	float r = dir.w;
+	int capB = int(head.y);
+	int capE = int(head.z);
+
+	float w = dot(p - ends.xy, n);
+
+	float3 planes[6];
+	planes[0] = float3(-n, r - w);
+	planes[1] = float3(n, r + w);
+	int count = 2;
+	addCapPlanes(capB, ends.xy, u, n, r, p, planes, count);
+	int countB = count;
+	addCapPlanes(capE, ends.zw, -u, -n, r, p, planes, count);
+
+	float c = polygonCoverage(planes, count);
+
+	// A round end is the band cut through the end, together with its circle cut by the other end.
+
+	bool bRoundB = (capB & 7) == 3;
+	bool bRoundE = (capE & 7) == 3;
+
+	if( bRoundB || bRoundE )
+	{
+		float2 dB = p - ends.xy;
+		float2 dE = p - ends.zw;
+		float discB = bRoundB ? circleCoverage(r, dB, length(dB)) : 0.f;
+		float discE = bRoundE ? circleCoverage(r, dE, length(dE)) : 0.f;
+
+		float regionB = max(polygonCoverage(planes + 2, countB - 2), discB);
+		float regionE = max(polygonCoverage(planes + countB, count - countB), discE);
+		c = max(c, max(min(discB, regionE), min(discE, regionB)));
+	}
+
+	if( c <= 0.f )
+		return;
+
+	float4 col = pColor[int(head.w)];
+	acc += float4(col.rgb * col.a, col.a) * c;
+	covered += c;
+}
+
 // Coverage of the drawn segments of a shape at a pixel center, their colors in acc.
 
 inline float shapeCoverage(constant float4 * pShape, constant float4 * pColor, int ofs, float2 p, thread float4& acc)
@@ -2435,6 +2580,8 @@ inline float shapeCoverage(constant float4 * pShape, constant float4 * pColor, i
 		boxCoverage(pShape, pColor, ofs, p, acc, covered);
 	else if( kind == 2 )
 		ringCoverage(pShape, pColor, ofs, p, acc, covered);
+	else if( kind == 3 )
+		lineCoverage(pShape, pColor, ofs, p, acc, covered);
 
 	return covered;
 }

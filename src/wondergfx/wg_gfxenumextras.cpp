@@ -293,6 +293,20 @@ namespace wg
 		return names[(int)i];
 	}
 
+	const char * toString(LineCapShape i)
+	{
+		static const char * names[] = { 
+			"None",
+			"Flat",
+			"Square",
+			"Round",
+			"Vertical",
+			"Horizontal",
+			"Spear" };
+
+		return names[(int)i];
+	}
+
 
 //=========================================================================
 //. endAutoSection

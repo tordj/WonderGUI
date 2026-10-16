@@ -629,7 +629,8 @@ namespace wg
 
 				for (int line = 0; line < nLines; line++)
 				{
-					HiColor fillColor = (*pColors++).toLinear();
+					HiColor color = *pColors++;
+					HiColor fillColor = color.toLinear();
 					HiColor tintedColor = fillColor;
 
 					if( m_tintColor != HiColor::White )
@@ -645,9 +646,22 @@ namespace wg
 					p = (const uint16_t*) p32;
 
 					spx thickness = * p++;
-					p++;
+					uint16_t capsWord = *p++;
 
-					//TODO: Proper 26:6 support
+					// Lines with caps
+
+					if (capsWord != 0)
+					{
+						if (_beginCappedLine(beg, end, thickness, decodeLineCaps(capsWord), color))
+						{
+							for (int i = 0; i < nClipRects; i++)
+								_drawCappedLine(pClipRects[i] / 64, m_pCanvasPixels, m_canvasPitch);
+						}
+						continue;
+					}
+
+					// Lines without caps, from pixel to pixel.
+
 					beg = Util::roundToPixels(beg);
 					end = Util::roundToPixels(end);
 
@@ -3090,6 +3104,107 @@ namespace wg
 
 			pOp(pDst, bHorizontal ? pitch : m_canvasPixelBytes, nPixels, pPixels, m_colTrans);
 		}
+	}
+
+	//____ _beginCappedLine() __________________________________________________
+	/*
+		Prepares a line with caps for _drawCappedLine(). Returns false if nothing should be drawn.
+	*/
+
+	bool SoftBackend::_beginCappedLine(CoordSPX begin, CoordSPX end, spx thickness, LineCaps caps, HiColor color)
+	{
+		if (m_blendMode == BlendMode::Ignore)
+			return false;
+
+		auto pKernels = m_pKernels[(int)m_canvasSoftFormat];
+
+		if (!pKernels || !pKernels->pClipLineKernels[(int)m_blendMode] || !pKernels->pCoverageKernels[(int)m_blendMode] ||
+			!pKernels->pFillKernels[(int)TintMode::Flat][(int)m_blendMode])
+		{
+			char errorMsg[1024];
+
+			snprintf(errorMsg, 1024, "Failed drawLine operation. SoftBackend is missing clipLine, fill or coverage kernel for BlendMode::%s onto surface of format %s.",
+				toString(m_blendMode),
+				toString(m_canvasSoftFormat));
+
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+
+		if (!m_shapes.prepareLine({ begin, end, thickness, caps }, m_lineParts))
+			return false;
+
+		// Body, colored as lines without caps.
+
+		m_pLineOp = pKernels->pClipLineKernels[(int)m_blendMode];
+		m_pTintedLineOp = m_softTint.isFlat() ? nullptr : pKernels->pCoverageKernels[(int)m_blendMode];
+
+		m_tintedLineColor = color.toLinear();
+		m_lineColor = m_tintColor != HiColor::White ? m_tintedLineColor * m_tintColor : m_tintedLineColor;
+
+		// Ends, as shapes of one segment.
+
+		m_pShapeCoverageOp = pKernels->pCoverageKernels[(int)m_blendMode];
+
+		if (m_shapeSegments.empty())
+			m_shapeSegments.resize(1);
+
+		const uint16_t* pNoTint = nullptr;
+		const HiColor* pNoTintColors = nullptr;
+		_setupShapeSegment(m_shapeSegments[0], true, color, false, pNoTint, pNoTintColors);
+
+		return true;
+	}
+
+	//____ _drawCappedLine() ___________________________________________________
+
+	void SoftBackend::_drawCappedLine(const RectI& clip, uint8_t* pOrigin, int pitch)
+	{
+		const SoftShapes::LineParts& parts = m_lineParts;
+
+		if (parts.bodyBeg < parts.bodyEnd)
+		{
+			const bool bAlongX = parts.bAlongX;
+
+			const int majorBeg = std::max(parts.bodyBeg, bAlongX ? clip.x : clip.y);
+			const int majorEnd = std::min(parts.bodyEnd, bAlongX ? clip.x + clip.w : clip.y + clip.h);
+			const int clipStart = (bAlongX ? clip.y : clip.x) << 16;
+			const int clipEnd = (bAlongX ? clip.y + clip.h : clip.x + clip.w) << 16;
+
+			if (majorBeg < majorEnd)
+			{
+				// Skipped if outside the clip rectangle, also so that pos fits.
+
+				const int64_t pos = parts.bodyPos + ((int64_t(majorBeg - parts.bodyBeg) * parts.bodySlope24 + 128) >> 8);
+				const int64_t posLast = pos + int64_t(parts.bodySlope) * (majorEnd - majorBeg - 1);
+
+				if (std::max(pos, posLast) + parts.bodyWidth > clipStart && std::min(pos, posLast) < clipEnd)
+				{
+					const int length = majorEnd - majorBeg;
+
+					if (m_pTintedLineOp)
+						_drawTintedLine(m_pTintedLineOp, bAlongX, majorBeg, length, parts.bodyWidth, int(pos), parts.bodySlope,
+										clipStart, clipEnd, m_tintedLineColor, pOrigin, pitch);
+					else
+					{
+						const int rowInc = bAlongX ? m_canvasPixelBytes : pitch;
+						const int pixelInc = bAlongX ? pitch : m_canvasPixelBytes;
+
+						m_pLineOp(clipStart, clipEnd, pOrigin + majorBeg * rowInc, rowInc, pixelInc, length, parts.bodyWidth, int(pos),
+								  parts.bodySlope, m_lineColor, m_colTrans, { 0,0 });
+					}
+				}
+			}
+		}
+
+		ShapeSink sink;
+		sink.pBackend = this;
+		sink.pOrigin = pOrigin;
+		sink.pitch = pitch;
+		sink.rowEnd = clip.y + clip.h;
+
+		for (int i = 0; i < parts.nParts; i++)
+			m_shapes.rasterizeLinePart(i, clip, &sink);
 	}
 
 	//____ _shapeBuffer() ______________________________________________________

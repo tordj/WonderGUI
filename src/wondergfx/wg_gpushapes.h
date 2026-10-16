@@ -61,6 +61,15 @@ namespace wg
 	 *
 	 * The entries of segments are filled in by the backend: offset of color and tint block in its
 	 * color buffer, -1 if not drawn or not tinted, 0, 0.
+	 *
+	 * Lines with caps (GfxBackend::Command::Line) are shapes too, of kind 3, see writeLine():
+	 *
+	 *   0		kind 3, cap of begin, cap of end, offset of color in color buffer (filled in by backend)
+	 *   1		begin x, y, end x, y
+	 *   2		direction x, y (of length 1), length, half the thickness
+	 *
+	 * Caps are LineCapShape, never None, plus 8 times the length of a spear in quarters of
+	 * the thickness. A line of no length runs along x.
 	 */
 
 	namespace GpuShapes
@@ -101,6 +110,17 @@ namespace wg
 		 */
 
 		int		write(GfxBackend::ShapeKind kind, const uint16_t* pPayload, const HiColor* pColors, float* pEntries, Segment* pSegments);
+
+		const int	c_lineKind = 3;
+		const int	c_lineEntries = 3;
+
+		/**
+		 * Writes the entries of a line with caps and the corners of a quad on the canvas, in
+		 * pixels and in order around it, that holds every pixel it touches. Returns the number
+		 * of entries, 0 if there is nothing to draw.
+		 */
+
+		int		writeLine(CoordSPX begin, CoordSPX end, spx thickness, LineCaps caps, float* pEntries, CoordF* pQuad);
 	}
 }
 

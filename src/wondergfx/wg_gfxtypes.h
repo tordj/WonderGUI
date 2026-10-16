@@ -443,7 +443,18 @@ namespace wg
 		Spx16I
 	};
 
+	//____ LineCapShape ___________________________________________________________
 
+	enum class LineCapShape : uint8_t	//. autoExtras
+	{
+		None,				// No cap: whole-pixel endpoint, cut along the minor axis, see LineCap.
+		Flat,				// Cut square to the line at the endpoint.
+		Square,				// Cut square to the line, half a thickness beyond the endpoint.
+		Round,				// Half disc around the endpoint.
+		Vertical,			// Cut along a vertical line through the endpoint.
+		Horizontal,			// Cut along a horizontal line through the endpoint.
+		Spear				// Pointed tip on the endpoint.
+	};
 
 } // namespace wg
 

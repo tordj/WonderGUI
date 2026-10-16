@@ -357,6 +357,14 @@ namespace wg
 
 		int		_scaleLineThickness(float thickness, int slope);
 
+		// Lines with caps (Command::Line), shared with LinearBackend. _beginCappedLine() prepares a
+		// line, _drawCappedLine() draws it within one clip rectangle onto pixels where pixel (x,y)
+		// is at pOrigin + y * pitch + x * m_canvasPixelBytes. Whole columns between the ends are
+		// drawn by the line kernels, the parts around the ends as shapes, see SoftShapes::prepareLine().
+
+		bool	_beginCappedLine(CoordSPX begin, CoordSPX end, spx thickness, LineCaps caps, HiColor color);
+		void	_drawCappedLine(const RectI& clip, uint8_t* pOrigin, int pitch);
+
 		// Warps (Command::WarpBlit and WarpDrawEdgemap), shared with LinearBackend. _beginWarp()
 		// prepares a command, _drawWarp() draws it within one clip rectangle onto pixels where
 		// pixel (x,y) is at pOrigin + y * pitch + x * m_canvasPixelBytes. See wg_softbackend_warp.cpp.
@@ -494,6 +502,14 @@ namespace wg
 		std::vector<CoveragePixel>	m_coverageColumn;
 		std::vector<CoveragePixel>	m_coverageEdge;					// Edge of a fill or span of a tinted line, see _drawCoverageEdge().
 		CoverageOp_p				m_pShapeCoverageOp = nullptr;
+
+		// Lines with caps
+
+		SoftShapes::LineParts		m_lineParts;
+		ClipLineOp_p				m_pLineOp = nullptr;			// Body of line, unless tinted...
+		CoverageOp_p				m_pTintedLineOp = nullptr;		// ...by a Tint.
+		HiColor						m_lineColor;					// Linear, with tint color for m_pLineOp.
+		HiColor						m_tintedLineColor;				// Linear, for m_pTintedLineOp.
 
 		// Warps
 

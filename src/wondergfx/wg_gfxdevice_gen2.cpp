@@ -1374,8 +1374,24 @@ void GfxDeviceGen2::fill(const RectSPX& rect, HiColor color)
 
 //____ drawLine() (start/direction) __________________________________________
 
-void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness)
+void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness, LineCaps caps)
 {
+	if (!caps.isNone())
+	{
+		CoordSPX end = begin;
+
+		switch (dir)
+		{
+		case Direction::Up:		end.y -= length; break;
+		case Direction::Down:	end.y += length; break;
+		case Direction::Left:	end.x -= length; break;
+		case Direction::Right:	end.x += length; break;
+		}
+
+		drawLine(begin, end, color, thickness, caps);
+		return;
+	}
+
 	RectSPX rect;
 
 	switch (dir)
@@ -1412,7 +1428,7 @@ void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor 
 
 //____ drawLine() (from/to) __________________________________________
 
-void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thickness)
+void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thickness, LineCaps caps)
 {
 	if (!m_pActiveCanvas)
 	{
@@ -1432,7 +1448,14 @@ void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thic
 
 	auto& commands = m_pActiveLayer->commands;
 
-	if( m_pActiveLayer->latestCommand == Command::Line && commands.at(m_pActiveLayer->latestCommandOfs+4).as<uint16_t>() < 65535 )
+	// Lines are added to the latest line command, unless it is full or with or without caps when
+	// this line isn't, as backends can draw them in separate batches. The last word of the latest
+	// command is the caps of its last line.
+
+	uint16_t capsWord = GfxBackend::encodeLineCaps(caps);
+
+	if( m_pActiveLayer->latestCommand == Command::Line && commands.at(m_pActiveLayer->latestCommandOfs+4).as<uint16_t>() < 65535 &&
+		(commands.at(commands.size() - 2).as<uint16_t>() == 0) == (capsWord == 0) )
 	{
 		commands.at(m_pActiveLayer->latestCommandOfs+4).as<uint16_t>() += 1;
 	}
@@ -1459,7 +1482,7 @@ void GfxDeviceGen2::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thic
 	commands.pushUnchecked(beg);
 	commands.pushUnchecked(end);
 	commands.pushUnchecked(uint16_t(thickness));
-	commands.pushUnchecked(uint16_t(0));						// padding
+	commands.pushUnchecked(capsWord);
 
 	m_pActiveLayer->colors.push_back(color);
 

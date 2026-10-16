@@ -1696,6 +1696,9 @@ namespace wg
 	{
 		bool bDraw = _setPipeline(_pipeline(m_activeBlendMode, PipelineKind::Line)) && m_pVertexPtr != nullptr;
 
+		const RectSPX* pClipRects = pRects;
+		pRects += nClipRects;
+
 		int firstVertex = bDraw ? int(m_pVertexPtr - m_pVertexBeg) : 0;
 		int nLinesDrawn = 0;
 
@@ -1717,8 +1720,16 @@ namespace wg
 
 			pCmd = (const uint16_t*) p32;
 
-			float thickness = *pCmd++ / 64.f;
-			pCmd++;								// padding
+			spx thicknessSPX = *pCmd++;
+			uint16_t capsWord = *pCmd++;
+
+			if (capsWord != 0)
+			{
+				m_cappedLines.push_back({ beginSpx, endSpx, thicknessSPX, capsWord, col });
+				continue;
+			}
+
+			float thickness = thicknessSPX / 64.f;
 
 			if (!bDraw)
 				continue;
@@ -1848,30 +1859,117 @@ namespace wg
 
 		if (nLinesDrawn > 0 && m_bCommandListOpen)
 		{
-			for (int i = 0; i < nClipRects; i++)
+			_drawScissored(pClipRects, nClipRects, firstVertex, nLinesDrawn * 6);
+		}
+
+		if (!m_cappedLines.empty())
+		{
+			_drawCappedLines(pClipRects, nClipRects);
+			m_cappedLines.clear();
+		}
+	}
+
+	//____ _drawScissored() ____________________________________________________
+	//
+	// Draws vertices once for each clip rectangle, with the scissor set to it, then
+	// puts the scissor back to the whole canvas.
+
+	void DX12Backend::_drawScissored(const RectSPX* pClipRects, int nClipRects, int firstVertex, int nVertices)
+	{
+		for (int i = 0; i < nClipRects; i++)
+		{
+			const RectSPX& clip = pClipRects[i];
+
+			D3D12_RECT scissorRect;
+			scissorRect.left = clip.x >> 6;
+			scissorRect.top = clip.y >> 6;
+			scissorRect.right = (clip.x + clip.w) >> 6;
+			scissorRect.bottom = (clip.y + clip.h) >> 6;
+
+			m_commandList->RSSetScissorRects(1, &scissorRect);
+			m_commandList->DrawInstanced(nVertices, 1, firstVertex, 0);
+		}
+
+		// Back to the whole canvas, which is what everything else expects.
+
+		D3D12_RECT fullRect = {};
+		fullRect.right = (LONG) m_activeCanvasSize.w;
+		fullRect.bottom = (LONG) m_activeCanvasSize.h;
+
+		m_commandList->RSSetScissorRects(1, &fullRect);
+	}
+
+	//____ _drawCappedLines() __________________________________________________
+	//
+	// Lines with caps, drawn by the shape shaders in a quad around each, see
+	// GpuShapes::writeLine(). As for shapes, their colors are written as given and
+	// the tint color comes with the white color of the vertices.
+
+	void DX12Backend::_drawCappedLines(const RectSPX* pClipRects, int nClipRects)
+	{
+		ID3D12PipelineState* pPipeline = _pipeline(m_activeBlendMode, PipelineKind::Shape);
+
+		if (!pPipeline || !m_pVertexPtr || !m_pColorPtr || !m_pExtrasPtr)
+			return;
+
+		int colorOfs = _addColor(HiColor::White);
+		if (colorOfs < 0)
+			return;
+
+		int firstVertex = int(m_pVertexPtr - m_pVertexBeg);
+		int nLinesDrawn = 0;
+
+		for (const CappedLine& line : m_cappedLines)
+		{
+			if (m_pExtrasEnd - m_pExtrasPtr < GpuShapes::c_lineEntries || m_pVertexEnd - m_pVertexPtr < 6 || m_pColorPtr == m_pColorEnd)
 			{
-				const RectSPX& clip = *pRects++;
-
-				D3D12_RECT scissorRect;
-				scissorRect.left = clip.x >> 6;
-				scissorRect.top = clip.y >> 6;
-				scissorRect.right = (clip.x + clip.w) >> 6;
-				scissorRect.bottom = (clip.y + clip.h) >> 6;
-
-				m_commandList->RSSetScissorRects(1, &scissorRect);
-				m_commandList->DrawInstanced(nLinesDrawn * 6, 1, firstVertex, 0);
+				static bool bReported = false;
+				if (!bReported && _blameSessionInfo())
+				{
+					GfxBase::throwError(ErrorLevel::Error, ErrorCode::ResourceExhausted, "Buffer full, lines dropped. SessionInfo underestimated what the session needs.",
+						this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					bReported = true;
+				}
+				break;
 			}
 
-			// Back to the whole canvas, which is what everything else expects.
+			ExtrasDX12* pEntries = m_pExtrasPtr;
+			CoordF quad[4];
 
-			D3D12_RECT fullRect = {};
-			fullRect.right = (LONG) m_activeCanvasSize.w;
-			fullRect.bottom = (LONG) m_activeCanvasSize.h;
+			int nEntries = GpuShapes::writeLine(line.begin, line.end, line.thickness, decodeLineCaps(line.caps), (float*) pEntries, quad);
+			if (nEntries == 0)
+				continue;
 
-			m_commandList->RSSetScissorRects(1, &fullRect);
+			pEntries[0].w = float(m_pColorPtr - m_pColorBeg);
+			line.color.toLinearFloat(&m_pColorPtr->r);
+			m_pColorPtr++;
+
+			int extrasOfs = int(pEntries - m_pExtrasBeg);
+			m_pExtrasPtr += nEntries;
+
+			const int corners[6] = { 0, 1, 2, 0, 2, 3 };
+
+			for (int vertex = 0; vertex < 6; vertex++)
+			{
+				const CoordF& corner = quad[corners[vertex]];
+
+				m_pVertexPtr->x = corner.x;
+				m_pVertexPtr->y = corner.y;
+				m_pVertexPtr->colorOfs = (uint32_t) colorOfs;
+				m_pVertexPtr->extrasOfs = (uint32_t) extrasOfs;
+				m_pVertexPtr->u = 0.f;
+				m_pVertexPtr->v = 0.f;
+
+				m_pVertexPtr++;
+			}
+
+			nLinesDrawn++;
 		}
-		else
-			pRects += nClipRects;
+
+		if (nLinesDrawn == 0 || !_setPipeline(pPipeline) || !m_bCommandListOpen)
+			return;
+
+		_drawScissored(pClipRects, nClipRects, firstVertex, nLinesDrawn * 6);
 	}
 
 	//____ _addColor() _________________________________________________________
@@ -3402,9 +3500,9 @@ namespace wg
 			const int c_maxTintStops = Tint::c_maxMixComponents * Tint::c_maxStops;
 			const int c_tintBlockOverhead = TintTools::gpuTintBlockMaxSize(Tint::c_maxMixComponents, c_maxTintStops) - c_maxTintStops;
 
-			nColors = pInfo->nColors + pInfo->nBlit + pInfo->nBlur + pInfo->nEdgemapDraws + pInfo->nShapeDraws + pInfo->nWarpDraws
+			nColors = pInfo->nColors + pInfo->nBlit + pInfo->nBlur + pInfo->nEdgemapDraws + pInfo->nShapeDraws + pInfo->nWarpDraws + pInfo->nLines
 					+ (pInfo->nStateChanges + pInfo->nShapeTints) * c_tintBlockOverhead;
-			nExtras = pInfo->nRects * 2 + nLines + pInfo->nBlur * 18 + pInfo->nEdgemapDraws * 2 + pInfo->nWarpDraws * 4 + GpuShapes::maxSessionEntries(*pInfo);
+			nExtras = pInfo->nRects * 2 + nLines * GpuShapes::c_lineEntries + pInfo->nBlur * 18 + pInfo->nEdgemapDraws * 2 + pInfo->nWarpDraws * 4 + GpuShapes::maxSessionEntries(*pInfo);
 		}
 		else
 		{

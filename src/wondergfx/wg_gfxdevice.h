@@ -149,6 +149,69 @@ namespace wg
 		Tint*				pBackTint = nullptr;
 	};
 
+	//____ LineCap ____________________________________________________________
+	/**
+	 * The shape of one end of a line drawn by GfxDevice::drawLine().
+	 *
+	 * A line with LineCap::None at both ends is drawn as it always has been: its
+	 * endpoints are rounded to whole pixels and it is cut along its minor axis there
+	 * (vertically if it runs mostly along x, otherwise horizontally).
+	 *
+	 * Once either end has another cap, the line is placed with subpixel precision and
+	 * its ends are shaped as follows:
+	 *
+	 *   Flat        Cut square to the line through the endpoint.
+	 *   Square      Cut square to the line, half the thickness beyond the endpoint.
+	 *   Round       A half disc with the diameter of the thickness, centered on the endpoint.
+	 *   Vertical    Cut along a vertical line through the endpoint.
+	 *   Horizontal  Cut along a horizontal line through the endpoint.
+	 *   Spear       Pointed, with the tip on the endpoint. The line widens to its full
+	 *               thickness spearLength percent of the thickness back from the tip.
+	 *   None        Cut along the minor axis through the endpoint.
+	 *
+	 * A Vertical or Horizontal end makes the line reach further past the endpoint the
+	 * more the line runs along the cut. A Vertical end on a line with no horizontal
+	 * extent, and a Horizontal end on one with no vertical extent, leave nothing to draw.
+	 *
+	 * Spears that are longer than the line overlap and are cut short by each other.
+	 * A line of zero length is taken to run along x, so round ends draw a dot and
+	 * square ends a square.
+	 *
+	 * spearLength is only used by Spear. It is 25 to 800 percent of the thickness and
+	 * is rounded to the nearest multiple of 25.
+	 */
+
+	struct LineCap
+	{
+		constexpr LineCap() {}
+		constexpr LineCap( LineCapShape _shape, uint16_t _spearLength = 200 ) : shape(_shape), spearLength(_spearLength) {}
+
+		static constexpr LineCap Spear( uint16_t lengthPercent = 200 ) { return LineCap( LineCapShape::Spear, lengthPercent ); }
+
+		static const LineCap None;
+		static const LineCap Flat;
+		static const LineCap Square;
+		static const LineCap Round;
+		static const LineCap Vertical;
+		static const LineCap Horizontal;
+
+		LineCapShape	shape = LineCapShape::None;
+		uint16_t		spearLength = 200;			// Percent of thickness from tip to full width, Spear only.
+	};
+
+	//____ LineCaps ___________________________________________________________
+
+	struct LineCaps
+	{
+		constexpr LineCaps( LineCap both = LineCap() ) : begin(both), end(both) {}
+		constexpr LineCaps( LineCap _begin, LineCap _end ) : begin(_begin), end(_end) {}
+
+		constexpr bool	isNone() const { return begin.shape == LineCapShape::None && end.shape == LineCapShape::None; }
+
+		LineCap		begin;
+		LineCap		end;
+	};
+
 	//____ CanvasInfo _________________________________________________________
 
 	struct CanvasInfo
@@ -268,8 +331,8 @@ namespace wg
 		virtual void	fill(HiColor color) = 0;
 		virtual void	fill( const RectSPX& rect, HiColor color ) = 0;
 
-	 	virtual void	drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64 ) = 0;
-		virtual void	drawLine( CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness = 64 ) = 0;
+	 	virtual void	drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64, LineCaps caps = LineCaps() ) = 0;
+		virtual void	drawLine( CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness = 64, LineCaps caps = LineCaps() ) = 0;
 
 		// Shapes
 

@@ -22,6 +22,8 @@ set( SOURCES
 	testsuites/edgemaptinttests.h
 	testsuites/roundedboxtests.h
 	testsuites/ringtests.h
+	testsuites/warptests.h
+	testsuites/linecaptests.h
 	testsuites/edgemaptoolstests.h
 	testsuites/filltests.h
 	testsuites/flattenlayerstests.h

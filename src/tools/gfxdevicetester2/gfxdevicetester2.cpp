@@ -47,6 +47,7 @@
 #include "testsuites/ringtests.h"
 #include "testsuites/warptests.h"
 #include "testsuites/flattenlayerstests.h"
+#include "testsuites/linecaptests.h"
 
 
 using namespace wg;
@@ -242,6 +243,7 @@ void GfxDeviceTester2::setup_tests()
 	add([]() { return new RingTests(); });
 	add([]() { return new WarpTests(); });
 	add([]() { return new FlattenLayersTests(); });
+	add([]() { return new LineCapTests(); });
 }
 
 //____ add_testsuite() ________________________________________________________

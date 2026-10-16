@@ -413,12 +413,27 @@ namespace wg
 						p = (const uint16_t*) p32;
 
 						spx thickness = *p++;
-						p++;
+						uint16_t capsWord = *p++;
 
 						HiColor col = * pColors++;
 
 						*m_pOStream << "        from (" << beg.x << ", " << beg.y << ") to (" << end.x << ", " << end.y << ") with thickness " << thickness
-									<< " and color " << col.r << ", " << col.g << ", " << col.b << ", " << col.a << std::endl;
+									<< " and color " << col.r << ", " << col.g << ", " << col.b << ", " << col.a;
+
+						if (capsWord != 0)
+						{
+							LineCaps caps = GfxBackend::decodeLineCaps(capsWord);
+
+							*m_pOStream << ", caps " << toString(caps.begin.shape);
+							if (caps.begin.shape == LineCapShape::Spear)
+								*m_pOStream << "(" << caps.begin.spearLength << "%)";
+
+							*m_pOStream << " and " << toString(caps.end.shape);
+							if (caps.end.shape == LineCapShape::Spear)
+								*m_pOStream << "(" << caps.end.spearLength << "%)";
+						}
+
+						*m_pOStream << std::endl;
 					}
 
 					break;

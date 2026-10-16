@@ -2530,4 +2530,554 @@ namespace wg
 		_rasterize(shape, c_ringFirstSliceSegment + ring.nSlices, rowBeg, rowEnd, clipBeg, clipEnd, pSink);
 	}
 
+
+	//____ PolygonShape _______________________________________________________
+	/*
+		A convex polygon, given as its left and right edge flattened in advance from its top
+		to its bottom. Edge ids: 0 left, 1 right.
+	*/
+
+	class SoftShapes::PolygonShape : public SoftShapes::EdgeShape
+	{
+	public:
+		Polyline	left;
+		Polyline	right;
+		int64_t		splits[2];
+
+		int edges(int64_t ya, int64_t yb, EdgeDef* pEdges) const
+		{
+			if (ya < splits[0] || yb > splits[1])
+				return 0;
+
+			pEdges[0] = { 0, 0, false, -1, 0, const_cast<Polyline*>(&left) };
+			pEdges[1] = { 1, -1, false, -1, 0, const_cast<Polyline*>(&right) };
+			return 2;
+		}
+
+		int64_t x(const EdgeDef& edge, int64_t y)
+		{
+			return _polylineX(edge.id == 0 ? left : right, y);
+		}
+
+		bool split(const EdgeDef& edge, int64_t ya, int64_t xa, int64_t yb, int64_t xb, int64_t& y)
+		{
+			return false;
+		}
+
+		int uniformEnd(int row) const
+		{
+			return row + 1;
+		}
+	};
+
+	//____ Lines ______________________________________________________________
+	/*
+		Lines with caps, see LineCap, are worked out in the frame of an end: 'a' along the line
+		towards the other end and 'w' across it, to the left of the direction of the line as
+		seen on the canvas (y pointing down). In that frame the line is the band |w| <= r, cut
+		by each end at a = f(w), the profile of its cap. Profiles are convex and piecewise
+		straight, round caps flattened into chords.
+
+		Where the profile of the first end, the one with the lower column, last reaches
+		(its highest column) the band covers whole columns until the profile of the other end
+		begins. Those columns are drawn by the line kernels, the parts around the ends as
+		convex polygons: the band cut by the profile of the end and a straight cut beyond its
+		columns. If the ends leave no whole columns between them, the whole line is one
+		polygon, the band between both profiles.
+
+		All values are in 1/16 spx, from the end and the direction of the line scaled to
+		2^29 -> 2^30, so integer math neither overflows nor loses precision. Directions and
+		vertices are rounded, to within 1/256 pixel.
+	*/
+
+	namespace
+	{
+		// Position on the canvas, spx, of the point a along and w across a line from px, py
+		// in direction ux, uy (2.30), in 1/16 spx.
+
+		inline void lineToCanvas(int64_t px, int64_t py, int64_t ux, int64_t uy, int64_t a, int64_t w, int64_t& x, int64_t& y)
+		{
+			const int64_t half = int64_t(1) << 33;
+			x = px + ((a * ux - w * uy + half) >> 34);
+			y = py + ((a * uy + w * ux + half) >> 34);
+		}
+
+		// Value of a profile at w, between its first and last point.
+
+		template<class Profile>
+		inline int64_t profileAt(const Profile& profile, int64_t w)
+		{
+			size_t i = 1;
+			while (i < profile.size() - 1 && profile[i].w < w)
+				i++;
+
+			const auto& p0 = profile[i - 1];
+			const auto& p1 = profile[i];
+
+			if (p1.w == p0.w)
+				return std::min(p0.a, p1.a);
+
+			return p0.a + (p1.a - p0.a) * (w - p0.w) / (p1.w - p0.w);
+		}
+	}
+
+	//____ _capProfile() ______________________________________________________
+	/*
+		Profile of a cap from w = -r to r. dirX and dirY is the direction of the line, either
+		way. Vertical and Horizontal ends need it to have some extent along x or y.
+	*/
+
+	void SoftShapes::_capProfile(LineCap cap, int64_t r, int64_t dirX, int64_t dirY, std::vector<ProfilePoint>& profile)
+	{
+		profile.clear();
+
+		auto add = [&](int64_t w, int64_t a)
+		{
+			profile.push_back({ w, std::min(std::max(a, -c_maxCapReach), c_maxCapReach) });
+		};
+
+		switch (cap.shape)
+		{
+			case LineCapShape::Square:
+				add(-r, -r);
+				add(r, -r);
+				break;
+
+			case LineCapShape::Vertical:					// Through the end along y: a = w * dirY / dirX.
+			{
+				const int64_t a = r * dirY / dirX;
+				add(-r, -a);
+				add(r, a);
+				break;
+			}
+
+			case LineCapShape::Horizontal:					// Through the end along x: a = -w * dirX / dirY.
+			{
+				const int64_t a = r * dirX / dirY;
+				add(-r, a);
+				add(r, -a);
+				break;
+			}
+
+			case LineCapShape::Spear:						// Tip on the end, full width at spearLength percent of thickness.
+			{
+				const int64_t length = r * std::min(std::max(int(cap.spearLength), 25), 800) / 50;
+				add(-r, length);
+				add(0, 0);
+				add(r, length);
+				break;
+			}
+
+			case LineCapShape::Round:
+			{
+				// Half circle into chords as in _quarter(), vertices between the ends moved out
+				// by half the sagitta.
+
+				const int64_t rSpx = r >> c_lineUnitShift;
+				const int64_t halves = rSpx >= 64 * 64 ? 2 : 1;
+
+				int n = 2 * std::max(int((isqrt(uint64_t(rSpx * halves / c_maxSagitta)) * 569 + 1023) >> 10), 1);
+
+				const int64_t cosHalfStep = _sin30(uint32_t((int64_t(1) << 30) / n) + 0x40000000);
+				const int64_t rOut = (r << 31) / ((int64_t(1) << 30) + cosHalfStep);		// 2r / (1 + cos(angle / 2)), 1/2^30.
+
+				for (int k = 0; k <= n; k++)
+				{
+					const uint32_t angle = uint32_t((int64_t(k) << 31) / n);				// Half a turn over the profile.
+					const int64_t sin30 = _sin30(angle);
+					const int64_t cos30 = _sin30(angle + 0x40000000);
+
+					if (k == 0 || k == n)
+						add((-r * cos30 + (1 << 29)) >> 30, 0);
+					else
+						add((-rOut * cos30 + (int64_t(1) << 29)) >> 30, (-rOut * sin30 + (int64_t(1) << 29)) >> 30);
+				}
+				break;
+			}
+
+			default:										// Flat
+				add(-r, 0);
+				add(r, 0);
+				break;
+		}
+	}
+
+	//____ _setLinePart() _____________________________________________________
+	/*
+		Sets the left and right edge of a part of a line from the vertices of its convex polygon,
+		in either order around it. Returns false if it covers no area.
+	*/
+
+	bool SoftShapes::_setLinePart(LinePart& part, std::vector<int64_t>& vx, std::vector<int64_t>& vy)
+	{
+		// Drop vertices repeated by rounding.
+
+		size_t n = 0;
+		for (size_t i = 0; i < vx.size(); i++)
+		{
+			if (n > 0 && vx[i] == vx[n - 1] && vy[i] == vy[n - 1])
+				continue;
+			vx[n] = vx[i];
+			vy[n] = vy[i];
+			n++;
+		}
+
+		while (n > 1 && vx[n - 1] == vx[0] && vy[n - 1] == vy[0])
+			n--;
+
+		if (n < 3)
+			return false;
+
+		// Twice the area, positive if clockwise on the canvas, which has y pointing down.
+
+		int64_t area = 0;
+		for (size_t i = 0; i < n; i++)
+		{
+			const size_t j = (i + 1) % n;
+			area += (vx[i] - vx[0]) * (vy[j] - vy[0]) - (vx[j] - vx[0]) * (vy[i] - vy[0]);
+		}
+
+		if (area == 0)
+			return false;
+
+		size_t top = 0;
+		part.top = vy[0];
+		part.bottom = vy[0];
+		part.left = vx[0];
+		part.right = vx[0];
+
+		for (size_t i = 1; i < n; i++)
+		{
+			if (vy[i] < part.top)
+			{
+				part.top = vy[i];
+				top = i;
+			}
+			part.bottom = std::max(part.bottom, vy[i]);
+			part.left = std::min(part.left, vx[i]);
+			part.right = std::max(part.right, vx[i]);
+		}
+
+		if (part.top == part.bottom)
+			return false;
+
+		// From the top along each way around to the bottom. Clockwise goes down the right edge.
+
+		auto walk = [&](int step, std::vector<int64_t>& ys, std::vector<int64_t>& xs)
+		{
+			ys.clear();
+			xs.clear();
+
+			size_t i = top;
+			auto next = [&](size_t k) { return (k + n + step) % n; };
+
+			while (vy[next(i)] == part.top && next(i) != top)
+				i = next(i);
+
+			ys.push_back(vy[i]);
+			xs.push_back(vx[i]);
+
+			while (vy[i] != part.bottom)
+			{
+				i = next(i);
+
+				if (vy[i] <= ys.back())
+					xs.back() = vx[i];				// Kink flattened by rounding.
+				else
+				{
+					ys.push_back(vy[i]);
+					xs.push_back(vx[i]);
+				}
+			}
+		};
+
+		walk(area > 0 ? 1 : -1, part.rightY, part.rightX);
+		walk(area > 0 ? -1 : 1, part.leftY, part.leftX);
+		return true;
+	}
+
+	//____ prepareLine() ______________________________________________________
+
+	bool SoftShapes::prepareLine(const Line& line, LineParts& parts)
+	{
+		parts.nParts = 0;
+		parts.bodyBeg = 0;
+		parts.bodyEnd = 0;
+
+		if (line.thickness <= 0)
+			return false;
+
+		CoordSPX beg = line.begin;
+		CoordSPX end = line.end;
+		LineCap caps[2] = { line.caps.begin, line.caps.end };
+
+		int64_t dx = int64_t(end.x) - beg.x;
+		int64_t dy = int64_t(end.y) - beg.y;
+
+		const bool bZero = dx == 0 && dy == 0;
+		const bool bAlongX = bZero || std::abs(dx) > std::abs(dy);
+
+		// The first end is the one with the lowest column.
+
+		if ((bAlongX ? dx : dy) < 0)
+		{
+			std::swap(beg, end);
+			std::swap(caps[0], caps[1]);
+			dx = -dx;
+			dy = -dy;
+		}
+
+		// Direction, along x if no length, scaled to 2^29 -> 2^30.
+
+		int64_t dirX = bZero ? 1 : dx;
+		int64_t dirY = bZero ? 0 : dy;
+
+		for (LineCap& cap : caps)
+		{
+			if (cap.shape == LineCapShape::None)
+				cap.shape = bAlongX ? LineCapShape::Vertical : LineCapShape::Horizontal;
+
+			if ((cap.shape == LineCapShape::Vertical && dirX == 0) || (cap.shape == LineCapShape::Horizontal && dirY == 0))
+				return false;
+		}
+
+		while (std::max(std::abs(dirX), std::abs(dirY)) >= (int64_t(1) << 30))
+		{
+			dirX /= 2;
+			dirY /= 2;
+		}
+
+		while (std::max(std::abs(dirX), std::abs(dirY)) < (int64_t(1) << 29))
+		{
+			dirX *= 2;
+			dirY *= 2;
+		}
+
+		const int64_t dirLength = isqrt(uint64_t(dirX * dirX + dirY * dirY));
+		const int64_t ux = dirX * (int64_t(1) << 30) / dirLength;
+		const int64_t uy = dirY * (int64_t(1) << 30) / dirLength;
+
+		const int64_t r = int64_t(line.thickness) << (c_lineUnitShift - 1);
+
+		_capProfile(caps[0], r, dirX, dirY, m_profiles[0]);
+		_capProfile(caps[1], r, dirX, dirY, m_profiles[1]);
+
+		// Frames of the ends: position and direction towards the other end.
+
+		const int64_t endX[2] = { beg.x, end.x };
+		const int64_t endY[2] = { beg.y, end.y };
+		const int64_t endUX[2] = { ux, -ux };
+		const int64_t endUY[2] = { uy, -uy };
+
+		// Columns each end reaches, from lo to hi, spx.
+
+		int64_t lo[2], hi[2];
+
+		for (int e = 0; e < 2; e++)
+		{
+			lo[e] = INT64_MAX;
+			hi[e] = INT64_MIN;
+
+			for (const ProfilePoint& point : m_profiles[e])
+			{
+				int64_t x, y;
+				lineToCanvas(endX[e], endY[e], endUX[e], endUY[e], point.a, point.w, x, y);
+
+				const int64_t column = bAlongX ? x : y;
+				lo[e] = std::min(lo[e], column);
+				hi[e] = std::max(hi[e], column);
+			}
+		}
+
+		m_bLineAlongX = bAlongX;
+		parts.bAlongX = bAlongX;
+
+		const int bodyBeg = ceilPixel(hi[0]);
+		const int bodyEnd = floorPixel(lo[1]);
+
+		if (!bZero && bodyBeg < bodyEnd)
+		{
+			// Body, columns centered on the line with the band across them.
+
+			const int64_t dMajor = bAlongX ? dx : dy;			// Positive.
+			const int64_t dMinor = bAlongX ? dy : dx;
+			const int64_t major = bAlongX ? beg.x : beg.y;
+			const int64_t minor = bAlongX ? beg.y : beg.x;
+
+			const int64_t slope24 = dMinor * (int64_t(1) << 24) / dMajor;
+			const int64_t width = int64_t(line.thickness) * 1024 * dirLength / std::abs(bAlongX ? dirX : dirY);
+
+			parts.bodyBeg = bodyBeg;
+			parts.bodyEnd = bodyEnd;
+			parts.bodySlope24 = slope24;
+			parts.bodySlope = int((slope24 + 128) >> 8);
+			parts.bodyWidth = int(width);
+			parts.bodyPos = minor * 1024 + (((int64_t(bodyBeg) * 64 + 32 - major) * slope24) >> 14) - width / 2;
+
+			// Ends, the band from the profile of the end to a cut beyond its columns.
+
+			for (int e = 0; e < 2; e++)
+			{
+				const int columnBeg = e == 0 ? floorPixel(lo[0]) : bodyEnd;
+				const int columnEnd = e == 0 ? bodyBeg : ceilPixel(hi[1]);
+
+				if (columnBeg >= columnEnd)
+					continue;
+
+				const int64_t endMajor = bAlongX ? endX[e] : endY[e];
+				const int64_t distance = e == 0 ? int64_t(bodyBeg) * 64 - endMajor : endMajor - int64_t(bodyEnd) * 64;
+				const int64_t cut = (3 * (distance + line.thickness / 2) / 2 + 64) << c_lineUnitShift;
+
+				m_vertexX.clear();
+				m_vertexY.clear();
+
+				auto vertex = [&](int64_t a, int64_t w)
+				{
+					int64_t x, y;
+					lineToCanvas(endX[e], endY[e], endUX[e], endUY[e], a, w, x, y);
+					m_vertexX.push_back(x);
+					m_vertexY.push_back(y);
+				};
+
+				for (const ProfilePoint& point : m_profiles[e])
+					vertex(point.a, point.w);
+
+				vertex(cut, r);
+				vertex(cut, -r);
+
+				LinePart& part = m_lineParts[parts.nParts];
+				if (_setLinePart(part, m_vertexX, m_vertexY))
+				{
+					part.columnBeg = columnBeg;
+					part.columnEnd = columnEnd;
+					parts.partBeg[parts.nParts] = columnBeg;
+					parts.partEnd[parts.nParts] = columnEnd;
+					parts.nParts++;
+				}
+			}
+
+			return true;
+		}
+
+		// No whole columns between the ends, which are close: the band between both profiles,
+		// in the frame of the first end. The second end has w the other way.
+
+		if (std::abs(dx) >= (int64_t(1) << 27) || std::abs(dy) >= (int64_t(1) << 27))
+			return false;													// Can't be, ends reach no further.
+
+		const int64_t length = isqrt(uint64_t(dx * dx + dy * dy) << (2 * c_lineUnitShift));
+
+		const auto& first = m_profiles[0];
+		const auto& second = m_profiles[1];
+
+		std::vector<int64_t>& ws = m_vertexX;			// Borrowed for the w of the corners.
+		ws.clear();
+
+		for (const ProfilePoint& point : first)
+			ws.push_back(point.w);
+		for (const ProfilePoint& point : second)
+			ws.push_back(-point.w);
+
+		std::sort(ws.begin(), ws.end());
+		ws.erase(std::unique(ws.begin(), ws.end()), ws.end());
+
+		// Where the band is long enough to reach between the profiles: g(w) <= length, where
+		// g(w) is the sum of the profiles, which is convex.
+
+		auto g = [&](int64_t w) { return profileAt(first, w) + profileAt(second, -w); };
+
+		int iFirst = -1, iLast = -1;
+		for (int i = 0; i < (int)ws.size(); i++)
+		{
+			if (g(ws[i]) <= length)
+			{
+				if (iFirst < 0)
+					iFirst = i;
+				iLast = i;
+			}
+		}
+
+		if (iFirst < 0)
+			return false;
+
+		auto crossing = [&](int64_t wOut, int64_t wIn)
+		{
+			const int64_t gOut = g(wOut);
+			const int64_t gIn = g(wIn);
+			return wOut + (wIn - wOut) * (gOut - length) / (gOut - gIn);
+		};
+
+		std::vector<int64_t> corners;
+		corners.push_back(iFirst > 0 ? crossing(ws[iFirst - 1], ws[iFirst]) : ws[iFirst]);
+		for (int i = iFirst; i <= iLast; i++)
+			if (ws[i] > corners.back())
+				corners.push_back(ws[i]);
+
+		const int64_t wLast = iLast < (int)ws.size() - 1 ? crossing(ws[iLast + 1], ws[iLast]) : ws[iLast];
+		if (wLast > corners.back())
+			corners.push_back(wLast);
+
+		std::vector<int64_t> vx, vy;
+
+		auto vertex = [&](int64_t a, int64_t w)
+		{
+			int64_t x, y;
+			lineToCanvas(endX[0], endY[0], ux, uy, a, w, x, y);
+			vx.push_back(x);
+			vy.push_back(y);
+		};
+
+		for (size_t i = 0; i < corners.size(); i++)
+			vertex(profileAt(first, corners[i]), corners[i]);
+
+		for (size_t i = corners.size(); i-- > 0; )
+			vertex(length - profileAt(second, -corners[i]), corners[i]);
+
+		LinePart& part = m_lineParts[0];
+		if (!_setLinePart(part, vx, vy))
+			return false;
+
+		part.columnBeg = floorPixel(bAlongX ? part.left : part.top);
+		part.columnEnd = ceilPixel(bAlongX ? part.right : part.bottom);
+		parts.partBeg[0] = part.columnBeg;
+		parts.partEnd[0] = part.columnEnd;
+		parts.nParts = 1;
+		return true;
+	}
+
+	//____ rasterizeLinePart() ________________________________________________
+
+	void SoftShapes::rasterizeLinePart(int partIndex, const RectI& clip, RowSink* pSink)
+	{
+		const LinePart& part = m_lineParts[partIndex];
+
+		int clipBeg = std::max(clip.x, floorPixel(part.left));
+		int clipEnd = std::min(clip.x + clip.w, ceilPixel(part.right));
+		int rowBeg = std::max(clip.y, floorPixel(part.top));
+		int rowEnd = std::min(clip.y + clip.h, ceilPixel(part.bottom));
+
+		if (m_bLineAlongX)
+		{
+			clipBeg = std::max(clipBeg, part.columnBeg);
+			clipEnd = std::min(clipEnd, part.columnEnd);
+		}
+		else
+		{
+			rowBeg = std::max(rowBeg, part.columnBeg);
+			rowEnd = std::min(rowEnd, part.columnEnd);
+		}
+
+		PolygonShape shape;
+		shape.left = { part.leftY.data(), part.leftX.data(), int(part.leftY.size()), 0 };
+		shape.right = { part.rightY.data(), part.rightX.data(), int(part.rightY.size()), 0 };
+		shape.splits[0] = part.top;
+		shape.splits[1] = part.bottom;
+		shape.pSplits = shape.splits;
+		shape.nSplits = 2;
+		shape.maxEdges = 2;
+		shape.nIds = 2;
+
+		_rasterize(shape, 1, rowBeg, rowEnd, clipBeg, clipEnd, pSink);
+	}
+
 }

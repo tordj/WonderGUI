@@ -669,8 +669,16 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 				end.y = *p32++;
 				p = (const uint16_t*) p32;
 
-				float thickness = *p++ / 64.f;
-				p++;
+				spx thicknessSPX = *p++;
+				uint16_t capsWord = *p++;
+
+				if (capsWord != 0)
+				{
+					m_cappedLines.push_back({ begin, end, thicknessSPX, capsWord, col });
+					continue;
+				}
+
+				float thickness = thicknessSPX / 64.f;
 
 				begin = roundToPixels(begin);
 				end = roundToPixels(end);
@@ -797,25 +805,65 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 
 			// Store command, with clip rects
 
-			if (nLinesWritten > 0)
+			auto storeCommand = [&](CommandGL command, int nVertices)
 			{
-				*pCommandGL++ = CommandGL::Lines;
+				*pCommandGL++ = command;
 				*pCommandGL++ = nClipRects;
-				*pCommandGL++ = nLinesWritten * 6;
+				*pCommandGL++ = nVertices;
 
 				for (int i = 0; i < nClipRects; i++)
 				{
-					RectSPX r = *pRects++;
+					RectSPX r = pRects[i];
 					*pCommandGL++ = r.x >> 6;
 					*pCommandGL++ = r.y >> 6;
 					*pCommandGL++ = r.w >> 6;
 					*pCommandGL++ = r.h >> 6;
 				}
+			};
 
+			if (nLinesWritten > 0)
+				storeCommand(CommandGL::Lines, nLinesWritten * 6);
+
+			// Lines with caps, as shapes in a quad around each, see GpuShapes::writeLine().
+			// The shader applies tint color and tint.
+
+			int nCappedWritten = 0;
+			int flatTintOfs = m_tintColorOfs >= 0 ? m_tintColorOfs : 0;		// Entry 0 is white.
+
+			for (const CappedLine& line : m_cappedLines)
+			{
+				CoordF quad[4];
+				int nEntries = GpuShapes::writeLine(line.begin, line.end, line.thickness, decodeLineCaps(line.caps), pExtrasGL, quad);
+				if (nEntries == 0)
+					continue;
+
+				pExtrasGL[3] = GLfloat(pColorGL - m_pColorBuffer);
+				line.color.toLinearFloat(&pColorGL->r);
+				pColorGL++;
+
+				int extrasOfs = int(pExtrasGL - m_pExtrasBuffer) / 4;
+				pExtrasGL += nEntries * 4;
+
+				for (int corner : { 0, 1, 2, 0, 2, 3 })
+				{
+					pVertexGL->coord = { int(std::lround(quad[corner].x)), int(std::lround(quad[corner].y)) };
+					pVertexGL->uv = { 0.f, 0.f };
+					pVertexGL->colorsOfs = flatTintOfs;
+					pVertexGL->extrasOfs = extrasOfs;
+					pVertexGL->tintmapOfs = { float(m_tintOfs), 0.f };
+					pVertexGL->colorstripOfs = { 0.f, 0.f };
+					pVertexGL++;
+				}
+
+				nCappedWritten++;
 			}
-			else
-				pRects += nClipRects;
 
+			m_cappedLines.clear();
+
+			if (nCappedWritten > 0)
+				storeCommand(CommandGL::CappedLines, nCappedWritten * 6);
+
+			pRects += nClipRects;
 			break;
 		}
 
@@ -1948,7 +1996,7 @@ void GlBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, int
 
 	int nExtrasFloats = 
 		+ pInfo->nBlur * 8
-		+ pInfo->nLineCoords/2 * 4
+		+ pInfo->nLineCoords/2 * GpuShapes::c_lineEntries * 4		// Lines with caps take the most.
 		+ pInfo->nRects * 8			// This is margin for blits (+8) and  subpixel fills (+4).
 		+ pInfo->nEdgemapDraws * 8
 		+ pInfo->nWarpDraws * 16
@@ -1964,7 +2012,7 @@ void GlBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, int
 		+ pInfo->nFill * 2 
 		+ pInfo->nBlit * 2
 		+ pInfo->nBlur * 2
-		+ pInfo->nLines * 3 + pInfo->nLineClipRects * 4
+		+ (pInfo->nLines * 3 + pInfo->nLineClipRects * 4) * 2		// Lines with and without caps in separate commands.
 		+ pInfo->nEdgemapDraws * 3
 		+ pInfo->nShapeDraws * 2
 		+ pInfo->nWarpDraws * 2
@@ -2132,11 +2180,12 @@ void GlBackend::endSession()
 			}
 
 			case CommandGL::Lines:
+			case CommandGL::CappedLines:
 			{
 				int clipListLen = *pCmd++;
 				int nVertices = *pCmd++;
 
-				glUseProgram(m_lineFromToProg[m_bActiveCanvasIsA8]);
+				glUseProgram(cmd == CommandGL::Lines ? m_lineFromToProg[m_bActiveCanvasIsA8] : m_shapeProg[m_bActiveCanvasIsA8]);
 				_setPartialCoverage(true);
 
 				for (int i = 0; i < clipListLen; i++)

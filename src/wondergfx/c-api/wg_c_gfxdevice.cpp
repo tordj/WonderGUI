@@ -380,6 +380,21 @@ void wg_drawStraightLine(wg_obj device, wg_coordSPX begin, wg_direction dir, wg_
 	getPtr(device)->drawLine( { begin.x, begin.y }, (Direction) dir, (spx) length, *(HiColor*)&color, (spx)thickness );
 }
 
+static LineCap toLineCap(wg_lineCap cap)
+{
+	return LineCap( (LineCapShape) cap.shape, (uint16_t) std::min(std::max(cap.spearLength, 0), 65535) );
+}
+
+void wg_drawLineWithCaps(wg_obj device, wg_coordSPX begin, wg_coordSPX end, wg_color color, wg_spx thickness, wg_lineCap beginCap, wg_lineCap endCap)
+{
+	getPtr(device)->drawLine({ begin.x, begin.y }, { end.x, end.y }, *(HiColor*)&color, (spx)thickness, { toLineCap(beginCap), toLineCap(endCap) });
+}
+
+void wg_drawStraightLineWithCaps(wg_obj device, wg_coordSPX begin, wg_direction dir, wg_spx length, wg_color color, wg_spx thickness, wg_lineCap beginCap, wg_lineCap endCap)
+{
+	getPtr(device)->drawLine({ begin.x, begin.y }, (Direction)dir, (spx)length, *(HiColor*)&color, (spx)thickness, { toLineCap(beginCap), toLineCap(endCap) });
+}
+
 
 void wg_blit(wg_obj device, wg_coordSPX dest)
 {

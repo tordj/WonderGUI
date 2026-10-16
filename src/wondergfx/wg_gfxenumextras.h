@@ -55,6 +55,7 @@ namespace wg
 	const static CanvasRef       CanvasRef_min       = CanvasRef::None;
 	const static SampleOrigo     SampleOrigo_min     = SampleOrigo::Top;
 	const static Compression     Compression_min     = Compression::None;
+	const static LineCapShape    LineCapShape_min    = LineCapShape::None;
 
 	const static TintMode        TintMode_max        = TintMode::GradientXY;
 	const static TintShape       TintShape_max       = TintShape::Radial;
@@ -74,6 +75,7 @@ namespace wg
 	const static CanvasRef       CanvasRef_max       = CanvasRef::Canvas_32;
 	const static SampleOrigo     SampleOrigo_max     = SampleOrigo::Bottom;
 	const static Compression     Compression_max     = Compression::Spx16I;
+	const static LineCapShape    LineCapShape_max    = LineCapShape::Spear;
 
 	const static int             TintMode_size       = (int)TintMode::GradientXY + 1;
 	const static int             TintShape_size      = (int)TintShape::Radial + 1;
@@ -93,6 +95,7 @@ namespace wg
 	const static int             CanvasRef_size      = (int)CanvasRef::Canvas_32 + 1;
 	const static int             SampleOrigo_size    = (int)SampleOrigo::Bottom + 1;
 	const static int             Compression_size    = (int)Compression::Spx16I + 1;
+	const static int             LineCapShape_size   = (int)LineCapShape::Spear + 1;
 
 	const char * toString(TintMode);
 	const char * toString(TintShape);
@@ -112,6 +115,7 @@ namespace wg
 	const char * toString(CanvasRef);
 	const char * toString(SampleOrigo);
 	const char * toString(Compression);
+	const char * toString(LineCapShape);
 
 //=========================================================================
 //. endAutoSection

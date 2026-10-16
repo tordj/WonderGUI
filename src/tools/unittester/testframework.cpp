@@ -15,6 +15,7 @@
 #include "tests/shaperender.h"
 #include "tests/warpmap.h"
 #include "tests/warprender.h"
+#include "tests/linerender.h"
 
 
 
@@ -35,6 +36,7 @@ TestFramework::TestFramework( std::ostream& output ) :
 	addCollection( new ShapeRenderTest() );
 	addCollection( new WarpmapTest() );
 	addCollection( new WarpRenderTest() );
+	addCollection( new LineRenderTest() );
 }
 
 //____ Destructor ______________________________________________________________

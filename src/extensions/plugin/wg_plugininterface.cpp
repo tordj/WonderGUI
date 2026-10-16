@@ -281,6 +281,8 @@ static void populateBody(wg_c_calls_body * pBody)
 	pBody->gfxDevice.warpBlit				= LOCKED(wg_warpBlit);
 	pBody->gfxDevice.warpBlitRect			= LOCKED(wg_warpBlitRect);
 	pBody->gfxDevice.warpDrawEdgemap		= LOCKED(wg_warpDrawEdgemap);
+	pBody->gfxDevice.drawLineWithCaps		= LOCKED(wg_drawLineWithCaps);
+	pBody->gfxDevice.drawStraightLineWithCaps = LOCKED(wg_drawStraightLineWithCaps);
 
 /*
 	pBody->streamBuffer.structSize				= sizeof(wg_streambuffer_calls);

@@ -138,6 +138,7 @@ namespace wg
 			SetCanvas,
 			StateChange,
 			Lines,
+			CappedLines,	// Lines with caps, drawn by the shape shader.
 			StraightFill,
 			SubpixelFill,
 			Blit,
@@ -440,6 +441,17 @@ namespace wg
 		void		_reserveColors(int used, int extra);
 
 		std::vector<GpuShapes::Segment>	m_shapeSegments;		// Segments of shape being processed.
+
+		struct CappedLine
+		{
+			CoordSPX	begin;
+			CoordSPX	end;
+			spx			thickness;
+			uint16_t	caps;
+			HiColor		color;
+		};
+
+		std::vector<CappedLine>	m_cappedLines;		// Lines with caps of line command being processed.
 
 
 	};

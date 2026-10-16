@@ -31,6 +31,8 @@
 #include <wg_gfxbase.h>
 #include <wg_gfxutil.h>
 
+#include <cmath>
+
 
 namespace wg
 {
@@ -762,7 +764,7 @@ void MetalBackend::beginSession( CanvasRef canvasRef, Surface * pCanvasSurface, 
 	int nExtrasFloats =
 	pInfo->nBlit * 8
 	+ pInfo->nBlur * 8
-	+ pInfo->nLineCoords/2 * 4
+	+ pInfo->nLineCoords/2 * GpuShapes::c_lineEntries * 4		// Lines with caps take the most.
 	+ pInfo->nRects * 4			// This is for possible subpixel fills. We have no way of knowing exactly how much is needed.
 	+ pInfo->nEdgemapDraws * 8
 	+ pInfo->nWarpDraws * 16
@@ -1271,8 +1273,16 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 					end.y = *p32++;
 					p = (const uint16_t*) p32;
 
-					float thickness = *p++ / 64.f;
-					p++;							// padding
+					spx thicknessSPX = *p++;
+					uint16_t capsWord = *p++;
+
+					if (capsWord != 0)
+					{
+						m_cappedLines.push_back({ begin, end, thicknessSPX, capsWord, col });
+						continue;
+					}
+
+					float thickness = thicknessSPX / 64.f;
 
 					begin = roundToPixels(begin);
 					end = roundToPixels(end);
@@ -1418,7 +1428,7 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 
 					for (int i = 0; i < nClipRects; i++)
 					{
-						RectI clip = (*pRects++)/64;
+						RectI clip = pRects[i]/64;
 						MTLScissorRect metalClip = {(unsigned) clip.x, (unsigned) clip.y, (unsigned) clip.w, (unsigned) clip.h};
 						[m_renderEncoder setScissorRect:metalClip];
 						[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nLinesWritten*6];
@@ -1426,11 +1436,65 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 
 					MTLScissorRect orgClip = {0, 0, (unsigned) m_activeCanvasSize.w, (unsigned) m_activeCanvasSize.h};
 					[m_renderEncoder setScissorRect:orgClip];
-
 				}
-				else
-					pRects += nClipRects;
 
+				// Lines with caps, as shapes in a quad around each, see GpuShapes::writeLine().
+				// The shader applies tint color and tint.
+
+				int nCappedWritten = 0;
+				int cappedVertexOfs = int(pVertexMTL - m_pVertexBuffer);
+				const simd_float2 noUV = { 0.f, 0.f };
+
+				for (const CappedLine& line : m_cappedLines)
+				{
+					CoordF quad[4];
+					int nEntries = GpuShapes::writeLine(line.begin, line.end, line.thickness, decodeLineCaps(line.caps), pExtrasMTL, quad);
+					if (nEntries == 0)
+						continue;
+
+					pExtrasMTL[3] = float(pColorMTL - m_pColorBuffer);
+					line.color.toLinearFloat(&pColorMTL->r);
+					pColorMTL++;
+
+					int extrasOfs = int(pExtrasMTL - m_pExtrasBuffer) / 4;
+					pExtrasMTL += nEntries * 4;
+
+					for (int corner : { 0, 1, 2, 0, 2, 3 })
+					{
+						pVertexMTL->coord = { int(std::lround(quad[corner].x)), int(std::lround(quad[corner].y)) };
+						pVertexMTL->colorsOfs = 0;
+						pVertexMTL->extrasOfs = extrasOfs;
+						pVertexMTL->uv = noUV;
+						pVertexMTL->tintOfs = m_tintOfs;
+						pVertexMTL++;
+					}
+
+					nCappedWritten++;
+				}
+
+				m_cappedLines.clear();
+
+				if (nCappedWritten > 0)
+				{
+					auto& pipeline = m_shapePipelines[m_tintOfs >= 0][(int)m_activeBlendMode][(int)m_activeCanvasFormat];
+					if( pipeline == nil )
+						pipeline = _compileShapePipeline(m_tintOfs >= 0, m_activeBlendMode, m_activeCanvasFormat);
+
+					[m_renderEncoder setRenderPipelineState:pipeline];
+
+					for (int i = 0; i < nClipRects; i++)
+					{
+						RectI clip = pRects[i] / 64;
+						MTLScissorRect metalClip = {(unsigned) clip.x, (unsigned) clip.y, (unsigned) clip.w, (unsigned) clip.h};
+						[m_renderEncoder setScissorRect:metalClip];
+						[m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:cappedVertexOfs vertexCount:nCappedWritten*6];
+					}
+
+					MTLScissorRect orgClip = {0, 0, (unsigned) m_activeCanvasSize.w, (unsigned) m_activeCanvasSize.h};
+					[m_renderEncoder setScissorRect:orgClip];
+				}
+
+				pRects += nClipRects;
 				break;
 			}
 
