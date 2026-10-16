@@ -552,7 +552,8 @@ namespace wg
 
 				for (int line = 0; line < nLines; line++)
 				{
-					HiColor fillColor = (*pColors++).toLinear();
+					HiColor color = *pColors++;
+					HiColor fillColor = color.toLinear();
 					HiColor tintedColor = fillColor;
 
 					if( m_tintColor != HiColor::White )
@@ -568,9 +569,40 @@ namespace wg
 					p = (const uint16_t*) p32;
 
 					spx thickness = * p++;
-					p++;									// padding
+					uint16_t capsWord = *p++;
 
-					//TODO: Proper 26:6 support
+					// Lines with caps
+
+					if (capsWord != 0)
+					{
+						if (_beginCappedLine(beg, end, thickness, decodeLineCaps(capsWord), color))
+						{
+							for (int i = 0; i < nClipRects; i++)
+							{
+								RectI clip = pClipRects[i] / 64;
+
+								if (clip.isEmpty())
+									continue;
+
+								while (clip.x < pSegment->rect.x || clip.x >= pSegment->rect.x + pSegment->rect.w ||
+									   clip.y < pSegment->rect.y || clip.y >= pSegment->rect.y + pSegment->rect.h)
+								{
+									pSegment++;
+									if (pSegment == pSegEnd)
+										pSegment = pSegBeg;
+								}
+
+								Segment& seg = *pSegment;
+
+								uint8_t* pOrigin = seg.pBuffer - seg.rect.y * seg.pitch - seg.rect.x * m_canvasPixelBytes;
+								_drawCappedLine(clip, pOrigin, seg.pitch);
+							}
+						}
+						continue;
+					}
+
+					// Lines without caps, from pixel to pixel.
+
 					beg = Util::roundToPixels(beg);
 					end = Util::roundToPixels(end);
 
