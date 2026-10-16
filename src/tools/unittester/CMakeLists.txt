@@ -5,6 +5,8 @@ set( SOURCES
 	main.cpp
 	testframework.cpp
 	testframework.h
+	tests/frost.cpp
+	tests/frost.h
 	tests/gfxstream.cpp
 	tests/gfxstream.h
 	tests/softgfxdevice.cpp

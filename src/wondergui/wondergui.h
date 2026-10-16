@@ -71,6 +71,7 @@
 #include <wg_drawerpanel.h>
 #include <wg_fpsdisplay.h>
 #include <wg_framemeterskin.h>
+#include <wg_frost.h>
 #include <wg_glow.h>
 #include <wg_hostbridge.h>
 #include <wg_icon.h>
@@ -81,6 +82,7 @@
 #include <wg_labelcapsule.h>
 #include <wg_lambdapanel.h>
 #include <wg_lineeditor.h>
+#include <wg_frostoverlay.h>
 #include <wg_modaloverlay.h>
 #include <wg_msg.h>
 #include <wg_msglogger.h>

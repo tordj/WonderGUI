@@ -1,6 +1,7 @@
 add_subdirectory(compressbench)
 add_subdirectory(editera)
 add_subdirectory(fontgenerator)
+add_subdirectory(frostworkbench)
 add_subdirectory(gfxbench)
 add_subdirectory(gfxdevicetester)
 add_subdirectory(gfxdevicetester2)
@@ -55,6 +56,7 @@ set(TOOL_TARGETS
 	lineargfxworkbench
 	testplugin
 	fontgenerator
+	frostworkbench
 	gfxbench
 	gfxworkbench
 	gfxworkbench-gen2

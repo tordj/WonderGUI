@@ -69,6 +69,8 @@ set( SOURCES
 	components/wg_editablenumber.h
 	components/wg_editabletext.cpp
 	components/wg_editabletext.h
+	components/wg_frost.cpp
+	components/wg_frost.h
 	components/wg_glow.cpp
 	components/wg_glow.h
 	components/wg_icon.cpp
@@ -243,6 +245,8 @@ set( SOURCES
 	widgets/overlays/wg_dragndropoverlay.h
 	widgets/overlays/wg_overlay.cpp
 	widgets/overlays/wg_overlay.h
+	widgets/overlays/wg_frostoverlay.cpp
+	widgets/overlays/wg_frostoverlay.h
 	widgets/overlays/wg_modaloverlay.cpp
 	widgets/overlays/wg_modaloverlay.h
 	widgets/overlays/wg_popupoverlay.cpp
