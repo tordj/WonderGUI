@@ -147,8 +147,7 @@ namespace wg
 			"Win_874",
 			"MacRoman",
 			"AtariST",
-			"RiscOS"
-		};
+			"RiscOS" };
 
 		return names[(int)i];
 	}
@@ -369,7 +368,6 @@ namespace wg
 
 		return names[(int)i];
 	}
-
 
 	const char * toString(MaskOp i)
 	{
