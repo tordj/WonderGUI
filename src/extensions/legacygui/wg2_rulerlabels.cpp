@@ -55,6 +55,9 @@ void WgRulerLabels::AddLabel( const wg::CharSeq& text, wg::TextStyle * pStyle, f
 
 void WgRulerLabels::SetDirection( WgDirection direction )
 {
+	if( direction == WgDirection::Undefined )
+		return;
+
 	m_direction = direction;
 	_requestResize();
 	_requestRender();

@@ -75,6 +75,9 @@ const char * WgVolumeMeter::GetClass()
 
 void WgVolumeMeter::SetDirection( WgDirection direction )
 {
+	if( direction == WgDirection::Undefined )
+		return;
+
 	if( direction != m_direction )
 	{
 		m_direction = direction;
@@ -309,6 +312,8 @@ void WgVolumeMeter::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 				switch( m_direction )
 				{
+					case WgDirection::Undefined:
+						break;
 					case WgDirection::Up:
 
 						rect.x = 0;
@@ -366,6 +371,8 @@ void WgVolumeMeter::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 	switch( m_direction )
 	{
+		case WgDirection::Undefined:
+			break;
 		case WgDirection::Up:
 			ledRect = WgRectF( (float) (_canvas.x + p), _canvas.y + _canvas.h - ledSize, (float) (_canvas.w - 2*p), ledSize );
 			stepX = 0.f;

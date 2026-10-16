@@ -124,10 +124,12 @@ int WgMultiSlider::AddSlider(	int id, WgDirection dir, SetGeoFunc pSetGeoFunc, f
 								SetValueFunc pSetValueFunc, wg::Skin * pBgSkin,
 								wg::Skin * pHandleSkin, WgCoordF handleHotspot, WgBorders handleMarkExtension, WgBorders sliderMarkExtension)
 {
-	WgOrigo origo;
+	WgOrigo origo = WgOrigo::West;
 
 	switch (dir)
 	{
+	case WgDirection::Undefined:
+		break;
 	case WgDirection::Up:
 		origo = WgOrigo::South;
 		break;

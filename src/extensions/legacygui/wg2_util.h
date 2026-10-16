@@ -37,7 +37,7 @@ namespace WgUtil
 
 	int 		SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy );
 
-	inline wg::Axis DirToOrient( WgDirection dir ) { return (dir == WgDirection::Up || dir == WgDirection::Down) ? wg::Axis::Y : wg::Axis::X; }
+	inline wg::Axis DirToOrient( WgDirection dir ) { return dir == WgDirection::Undefined ? wg::Axis::Undefined : (dir == WgDirection::Up || dir == WgDirection::Down) ? wg::Axis::Y : wg::Axis::X; }
 
 	template <class T> inline T Max (T a, T b) {return (a>b?a:b); }
 	template <class T> inline T Min (T a, T b) {return (a<b?a:b); }

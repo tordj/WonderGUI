@@ -58,7 +58,7 @@ namespace wg
 
 		spx 		sizeFromConstraint( spx defaultSize, spx specifiedSize, SizeConstraint policy );
 
-		inline Axis dirToAxis( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Axis::Y : Axis::X; }
+		inline Axis dirToAxis( Direction dir ) { return dir == Direction::Undefined ? Axis::Undefined : (dir == Direction::Up || dir == Direction::Down) ? Axis::Y : Axis::X; }
 
 		std::tuple<int,int,int> calcStateToIndexParam(int nbStates, const State* pStates);					// returns: indexTabEntries, mask, shift
 		void 		generateStateToIndexTab(uint8_t * pDest, int nbStates, const State* pStates);

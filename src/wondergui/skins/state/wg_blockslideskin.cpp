@@ -45,7 +45,7 @@ namespace wg
 	BlockSlideSkin::BlockSlideSkin( const Blueprint& bp) : StateSkin(bp)
 	{	
 		m_pSurface = bp.surface;
-		m_slideDirection = bp.slideDirection;
+		m_slideDirection = bp.slideDirection == Direction::Undefined ? Direction::Right : bp.slideDirection;
 		m_slideDuration = bp.slideDuration;
 		m_slideState = bp.slideState;
 
@@ -54,7 +54,7 @@ namespace wg
 
 		m_transitionTimes[int(m_slideState)] = m_slideDuration;
 
-		Axis slideAxis = bp.slideDirection == Direction::Up || bp.slideDirection == Direction::Down ? Axis::Y : Axis::X;
+		Axis slideAxis = m_slideDirection == Direction::Up || m_slideDirection == Direction::Down ? Axis::Y : Axis::X;
 
 
 		Rect lane = bp.firstLane;
@@ -291,6 +291,8 @@ namespace wg
 
 		switch (m_slideDirection)
 		{
+		case Direction::Undefined:
+			break;
 		case Direction::Up:
 			source.y -= offset * m_slideDistance;
 			break;

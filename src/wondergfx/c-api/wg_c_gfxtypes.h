@@ -106,9 +106,10 @@ typedef enum
 
 typedef enum
 {
+	WG_DIR_UNDEFINED,
 	WG_DIR_UP,
 	WG_DIR_RIGHT,
-	WG_DIR_DOWM,
+	WG_DIR_DOWN,
 	WG_DIR_LEFT
 } wg_direction;
 

@@ -64,6 +64,12 @@ namespace wg
 
 	void DrawerPanel::setDirection(Direction direction)
 	{
+		if (direction == Direction::Undefined)
+		{
+			Base::throwError(ErrorLevel::Warning, ErrorCode::InvalidParam, "Direction::Undefined is not a valid direction for DrawerPanel. Ignoring.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
 		if (direction != m_direction)
 		{
 			auto oldDirection = m_direction;
@@ -570,6 +576,8 @@ namespace wg
 
 		switch( m_direction )
 		{
+			case Direction::Undefined:
+				break;
 			case Direction::Up:
 
 				m_frontGeo = { content.x, content.y + content.h - frontSize.h, frontSize.w, frontSize.h };

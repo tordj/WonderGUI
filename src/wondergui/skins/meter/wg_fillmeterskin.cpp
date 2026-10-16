@@ -57,7 +57,7 @@ namespace wg
 		m_gfxPadding		= bp.gfxPadding;
 		m_backColor			= bp.backColor;
 		m_blendMode			= bp.blendMode;
-		m_direction			= bp.direction;
+		m_direction			= bp.direction == Direction::Undefined ? Direction::Right : bp.direction;
 		m_pTint			= bp.tint;
 
 		m_minBarLength		= bp.startLength;
@@ -65,7 +65,7 @@ namespace wg
 
 		if (bp.defaultSize.isEmpty())
 		{
-			Size pref = (bp.direction == Direction::Up || bp.direction == Direction::Down) ? Size(10, 50) : Size(50, 10);
+			Size pref = (m_direction == Direction::Up || m_direction == Direction::Down) ? Size(10, 50) : Size(50, 10);
 			m_defaultSize = Size::max(pref, m_padding.size());
 		}
 		else
@@ -112,6 +112,8 @@ namespace wg
 
 			switch (m_direction)
 			{
+			case Direction::Undefined:
+				break;
 			case Direction::Up:
 			case Direction::Down:
 			{

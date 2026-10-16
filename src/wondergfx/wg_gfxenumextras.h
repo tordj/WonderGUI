@@ -44,7 +44,7 @@ namespace wg
 	const static BlendMode       BlendMode_min       = BlendMode::Undefined;
 	const static Alignment       Alignment_min       = Alignment::Begin;
 	const static Placement       Placement_min       = Placement::Undefined;
-	const static Direction       Direction_min       = Direction::Up;
+	const static Direction       Direction_min       = Direction::Undefined;
 	const static Axis            Axis_min            = Axis::Undefined;
 	const static SampleMethod    SampleMethod_min    = SampleMethod::Nearest;
 	const static PixelFormat     PixelFormat_min     = PixelFormat::Undefined;

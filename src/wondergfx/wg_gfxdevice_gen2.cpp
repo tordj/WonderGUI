@@ -1420,6 +1420,8 @@ void GfxDeviceGen2::drawLine(CoordSPX begin, Direction dir, spx length, HiColor 
 		rect.w = length;
 		rect.h = thickness;
 		break;
+	case Direction::Undefined:
+		return;
 	}
 
 	fill(rect, color);

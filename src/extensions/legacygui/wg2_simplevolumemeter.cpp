@@ -224,6 +224,9 @@ void WgSimpleVolumeMeter::SetValue( float leftPeak, float leftHold, float rightP
 
 void WgSimpleVolumeMeter::SetDirection(WgDirection direction)
 {
+	if( direction == WgDirection::Undefined )
+		return;
+
 	if (direction != m_direction)
 	{
 		m_direction = direction;
@@ -291,6 +294,8 @@ void WgSimpleVolumeMeter::_requestRenderPartial( WgSize sz, int newLeftPeak, int
 
 	switch( m_direction )
 	{
+		case WgDirection::Undefined:
+			break;
 		case WgDirection::Up:
 			_requestRender(WgRect(0, sz.h - end, sz.w, end - beg));
 			break;
@@ -427,6 +432,8 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 			WgRect r = _rect;
 			switch (m_direction)
 			{
+			case WgDirection::Undefined:
+				break;
 			case WgDirection::Up:
 				r.y += _rect.h - holdOfs;
 				r.h = m_iHoldHeight;
@@ -464,6 +471,8 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 		WgRect r = _rect;
 		switch (m_direction)
 		{
+		case WgDirection::Undefined:
+			break;
 		case WgDirection::Up:
 			r.y += _rect.h - peakHeight;
 			r.h = peakHeight;
@@ -498,6 +507,8 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 			WgRect r = _rect;
 			switch (m_direction)
 			{
+			case WgDirection::Undefined:
+				break;
 			case WgDirection::Up:
 				r.y += _rect.h - ofs - sectionHeight;
 				r.h = sectionHeight;

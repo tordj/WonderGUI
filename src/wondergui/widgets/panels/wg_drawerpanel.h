@@ -126,7 +126,8 @@ namespace wg
 		DrawerPanel();
 		template<class BP> DrawerPanel(const BP& bp) : slots(this), m_buttonSkin(this), Container(bp)
 		{
-			m_direction		= bp.direction;
+			if( bp.direction != Direction::Undefined )
+				m_direction	= bp.direction;
 			m_pTransition	= bp.transition;
 
 			m_buttonGeo = { bp.buttonOfs, bp.buttonSize };

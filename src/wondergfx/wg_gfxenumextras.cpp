@@ -123,6 +123,7 @@ namespace wg
 	const char * toString(Direction i)
 	{
 		static const char * names[] = { 
+			"Undefined",
 			"Up",
 			"Right",
 			"Down",
