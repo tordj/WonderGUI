@@ -32,7 +32,7 @@ set( TESTSUITES
 	${TESTSUITE_DIR}/edgemaptinttests.h
 	${TESTSUITE_DIR}/roundedboxtests.h
 	${TESTSUITE_DIR}/ringtests.h
-	${TESTSUITE_DIR}/edgemaptoolstests.h
+	${TESTSUITE_DIR}/edgemapringtests.h
 	${TESTSUITE_DIR}/edgemapwavetests.h
 	${TESTSUITE_DIR}/filltests.h
 	${TESTSUITE_DIR}/linetests.h
