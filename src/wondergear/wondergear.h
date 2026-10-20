@@ -33,5 +33,6 @@
 #include <wg_memstack.h>
 #include <wg_object.h>
 #include <wg_pointers.h>
+#include <wg_utf8.h>
 
 #endif //WONDERGEAR_DOT_H

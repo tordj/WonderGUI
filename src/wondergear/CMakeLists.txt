@@ -21,6 +21,8 @@ set(SOURCES
 	wg_object.h
 	wg_pointers.h
 	wg_strongptr.h
+	wg_utf8.cpp
+	wg_utf8.h
 	wg_gearenumextras.cpp
 	wg_gearenumextras.h
 	wg_geartypes.h
