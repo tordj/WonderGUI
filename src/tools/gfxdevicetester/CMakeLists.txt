@@ -33,6 +33,7 @@ set( TESTSUITES
 	${TESTSUITE_DIR}/roundedboxtests.h
 	${TESTSUITE_DIR}/ringtests.h
 	${TESTSUITE_DIR}/edgemaptoolstests.h
+	${TESTSUITE_DIR}/edgemapwavetests.h
 	${TESTSUITE_DIR}/filltests.h
 	${TESTSUITE_DIR}/linetests.h
 	${TESTSUITE_DIR}/mipmaptests.h
@@ -49,7 +50,6 @@ set( TESTSUITES
 	${TESTSUITE_DIR}/tintsegmenttests.h
 	${TESTSUITE_DIR}/tinttests.h
 	${TESTSUITE_DIR}/wavetests.h
-	${TESTSUITE_DIR}/waveformtests.h
 )
 
 

@@ -42,7 +42,7 @@
 #include "testsuites/wavetests.h"
 #include "testsuites/edgemaptests.h"
 #include "testsuites/edgemaptoolstests.h"
-#include "testsuites/waveformtests.h"
+#include "testsuites/edgemapwavetests.h"
 #include "testsuites/samplingtests.h"
 #include "testsuites/palettecapacitytests.h"
 #include "testsuites/blursourcetests.h"
@@ -839,7 +839,7 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite([](){ return new BlendFixedColorTests();});
 	add_testsuite([](){ return new EdgemapTests();});
 	add_testsuite([](){ return new EdgemapToolsTests();});
-	add_testsuite([](){ return new WaveformTests();});
+	add_testsuite([](){ return new EdgemapWaveTests();});
 	add_testsuite([]() { return new ColorTests(); });
 	add_testsuite([]() { return new SamplingTests(); });
 	add_testsuite([]() { return new PaletteCapacityTests(); });
