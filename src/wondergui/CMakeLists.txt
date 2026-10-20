@@ -5,11 +5,6 @@ set( SOURCES
 	base/wg_animframes.h
 	base/wg_caret.cpp
 	base/wg_caret.h
-	base/wg_char.h
-	base/wg_charbuffer.cpp
-	base/wg_charbuffer.h
-	base/wg_charseq.cpp
-	base/wg_charseq.h
 	base/wg_codepages.cpp
 	base/wg_codepages.h
 	base/wg_dynamicvector.h
@@ -42,16 +37,12 @@ set( SOURCES
 	base/wg_state.cpp
 	base/wg_state.h
 	base/wg_staticvector.h
-	base/wg_string.cpp
-	base/wg_string.h
 	base/wg_textlink.cpp
 	base/wg_textlink.h
 	base/wg_textstyle.cpp
 	base/wg_textstyle.h
 	base/wg_textstylemanager.cpp
 	base/wg_textstylemanager.h
-	base/wg_texttool.cpp
-	base/wg_texttool.h
 	base/wg_togglegroup.cpp
 	base/wg_togglegroup.h
 	base/wg_types.h
@@ -146,8 +137,10 @@ set( SOURCES
 	slots/wg_staticslotvector.h
 	slots/wg_staticslotvector.impl.h
 
-	textlayouts/wg_basictextlayout.cpp
-	textlayouts/wg_basictextlayout.h
+	textlayouts/wg_flowtextlayout.cpp
+	textlayouts/wg_flowtextlayout.h
+	textlayouts/wg_plaintextlayout.cpp
+	textlayouts/wg_plaintextlayout.h
 	textlayouts/wg_textlayout.cpp
 	textlayouts/wg_textlayout.h
 

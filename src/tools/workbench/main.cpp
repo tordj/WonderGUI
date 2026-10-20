@@ -221,7 +221,6 @@ int main(int argc, char** argv)
 	printf("SizeOf Receiver: %d\n", (int) sizeof(Receiver));
 
 	printf("SizeOf SkinSlot: %d\n", (int)sizeof(SkinSlot));
-	printf("SizeOf String: %d\n", (int)sizeof(String));
 	printf("SizeOf SizeSPX: %d\n", (int)sizeof(SizeSPX));
 
 
@@ -597,7 +596,7 @@ int main(int argc, char** argv)
 
 
 		/*
-			BasicTextLayout_p pMapper = BasicTextLayout::create();
+			PlainTextLayout_p pMapper = PlainTextLayout::create();
 			pMapper->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
 			Base::setDefaultTextLayout(pMapper);
 		*/
@@ -1382,11 +1381,11 @@ bool textClipTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool textEditorTest(ComponentPtr<DynamicSlot> pEntry)
 {
-	auto pLayout = BasicTextLayout::create({ .lineSpacing = 1.2f, .paragraphSpacing = 1.f, .wrap = true});
+	auto pLayout = PlainTextLayout::create({ .lineSpacing = 1.2f, .paragraphSpacing = 1.f, .wrap = true});
 
 	auto pSkin = ColorSkin::create(Color::YellowGreen, 2);
 
-	auto pEditor = TextEditor::create( {	.editor = { .layout = pLayout, .text = String("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.") },
+	auto pEditor = TextEditor::create( {	.editor = { .layout = pLayout, .text = "TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3." },
 											.skin = pSkin});
 
 	auto pFlex = FlexPanel::create();
@@ -2600,12 +2599,12 @@ bool tooltipLayerTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pWidget1 = Filler::create();
 	pWidget1->setSkin( ColorSkin::create(Color::Blue) );
-	pWidget1->setTooltip( String("This is widget 1.") );
+	pWidget1->setTooltip( "This is widget 1." );
 	pBaseLayer->slots.pushBack(pWidget1, { .pos = {20, 20}, .size = {100, 100} });
 
 	auto pWidget2 = Filler::create();
 	pWidget2->setSkin( ColorSkin::create(Color::Green) );
-	pWidget2->setTooltip(String("This is widget 2."));
+	pWidget2->setTooltip("This is widget 2.");
 	pBaseLayer->slots.pushBack(pWidget2, { .pos = {150, 20}, .size = {100, 100} });
 
 	pTooltipOverlay->mainSlot = pBaseLayer;
@@ -2975,7 +2974,7 @@ bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pEntry)
 {
-	auto pWrapTextLayout = BasicTextLayout::create( { .wrap = true });
+	auto pWrapTextLayout = PlainTextLayout::create( { .wrap = true });
 
 	auto pPanel = TwoSlotPanel::create();
 	pPanel->setAxis(Axis::X);
@@ -3668,7 +3667,7 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool skinMarginTest(ComponentPtr<DynamicSlot> pEntry)
 {
-	auto pWrapTextLayout = BasicTextLayout::create( { .wrap = true });
+	auto pWrapTextLayout = PlainTextLayout::create( { .wrap = true });
 
 	auto pPanel = TwoSlotPanel::create();
 	pPanel->setAxis(Axis::X);
@@ -3706,7 +3705,7 @@ bool widgetRecording(ComponentPtr<DynamicSlot> pEntry)
 
 	TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .font = m_pFont, .size = 20 });
 
-	auto pLayout = BasicTextLayout::create({ .placement = Placement::Center });
+	auto pLayout = PlainTextLayout::create({ .placement = Placement::Center });
 
 
 	pButton->label.setText("EDIT");
@@ -3785,7 +3784,7 @@ bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
 	//
 
 	TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .size = 20 });
-	auto pLayout = BasicTextLayout::create({ .placement = Placement::Center });
+	auto pLayout = PlainTextLayout::create({ .placement = Placement::Center });
 
 	
 	Button::Blueprint bp = { .label = {.layout = pLayout, .style = pStyle },
@@ -3856,7 +3855,7 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	*pEntry = pBack;
 
 	
-	auto pWrapTextLayout = BasicTextLayout::create( { .wrap = true });
+	auto pWrapTextLayout = PlainTextLayout::create( { .wrap = true });
 
 	auto pPanel = TwoSlotPanel::create({ .skin = ColorSkin::create(Color::Pink) });
 	pPanel->setAxis(Axis::X);
@@ -3935,7 +3934,7 @@ bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pEntry)
 
 	pBack->slots.pushBack(pGlowCapsule, { .pos = {  50, 50}, .size = {300,0} });
 
-	auto pWrapTextLayout = BasicTextLayout::create({ .wrap = true });
+	auto pWrapTextLayout = PlainTextLayout::create({ .wrap = true });
 
 
 	auto pContent = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .style = pMyStyle, .text = "HEJ" } });
@@ -3975,7 +3974,7 @@ bool textDisplayTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pInnerSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black, .outlineThickness = 1, .padding = 4 } );
 
 	
-	auto pTextLayout = BasicTextLayout::create( { .wrap = true } );
+	auto pTextLayout = PlainTextLayout::create( { .wrap = true } );
 	
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
@@ -4383,7 +4382,7 @@ bool tablePanelTest(ComponentPtr<DynamicSlot> pEntry)
 		.skin = ColorSkin::create(Color::White),
 	});
 	
-	auto pLayout = BasicTextLayout::create({ .lineSpacing = 1.2f, .paragraphSpacing = 1.f, .wrap = true });
+	auto pLayout = PlainTextLayout::create({ .lineSpacing = 1.2f, .paragraphSpacing = 1.f, .wrap = true });
 
 
 	auto pTextEditor1 = TextEditor::create( WGBP(TextEditor,
@@ -4498,7 +4497,7 @@ bool tablePanelTest2(ComponentPtr<DynamicSlot> pEntry)
 				.skin = ColorSkin::create(Color::Green),
 		});
 
-	auto pLayout = BasicTextLayout::create({ .lineSpacing = 1.2f, .paragraphSpacing = 0.2f, .wrap = true });
+	auto pLayout = PlainTextLayout::create({ .lineSpacing = 1.2f, .paragraphSpacing = 0.2f, .wrap = true });
 
 	auto pCellSkin = BoxSkin::create({
 
@@ -4809,8 +4808,8 @@ bool elipsisTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::Honeydew));
 
-	auto pTextLayout = BasicTextLayout::create({ .autoEllipsis = true });
-	auto pTextLayout2 = BasicTextLayout::create({ .autoEllipsis = true, .wrap = true });
+	auto pTextLayout = PlainTextLayout::create({ .autoEllipsis = true });
+	auto pTextLayout2 = PlainTextLayout::create({ .autoEllipsis = true, .wrap = true });
 
 	auto pEditorSkin = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Black, .padding = 2 });
 
@@ -4840,7 +4839,7 @@ bool packPanelSpacingBugTest(ComponentPtr<DynamicSlot> pEntry)
 
 
 
-	auto pTextLayout = BasicTextLayout::create({ .autoEllipsis = true, .wrap = false });
+	auto pTextLayout = PlainTextLayout::create({ .autoEllipsis = true, .wrap = false });
 
 	auto pEntrySkin = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Black, .padding = 2 });
 
@@ -5201,7 +5200,7 @@ bool elipsisWrapTextTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::LightGrey));
 
-	auto pTextLayout = BasicTextLayout::create({ .autoEllipsis = true, .wrap = true });
+	auto pTextLayout = PlainTextLayout::create({ .autoEllipsis = true, .wrap = true });
 	auto pEditorSkin = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Black, .padding = 2 });
 
 	auto pPanelSkin = ColorSkin::create({ .color = Color::PapayaWhip });

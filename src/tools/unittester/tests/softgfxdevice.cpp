@@ -6,7 +6,6 @@
 #include <wg_gfxdevice_gen2.h>
 #include <wg_softbackend.h>
 
-#include <wg_string.h>
 
 using namespace wg;
 

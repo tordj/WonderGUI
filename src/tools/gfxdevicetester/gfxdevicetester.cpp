@@ -1200,7 +1200,7 @@ bool GfxDeviceTester::setup_chrome()
 	// Setup performance display
 
 	{
-		auto pMapper = BasicTextLayout::create({ .placement = Placement::East });
+		auto pMapper = PlainTextLayout::create({ .placement = Placement::East });
 		g_pPerformanceValueMapper = pMapper;
 
 		g_pPerformanceEntryLayout = PackLayout::create( { .expandFactor = PackLayout::Factor::One } );

@@ -24,7 +24,8 @@
 #pragma once
 
 #include <wg_types.h>
-#include <wg_string.h>
+#include <string>
+#include <string_view>
 #include <wg_receiver.h>
 #include <wg_slotholder.h>
 #include <wg_skinslot.h>
@@ -101,7 +102,7 @@ namespace wg
 			Skin_p			skin;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
-			String			tooltip;
+			std::string			tooltip;
 		};
 
 		//.____ Identification ________________________________________________
@@ -180,8 +181,8 @@ namespace wg
 		virtual void		setSkin(Skin* pSkin);
 		inline Skin_p		skin() const;
 
-		inline void			setTooltip(const String& str);
-		inline virtual String tooltip() const;
+		inline void			setTooltip(std::string_view str);
+		inline virtual std::string tooltip() const;
 
 		inline void			setPointerStyle(PointerStyle style);
 		virtual PointerStyle pointerStyle() const;
@@ -387,7 +388,7 @@ namespace wg
 		SlotHolder *	m_pHolder = nullptr;
 		StaticSlot *	m_pSlot = nullptr;
 
-		String			m_tooltip;
+		std::string		m_tooltip;
 		bool 			m_showToolTip = true;
 
 		int				m_id = 0;
@@ -863,7 +864,7 @@ namespace wg
 	 *
 	 */
 
-	void Widget::setTooltip(const String& str)
+	void Widget::setTooltip(std::string_view str)
 	{
 		m_tooltip = str;
 	}
@@ -883,13 +884,13 @@ namespace wg
 	 * @return void
 	 */
 
-	String Widget::tooltip() const
+	std::string Widget::tooltip() const
 	{
 		if(m_showToolTip)
 		{
 			return m_tooltip;
 		}
-		return String("");
+		return std::string();
 	}
 
 	//____ skin() _____________________________________________________________

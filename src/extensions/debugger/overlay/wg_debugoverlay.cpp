@@ -32,7 +32,7 @@
 #include <wg_textdisplay.h>
 #include <wg_gfxdevice.h>
 #include <wg_togglegroup.h>
-#include <wg_basictextlayout.h>
+#include <wg_plaintextlayout.h>
 #include <wg_basicnumberlayout.h>
 
 #include <wg_staticslotvector.impl.h>
