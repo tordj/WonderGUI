@@ -139,6 +139,10 @@ set( SOURCES
 
 	textlayouts/wg_flowtextlayout.cpp
 	textlayouts/wg_flowtextlayout.h
+	textlayouts/wg_markdowntextlayout.cpp
+	textlayouts/wg_markdowntextlayout.h
+	textlayouts/md4c/md4c.c
+	textlayouts/md4c/md4c.h
 	textlayouts/wg_plaintextlayout.cpp
 	textlayouts/wg_plaintextlayout.h
 	textlayouts/wg_textlayout.cpp
