@@ -41,6 +41,7 @@
 #include "testsuites/tinttests.h"
 #include "testsuites/wavetests.h"
 #include "testsuites/edgemaptests.h"
+#include "testsuites/edgemapboxtests.h"
 #include "testsuites/edgemapringtests.h"
 #include "testsuites/edgemapwavetests.h"
 #include "testsuites/samplingtests.h"
@@ -838,6 +839,7 @@ void GfxDeviceTester::setup_tests()
 //	add_testsuite([](){ return new RGB565BigEndianTests();});
 	add_testsuite([](){ return new BlendFixedColorTests();});
 	add_testsuite([](){ return new EdgemapTests();});
+	add_testsuite([](){ return new EdgemapBoxTests();});
 	add_testsuite([](){ return new EdgemapRingTests();});
 	add_testsuite([](){ return new EdgemapWaveTests();});
 	add_testsuite([]() { return new ColorTests(); });
