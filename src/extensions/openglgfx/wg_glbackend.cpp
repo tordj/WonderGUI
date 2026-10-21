@@ -336,7 +336,6 @@ void GlBackend::setObjects(Object* const * pBeg, Object* const * pEnd)
 {
 	m_pObjectsBeg = pBeg;
 	m_pObjectsEnd = pEnd;
-	m_pObjectsPtr = pBeg;
 }
 
 //____ setRects() _________________________________________________________
@@ -371,7 +370,6 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 {
 	const RectSPX* 	pRects = m_pRectsPtr;
 	const HiColor* 	pColors = m_pColorsPtr;
-	Object* const *	pObjects = m_pObjectsPtr;
 
 
 	VertexGL *	pVertexGL	= m_pVertexBuffer + m_nVertices;
@@ -399,7 +397,7 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 
 			if (statesChanged & uint8_t(StateChange::BlitSource))
 			{
-				auto pSource = static_cast<GlSurface*>(* pObjects++);
+				auto pSource = static_cast<GlSurface*>(m_pObjectsBeg[readObjectIndex(p)]);
 
 				// Save size and sampleMethod for blit-command processing
 
@@ -973,8 +971,8 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 			WarpParams params;
 			p = decodeWarp(cmd, p, params);
 
-			auto pWarpmap = static_cast<GlWarpmap*>(*pObjects++);
-			auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<GlEdgemap*>(*pObjects++) : nullptr;
+			auto pWarpmap = static_cast<GlWarpmap*>(m_pObjectsBeg[params.warpmap]);
+			auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<GlEdgemap*>(m_pObjectsBeg[params.edgemap]) : nullptr;
 
 			const RectSPX* pWarpRects = pRects;
 			pRects += params.nRects;
@@ -1070,13 +1068,14 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 		case Command::DrawEdgemap:
 		case Command::TileEdgemap:
 		{
-			auto pEdgemap = static_cast<GlEdgemap*>(*pObjects++);
 			bool bTile = (cmd == Command::TileEdgemap);		// Origo is for one of the copies, rects give area to fill.
 
 			int32_t nRects = *p++;
 			int32_t	flip = *p++;
 			
 			p++;					// padding
+
+			auto pEdgemap = static_cast<GlEdgemap*>(m_pObjectsBeg[readObjectIndex(p)]);
 
 			auto p32 = (const spx *) p;
 			int32_t	destX = *p32++;
@@ -1416,7 +1415,6 @@ void GlBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, int 
 
 	m_pRectsPtr = pRects;
 	m_pColorsPtr = pColors;
-	m_pObjectsPtr = pObjects;
 
 	m_nVertices			= int(pVertexGL - m_pVertexBuffer);
 	m_nColors			= int(pColorGL	- m_pColorBuffer);

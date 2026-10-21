@@ -219,7 +219,7 @@ namespace wg
 
 	void ReferenceBackend::setObjects(Object* const * pBeg, Object* const * pEnd)
 	{
-		m_pObjectsPtr = pBeg;
+		m_pObjectsBeg = pBeg;
 	}
 
 	//____ setRects() _____________________________________________
@@ -358,8 +358,8 @@ namespace wg
 					WarpParams params;
 					p = decodeWarp(cmd, p, params);
 
-					auto pWarpmap = static_cast<SoftWarpmap*>(*m_pObjectsPtr++);
-					auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<SoftEdgemap*>(*m_pObjectsPtr++) : nullptr;
+					auto pWarpmap = static_cast<SoftWarpmap*>(m_pObjectsBeg[params.warpmap]);
+					auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<SoftEdgemap*>(m_pObjectsBeg[params.edgemap]) : nullptr;
 
 					if (pEdgemap)
 						_decodeSegmentTints(pEdgemap);
@@ -372,11 +372,11 @@ namespace wg
 				case Command::DrawEdgemap:
 				case Command::TileEdgemap:
 				{
-					auto pEdgemap = static_cast<SoftEdgemap*>(*m_pObjectsPtr++);
-
 					int nRects = *p++;
 					GfxFlip flip = GfxFlip(*p++);
 					p++;										// padding
+
+					auto pEdgemap = static_cast<SoftEdgemap*>(m_pObjectsBeg[readObjectIndex(p)]);
 
 					CoordSPX origo;
 					origo.x = _read32(p);
@@ -396,7 +396,7 @@ namespace wg
 	//____ _changeStates() ________________________________________________________
 	/*
 		Reads a StateChange command. Each state that has changed has its parameters in the stream
-		(or its color/object in their buffers), in the order of the StateChange bits.
+		(or its color in the color buffer), in the order of the StateChange bits.
 	*/
 
 	const uint16_t* ReferenceBackend::_changeStates(const uint16_t* p)
@@ -408,7 +408,7 @@ namespace wg
 			if (m_pBlitSource)
 				m_pBlitSource->freePixelBuffer(m_blitSourceBuffer);
 
-			m_pBlitSource = static_cast<Surface*>(*m_pObjectsPtr++);
+			m_pBlitSource = static_cast<Surface*>(m_pObjectsBeg[readObjectIndex(p)]);
 
 			if (m_pBlitSource)
 				m_blitSourceBuffer = m_pBlitSource->allocPixelBuffer();

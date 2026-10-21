@@ -234,7 +234,7 @@ namespace wg
 		int		m_streamMajorVersion = 0;
 		int		m_streamMinorVersion = 0;
 
-		static const int	c_minProtocolVersion = 0x0302;				// 3.2: Color space and byte order separate from PixelFormat. Older streams are refused.
+		static const int	c_minProtocolVersion = 0x0305;				// 3.5: Commands refer to objects by index in the object table. Older streams are refused.
 
 		bool				m_bStoreDirtyRects = false;
 		int					m_maxDirtyRects = 64;

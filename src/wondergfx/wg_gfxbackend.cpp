@@ -124,6 +124,9 @@ const uint16_t* GfxBackend::decodeWarp(Command cmd, const uint16_t* p, WarpParam
 {
 	params.nRects = *p++;
 
+	params.warpmap = readObjectIndex(p);
+	params.edgemap = (cmd == Command::WarpDrawEdgemap) ? readObjectIndex(p) : 0;
+
 	spx values[4];
 
 	std::memcpy(values, p, 16);

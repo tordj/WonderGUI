@@ -33,7 +33,6 @@
 #include <d3d12.h>
 
 #include <map>
-#include <unordered_map>
 #include <vector>
 #include <atomic>
 
@@ -262,18 +261,21 @@ namespace wg
 		void _drawLines(const uint16_t*& pCmd, const RectSPX*& pRects, const HiColor*& pColors, int nClipRects, int nLines);
 		void _drawCappedLines(const RectSPX* pClipRects, int nClipRects);
 		void _drawScissored(const RectSPX* pClipRects, int nClipRects, int firstVertex, int nVertices);
-		void _drawEdgemap(const uint16_t*& pCmd, const RectSPX*& pRects, Object* const*& pObjects, int nRects, bool bTile);
+		void _drawEdgemap(const uint16_t*& pCmd, const RectSPX*& pRects, int nRects, bool bTile);
 		void _drawShape(ShapeKind kind, const uint16_t* pPayload, const RectSPX* pRects, int nRects, const HiColor* pColors);
-		void _drawWarp(Command cmd, const WarpParams& params, const RectSPX* pRects, Object* const*& pObjects);
+		void _drawWarp(Command cmd, const WarpParams& params, const RectSPX* pRects);
+
+		Object* _object(uint32_t index) const;		// From the object table, null if the index is out of range.
 
 		bool _createSRVHeap(int frameIndex, int nDescriptors);
-		bool _growSRVHeap();						// Mid-frame, when the current frame's heap is full.
+		bool _growSRVHeap(int nNeeded = 0);			// When the current frame's heap is full or can't fit a session.
+		void _forgetObjectSRVs();					// Descriptors must be copied anew for the object table.
 
 		bool _isDX12Surface(const Object* pObject) const;
 		static bool _isDX12SurfaceType(const TypeInfo& type);
 		static bool _isOfType(const TypeInfo& type, const TypeInfo& base);
 
-		void _setBlitSource(DX12Surface* pSurface);
+		void _setBlitSource(DX12Surface* pSurface, uint32_t objectIndex = c_noObject);
 		bool _bindBlitSource();					// Puts source and sampler in place for the coming draw.
 		void _generateMipmaps(DX12Surface* pSurface);			// Draws every mip level from level 0.
 		ID3D12PipelineState* _mipmapPipeline(DXGI_FORMAT format);
@@ -314,9 +316,10 @@ namespace wg
 		bool						m_bSessionOnDefaultCanvas = false;
 		bool						m_bInSession = false;			// Between beginSession() and endSession().
 
-		Object* const* m_pObjectsBeg = nullptr;
+		Object* const* m_pObjectsBeg = nullptr;		// Object table, commands refer to objects by index.
 		Object* const* m_pObjectsEnd = nullptr;
-		Object* const* m_pObjectsPtr = nullptr;
+
+		static const uint32_t		c_noObject = 0xFFFFFFFF;
 
 		const RectSPX* m_pRectsBeg = nullptr;
 		const RectSPX* m_pRectsEnd = nullptr;
@@ -424,6 +427,7 @@ namespace wg
 		// Blit source, set through StateChange commands.
 
 		DX12Surface *			m_pBlitSource = nullptr;
+		uint32_t				m_blitSourceObject = c_noObject;	// Its index in the object table.
 		SizeI					m_blitSourceSize;
 		bool					m_bBlitSourceAlphaOnly = false;
 		bool					m_bBlitSourceIndexed = false;		// Palette based, see PipelineKind::PaletteBlit.
@@ -491,22 +495,23 @@ namespace wg
 			std::vector<Microsoft::WRL::ComPtr<ID3D12Pageable>>	resources;
 		};
 
-		// Where in the current frame's shader visible heap each blit source's
-		// descriptor has been copied, keyed on its texture. Text switches blit
-		// source for almost every glyph, since the glyph cache sorts glyphs into
-		// surfaces by height, so a descriptor per switch would run out long before
-		// the frame does - in a large window full of text, that is. Every texture
-		// in here is held by m_heldResources, so the map is cleared along with
-		// each submission, before a texture can be released and its address
-		// reused.
+		// Where in the current frame's shader visible heap the descriptor of each blit
+		// source in the object table has been copied, by index in the table. Text
+		// switches blit source for almost every glyph, since the glyph cache sorts
+		// glyphs into surfaces by height, but between only a handful of surfaces, so
+		// the table has each once and a descriptor per entry is all a session needs.
+		//
+		// Whoever let go of a surface, its texture is held by m_heldResources until
+		// the GPU is done with it. That is per submission, so the slots are forgotten
+		// with each one and the next draw from the surface holds it again.
 
 		struct SRVSlot
 		{
-			SIZE_T	srv;			// The surface's own descriptor, which is what was copied.
-			int		slot;
+			SIZE_T	srv = 0;		// The surface's own descriptor, which is what was copied.
+			int		slot = -1;		// -1 until copied.
 		};
 
-		std::unordered_map<ID3D12Resource*, SRVSlot>		m_srvSlots;
+		std::vector<SRVSlot>								m_objectSRVs;
 
 		static TP_CALLBACK_ENVIRON							s_releaserEnv;			// Keeps our module loaded while a callback runs.
 		static bool											s_bReleaserReady;

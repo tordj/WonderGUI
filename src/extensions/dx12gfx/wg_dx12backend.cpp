@@ -622,7 +622,7 @@ namespace wg
 		m_pExtrasPtr = m_pExtrasBeg;
 
 		m_frameResources[frame].nSRVDescriptors = 0;
-		m_srvSlots.clear();
+		_forgetObjectSRVs();
 
 		// Sessions un-park what they parked, so this should already be empty.
 
@@ -704,10 +704,10 @@ namespace wg
 		_releaseWhenDone(m_fenceValue);
 
 		// The textures the descriptors in the heap were copied for are no longer
-		// held by us, so their addresses may be reused. The descriptors stay where
-		// they are, since what we just submitted reads them.
+		// held by the submission we are recording. The descriptors stay where they
+		// are, since what we just submitted reads them.
 
-		m_srvSlots.clear();
+		_forgetObjectSRVs();
 
 		// The allocator keeps the memory of what we just submitted, it is only
 		// reset in beginRender() once the fence says the GPU is done with it.
@@ -1332,7 +1332,11 @@ namespace wg
 	{
 		m_pObjectsBeg = pBeg;
 		m_pObjectsEnd = pEnd;
-		m_pObjectsPtr = pBeg;
+
+		// A new table, so nothing has been copied for it yet. The descriptors of the
+		// previous one stay in the heap, earlier draws read them.
+
+		m_objectSRVs.assign(pEnd - pBeg, SRVSlot());
 	}
 
 	//____ setRects() __________________________________________________________
@@ -1376,7 +1380,6 @@ namespace wg
 
 		const RectSPX*	pRects = m_pRectsPtr;
 		const HiColor*	pColors = m_pColorsPtr;
-		Object* const*	pObjects = m_pObjectsPtr;
 
 		auto p = pBeg;
 		while (p < pEnd)
@@ -1396,9 +1399,10 @@ namespace wg
 
 					if (statesChanged & uint8_t(StateChange::BlitSource))
 					{
-						Object * pObject = *pObjects++;
+						uint32_t index = readObjectIndex(p);
+						Object * pObject = _object(index);
 
-						_setBlitSource( _isDX12Surface(pObject) ? static_cast<DX12Surface*>(pObject) : nullptr );
+						_setBlitSource( _isDX12Surface(pObject) ? static_cast<DX12Surface*>(pObject) : nullptr, index );
 					}
 
 					// Tint color and tint are independent. The tint color goes into
@@ -1525,7 +1529,7 @@ namespace wg
 					WarpParams params;
 					p = decodeWarp(cmd, p, params);
 
-					_drawWarp(cmd, params, pRects, pObjects);
+					_drawWarp(cmd, params, pRects);
 					pRects += params.nRects;
 					break;
 				}
@@ -1535,7 +1539,7 @@ namespace wg
 				{
 					int32_t nRects = *p++;
 
-					_drawEdgemap(p, pRects, pObjects, nRects, cmd == Command::TileEdgemap);
+					_drawEdgemap(p, pRects, nRects, cmd == Command::TileEdgemap);
 					break;
 				}
 
@@ -1563,7 +1567,13 @@ namespace wg
 
 		m_pRectsPtr = pRects;
 		m_pColorsPtr = pColors;
-		m_pObjectsPtr = pObjects;
+	}
+
+	//____ _object() ___________________________________________________________
+
+	Object* DX12Backend::_object(uint32_t index) const
+	{
+		return (m_pObjectsBeg && index < uint32_t(m_pObjectsEnd - m_pObjectsBeg)) ? m_pObjectsBeg[index] : nullptr;
 	}
 
 	//____ _drawFillRects() ____________________________________________________
@@ -2201,9 +2211,10 @@ namespace wg
 
 	//____ _setBlitSource() ____________________________________________________
 
-	void DX12Backend::_setBlitSource(DX12Surface* pSurface)
+	void DX12Backend::_setBlitSource(DX12Surface* pSurface, uint32_t objectIndex)
 	{
 		m_pBlitSource = pSurface;
+		m_blitSourceObject = objectIndex;
 		m_bBlitSourceBound = false;
 		m_bBlitSourceIndexed = false;
 
@@ -2273,20 +2284,20 @@ namespace wg
 		if (!frame.srvHeap || !m_pSamplerHeap)
 			return false;
 
-		// The source's descriptor is copied into the heap the first time it is
-		// used in this submission, after that we point at the copy. Text alone
-		// switches source thousands of times per frame in a large window, but
-		// between only a handful of glyph cache surfaces.
+		// The source's descriptor is copied into the heap the first time its entry
+		// in the object table is used, after that we point at the copy, see
+		// m_objectSRVs.
 
 		ID3D12Resource* pTexture = m_pBlitSource->texture();
 		D3D12_CPU_DESCRIPTOR_HANDLE srcSRV = m_pBlitSource->textureSRV();
 
+		SRVSlot dummy;
+		SRVSlot& entry = m_blitSourceObject < m_objectSRVs.size() ? m_objectSRVs[m_blitSourceObject] : dummy;
+
 		int slot;
 
-		auto it = m_srvSlots.find(pTexture);
-
-		if (it != m_srvSlots.end() && it->second.srv == srcSRV.ptr)
-			slot = it->second.slot;
+		if (entry.slot >= 0 && entry.srv == srcSRV.ptr)
+			slot = entry.slot;
 		else
 		{
 			if (frame.nSRVDescriptors >= frame.srvCapacity && !_growSRVHeap())
@@ -2304,7 +2315,7 @@ namespace wg
 
 			// Ordinary surfaces need holding as much as canvases do: a temporary
 			// surface is released by GfxDeviceGen2 when the session ends. Once is
-			// enough, m_srvSlots is cleared with every submission.
+			// enough, m_objectSRVs is forgotten with every submission.
 
 			_holdUntilDone(pTexture);
 
@@ -2315,7 +2326,8 @@ namespace wg
 
 			m_pDX12Device->CopyDescriptorsSimple(1, dest, srcSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-			m_srvSlots[pTexture] = { srcSRV.ptr, slot };
+			entry.srv = srcSRV.ptr;
+			entry.slot = slot;
 		}
 
 		D3D12_GPU_DESCRIPTOR_HANDLE srvHandle = frame.srvHeap->GetGPUDescriptorHandleForHeapStart();
@@ -2597,32 +2609,50 @@ namespace wg
 
 	//____ _growSRVHeap() _______________________________________________________
 	//
-	// Replaces the current frame's full heap with one twice the size, like the
-	// vertex buffers grow. Draws recorded so far read their descriptors from the
-	// old heap, so it is held until the GPU is done with them. Switching heaps
-	// leaves the descriptor tables set so far pointing into a heap that is no
-	// longer bound, which is fine since our only callers, _bindBlitSource() and
-	// _generateMipmaps(), set them both right after, and nothing else uses them.
+	// Replaces the current frame's heap with an empty one at least twice the
+	// size, and with room for nNeeded, like the vertex buffers grow. Draws
+	// recorded so far read their descriptors from the old heap, so it is held
+	// until the GPU is done with them.
+	//
+	// Switching heaps leaves the descriptor tables set so far pointing into a
+	// heap that is no longer bound. That is fine: _reserveBuffers() grows it
+	// before _bindSessionState() binds anything, and _bindBlitSource() and
+	// _generateMipmaps() set both tables right after. Nothing else uses them.
 
-	bool DX12Backend::_growSRVHeap()
+	bool DX12Backend::_growSRVHeap(int nNeeded)
 	{
 		auto& frame = m_frameResources[m_currentFrameIndex];
 
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> pOldHeap = frame.srvHeap;
 
-		if (!_createSRVHeap(m_currentFrameIndex, frame.srvCapacity * 2))
+		int newCapacity = frame.srvCapacity * 2;
+		if (newCapacity < nNeeded)
+			newCapacity = nNeeded;
+
+		if (!_createSRVHeap(m_currentFrameIndex, newCapacity))
 			return false;
 
 		_holdUntilDone(pOldHeap.Get());
 
 		// The descriptors we had copied are all in the old heap.
 
-		m_srvSlots.clear();
+		_forgetObjectSRVs();
 
-		ID3D12DescriptorHeap* pHeaps[] = { frame.srvHeap.Get(), m_pSamplerHeap.Get() };
-		m_commandList->SetDescriptorHeaps(2, pHeaps);
+		if (m_bCommandListOpen)
+		{
+			ID3D12DescriptorHeap* pHeaps[] = { frame.srvHeap.Get(), m_pSamplerHeap.Get() };
+			m_commandList->SetDescriptorHeaps(2, pHeaps);
+		}
 
 		return true;
+	}
+
+	//____ _forgetObjectSRVs() ____________________________________________________
+
+	void DX12Backend::_forgetObjectSRVs()
+	{
+		for (auto& entry : m_objectSRVs)
+			entry = SRVSlot();
 	}
 
 	//____ _drawBlitRects() ____________________________________________________
@@ -2800,12 +2830,12 @@ namespace wg
 	// each segment covers. The vertices carry where in the edgemap each corner
 	// sits, which is what lets the same quad be flipped or rotated.
 
-	void DX12Backend::_drawEdgemap(const uint16_t*& pCmd, const RectSPX*& pRects, Object* const*& pObjects, int nRects, bool bTile)
+	void DX12Backend::_drawEdgemap(const uint16_t*& pCmd, const RectSPX*& pRects, int nRects, bool bTile)
 	{
-		Object * pObject = *pObjects++;
-
 		int32_t flip = *pCmd++;
 		pCmd++;								// padding
+
+		Object * pObject = _object(readObjectIndex(pCmd));
 
 		auto p32 = (const spx*) pCmd;
 
@@ -3143,12 +3173,12 @@ namespace wg
 	// them where the Warpmap is and what it maps onto, its cells are in its own
 	// buffer. pRects are the clip rectangles, which the caller steps past.
 
-	void DX12Backend::_drawWarp(Command cmd, const WarpParams& params, const RectSPX* pRects, Object* const*& pObjects)
+	void DX12Backend::_drawWarp(Command cmd, const WarpParams& params, const RectSPX* pRects)
 	{
 		bool bEdgemap = (cmd == Command::WarpDrawEdgemap);
 
-		Object * pWarpObject = *pObjects++;
-		Object * pEdgemapObject = bEdgemap ? *pObjects++ : nullptr;
+		Object * pWarpObject = _object(params.warpmap);
+		Object * pEdgemapObject = bEdgemap ? _object(params.edgemap) : nullptr;
 
 		DX12Warpmap * pWarpmap = (pWarpObject && _isOfType(pWarpObject->typeInfo(), DX12Warpmap::TYPEINFO)) ?
 								 static_cast<DX12Warpmap*>(pWarpObject) : nullptr;
@@ -3600,6 +3630,16 @@ namespace wg
 
 		bOK = _reserveBuffer(frame.extrasBuffer, frame.pExtrasBufferData, frame.extrasCapacity,
 							 m_pExtrasBeg, m_pExtrasPtr, m_pExtrasEnd, nExtras, L"WonderGUI Extras Buffer") && bOK;
+
+		// One descriptor per entry in the object tables of the session is enough
+		// for every blit source, see m_objectSRVs. Mipmaps that need drawing take
+		// a few more, which _generateMipmaps() makes room for itself. Should the
+		// heap fail to grow, _bindBlitSource() tries again and reports it.
+
+		int nDescriptors = pInfo ? pInfo->nObjects : 0;
+
+		if (frame.srvHeap && frame.srvCapacity - frame.nSRVDescriptors < nDescriptors)
+			_growSRVHeap(nDescriptors);
 
 		// If a buffer couldn't grow, the draws that don't fit are dropped, and the
 		// messages for that would blame SessionInfo. It is the buffer's fault, so

@@ -61,7 +61,7 @@ namespace wg
 		m_maxEdges = maxEdges;
 
 		(*m_pEncoder) << GfxStream::Header{ GfxStream::ChunkId::ProtocolVersion, 0, 2 };
-		(*m_pEncoder) << (uint16_t) 0x0304;		// 3.4: Warpmaps and warp commands, warp count in BeginSession.
+		(*m_pEncoder) << (uint16_t) 0x0305;		// 3.5: Commands refer to objects by index in the object table.
 	}
 
 	StreamBackend::StreamBackend(const Blueprint& bp)
@@ -76,7 +76,7 @@ namespace wg
 		m_pColorCompressor		= bp.colorCompressor;
 
 		(*m_pEncoder) << GfxStream::Header{ GfxStream::ChunkId::ProtocolVersion, 0, 2 };
-		(*m_pEncoder) << (uint16_t) 0x0304;		// 3.4: Warpmaps and warp commands, warp count in BeginSession.
+		(*m_pEncoder) << (uint16_t) 0x0305;		// 3.5: Commands refer to objects by index in the object table.
 	}
 
 

@@ -145,17 +145,16 @@ namespace wg
 
 			m_pObjectsBeg = pBeg;
 			m_pObjectsEnd = pEnd;
-			m_pObjectsPtr = pBeg;
 
-			Object* const * p = pBeg;
-
-			while (p < pEnd)
+			for (Object* const * p = pBeg; p < pEnd; p++)
 			{
-				auto pObj = *p++;
+				auto pObj = *p;
+				*m_pOStream << "    " << int(p - pBeg) << ": ";
+
 				if( pObj )
-					*m_pOStream << "    " << pObj << " (" << pObj->typeInfo().className << ")" << std::endl;
+					*m_pOStream << pObj << " (" << pObj->typeInfo().className << ")" << std::endl;
 				else
-					*m_pOStream << "    nullptr" << std::endl;
+					*m_pOStream << "nullptr" << std::endl;
 			}
 		}
 
@@ -262,7 +261,19 @@ namespace wg
 
 			const HiColor* pColors	= m_pColorsPtr;
 			const RectSPX* pRects	= m_pRectsPtr;
-			Object* const * pObjects = m_pObjectsPtr;
+
+			// Objects are referred to by index in the object table. Print both, and
+			// make a bad index stand out rather than read outside the table.
+
+			auto printObject = [this](uint32_t index)
+			{
+				*m_pOStream << "#" << index;
+
+				if (m_pObjectsBeg && index < uint32_t(m_pObjectsEnd - m_pObjectsBeg))
+					*m_pOStream << " (" << m_pObjectsBeg[index] << ")";
+				else
+					*m_pOStream << " (OUT OF RANGE)";
+			};
 
 			auto p = pBeg;
 			while (p < pEnd)
@@ -282,8 +293,9 @@ namespace wg
 
 					if (statesChanged & uint8_t(StateChange::BlitSource))
 					{
-						Object* pObj = *pObjects++;
-						*m_pOStream << "        BlitSource: " << pObj << std::endl;
+						*m_pOStream << "        BlitSource: ";
+						printObject(readObjectIndex(p));
+						*m_pOStream << std::endl;
 					}
 
 					if (statesChanged & uint8_t(StateChange::TintColor))
@@ -447,14 +459,16 @@ namespace wg
 
 					p++;		// padding
 
+					uint32_t edgemap = readObjectIndex(p);
+
 					auto p32 = (const spx *) p;
 					spx destX = *p32++;
 					spx destY = *p32++;
 					p = (const uint16_t*) p32;
 
-					Object * pObj = *pObjects++;
-
-					*m_pOStream << (cmd == Command::TileEdgemap ? "    TileEdgemap: " : "    DrawEdgemap: ") << pObj << " at: " << destX << ", " << destY << ", with transform: " << transform
+					*m_pOStream << (cmd == Command::TileEdgemap ? "    TileEdgemap: " : "    DrawEdgemap: ");
+					printObject(edgemap);
+					*m_pOStream << " at: " << destX << ", " << destY << ", with transform: " << transform
 						<< " split into " << nRects << " rectangles." << std::endl;
 
 					_printRects(*m_pOStream, nRects, pRects);
@@ -512,12 +526,16 @@ namespace wg
 					WarpParams params;
 					p = decodeWarp(cmd, p, params);
 
-					Object* pWarpmap = *pObjects++;
+					*m_pOStream << (cmd == Command::WarpBlit ? "    WarpBlit: warpmap " : "    WarpDrawEdgemap: warpmap ");
+					printObject(params.warpmap);
 
 					if (cmd == Command::WarpBlit)
-						*m_pOStream << "    WarpBlit: warpmap " << pWarpmap << " source: " << params.source.x << ", " << params.source.y << ", " << params.source.w << ", " << params.source.h;
+						*m_pOStream << " source: " << params.source.x << ", " << params.source.y << ", " << params.source.w << ", " << params.source.h;
 					else
-						*m_pOStream << "    WarpDrawEdgemap: warpmap " << pWarpmap << " edgemap: " << *pObjects++;
+					{
+						*m_pOStream << " edgemap: ";
+						printObject(params.edgemap);
+					}
 
 					*m_pOStream << " at: " << params.dest.x << ", " << params.dest.y << " offset: " << params.sourceOffset.x << ", " << params.sourceOffset.y
 						<< " split into " << params.nRects << " rectangles." << std::endl;
@@ -578,7 +596,6 @@ namespace wg
 
 			m_pRectsPtr = pRects;
 			m_pColorsPtr = pColors;
-			m_pObjectsPtr = pObjects;
 		}
 
 		if (m_pBackend)

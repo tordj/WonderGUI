@@ -214,7 +214,6 @@ namespace wg
 
 		const RectSPX *	pRects = m_pRectsPtr;
 		const HiColor*	pColors = m_pColorsPtr;
-		Object* const *	pObjects = m_pObjectsPtr;
 
 		Segment *	pSegBeg = m_canvasSegments.data();
 		Segment *	pSegEnd = m_canvasSegments.data() + m_canvasSegments.size();
@@ -237,7 +236,7 @@ namespace wg
 
 				if (statesChanged & uint8_t(StateChange::BlitSource))
 				{
-					auto pBlitSource = static_cast<SoftSurface*>(* pObjects++);
+					auto pBlitSource = static_cast<SoftSurface*>(m_pObjectsBeg[readObjectIndex(p)]);
 
 					if (!pBlitSource || !m_pBlitSource || pBlitSource->softFormat() != m_pBlitSource->softFormat() ||
 						pBlitSource->sampleMethod() != m_pBlitSource->sampleMethod())
@@ -759,8 +758,8 @@ namespace wg
 				WarpParams params;
 				p = decodeWarp(cmd, p, params);
 
-				auto pWarpmap = static_cast<SoftWarpmap*>(*pObjects++);
-				auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<SoftEdgemap*>(*pObjects++) : nullptr;
+				auto pWarpmap = static_cast<SoftWarpmap*>(m_pObjectsBeg[params.warpmap]);
+				auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<SoftEdgemap*>(m_pObjectsBeg[params.edgemap]) : nullptr;
 
 				const RectSPX* pMyRects = pRects;
 				pRects += params.nRects;
@@ -794,12 +793,13 @@ namespace wg
 			case Command::DrawEdgemap:
 			case Command::TileEdgemap:
 			{
-				auto pEdgemap = static_cast<SoftEdgemap*>(*pObjects++);
 				bool bTile = (cmd == Command::TileEdgemap);		// Origo is for one of the copies, rects give area to fill.
 
 				int32_t nRects = *p++;
 				int32_t	flip = *p++;
 				p++;						// padding
+
+				auto pEdgemap = static_cast<SoftEdgemap*>(m_pObjectsBeg[readObjectIndex(p)]);
 
 				auto p32 = (const spx *) p;
 				int32_t	destX = *p32++;
@@ -1154,7 +1154,6 @@ namespace wg
 
 		m_pRectsPtr = pRects;
 		m_pColorsPtr = pColors;
-		m_pObjectsPtr = pObjects;
 	}
 
 	//____ _updateBlitFunctions() _____________________________________________

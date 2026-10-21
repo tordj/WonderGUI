@@ -969,6 +969,17 @@ void GfxDeviceGen2::_resetCanvas()
 		layer.rects.clear();
 		layer.commands.clear();
 
+		// Forget what the object cache knew. Should the generation wrap around, entries
+		// from four billion sessions ago would look valid, so start over properly.
+
+		if (++layer.objectCacheGeneration == 0)
+		{
+			for (auto& entry : layer.objectCache)
+				entry = ObjectCacheEntry();
+
+			layer.objectCacheGeneration = 1;
+		}
+
 		layer.latestCommand = Command::None;
 		layer.latestCommandOfs = -1;
 
@@ -1188,6 +1199,9 @@ void GfxDeviceGen2::_doFlattenLayers()
 		else
 		{
 			// Send buffers and commands to backend
+
+			if( !layer.objects.empty() )
+				m_pBackend->setObjects( layer.objects.data(), layer.objects.data() + layer.objects.size() );
 
 			if( !layer.rects.empty() )
 			{
@@ -3072,19 +3086,18 @@ void GfxDeviceGen2::_encodeEdgemapDraw(const RectSPX& area, CoordSPX origo, Edge
 
 		m_pActiveLayer->latestCommand = cmd;
 
-		m_pActiveLayer->commands.secureSpace(16);
+		uint32_t edgemapIndex = _objectIndex(pEdgemap);
+
+		m_pActiveLayer->commands.secureSpace(20);
 
 		m_pActiveLayer->commands.pushUnchecked(uint16_t(cmd));
 		m_pActiveLayer->commands.pushUnchecked(uint16_t(nRects));
 		m_pActiveLayer->commands.pushUnchecked(uint16_t(flip));
 		m_pActiveLayer->commands.pushUnchecked(uint16_t(0));									// padding
+		m_pActiveLayer->commands.pushUnchecked(edgemapIndex);
 		m_pActiveLayer->commands.pushUnchecked(origo);
 
-		m_pActiveLayer->objects.push_back(pEdgemap);
-		pEdgemap->retain();
-
 		m_pActiveCanvas->sessionInfo.nEdgemapDraws++;
-		m_pActiveCanvas->sessionInfo.nObjects++;
 	}
 }
 
@@ -3180,26 +3193,23 @@ void GfxDeviceGen2::_encodeWarp(CoordSPX dest, Warpmap* pWarpmap, Edgemap* pEdge
 
 	m_pActiveLayer->latestCommand = cmd;
 
-	m_pActiveLayer->commands.secureSpace(pSource ? 36 : 20);
+	uint32_t warpmapIndex = _objectIndex(pWarpmap);
+	uint32_t edgemapIndex = pEdgemap ? _objectIndex(pEdgemap) : 0;
+
+	m_pActiveLayer->commands.secureSpace(pSource ? 40 : 28);
 
 	m_pActiveLayer->commands.pushUnchecked(uint16_t(cmd));
 	m_pActiveLayer->commands.pushUnchecked(uint16_t(nRects));
+	m_pActiveLayer->commands.pushUnchecked(warpmapIndex);
+
+	if (pEdgemap)
+		m_pActiveLayer->commands.pushUnchecked(edgemapIndex);
+
 	m_pActiveLayer->commands.pushUnchecked(dest);
 	m_pActiveLayer->commands.pushUnchecked(sourceOffset);
 
 	if (pSource)
 		m_pActiveLayer->commands.pushUnchecked(*pSource);
-
-	m_pActiveLayer->objects.push_back(pWarpmap);
-	pWarpmap->retain();
-	m_pActiveCanvas->sessionInfo.nObjects++;
-
-	if (pEdgemap)
-	{
-		m_pActiveLayer->objects.push_back(pEdgemap);
-		pEdgemap->retain();
-		m_pActiveCanvas->sessionInfo.nObjects++;
-	}
 
 	m_pActiveCanvas->sessionInfo.nWarpDraws++;
 }
@@ -3668,9 +3678,7 @@ void GfxDeviceGen2::_encodeStateChanges()
 
 		if (pSource != pOldSource)
 		{
-			m_pActiveLayer->objects.push_back(pSource);
-			if( pSource )
-				pSource->retain();
+			cmdBuffer.push(_objectIndex(pSource));
 
 			encodedState.blitSource = pSource;
 			statesChanged |= int(StateChange::BlitSource);
@@ -3792,6 +3800,39 @@ void GfxDeviceGen2::_encodeStateChanges()
 
 	m_stateChanges = 0;
 
+}
+
+//____ _objectIndex() __________________________________________________________
+/*
+	Returns the index of the object in the object table of the active layer, adding
+	it (and retaining it until the session has been rendered) if it isn't there.
+	Null is added like any other object, it stands for no blit source.
+
+	The cache is a hint only, see ObjectCacheEntry. The hash is Fibonacci hashing of
+	the address, which spreads objects allocated close together over the entries.
+*/
+
+uint32_t GfxDeviceGen2::_objectIndex(Object* pObject)
+{
+	auto& layer = *m_pActiveLayer;
+
+	uint64_t hash = (uint64_t(uintptr_t(pObject)) * 0x9E3779B97F4A7C15ull) >> (64 - c_objectCacheBits);
+	auto& entry = layer.objectCache[hash];
+
+	if (entry.generation == layer.objectCacheGeneration && entry.pObject == pObject)
+		return entry.index;
+
+	uint32_t index = (uint32_t) layer.objects.size();
+
+	layer.objects.push_back(pObject);
+	if (pObject)
+		pObject->retain();
+
+	entry.pObject = pObject;
+	entry.index = index;
+	entry.generation = layer.objectCacheGeneration;
+
+	return index;
 }
 
 } // namspace wg

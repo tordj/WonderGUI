@@ -262,6 +262,24 @@ namespace wg
 		};
 
 
+		// Remembers where in the object table of a layer an object was put, so that it is
+		// added only once, see _objectIndex(). Text alone switches blit source between a
+		// few glyph cache surfaces for almost every glyph.
+		//
+		// The cache is direct mapped and an entry is simply replaced when another object
+		// lands on it. That can only make an object appear twice in the table, which costs
+		// a little but is never wrong. Entries are valid when their generation matches the
+		// layer's, which is stepped instead of clearing the cache with every session.
+
+		struct ObjectCacheEntry
+		{
+			Object*		pObject = nullptr;
+			uint32_t	index = 0;
+			uint32_t	generation = 0;
+		};
+
+		static const int		c_objectCacheBits = 6;		// 64 entries.
+
 		struct RenderLayer
 		{
 			RenderState				encodedState;				// State encoded in commands
@@ -270,7 +288,10 @@ namespace wg
 
 			std::vector<RectSPX>	rects;
 			std::vector<HiColor>	colors;
-			std::vector<Object*>	objects;
+			std::vector<Object*>	objects;					// Object table, retained, referred to by index from commands.
+
+			ObjectCacheEntry		objectCache[1 << c_objectCacheBits];
+			uint32_t				objectCacheGeneration = 1;
 
 			int						finalCommandsOfs = -1;
 			Surface_p				pLayerCanvas;				// Null for layer 0 or any layer rendering directly to layer 0.
@@ -324,6 +345,7 @@ namespace wg
 
 		void _resetState(RenderState& state);
 		void _encodeStateChanges();
+		uint32_t _objectIndex(Object* pObject);		// Index in the active layer's object table, adds the object if needed.
 		void _doFlattenLayers();
 		void _resetCanvas();
 

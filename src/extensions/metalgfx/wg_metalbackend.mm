@@ -903,7 +903,6 @@ void MetalBackend::setObjects(Object* const * pBeg, Object* const * pEnd)
 {
 	m_pObjectsBeg = pBeg;
 	m_pObjectsEnd = pEnd;
-	m_pObjectsPtr = pBeg;
 }
 
 //____ setRects() _________________________________________________________
@@ -939,7 +938,6 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 {
 	const RectSPX* 	pRects = m_pRectsPtr;
 	const HiColor* 	pColors = m_pColorsPtr;
-	Object* const *	pObjects = m_pObjectsPtr;
 
 	VertexMTL *	pVertexMTL	= m_pVertexBuffer + m_nVertices;
 	ColorMTL*	pColorMTL	= m_pColorBuffer + m_nColors;
@@ -965,7 +963,7 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 
 				if (statesChanged & uint8_t(StateChange::BlitSource))
 				{
-					auto pSurf = static_cast<MetalSurface*>(* pObjects++);
+					auto pSurf = static_cast<MetalSurface*>(m_pObjectsBeg[readObjectIndex(p)]);
 
 					if( pSurf )
 					{
@@ -1598,8 +1596,8 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 				WarpParams params;
 				p = decodeWarp(cmd, p, params);
 
-				auto pWarpmap = static_cast<MetalWarpmap*>(*pObjects++);
-				auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<MetalEdgemap*>(*pObjects++) : nullptr;
+				auto pWarpmap = static_cast<MetalWarpmap*>(m_pObjectsBeg[params.warpmap]);
+				auto pEdgemap = (cmd == Command::WarpDrawEdgemap) ? static_cast<MetalEdgemap*>(m_pObjectsBeg[params.edgemap]) : nullptr;
 
 				const RectSPX* pWarpRects = pRects;
 				pRects += params.nRects;
@@ -1740,13 +1738,14 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 			case Command::DrawEdgemap:
 			case Command::TileEdgemap:
 			{
-				auto pEdgemap = static_cast<MetalEdgemap*>(*pObjects++);
 				bool bTile = (cmd == Command::TileEdgemap);		// Origo is for one of the copies, rects give area to fill.
 
 				int32_t nRects = *p++;
 				int32_t	flip = *p++;
 
 				p++;					// padding
+
+				auto pEdgemap = static_cast<MetalEdgemap*>(m_pObjectsBeg[readObjectIndex(p)]);
 
 				auto p32 = (const spx *) p;
 				int32_t	destX = *p32++;
@@ -2162,7 +2161,6 @@ void MetalBackend::processCommands(const uint16_t* pBeg, const uint16_t* pEnd, i
 
 	m_pRectsPtr = pRects;
 	m_pColorsPtr = pColors;
-	m_pObjectsPtr = pObjects;
 
 	m_nVertices			= int(pVertexMTL - m_pVertexBuffer);
 	m_nColors			= int(pColorMTL	- m_pColorBuffer);

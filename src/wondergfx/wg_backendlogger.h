@@ -102,9 +102,8 @@ protected:
 	const RectSPX*	m_pRectsEnd = nullptr;
 	const RectSPX*	m_pRectsPtr = nullptr;
 
-	Object* const *	m_pObjectsBeg = nullptr;
+	Object* const *	m_pObjectsBeg = nullptr;		// Object table, commands refer to objects by index.
 	Object* const *	m_pObjectsEnd = nullptr;
-	Object* const *	m_pObjectsPtr = nullptr;
 
 	GfxBackend_p	m_pBackend;
 

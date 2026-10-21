@@ -41,6 +41,7 @@
 #include <wg_canvaslayers.h>
 
 #include <vector>
+#include <cstring>
 
 namespace wg
 {
@@ -80,7 +81,7 @@ namespace wg
 
 			int		nColors;			// Total number of colors to be used through all commands.
 			int		nTransforms;		// Total number of transforms for session.
-			int		nObjects;			// Total number of object references for session.
+			int		nObjects;			// Total number of entries in the object tables of the session's layers.
 
 			// Shapes
 
@@ -107,6 +108,33 @@ namespace wg
 		};
 
 		/*
+			Objects - blit sources, edgemaps and warpmaps - are referred to by their index in
+			the object table that setObjects() was last given. GfxDeviceGen2 gives each layer
+			a table of its own, which lists the objects of the layer once each. Not always
+			exactly once though: a backend must not count on there being no duplicates, only
+			on an index of the table always meaning the same object. An entry can be null,
+			for no blit source.
+
+			An index is 32 bits, written as two 16-bit words in native byte order and always
+			32-bit aligned, see readObjectIndex(). They are found in:
+
+			  StateChange		First in the payload, when BlitSource is among the states changed.
+			  DrawEdgemap		After the flip and padding word, see below.
+			  TileEdgemap		Same as DrawEdgemap.
+			  WarpBlit			See below.
+			  WarpDrawEdgemap	See below.
+
+			DrawEdgemap and TileEdgemap. Layout, in 16-bit words:
+
+			  uint16	Command::DrawEdgemap or Command::TileEdgemap
+			  uint16	nRects			Clip rectangles in rect buffer.
+			  uint16	flip			GfxFlip.
+			  uint16	padding
+			  uint32	edgemap			Index of the edgemap in the object table.
+			  int32		origo x, y		spx.
+		*/
+
+		/*
 			Line draws lines in one color each. Layout, in 16-bit words:
 
 			  uint16	Command::Line
@@ -129,11 +157,11 @@ namespace wg
 
 			  uint16	Command::WarpBlit or Command::WarpDrawEdgemap
 			  uint16	nRects			Clip rectangles in rect buffer, within the rectangle of the Warpmap.
+			  uint32	warpmap			Index of the Warpmap in the object table.
+			  uint32	edgemap			WarpDrawEdgemap only. Index of the edgemap in the object table.
 			  int32		dest x, y		Top-left corner of the Warpmap, spx. Rounded to nearest pixel.
 			  int32		offset x, y		Source offset, spx.
 			  int32		source x, y, w, h	WarpBlit only. Source rectangle of the blit source, spx.
-
-			  Objects: the Warpmap, then the edgemap for WarpDrawEdgemap.
 		*/
 
 		/*
@@ -264,6 +292,8 @@ namespace wg
 		struct WarpParams
 		{
 			int				nRects;
+			uint32_t		warpmap;				// Index in object table.
+			uint32_t		edgemap;				// Index in object table, WarpDrawEdgemap only.
 			CoordSPX		dest;
 			CoordSPX		sourceOffset;
 			RectSPX			source;					// WarpBlit only.
@@ -273,6 +303,10 @@ namespace wg
 		// the returned pointer at the word after its parameters.
 
 		static const uint16_t*		decodeWarp(Command cmd, const uint16_t* p, WarpParams& params);
+
+		// Reads an index into the object table and steps p past it.
+
+		static inline uint32_t		readObjectIndex(const uint16_t*& p);
 
 		// The caps word of a line. Bits 0-2 hold the LineCapShape of the begin and bits 8-10 that
 		// of the end. Bits 3-7 and 11-15 hold the spear lengths of the begin and end in steps of
@@ -344,6 +378,16 @@ namespace wg
 		static const spx				s_defaultBlurRadius;
 
 	};
+
+	//____ readObjectIndex() _____________________________________________________
+
+	inline uint32_t GfxBackend::readObjectIndex(const uint16_t*& p)
+	{
+		uint32_t index;
+		std::memcpy(&index, p, 4);
+		p += 2;
+		return index;
+	}
 
 } // namespace wg
 #endif	// WG_GFXBACKEND_DOT_H

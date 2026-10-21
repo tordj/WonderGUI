@@ -162,9 +162,8 @@ namespace wg
 		EdgemapFactory_p	m_pEdgemapFactory = nullptr;
 		WarpmapFactory_p	m_pWarpmapFactory;
 
-		Object* const * m_pObjectsBeg = nullptr;
+		Object* const * m_pObjectsBeg = nullptr;		// Object table, commands refer to objects by index.
 		Object* const * m_pObjectsEnd = nullptr;
-		Object* const * m_pObjectsPtr = nullptr;
 
 		const RectSPX* m_pRectsBeg = nullptr;
 		const RectSPX* m_pRectsEnd = nullptr;
